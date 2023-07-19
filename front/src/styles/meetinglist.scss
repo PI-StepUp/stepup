@@ -31,7 +31,7 @@
         .meeting-content-wrap{
             margin-top:144px;
             ul{
-                @include flex;
+                @include flex(center, center);
                 flex-wrap: wrap;
                 li{
                     @include setSize(390px);
@@ -77,6 +77,7 @@
                 li{
                     @include font(14px, 400, #C0C0C0);
                     margin-left:9px;
+                    cursor:pointer;
                     &:first-child{
                         margin-left:0px;
                     }
