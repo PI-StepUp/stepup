@@ -1,0 +1,104 @@
+@import "./function.scss";
+
+.notice-create-wrap{
+    @include block-center(1200px);
+    padding-top:73px;
+    padding-bottom:165px;
+    .notice-create-title{
+        span{
+            @include font(28px, 700, #6BBDA7);
+        }
+        .flex-wrap{
+            @include flex(flex-start, center);
+            margin-top:6px;
+            h3{
+                @include font(50px, 700, #1D1D1D);
+            }
+            .horizontal-line{
+                @include setSize(200px, 2px);
+                background-color:#1D1D1D;
+                margin-left:18px;
+            }
+        }
+    }
+    .notice-create-content{
+        margin-top:110px;
+        form{
+            table{
+                margin:0 auto;
+                tr{
+                    margin-top:40px;
+                    @include flex(flex-start, center);
+                    td{
+                        &:first-child{
+                            padding-top:0px;
+                        }
+                        &:nth-child(1){
+                            width:200px;
+                            @include font(30px, 600, #454545);
+                        }
+                        &:nth-child(2){
+                            width:900px;
+                            .input-title{
+                                @include setSize(900px, 70px);
+                                background-color:#EDEDED;
+                                border:none;
+                                border-radius:10px;
+                                @include box-padding(20px);
+                                @include font(14px, 500, #454545);
+                            }
+                            .input-content{
+                                @include setSize(900px, 360px);
+                                background-color:#EDEDED;
+                                border:none;
+                                border-radius:10px;
+                                @include box-padding(20px);
+                                @include font(14px, 500, #454545);
+                            }
+                            input[type="file"]{
+                                &::file-selector-button {
+                                    @include setSize(150px, 30px);
+                                    background: #EDEDED;
+                                    border:none;
+                                    border-radius: 10px;
+                                    cursor: pointer;
+                                    &:hover {
+                                        background: rgb(77,77,77);
+                                        color: #fff;
+                                    }
+                                }
+                            }
+                            .notice-create-button-wrap{
+                                ul{
+                                    @include flex(flex-end, center);
+                                    li{
+                                        margin-left:10px;
+                                        button{
+                                            @include setSize(108px, 44px);
+                                            border: none;
+                                            cursor:pointer;
+                                        }
+                                        &:nth-child(1){
+                                            margin-left:0px;
+                                            button{
+                                                background-color:#EDEDED;
+                                                @include font(16px, 500, #343434);
+                                            }
+                                        }
+                                        &:nth-child(2){
+                                            button{
+                                                background-color:#343434;
+                                                @include font(16px, 500, #FFFFFF);
+                                            }
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
