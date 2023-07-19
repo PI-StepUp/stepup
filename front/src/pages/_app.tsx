@@ -8,6 +8,7 @@ import "../styles/articlelist.scss"
 import "../styles/meetinglist.scss"
 import "../styles/footer.scss"
 import "../styles/login.scss"
+import "../styles/signup.scss"
 
 import type {AppProps} from 'next/app';
 
