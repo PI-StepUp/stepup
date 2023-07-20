@@ -3,10 +3,12 @@ package com.pi.stepup.domain.user.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.pi.stepup.domain.user.domain.Country;
+import com.pi.stepup.domain.user.domain.User;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class UserRepositoryImplTest {
 
-    @Autowired
+    @PersistenceContext
     private EntityManager em;
 
     @Autowired
@@ -39,6 +41,32 @@ class UserRepositoryImplTest {
         for (int i = 0; i < countries.size(); i++) {
             assertThat(findCountries.get(i)).isEqualTo(countries.get(i));
         }
+    }
+
+    @DisplayName("이메일 기준 조회 테스트")
+    @Test
+    void findByEmail() {
+        // given
+        String testCountryCodes = "ko";
+        String testEmail = "test@test.com";
+
+        Country country = Country.builder()
+            .code(testCountryCodes)
+            .build();
+        em.persist(country);
+
+        User user = User.builder()
+            .email(testEmail)
+            .country(country)
+            .point(0)
+            .build();
+        em.persist(user);
+
+        // when
+        User findUser = userRepository.findByEmail(testEmail);
+
+        // then
+        assertThat(findUser).isEqualTo(user);
     }
 
     private List<Country> makeSampleCountries() {
