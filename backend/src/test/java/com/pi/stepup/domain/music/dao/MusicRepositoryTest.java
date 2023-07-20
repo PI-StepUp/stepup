@@ -38,6 +38,7 @@ class MusicRepositoryTest {
 
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
+    @Transactional
     public void selectOneMusicTest(){
         Music music = Music.builder()
             .title("spicy")
@@ -47,9 +48,9 @@ class MusicRepositoryTest {
             .build();
         musicRepository.insert(music);
 
-        Long musicId = 1L;
+        Long musicId = music.getMusicId();
         Music result = musicRepository.selectOne(musicId);
-        assertEquals(musicId, result.getMusicId());
+        assertEquals(music.getTitle(), result.getTitle());
     }
 
 }
