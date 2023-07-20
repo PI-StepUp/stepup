@@ -46,5 +46,13 @@ class MusicServiceTest {
         assertThat(result.getTitle()).isEqualTo(music.getTitle());
     }
 
+    @Test
+    @DisplayName("노래 한 곡 조회 테스트")
+    public void selectOneMusicServiceTest(){
+        Music insertedMusic = musicService.create(music);
 
+        Long musicId = 1L;
+        Music foundMusic = musicService.selectOne(musicId);
+        assertThat(insertedMusic.getTitle()).isEqualTo(foundMusic.getTitle());
+    }
 }
