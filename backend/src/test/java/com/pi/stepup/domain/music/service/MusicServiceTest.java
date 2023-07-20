@@ -25,7 +25,7 @@ class MusicServiceTest {
     @Test
     @DisplayName("노래 추가 서비스 테스트")
     @Transactional
-    public void insertMusicServiceTest() {
+    public void createMusicServiceTest() {
         Music music = Music.builder()
             .title("spicy")
             .artist("aespa")
