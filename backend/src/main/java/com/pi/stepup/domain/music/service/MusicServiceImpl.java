@@ -25,4 +25,9 @@ public class MusicServiceImpl implements MusicService{
 
         return musicRepository.insert(music);
     }
+
+    @Override
+    public Music readOne(Long musicId) {
+        return musicRepository.selectOne(musicId);
+    }
 }

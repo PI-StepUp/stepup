@@ -5,4 +5,5 @@ import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 
 public interface MusicService {
     Music create(MusicSaveRequestDto musicSaveRequestDto);
+    Music readOne(Long musicId);
 }
