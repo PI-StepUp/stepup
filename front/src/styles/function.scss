@@ -1,0 +1,32 @@
+@mixin setSize($width:null, $height:null){
+    width: $width;
+    height: $height;
+}
+
+@mixin block-center($width:null){
+    width:$width;
+    margin:0 auto;
+}
+
+@mixin font($fontSize:null, $fontWeight:null, $color:null){
+    font-size: $fontSize;
+    font-weight: $fontWeight;
+    color: $color;
+}
+
+@mixin flex($justifyContent:null, $alignItems:null){
+    display:flex;
+    justify-content: $justifyContent;
+    align-items: $alignItems;
+}
+
+@mixin background($url:null){
+    background-image: url($url);
+    background-position: center;
+    background-size: cover;
+}
+
+@mixin box-padding($padding){
+    box-sizing: border-box;
+    padding: $padding;
+}

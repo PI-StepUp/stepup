@@ -1,0 +1,243 @@
+@import "./function.scss";
+
+.practiceroom-wrap{
+    @include flex;
+    .practice-video-wrap{
+        @include box-padding(20px);
+        @include setSize(68vw,100vh);
+        background-color:#F5F5F5;
+        .practice-title{
+            @include flex(flex-start, center);
+            .pre-icon{
+                @include setSize(80px, 80px);
+                background-color:#FFFFFF;
+                border-radius:100%;
+                @include flex(center,center);
+                img{
+                    @include setSize(40px, 40px);
+                }
+            }
+            .room-title{
+                margin-left:20px;
+                h3{
+                    @include font(28px, 700, #2D2D2F);
+                }
+                span{
+                    @include font(22px, 400, #BEBFC3);
+                    display:inline-block;
+                    margin-top:10px;
+                }
+            }
+        }
+        .participle-wrap{
+            margin-top:28px;
+            @include flex(flex-start, center);
+            .participle-icon{
+                @include setSize(130px, 50px);
+                background-color:#FFFFFF;
+                border-radius:50px;
+                @include flex(center, center);
+                img{
+
+                }
+                span{
+                    @include font(22px, 700, #717277);
+                    display:inline-block;
+                    margin-left:10px;
+                }
+            }
+            button{
+                @include setSize(250px, 50px);
+                background-color:#3D84F6;
+                border:none;
+                border-radius:50px;
+                margin-left:16px;
+                cursor:pointer;
+                img{
+
+                }
+                span{
+                    @include font(22px, 500, #FFFFFF);
+                    display:inline-block;
+                    margin-left:13px;
+                }
+            }
+        }
+        .video-content{
+            height:60%;
+            @include flex(center, center);
+            margin-top:25px;
+            .my-video{
+                @include setSize(50%, 100%);
+                background-color:#CBD1D1;
+                video{
+                    @include setSize(100%, 100%);
+                }
+            }
+            .yours-video{
+                @include setSize(50%, 100%);
+                background-color:#CBD1D1;
+                ul{
+                    @include flex;
+                    flex-wrap:wrap;
+                    li{
+                        @include setSize(50%, 50%);
+                        video{
+                            @include setSize(100%);
+                        }
+                    }
+                }
+            }
+            .control-wrap{
+                width:100%;
+                position:fixed;
+                bottom:20px;
+                @include flex(center,center);
+                ul{
+                    @include flex(center, center);
+                    li{
+                        margin-left:30px;
+                        &:first-child{
+                            margin-left:0px;
+                        }
+                        button{
+                            @include setSize(60px, 60px);
+                            background-color:#FFF;
+                            border:none;
+                            border-radius:50px;
+                            cursor:pointer;
+                            &:hover{
+                                background-color:#F95A3A;
+                            }
+                        }
+                        .exit-button{
+                            @include setSize(220px, 60px);
+                            background-color:#FFF;
+                            @include font(20px, 900, #696973);
+                            &:hover{
+                                background-color:#F95A3A;
+                                @include font(20px, 900, #FFFFFF);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .participant-wrap{
+        @include setSize(24vw);
+        @include box-padding(30px);
+        .participant-list{
+            .participant-list-title{
+                position:relative;
+                h3{
+                    @include font(28px, 900, #2D2D2F);
+                }
+                span{
+                    display:inline-block;
+                    @include setSize(60px, 35px);
+                    background-color:#3D84F6;
+                    border-radius:50px;
+                    @include font(22px, 900, #FFFFFF);
+                    @include flex(center, center);
+                    position: absolute;
+                    top:0px;
+                    right:0px;
+                }
+            }
+            .participant-list-content{
+                @include setSize(100%, 30vh);
+                margin-top:20px;
+                overflow-y: scroll;
+                -ms-overflow-style: none; /* 인터넷 익스플로러 */
+                scrollbar-width: none; /* 파이어폭스 */
+                &::-webkit-scrollbar{
+                    display:none;
+                }
+                ul{
+                    width:100%;
+                    li{
+                        width:100%;
+                        @include flex(flex-start, center);
+                        @include box-padding(5px);
+                        span{
+                            @include font(24px, 600, #4F5052);
+                            margin-left:18px;
+                        }
+                    }
+                    .on{
+                        background-color:#D9D9D9;
+                        border-radius:50px;
+                    }
+                }
+            }
+        }
+        .chat-wrap{
+            height:auto;
+            .chat-title{
+                margin-top:20px;
+                h3{
+                    @include font(30px, 900, #2D2D2F);
+                }
+            }
+            .chat-content-wrap{
+                height:100%;
+                margin-top:20px;
+                .chat-read{
+                    height:40vh;
+                    overflow-y: scroll;
+                    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+                    scrollbar-width: none; /* 파이어폭스 */
+                    &::-webkit-scrollbar{
+                        display:none;
+                    }
+                    ul{
+                        li{
+                            @include flex;
+                            margin-top:12px;
+                            .chat-user-img{
+    
+                            }
+                            .chat-user-msg{
+                                margin-left:16px;
+                                span{
+                                    @include font(18px, 400, #B0B0B0);
+                                }
+                                p{
+                                    @include box-padding(20px);
+                                    background-color:#F5F5F5;
+                                    border-radius:10px;
+                                    @include font(18px, 700, #808080);
+                                    line-height:24px;
+                                    margin-top:7px;
+                                }
+                            }
+                        }
+                    }
+                }
+                .chat-write{
+                    position:absolute;
+                    bottom:20px;
+                    @include flex(space-between, center);
+                    input[type="text"] {
+                        @include setSize(100%, 30px);
+                        background-color:#E9E9E9;
+                        border:none;
+                        border-radius:20px;
+                        @include box-padding(20px);
+                    }
+                    button{
+                        @include setSize(20%, 30px);
+                        border:none;
+                        border-radius:30px;
+                        background-color:#4589F4;
+                        @include flex(center, center);
+                        @include box-padding(20px);
+                        cursor:pointer;
+                    }
+                }
+            }
+        }
+    }
+}

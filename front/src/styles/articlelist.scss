@@ -1,0 +1,80 @@
+@import "./function.scss";
+
+.article-list-wrap{
+    @include block-center(1200px);
+    .article-list-title{
+        padding-top:73px;
+        padding-left:10px;
+        span{
+            @include font(28px, 700, #6BBDA7);
+        }
+        h3{
+            margin-top:2px;
+            @include font(50px, 700, #1D1D1D);
+            line-height:64px;
+        }
+    }
+    .search-wrap{
+        text-align:right;
+        margin-top:51px;
+        form{
+            input[type="text"]{
+                @include setSize(492px, 44px);
+                border-radius: 50px;
+                background-color: #F1F1F1;
+                border: none;
+                box-sizing: border-box;
+                padding:20px;
+                @include font(16px, 400, #585858);
+            }
+            input[type="submit"]{
+                @include setSize(108px, 44px);
+                background-color:#343434;
+                @include font(16px, 400, #FFFFFF);
+                margin-left:18px;
+            }
+        }
+    }
+    table{
+        @include block-center(1100px);
+        margin-top:30px;
+        thead{
+            tr{
+                border-bottom:2px solid #A8A8A8;
+                th{
+                    @include font(20px, 400, #A5A5A5);
+                    padding:22px 0px;
+                }
+            }
+        }
+        tbody{
+            text-align:center;
+            tr{
+                border-bottom: 1px solid #B1B1B1;
+                td{
+                    @include font(18px, 400, #454545);
+                    padding:22px 0px;
+                }
+            }
+        }
+    }
+    .pagination{
+        text-align:center;
+        margin-top:45px;
+        padding-bottom: 47px;
+        ul{
+            @include flex(center, center);
+            li{
+                @include setSize(25px, 25px);
+                @include flex(center, center);
+                border: 1px solid #B1B1B1;
+                @include font(14px, 400, #B1B1B1);
+                margin-left:2px;
+                cursor:pointer;
+                &:first-child{
+                    margin-left:0px;
+                }
+            }
+        }
+    }
+}

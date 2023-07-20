@@ -1,0 +1,17 @@
+@import "./function.scss";
+
+.sub-nav-wrap{
+    @include block-center(1200px);
+    height:80px;
+    ul{
+        height:100%;
+        @include flex(flex-start, center);
+        li{
+            padding:10px 20px;
+            border-radius: 50px;
+            background-color:#F7F7F7;
+            margin-left:4px;
+            @include font(20px, 400, #8F8F8F);
+        }
+    }
+}
