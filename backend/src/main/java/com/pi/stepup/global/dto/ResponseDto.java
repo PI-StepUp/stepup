@@ -1,22 +1,16 @@
 package com.pi.stepup.global.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResponseDto<T> {
-    private String message;
-    private T data;
+    private final String message;
+    private final T data;
 
-    public static <T> ResponseDto<T> create(String message) {
-        return new ResponseDto<>(message, null);
-    }
-
-    public static <T> ResponseDto<T> create(String message, T data) {
-        return new ResponseDto<>(message, data);
+    @Builder
+    public ResponseDto(String message, T data) {
+        this.message = message;
+        this.data = data;
     }
 }
