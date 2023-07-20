@@ -5,4 +5,5 @@ import com.pi.stepup.domain.music.domain.Music;
 public interface MusicRepository{
 
     Music insert(Music music);
+    Music selectOne(Long musicId);
 }
