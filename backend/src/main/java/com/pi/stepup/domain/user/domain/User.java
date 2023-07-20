@@ -2,7 +2,6 @@ package com.pi.stepup.domain.user.domain;
 
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.global.entity.BaseEntity;
-import com.pi.stepup.global.entity.Country;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
