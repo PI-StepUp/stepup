@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.api;
 
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.service.MusicService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class MusicApiController {
     private final MusicService musicService;
 
     @PostMapping
-    public ResponseEntity<?> createMusic(@RequestBody Music music){
+    public ResponseEntity<?> createMusic(@RequestBody MusicSaveRequestDto music){
         Long musicId = musicService.create(music).getMusicId();
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             "노래 등록 완료",
