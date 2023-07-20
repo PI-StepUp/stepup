@@ -7,10 +7,7 @@ import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/music")
@@ -24,6 +21,14 @@ public class MusicApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             "노래 등록 완료",
             musicId
+        ));
+    }
+
+    @GetMapping("/{musicId}")
+    public ResponseEntity<?> readOneMusic(@PathVariable("musicId") Long musicId){
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                "노래 조회 완료",
+                musicService.readOne(musicId)
         ));
     }
 }
