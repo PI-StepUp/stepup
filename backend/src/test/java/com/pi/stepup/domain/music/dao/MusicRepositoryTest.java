@@ -33,8 +33,23 @@ class MusicRepositoryTest {
             .URL("url")
             .build();
         Music result = musicRepository.insert(music);
-        System.out.println(result.getMusicId());
         assertEquals(music, result);
+    }
+
+    @Test
+    @DisplayName("노래 한 곡 조회 테스트")
+    public void selectOneMusicTest(){
+        Music music = Music.builder()
+            .title("spicy")
+            .artist("aespa")
+            .answer("")
+            .URL("url")
+            .build();
+        musicRepository.insert(music);
+
+        Long musicId = 1L;
+        Music result = musicRepository.selectOne(musicId);
+        assertEquals(musicId, result.getMusicId());
     }
 
 }
