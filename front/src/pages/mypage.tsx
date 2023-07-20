@@ -12,92 +12,96 @@ const MyPage = () => {
 	return (
 		<>
 			<Header />
-			<body className="background_color">
-				<ul className="mypage_profile">
-					<li>
-						<div className="info">
-							<div className="cnt">3</div>
-							<div className="cnt_title">예약된 랜플댄</div>
-							<div className="btn_info">
-								<a href="">랜플댄 시간표 보기</a>
-							</div>
-						</div>
-					</li>
-					<li>
-						<div className="info">
-							<div className="img_profile">
-								<Image className="img" src={img_profile} alt="profile"></Image>
-							</div>
-							<div>
-								<progress value="985" max="2000"></progress>
-								<div className="progress_text">
-									<p>다음 랭킹까지 1,015</p>
-									<p>985/2,000</p>
-								</div>
-								<div className="info_user">
-									<p className="ranking">골드</p>
-									<p className="name">김싸피</p>
+			<div className="background_color">
+				<div>
+					<ul className="mypage_profile">
+						<li>
+							<div className="info">
+								<div className="cnt">3</div>
+								<div className="cnt_title">예약된 랜플댄</div>
+								<div className="btn_info">
+									<a href="">랜플댄 시간표 보기</a>
 								</div>
 							</div>
-						</div>
-					</li>
-					<li>
-						<div className="info">
-							<div className="cnt">3</div>
-							<div className="cnt_title">작성한 글 수</div>
-							<div className="btn_info">
-								<a href="">게시글 확인하기</a>
+						</li>
+						<li>
+							<div className="info">
+								<div className="img_profile">
+									<Image className="img" src={img_profile} alt="profile"></Image>
+								</div>
+								<div>
+									<progress value="985" max="2000"></progress>
+									<div className="progress_text">
+										<p>다음 랭킹까지 1,015</p>
+										<p>985/2,000</p>
+									</div>
+									<div className="info_user">
+										<p className="ranking">골드</p>
+										<p className="name">김싸피</p>
+									</div>
+								</div>
 							</div>
-						</div>
-					</li>
-				</ul>
+						</li>
+						<li>
+							<div className="info">
+								<div className="cnt">3</div>
+								<div className="cnt_title">작성한 글 수</div>
+								<div className="btn_info">
+									<a href="">게시글 확인하기</a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
 				{/* end - profile information */}
-				<ul className="list">
-					<div>내 예약</div>
-					<li className="contents">
-						<div className="img_box">
-							<Image className="img" src={img_rpdance} alt="reserved"></Image>
-						</div>
-						<div className="description">
-							<div className="time">Korea 5:00PM ~ 6:20PM (KST)</div>
-							<div className="title">여기서요? 4세대 남돌 곡 모음</div>
-							<div className="learner">Learner</div>
-						</div>
-						<div className="btn_contents">
-							<a href="">예약 취소</a>
-							<a href="">방 생성 취소</a>
-						</div>
-					</li>
-					{/* end - one reservation*/}
-					<li className="contents">
-						<div className="img_box">
-							<Image className="img" src={img_rpdance} alt="reserved"></Image>
-						</div>
-						<div className="description">
-							<div className="time">Korea 5:00PM ~ 6:20PM (KST)</div>
-							<div className="title">여기서요? 4세대 남돌-여돌 곡 모음 제목이 길면 다음줄로. 최대 2줄</div>
-							<div className="learner">Learner</div>
-						</div>
-						<div className="btn_contents">
-							<a href="">예약 취소</a>
-							<a href="">방 생성 취소</a>
-						</div>
-					</li>
-					<li className="contents">
-						<div className="img_box">
-							<Image className="img" src={img_rpdance} alt="reserved"></Image>
-						</div>
-						<div className="description">
-							<div className="time">Korea 5:00PM ~ 6:20PM (KST)</div>
-							<div className="title">여기서요? 4세대 남돌-여돌 곡 모음 제목이 길면 다음줄로. 최대 2줄</div>
-							<div className="learner">Learner</div>
-						</div>
-						<div className="btn_contents">
-							<a href="">예약 취소</a>
-							<a href="">방 생성 취소</a>
-						</div>
-					</li>
-				</ul>
+				<div>
+					<ul className="list">
+						<div>내 예약</div>
+						<li className="contents">
+							<div className="img_box">
+								<Image className="img" src={img_rpdance} alt="reserved"></Image>
+							</div>
+							<div className="description">
+								<div className="time">Korea 5:00PM ~ 6:20PM (KST)</div>
+								<div className="title">여기서요? 4세대 남돌 곡 모음</div>
+								<div className="learner">Learner</div>
+							</div>
+							<div className="btn_contents">
+								<a href="">예약 취소</a>
+								<a href="">방 생성 취소</a>
+							</div>
+						</li>
+						{/* end - one reservation*/}
+						<li className="contents">
+							<div className="img_box">
+								<Image className="img" src={img_rpdance} alt="reserved"></Image>
+							</div>
+							<div className="description">
+								<div className="time">Korea 5:00PM ~ 6:20PM (KST)</div>
+								<div className="title">여기서요? 4세대 남돌-여돌 곡 모음 제목이 길면 다음줄로. 최대 2줄</div>
+								<div className="learner">Learner</div>
+							</div>
+							<div className="btn_contents">
+								<a href="">예약 취소</a>
+								<a href="">방 생성 취소</a>
+							</div>
+						</li>
+						<li className="contents">
+							<div className="img_box">
+								<Image className="img" src={img_rpdance} alt="reserved"></Image>
+							</div>
+							<div className="description">
+								<div className="time">Korea 5:00PM ~ 6:20PM (KST)</div>
+								<div className="title">여기서요? 4세대 남돌-여돌 곡 모음 제목이 길면 다음줄로. 최대 2줄</div>
+								<div className="learner">Learner</div>
+							</div>
+							<div className="btn_contents">
+								<a href="">예약 취소</a>
+								<a href="">방 생성 취소</a>
+							</div>
+						</li>
+					</ul>
+				</div>
 				{/* end - my reservation */}
 				<div className="settings">
 					<details>
@@ -206,8 +210,20 @@ const MyPage = () => {
 						</li>
 						<a href="" className="btn_more">더보기</a>
 					</ul>
+					{/* end - board */}
 				</div>
-			</body>
+				<div className="ad_enjoy">
+					<div className="ad_title">
+						<span>STEPUP의 </span>
+						<span>더 많은 즐길거리 즐기기</span>
+					</div>
+					<div className="ad_btn">
+						<a id="ad_whitebox" href="">랜플댄 예약하기</a>
+						<a id="ad_bluebox" href="">개인연습실 이용하기</a>
+					</div>
+				</div>
+			</div>
+			{/* end - advertisement */}
 			<Footer />
 		</>
 	)

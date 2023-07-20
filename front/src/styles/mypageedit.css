@@ -1,0 +1,105 @@
+.background_color {
+  background-color: #F2F3F8;
+}
+
+.mt-5 {
+  margin-top: 5px;
+}
+
+.mt-25 {
+  margin-top: 25px;
+}
+
+.mt-40 {
+  margin-top: 40px;
+}
+
+.mt-70 {
+  margin-top: 70px;
+}
+
+.myinfo {
+  position: relative;
+  margin: auto;
+  /* top: -135px; */
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  width: 1200px;
+  background-color:white;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+	list-style-type: none;
+}
+
+.list_title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #A1A0A5;
+  margin-left: 130px;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.img_box {
+  width: 240px;
+	height: 240px;
+	border-radius: 70%;
+	overflow: hidden;
+  margin-top: 44px;
+  margin-bottom: 50px;
+}
+
+.img_box > .img {
+  width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.btn_upload {
+  width: 300px;
+  height: 50px;
+  background-color: #F2F5FE;
+  color: #C1C0CE;
+  font-size: 24px;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+
+#input-file {
+  display: none;
+}
+
+.btn_remove {
+  width: 300px;
+  height: 50px;
+  background-color: #F2F5FE;
+  color: #C1C0CE;
+  font-size: 24px;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 50px;
+  text-align: center;
+  margin-left: 50px;
+  cursor: pointer;
+}
+
+.profile > p {
+  width: 650px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #536BF6;
+  margin-top: 10px;
+}
+
+.nickname {
+  display: flex;
+  flex-direction: row;
+}
