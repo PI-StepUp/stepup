@@ -49,7 +49,7 @@ class MusicServiceTest {
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
     @Transactional
-    public void selectOneMusicServiceTest(){
+    public void readOneMusicServiceTest(){
         Music insertedMusic = musicService.create(music);
 
         Long musicId = insertedMusic.getMusicId();
