@@ -56,7 +56,7 @@ class UserRepositoryImplTest {
         User user = setUserSample();
 
         // when
-        User findUser = userRepository.findByEmail(TEST_EMAIL);
+        User findUser = userRepository.findByEmail(TEST_EMAIL).orElse(User.builder().build());
 
         // then
         assertThat(findUser).isEqualTo(user);
