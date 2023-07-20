@@ -1,5 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
-public interface MusicService {
+import com.pi.stepup.domain.music.domain.Music;
 
+public interface MusicService {
+    Music insert(Music music);
 }
