@@ -1,7 +1,6 @@
 package com.pi.stepup.domain.music.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.pi.stepup.domain.music.domain.Music;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +18,7 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("MusicRepository가 null이 아님을 테스트")
     public void musicRepositoryNotNullTest() {
-        assertNotNull(musicRepository);
+        assertThat(musicRepository).isNotNull();
     }
 
     @Test
@@ -33,7 +32,7 @@ class MusicRepositoryTest {
             .URL("url")
             .build();
         Music result = musicRepository.insert(music);
-        assertEquals(music, result);
+        assertThat(music).isEqualTo(result);
     }
 
     @Test
@@ -50,7 +49,7 @@ class MusicRepositoryTest {
 
         Long musicId = music.getMusicId();
         Music result = musicRepository.selectOne(musicId);
-        assertEquals(music.getTitle(), result.getTitle());
+        assertThat(music.getTitle()).isEqualTo(result.getTitle());
     }
 
 }

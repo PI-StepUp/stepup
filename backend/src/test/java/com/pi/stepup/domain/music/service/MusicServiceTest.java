@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.pi.stepup.domain.music.domain.Music;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,7 @@ class MusicServiceTest {
     @Test
     @DisplayName("musicService가 null이 아님을 테스트")
     public void musicServiceNotNullTest(){
-        assertNotNull(musicService);
+        assertThat(musicService).isNotNull();
     }
 
     @Test
@@ -33,6 +34,6 @@ class MusicServiceTest {
             .build();
 
         Music result = musicService.create(music);
-        assertEquals(result, music);
+        assertThat(result).isEqualTo(music);
     }
 }
