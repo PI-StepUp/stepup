@@ -18,14 +18,14 @@ class MusicRepositoryTest {
 
     @Test
     @DisplayName("MusicRepository가 null이 아님을 테스트")
-    public void musicRepositoryNotNullTest(){
+    public void musicRepositoryNotNullTest() {
         assertNotNull(musicRepository);
     }
 
     @Test
     @DisplayName("노래 추가 테스트")
     @Transactional
-    public void insertMusicTest(){
+    public void insertMusicTest() {
         Music music = Music.builder()
             .title("spicy")
             .artist("aespa")
@@ -39,7 +39,7 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
     @Transactional
-    public void selectOneMusicTest(){
+    public void selectOneMusicTest() {
         Music music = Music.builder()
             .title("spicy")
             .artist("aespa")
