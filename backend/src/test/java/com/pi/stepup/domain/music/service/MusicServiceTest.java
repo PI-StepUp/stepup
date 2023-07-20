@@ -32,7 +32,7 @@ class MusicServiceTest {
             .URL("url")
             .build();
 
-        Music result = musicService.insert(music);
+        Music result = musicService.create(music);
         assertEquals(result, music);
     }
 }

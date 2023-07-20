@@ -14,7 +14,7 @@ public class MusicServiceImpl implements MusicService{
     private final MusicRepository musicRepository;
 
     @Override
-    public Music insert(Music music) {
+    public Music create(Music music) {
         return musicRepository.insert(music);
     }
 }
