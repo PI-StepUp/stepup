@@ -29,7 +29,7 @@ class UserServiceImplTest {
     @Test
     void readAllCountries() {
         // given
-        List<Country> countryResponseDtos = makeCountryResponseDtos();
+        List<Country> countryResponseDtos = makeCountries();
         doReturn(countryResponseDtos)
             .when(userRepository)
             .findAllCountries();
@@ -48,7 +48,7 @@ class UserServiceImplTest {
         }
     }
 
-    private List<Country> makeCountryResponseDtos() {
+    private List<Country> makeCountries() {
         return new ArrayList<>(Arrays.asList(
             Country.builder().code("en").build(),
             Country.builder().code("ko").build(),
