@@ -24,7 +24,7 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 추가 테스트")
     @Transactional
-    public void insertMusicTest() {
+    public void insertMusicRepoTest() {
         Music music = Music.builder()
             .title("spicy")
             .artist("aespa")
@@ -38,7 +38,7 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
     @Transactional
-    public void selectOneMusicTest() {
+    public void selectOneMusicRepoTest() {
         Music music = Music.builder()
             .title("spicy")
             .artist("aespa")
