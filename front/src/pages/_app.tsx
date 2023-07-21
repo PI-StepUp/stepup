@@ -1,4 +1,5 @@
 import "../styles/global.scss"
+import "../styles/header.scss"
 
 import type {AppProps} from 'next/app';
 
