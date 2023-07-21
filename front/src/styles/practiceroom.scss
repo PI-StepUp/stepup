@@ -9,10 +9,11 @@
         .practice-title{
             @include flex(flex-start, center);
             .pre-icon{
-                @include setSize(80px, 80px);
+                @include setSize(76px, 76px);
                 background-color:#FFFFFF;
                 border-radius:100%;
                 @include flex(center,center);
+                cursor:pointer;
                 img{
                     @include setSize(40px, 40px);
                 }
@@ -237,6 +238,30 @@
                         cursor:pointer;
                     }
                 }
+            }
+        }
+    }
+}
+
+.practiceroom-wrap{
+    .musiclist{
+        @include setSize(24vw);
+        @include box-padding(30px);
+        .musiclist-title{
+            position:relative;
+            h3{
+                @include font(28px, 900, #2D2D2F);
+            }
+            span{
+                display:inline-block;
+                @include setSize(60px, 35px);
+                background-color:#3D84F6;
+                border-radius:50px;
+                @include font(22px, 900, #FFFFFF);
+                @include flex(center, center);
+                position: absolute;
+                top:0px;
+                right:0px;
             }
         }
     }
