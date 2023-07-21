@@ -28,6 +28,6 @@ public class MusicServiceImpl implements MusicService{
 
     @Override
     public Music readOne(Long musicId) {
-        return musicRepository.selectOne(musicId);
+        return musicRepository.findOne(musicId);
     }
 }

@@ -17,7 +17,7 @@ public class MusicRepositoryImpl implements MusicRepository {
     }
 
     @Override
-    public Music selectOne(Long musicId) {
+    public Music findOne(Long musicId) {
         return em.find(Music.class, musicId);
     }
 }
