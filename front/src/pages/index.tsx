@@ -27,8 +27,8 @@ const Index = () => {
                     </nav>
                     <div className="login-wrap">
                         <ul>
-                            <li><Link href="/">로그인</Link></li>
-                            <li><Link href="/">회원가입</Link></li>
+                            <li><Link href="/login">로그인</Link></li>
+                            <li><Link href="/signup">회원가입</Link></li>
                         </ul>
                     </div>
                 </div>
