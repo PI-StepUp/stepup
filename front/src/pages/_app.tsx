@@ -10,6 +10,7 @@ import "../styles/footer.scss"
 import "../styles/login.scss"
 import "../styles/signup.scss"
 import "../styles/playlist.scss"
+import "../styles/noticecreate.scss"
 
 import type {AppProps} from 'next/app';
 
