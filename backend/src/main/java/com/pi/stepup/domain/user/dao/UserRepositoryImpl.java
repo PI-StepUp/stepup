@@ -37,4 +37,24 @@ public class UserRepositoryImpl implements UserRepository {
             return user;
         }
     }
+
+    @Override
+    public Optional<User> findByNickname(String nickname) {
+        Optional<User> user = null;
+
+        try {
+            user = Optional.ofNullable(
+                em.createQuery(
+                        "SELECT u FROM User u "
+                            + "WHERE u.nickname = :nickname", User.class
+                    )
+                    .setParameter("nickname", nickname)
+                    .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            user = Optional.empty();
+        } finally {
+            return user;
+        }
+    }
 }
