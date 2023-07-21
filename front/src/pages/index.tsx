@@ -5,8 +5,9 @@ import personIcon from "/public/images/person-icon.svg"
 import shareScreen from "/public/images/sharescreen-icon.svg"
 import rankIcon from "/public/images/rank-icon.svg"
 import musicNoteIcon from "/public/images/musicnote-icon.svg"
-import randomplayAd from "/public/images/randomplay-ad-img.png"
 import realtimeRandomPlay1 from "/public/images/realtimeRandomplayImg1.png"
+
+import Footer from "components/Footer"
 
 const Index = () => {
     return(
@@ -150,6 +151,7 @@ const Index = () => {
                     <button><Link href="/">랜플댄 방 참여하기</Link></button>
                 </div>
             </div>
+            <Footer/>
         </>
     )
 }
