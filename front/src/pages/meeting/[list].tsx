@@ -1,6 +1,7 @@
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
+import Footer from "components/Footer";
 
 import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg"
 
@@ -131,6 +132,7 @@ const MeetingList = () => {
                     </div>
                 </div>
             </div>
+            <Footer/>
         </>
     )
 }

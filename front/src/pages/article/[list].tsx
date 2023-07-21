@@ -1,6 +1,7 @@
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
+import Footer from "components/Footer";
 
 const ArticleList = () => {
     return (
@@ -114,6 +115,7 @@ const ArticleList = () => {
                     </ul>
                 </div>
             </div>
+            <Footer/>
         </>
     )
 }
