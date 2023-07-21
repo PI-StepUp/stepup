@@ -2,7 +2,7 @@
 const Header = () => {
     return (
         <>
-            Header
+            
         </>
     )
 }

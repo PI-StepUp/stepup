@@ -1,6 +1,8 @@
 import "../styles/global.scss"
 
-const StepUp = ({Component}) => {
+import type {AppProps} from 'next/app';
+
+const StepUp = ({Component} : AppProps) => {
     return (
         <>
             <Component/>
