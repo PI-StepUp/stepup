@@ -1,12 +1,16 @@
 package com.pi.stepup.domain.user.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public class UserRequestDto {
 
-    @Getter
-    @Setter
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CheckEmailRequestDto {
 
         private String email;
