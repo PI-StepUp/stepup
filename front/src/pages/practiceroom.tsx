@@ -7,9 +7,9 @@ import MicIcon from "/public/images/icon-mic.svg"
 import MoreIcon from "/public/images/icon-more-dot.svg"
 import PlayThumbnail from "/public/images/room-playlist-thumbnail.png"
 import PlayIcon from "/public/images/icon-play.svg"
-import StopIcon from "/public/images/icon-stop.svg"
 
 import Image from "next/image"
+import Link from "next/link"
 
 const PracticeRoom = () => {
     return(
@@ -19,7 +19,7 @@ const PracticeRoom = () => {
                 <div className="practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
-                            <Image src={LeftArrowIcon} alt=""/>
+                            <Link href="/"><Image src={LeftArrowIcon} alt=""/></Link>
                         </div>
                         <div className="room-title">
                             <h3>보이넥스트도어 - One and Only</h3>
