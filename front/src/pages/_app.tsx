@@ -9,6 +9,7 @@ import "../styles/meetinglist.scss"
 import "../styles/footer.scss"
 import "../styles/login.scss"
 import "../styles/signup.scss"
+import "../styles/playlist.scss"
 
 import type {AppProps} from 'next/app';
 
