@@ -73,6 +73,7 @@
             @include font(14px, 400, #C0C0C0);
             li{
                 margin-left:9px;
+                cursor: pointer;
                 &:first-child{
                     margin-left:0px;
                 }

@@ -70,6 +70,7 @@
                 border: 1px solid #B1B1B1;
                 @include font(14px, 400, #B1B1B1);
                 margin-left:2px;
+                cursor:pointer;
                 &:first-child{
                     margin-left:0px;
                 }
