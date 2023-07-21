@@ -6,6 +6,7 @@ import "../styles/subnav.scss"
 import "../styles/noticelist.scss"
 import "../styles/articlelist.scss"
 import "../styles/meetinglist.scss"
+import "../styles/footer.scss"
 
 import type {AppProps} from 'next/app';
 
