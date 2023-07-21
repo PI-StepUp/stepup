@@ -1,10 +1,16 @@
 package com.pi.stepup.domain.board.domain;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
+@Getter
+@Setter
 @DiscriminatorValue("MEETING")
 public class Meeting extends Board{
     private String region;
@@ -12,35 +18,5 @@ public class Meeting extends Board{
     private LocalDateTime endAt;
     private int commentCnt;
 
-    public String getRegion() {
-        return region;
-    }
 
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    public LocalDateTime getStartAt() {
-        return startAt;
-    }
-
-    public void setStartAt(LocalDateTime startAt) {
-        this.startAt = startAt;
-    }
-
-    public LocalDateTime getEndAt() {
-        return endAt;
-    }
-
-    public void setEndAt(LocalDateTime endAt) {
-        this.endAt = endAt;
-    }
-
-    public int getCommentCnt() {
-        return commentCnt;
-    }
-
-    public void setCommentCnt(int commentCnt) {
-        this.commentCnt = commentCnt;
-    }
 }
