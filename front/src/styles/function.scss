@@ -25,3 +25,8 @@
     background-position: center;
     background-size: cover;
 }
+
+@mixin box-padding($padding){
+    box-sizing: border-box;
+    padding: $padding;
+}
