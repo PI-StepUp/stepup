@@ -8,9 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Comment extends BaseEntity {
 
     @Id
@@ -19,12 +17,19 @@ public class Comment extends BaseEntity {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BOARD_ID")
     private Board board;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User writer;
+
+    @Builder
+    public Comment(String content, Board board, User writer) {
+        this.content = content;
+        this.board = board;
+        this.writer = writer;
+    }
 
 }
