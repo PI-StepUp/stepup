@@ -1,8 +1,8 @@
-.background_color {
+.background-color {
 	background-color: #F2F3F8;
 }
 
-.mypage_profile {
+.mypage-profile {
 	position: relative;
 	/* top: -135px; */
 	display: flex;
@@ -15,7 +15,7 @@
 	text-align: center;
 }
 
-.mypage_profile>li {
+.mypage-profile>li {
 	flex: 1;
 	font-weight: bold;
 	text-align: center;
@@ -36,12 +36,12 @@
 	line-height: 98px;
 }
 
-.info>.cnt_title {
+.info>.cnt-title {
 	font-size: 30px;
 	color: #848484;
 }
 
-.info>.btn_info {
+.info>.btn-info {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -56,11 +56,11 @@
 	line-height: 50px;
 }
 
-.info>.btn_info:hover {
+.info>.btn-info:hover {
 	color: #7E7E7E;
 }
 
-.info>.img_profile {
+.info>.img-profile {
 	width: 140px;
 	height: 140px;
 	border-radius: 70%;
@@ -68,7 +68,7 @@
 	margin: auto;
 }
 
-.info>.img_profile>.img {
+.info>.img-profile>.img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
@@ -96,7 +96,7 @@ progress {
 	border-radius: 50px;
 }
 
-.progress_text {
+.progress-text {
 	width: 200px;
 	font-size: 12px;
 	color: #848484;
@@ -106,7 +106,7 @@ progress {
 	margin-top: 1px;
 }
 
-.info_user {
+.info-user {
 	display: flex;
 	justify-content: space-between;
 	width: 167px;
@@ -161,14 +161,14 @@ progress {
 	margin-top: 63px;
 }
 
-.contents>.img_box {
+.contents>.img-box {
 	width: 151px;
 	height: 151px;
 	border-radius: 70%;
 	overflow: hidden;
 }
 
-.contents>.img_box>.img {
+.contents>.img-box>.img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
@@ -198,7 +198,7 @@ progress {
 	-webkit-box-orient: vertical;
 }
 
-.contents>.description>.title_past {
+.contents>.description>.title-past {
 	font-weight: bold;
 	font-size: 28px;
 	line-height: 35px;
@@ -217,13 +217,13 @@ progress {
 	font-size: 20px;
 }
 
-.contents>.btn_contents {
+.contents>.btn-contents {
 	display: flex;
 	margin-left: 31px;
 }
 
 
-.contents>.btn_contents>a {
+.contents>.btn-contents>a {
 	color: #C1C0CE;
 	background-color: #F2F5FE;
 	width: 160px;
@@ -236,7 +236,7 @@ progress {
 	font-size: 20px;
 }
 
-.contents>.btn_contents>a:hover {
+.contents>.btn-contents>a:hover {
 	color: #7E7E7E;
 }
 
@@ -273,23 +273,23 @@ details[open] summary p {
 	color: #7E7E7E;
 }
 
-.settings>details>summary>.img_setting {
+.settings>details>summary>.img-setting {
 	width: 104px;
 	height: 104px;
 	background-image: url("../public/images/img_settings.svg");
 
 }
 
-summary:hover .img_setting {
+summary:hover .img-setting {
 	filter: grayscale(100%);
 	transform: scale(1.1) rotate(10deg);
 }
 
-summary:focus .img_setting {
+summary:focus .img-setting {
 	filter: grayscale(100%);
 }
 
-details[open] summary .img_setting {
+details[open] summary .img-setting {
 	filter: grayscale(100%);
 	transform: scale(1.1) rotate(10deg);
 }
@@ -300,7 +300,7 @@ details[open] summary .img_setting {
 	margin-left: 219px;
 }
 
-.settings>details>summary>.img_vector {
+.settings>details>summary>.img-vector {
 	width: 50px;
 	height: 28px;
 	margin-left: 277.5px;
@@ -308,16 +308,16 @@ details[open] summary .img_setting {
 	background-image: url("../public/images/img_vector.png");
 }
 
-summary:hover .img_vector {
+summary:hover .img-vector {
 	filter: grayscale(100%);
 }
 
-details[open] summary .img_vector {
+details[open] summary .img-vector {
 	filter: grayscale(100%);
 	transform: rotate(180deg);
 }
 
-.enter_password {
+.enter-password {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
@@ -325,7 +325,7 @@ details[open] summary .img_vector {
 	margin-top: 40px;
 }
 
-.enter_password>p {
+.enter-password>p {
 	color: #C1C0CE;
 	font-weight: bold;
 	font-size: 24px;
@@ -346,7 +346,7 @@ details[open] summary .img_vector {
 	letter-spacing: 13px;
 }
 
-.btn_submit {
+.btn-submit {
 	margin-left: 20px;
 	background-color: #F2F5FE;
 	border: none;
@@ -389,7 +389,7 @@ details[open] summary .img_vector {
 	color: #7E7E7E;
 }
 
-.btn_more {
+.btn-more {
 	color: #5970F7;
 	background-color: #F0F3F8;
 	width: 160px;
@@ -403,7 +403,7 @@ details[open] summary .img_vector {
 	font-size: 24px;
 }
 
-.ad_enjoy {
+.ad-enjoy {
 	background-color: #677DFA;
 	height: 250px;
 	margin-top: 60px;
@@ -413,20 +413,20 @@ details[open] summary .img_vector {
 	justify-content: center;
 }
 
-.ad_title > span {
+.ad-title > span {
 	color: white;
 	font-size: 38px;
 }
 
-.ad_title >span:last-child{
+.ad-title >span:last-child{
 	font-weight: bold;
 }
 
-.ad_btn {
+.ad-btn {
 	margin-top: 20px;
 }
 
-.ad_btn > #ad_whitebox {
+.ad-btn > #ad-whitebox {
 	display: inline-block;
 	background-color: white;
 	color: #677DFA;
@@ -440,7 +440,7 @@ details[open] summary .img_vector {
 	margin: 8px;
 }
 
-.ad_btn > #ad_bluebox {
+.ad-btn > #ad-bluebox {
 	display: inline-block;
 	background-color: #97A8FF;
 	color: white;
