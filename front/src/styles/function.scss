@@ -19,3 +19,9 @@
     justify-content: $justifyContent;
     align-items: $alignItems;
 }
+
+@mixin background($url:null){
+    background-image: url($url);
+    background-position: center;
+    background-size: cover;
+}
