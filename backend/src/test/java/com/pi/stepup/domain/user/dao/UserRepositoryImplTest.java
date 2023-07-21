@@ -6,6 +6,7 @@ import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -60,6 +61,19 @@ class UserRepositoryImplTest {
 
         // then
         assertThat(findUser).isEqualTo(user);
+    }
+
+    @DisplayName("닉네임 기준 조회 테스트")
+    @Test
+    void findByNickname() {
+        // given
+        User user = setUserSample();
+
+        // when
+        User findUser = userRepository.findByNickname(TEST_NICKNAME).orElse(User.builder().build());
+
+        //then
+        assertThat(user).isEqualTo(findUser);
     }
 
     private User setUserSample() {
