@@ -5,6 +5,8 @@ import Footer from "components/Footer"
 import EntranceIcon from "/public/images/entrance-icon.svg"
 import Image from "next/image"
 
+import Link from "next/link"
+
 const NoticeList = () => {
     return(
         <>
@@ -90,6 +92,9 @@ const NoticeList = () => {
                         </div>
                     </li>
                 </ul>
+                <div className="notice-create-button">
+                    <button><Link href="/notice/create">글 작성하기</Link></button>
+                </div>
                 <div className="pagination">
                     <ul>
                         <li>1</li>
