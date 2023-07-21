@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -51,4 +52,21 @@ public class User extends BaseEntity {
     private Integer point;
 
     // TODO: Rank 엔티티 연관관계 설정
+
+    @Builder
+    public User(Long userId, String id, String password, String email, Integer emailAlert,
+        Country country, String nickname, LocalDateTime birth, String profileImg,
+        UserRole role, Integer point) {
+        this.userId = userId;
+        this.id = id;
+        this.password = password;
+        this.email = email;
+        this.emailAlert = emailAlert;
+        this.country = country;
+        this.nickname = nickname;
+        this.birth = birth;
+        this.profileImg = profileImg;
+        this.role = role;
+        this.point = point;
+    }
 }

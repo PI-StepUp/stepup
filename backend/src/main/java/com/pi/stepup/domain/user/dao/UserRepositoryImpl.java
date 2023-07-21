@@ -1,8 +1,11 @@
 package com.pi.stepup.domain.user.dao;
 
 import com.pi.stepup.domain.user.domain.Country;
+import com.pi.stepup.domain.user.domain.User;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +19,22 @@ public class UserRepositoryImpl implements UserRepository {
     public List<Country> findAllCountries() {
         return em.createQuery("SELECT c FROM Country c", Country.class)
             .getResultList();
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        Optional<User> user = null;
+
+        try {
+            user = Optional.ofNullable(em.createQuery(
+                    "SELECT u FROM User u "
+                        + "WHERE u.email = :email", User.class)
+                .setParameter("email", email)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            user = Optional.empty();
+        } finally {
+            return user;
+        }
     }
 }

@@ -3,10 +3,12 @@ package com.pi.stepup.domain.user.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.pi.stepup.domain.user.domain.Country;
-import java.util.ArrayList;
+import com.pi.stepup.domain.user.domain.User;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class UserRepositoryImplTest {
 
-    @Autowired
+    @PersistenceContext
     private EntityManager em;
 
     @Autowired
     private UserRepository userRepository;
+
+    private final String[] testCountryCodes = new String[]{"en", "ko", "jp", "ch"};
+    private final String TEST_EMAIL = "test@test.com";
+    private final String TEST_ID = "testId";
+    private final String TEST_NICKNAME = "testNickname";
+
 
     @DisplayName("국가 정보 목록 조회 테스트")
     @Test
@@ -41,13 +49,41 @@ class UserRepositoryImplTest {
         }
     }
 
+    @DisplayName("이메일 기준 조회 테스트")
+    @Test
+    void findByEmail() {
+        // given
+        User user = setUserSample();
+
+        // when
+        User findUser = userRepository.findByEmail(TEST_EMAIL).orElse(User.builder().build());
+
+        // then
+        assertThat(findUser).isEqualTo(user);
+    }
+
+    private User setUserSample() {
+        Country country = Country.builder()
+            .code(testCountryCodes[0])
+            .build();
+        em.persist(country);
+
+        User user = User.builder()
+            .id(TEST_ID)
+            .email(TEST_EMAIL)
+            .country(country)
+            .nickname(TEST_NICKNAME)
+            .point(0)
+            .build();
+        em.persist(user);
+
+        return user;
+    }
+
     private List<Country> makeSampleCountries() {
-        return new ArrayList<>(Arrays.asList(
-            Country.builder().code("en").build(),
-            Country.builder().code("ko").build(),
-            Country.builder().code("jp").build(),
-            Country.builder().code("ch").build()
-        ));
+        return Arrays.stream(testCountryCodes)
+            .map(c -> Country.builder().code(c).build())
+            .collect(Collectors.toList());
     }
 
     private void insertCountries(List<Country> countries) {
