@@ -1,6 +1,7 @@
-import Header from "../../components/Header"
-import MainBanner from "../../components/MainBanner"
+import Header from "components/Header"
+import MainBanner from "components/MainBanner"
 import SubNav from "components/subNav"
+import Footer from "components/Footer"
 import EntranceIcon from "/public/images/entrance-icon.svg"
 import Image from "next/image"
 
@@ -102,6 +103,7 @@ const NoticeList = () => {
                     </ul>
                 </div>
             </div>
+            <Footer/>
         </>
     )
 }
