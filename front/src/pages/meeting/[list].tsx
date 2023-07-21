@@ -6,6 +6,7 @@ import Footer from "components/Footer";
 import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg"
 
 import Image from "next/image"
+import Link from "next/link"
 
 const MeetingList = () => {
     return (
@@ -23,6 +24,9 @@ const MeetingList = () => {
                             </h3>
                             <span>KR : 한국</span>
                         </div>
+                    </div>
+                    <div className="button-wrap">
+                        <button><Link href="/meeting/create">글 작성하기</Link></button>
                     </div>
                     <div className="meeting-content-wrap">
                         <ul>
