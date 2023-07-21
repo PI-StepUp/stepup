@@ -1,9 +1,10 @@
+import {useRef, useHover} from "react";
+
 import SideMenu from "components/SideMenu";
 
 import Image from "next/image";
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
 import GroupIcon from "/public/images/icon-group.svg"
-import PlusIcon from "/public/images/icon-plus.svg"
 import ReflectIcon from "/public/images/icon-reflect.svg"
 import CameraIcon from "/public/images/icon-camera.svg"
 import MicIcon from "/public/images/icon-mic.svg"
@@ -12,6 +13,10 @@ import ChatDefaultImg from "/public/images/chat-default-profile-img.svg"
 import sendImg from "/public/images/send-img.svg"
 
 const DanceRoom = () => {
+    const reflectHoverFunction = () => {
+        
+    }
+    const reflectHover = useHover<HTMLImageElement>(reflectHoverFunction);
     return(
         <>
             <div className="practiceroom-wrap">
@@ -25,16 +30,6 @@ const DanceRoom = () => {
                             <h3>랜덤플레이 댄스 방 제목</h3>
                             <span>2013년 7월 3일</span>
                         </div>
-                    </div>
-                    <div className="participle-wrap">
-                        <div className="participle-icon">
-                            <Image src={GroupIcon} alt="" />
-                            <span>30명</span>
-                        </div>
-                        <button>
-                            <Image src={PlusIcon} alt="" />
-                            <span>ADD PARTICIPLE</span>
-                        </button>
                     </div>
 
                     <div className="video-content">
@@ -59,7 +54,7 @@ const DanceRoom = () => {
                         </div>
                         <div className="control-wrap">
                             <ul>
-                                <li><button><Image src={ReflectIcon} alt=""/></button></li>
+                                <li><button><Image src={ReflectIcon} alt="" ref={reflectHover}/></button></li>
                                 <li><button><Image src={MicIcon} alt=""/></button></li>
                                 <li><button className="exit-button">연습 종료하기</button></li>
                                 <li><button><Image src={CameraIcon} alt=""/></button></li>
@@ -73,7 +68,7 @@ const DanceRoom = () => {
                     <div className="participant-list">
                         <div className="participant-list-title">
                             <h3>참여자 목록</h3>
-                            <span>5</span>
+                            <span><Image src={GroupIcon} alt=""/>5명</span>
                         </div>
                         <div className="participant-list-content">
                             <ul>

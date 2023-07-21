@@ -1,12 +1,13 @@
 import SideMenu from "components/SideMenu";
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
-import GroupIcon from "/public/images/icon-group.svg"
-import PlusIcon from "/public/images/icon-plus.svg"
 import ReflectIcon from "/public/images/icon-reflect.svg"
 import CameraIcon from "/public/images/icon-camera.svg"
 import MicIcon from "/public/images/icon-mic.svg"
 import MoreIcon from "/public/images/icon-more-dot.svg"
+import PlayThumbnail from "/public/images/room-playlist-thumbnail.png"
+import PlayIcon from "/public/images/icon-play.svg"
+import StopIcon from "/public/images/icon-stop.svg"
 
 import Image from "next/image"
 
@@ -62,6 +63,80 @@ const PracticeRoom = () => {
                     <div className="musiclist-title">
                         <h3>연습실 목록</h3>
                         <span>5</span>
+                    </div>
+                    <div className="musiclist-content">
+                        <ul>
+                            <li>
+                                <div className="flex-wrap">
+                                    <div className="musiclist-content-thumbnail">
+                                        <Image src={PlayThumbnail} alt=""/>
+                                    </div>
+                                    <div className="musiclist-content-info">
+                                        <h4>One and Only</h4>
+                                        <span>보이넥스트도어</span>
+                                    </div>
+                                </div>
+                                <div className="musiclist-content-control-icon">
+                                    <span><Image src={PlayIcon} alt=""/></span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="flex-wrap">
+                                    <div className="musiclist-content-thumbnail">
+                                        <Image src={PlayThumbnail} alt=""/>
+                                    </div>
+                                    <div className="musiclist-content-info">
+                                        <h4>One and Only</h4>
+                                        <span>보이넥스트도어</span>
+                                    </div>
+                                </div>
+                                <div className="musiclist-content-control-icon">
+                                    <span><Image src={PlayIcon} alt=""/></span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="flex-wrap">
+                                    <div className="musiclist-content-thumbnail">
+                                        <Image src={PlayThumbnail} alt=""/>
+                                    </div>
+                                    <div className="musiclist-content-info">
+                                        <h4>One and Only</h4>
+                                        <span>보이넥스트도어</span>
+                                    </div>
+                                </div>
+                                <div className="musiclist-content-control-icon">
+                                    <span><Image src={PlayIcon} alt=""/></span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="flex-wrap">
+                                    <div className="musiclist-content-thumbnail">
+                                        <Image src={PlayThumbnail} alt=""/>
+                                    </div>
+                                    <div className="musiclist-content-info">
+                                        <h4>One and Only</h4>
+                                        <span>보이넥스트도어</span>
+                                    </div>
+                                </div>
+                                <div className="musiclist-content-control-icon">
+                                    <span><Image src={PlayIcon} alt=""/></span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="flex-wrap">
+                                    <div className="musiclist-content-thumbnail">
+                                        <Image src={PlayThumbnail} alt=""/>
+                                    </div>
+                                    <div className="musiclist-content-info">
+                                        <h4>One and Only</h4>
+                                        <span>보이넥스트도어</span>
+                                    </div>
+                                </div>
+                                <div className="musiclist-content-control-icon">
+                                    <span><Image src={PlayIcon} alt=""/></span>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
