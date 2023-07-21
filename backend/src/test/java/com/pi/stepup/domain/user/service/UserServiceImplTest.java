@@ -106,7 +106,8 @@ class UserServiceImplTest {
         when(userRepository.findByNickname(any(String.class)))
             .thenReturn(Optional.empty());
 
-        CheckNicknameRequestDto checkNicknameRequestDto = CheckNicknameRequestDto.builder().build();
+        CheckNicknameRequestDto checkNicknameRequestDto = CheckNicknameRequestDto.builder()
+            .nickname(TEST_NICKNAME).build();
 
         // when, then
         assertThatNoException()
@@ -119,9 +120,10 @@ class UserServiceImplTest {
     void checkNicknameDuplicatedTest_Duplicated() {
         // given
         when(userRepository.findByNickname(any(String.class)))
-            .thenReturn(Optional.empty());
+            .thenReturn(Optional.of(User.builder().build()));
 
-        CheckNicknameRequestDto checkNicknameRequestDto = CheckNicknameRequestDto.builder().build();
+        CheckNicknameRequestDto checkNicknameRequestDto = CheckNicknameRequestDto.builder()
+            .nickname(TEST_NICKNAME).build();
 
         // when, then
         assertThatThrownBy(() -> userService.checkNicknameDuplicated(checkNicknameRequestDto))

@@ -1,12 +1,14 @@
 package com.pi.stepup.domain.user.service;
 
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_FAIL;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_FAIL;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
+import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void checkNicknameDuplicated(CheckNicknameRequestDto checkNicknameRequestDto) {
-
+        if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
+            throw new NicknameDuplicatedException(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
+        }
     }
 }
