@@ -1,6 +1,6 @@
 @import "./function.scss";
 
-header{
+.header{
     @include setSize(100%, 100px);
     background: linear-gradient(to right,#677CF9, #4A64F5);
     .block-margin{
