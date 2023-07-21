@@ -4,6 +4,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL
 
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import java.util.List;
@@ -32,5 +33,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(checkEmailRequestDto.getEmail()).isPresent()) {
             throw new EmailDuplicatedException(CHECK_EMAIL_DUPLICATED_FAIL.getMessage());
         }
+    }
+
+    @Override
+    public void checkNicknameDuplicated(CheckNicknameRequestDto checkNicknameRequestDto) {
+
     }
 }

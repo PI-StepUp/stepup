@@ -15,4 +15,13 @@ public class UserRequestDto {
 
         private String email;
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CheckNicknameRequestDto {
+
+        private String nickname;
+    }
 }

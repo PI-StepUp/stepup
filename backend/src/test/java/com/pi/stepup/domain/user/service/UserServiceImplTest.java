@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.user.service;
 
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_FAIL;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_FAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,8 +13,10 @@ import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
+import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -94,6 +97,37 @@ class UserServiceImplTest {
         assertThatThrownBy(() -> userService.checkEmailDuplicated(checkEmailRequestDto))
             .isInstanceOf(EmailDuplicatedException.class)
             .hasMessageContaining(CHECK_EMAIL_DUPLICATED_FAIL.getMessage());
+    }
+
+    @DisplayName("닉네임 중복 검사 - 중복 아님")
+    @Test
+    void checkNicknameDuplicatedTest_NoDuplicated() {
+        // given
+        when(userRepository.findByNickname(any(String.class)))
+            .thenReturn(Optional.empty());
+
+        CheckNicknameRequestDto checkNicknameRequestDto = CheckNicknameRequestDto.builder().build();
+
+        // when, then
+        assertThatNoException()
+            .isThrownBy(() -> userService.checkNicknameDuplicated(checkNicknameRequestDto));
+
+    }
+
+    @DisplayName("닉네임 중복 검사 - 중복")
+    @Test
+    void checkNicknameDuplicatedTest_Duplicated() {
+        // given
+        when(userRepository.findByNickname(any(String.class)))
+            .thenReturn(Optional.empty());
+
+        CheckNicknameRequestDto checkNicknameRequestDto = CheckNicknameRequestDto.builder().build();
+
+        // when, then
+        assertThatThrownBy(() -> userService.checkNicknameDuplicated(checkNicknameRequestDto))
+            .isInstanceOf(NicknameDuplicatedException.class)
+            .hasMessageContaining(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
+
     }
 
 
