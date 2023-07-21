@@ -4,7 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("BOARD_TYPE")
+@DiscriminatorValue("TALK")
 public class Talk extends Board {
     private int commentCnt;
 

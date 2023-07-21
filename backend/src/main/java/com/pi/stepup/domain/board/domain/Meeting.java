@@ -1,12 +1,11 @@
 package com.pi.stepup.domain.board.domain;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("BOARD_TYPE")
+@DiscriminatorValue("MEETING")
 public class Meeting extends Board{
     private String region;
     private LocalDateTime startAt;
