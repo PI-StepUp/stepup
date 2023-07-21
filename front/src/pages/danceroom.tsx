@@ -1,5 +1,3 @@
-import {useRef, useHover} from "react";
-
 import SideMenu from "components/SideMenu";
 
 import Image from "next/image";
@@ -13,10 +11,6 @@ import ChatDefaultImg from "/public/images/chat-default-profile-img.svg"
 import sendImg from "/public/images/send-img.svg"
 
 const DanceRoom = () => {
-    const reflectHoverFunction = () => {
-        
-    }
-    const reflectHover = useHover<HTMLImageElement>(reflectHoverFunction);
     return(
         <>
             <div className="practiceroom-wrap">
@@ -54,7 +48,7 @@ const DanceRoom = () => {
                         </div>
                         <div className="control-wrap">
                             <ul>
-                                <li><button><Image src={ReflectIcon} alt="" ref={reflectHover}/></button></li>
+                                <li><button><Image src={ReflectIcon} alt="" /></button></li>
                                 <li><button><Image src={MicIcon} alt=""/></button></li>
                                 <li><button className="exit-button">연습 종료하기</button></li>
                                 <li><button><Image src={CameraIcon} alt=""/></button></li>
