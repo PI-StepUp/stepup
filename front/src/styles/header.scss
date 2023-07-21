@@ -1,0 +1,39 @@
+@import "./function.scss";
+
+header{
+    @include setSize(100%, 100px);
+    background: linear-gradient(to right,#677CF9, #4A64F5);
+    .block-margin{
+        height:100px;
+        @include block-center(1200px);
+        @include flex(null, center);
+    }
+    .logo{
+        h1{
+            @include font(22px, 700, #E2EFFF);
+        }
+    }
+    nav{
+        margin-right:auto;
+        ul{
+            height:100px;
+            @include flex(null, center);
+            li{
+                @include font(18px, 700, #E2EFFF);
+                margin-right:16px;
+                &:first-child{
+                    margin-left:38px;
+                }
+            }
+        }
+    }
+    .login-wrap{
+        ul{
+            @include flex();
+            li{
+                @include font(18px, 700, #E2EFFF);
+                margin-left:16px;
+            }
+        }
+    }
+}
