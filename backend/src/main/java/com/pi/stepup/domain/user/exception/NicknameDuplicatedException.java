@@ -4,8 +4,6 @@ import com.pi.stepup.global.error.exception.DuplicatedException;
 
 public class NicknameDuplicatedException extends DuplicatedException {
 
-    private String message;
-
     public NicknameDuplicatedException() {
         super();
     }
