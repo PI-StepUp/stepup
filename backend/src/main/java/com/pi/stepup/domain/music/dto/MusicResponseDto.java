@@ -8,6 +8,7 @@ public class MusicResponseDto {
 
     @Getter
     public static class MusicFindResponseDto {
+        private final Long musicId;
         private final String title;
         private final String artist;
         private final String answer;
@@ -15,6 +16,7 @@ public class MusicResponseDto {
 
         @Builder
         public MusicFindResponseDto(Music music) {
+            this.musicId = music.getMusicId();
             this.title = music.getTitle();
             this.artist = music.getArtist();
             this.answer = music.getAnswer();
