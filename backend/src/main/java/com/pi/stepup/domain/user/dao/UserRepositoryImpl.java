@@ -57,4 +57,24 @@ public class UserRepositoryImpl implements UserRepository {
             return user;
         }
     }
+
+    @Override
+    public Optional<User> findById(String id) {
+        Optional<User> user = null;
+
+        try {
+            user = Optional.ofNullable(
+                em.createQuery(
+                        "SELECT u FROM User u "
+                            + "WHERE u.id = :id", User.class
+                    )
+                    .setParameter("id", id)
+                    .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            user = Optional.empty();
+        } finally {
+            return user;
+        }
+    }
 }

@@ -13,4 +13,6 @@ public interface UserRepository {
 
     Optional<User> findByNickname(String nickname);
 
+    Optional<User> findById(String id);
+
 }
