@@ -52,8 +52,9 @@ class MusicApiControllerTest {
     @Test
     @DisplayName("노래 추가 컨트롤러 테스트")
     public void createMusicControllerTest() throws Exception {
-        String url = "/api/music";
+        when(musicService.create(any())).thenReturn(music);
 
+        String url = "/api/music";
         final ResultActions actions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
                         .content(gson.toJson(musicSaveRequestDto))
