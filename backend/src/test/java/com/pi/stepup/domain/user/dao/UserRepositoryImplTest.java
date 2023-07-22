@@ -6,7 +6,6 @@ import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -52,7 +51,7 @@ class UserRepositoryImplTest {
 
     @DisplayName("이메일 기준 조회 테스트")
     @Test
-    void findByEmail() {
+    void findByEmailTest() {
         // given
         User user = setUserSample();
 
@@ -65,7 +64,7 @@ class UserRepositoryImplTest {
 
     @DisplayName("닉네임 기준 조회 테스트")
     @Test
-    void findByNickname() {
+    void findByNicknameTest() {
         // given
         User user = setUserSample();
 
