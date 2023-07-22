@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,12 +24,20 @@ public class MusicRepositoryImpl implements MusicRepository {
     public Optional<Music> findOne(Long musicId) {
         Optional<Music> music = null;
 
-        try{
+        try {
             music = Optional.ofNullable(em.find(Music.class, musicId));
-        } catch (NoResultException e){
+        } catch (NoResultException e) {
             music = Optional.empty();
         } finally {
             return music;
         }
+    }
+
+    @Override
+    public List<Music> findAll() {
+        return em.createQuery(
+                        "SELECT m FROM Music m", Music.class
+                )
+                .getResultList();
     }
 }
