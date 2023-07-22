@@ -7,6 +7,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +37,7 @@ public class UserApiController {
         @RequestBody CheckEmailRequestDto checkEmailRequestDto) {
         userService.checkEmailDuplicated(checkEmailRequestDto);
 
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(CHECK_EMAIL_DUPLICATED_SUCCESS.getMessage())
         );
     }
