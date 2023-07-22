@@ -3,7 +3,8 @@ package com.pi.stepup.domain.user.api;
 public enum UserApiUrls {
     READ_ALL_COUNTRIES_URL("/country"),
     CHECK_EMAIL_DUPLICATED_URL("/dupemail"),
-    CHECK_NICKNAME_DUPLICATED_URL("/dupnick");
+    CHECK_NICKNAME_DUPLICATED_URL("/dupnick"),
+    CHECK_ID_DUPLICATED_URL("/dupid");
 
     private final String url;
 

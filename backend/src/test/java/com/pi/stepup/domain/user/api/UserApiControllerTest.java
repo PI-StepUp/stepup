@@ -1,9 +1,11 @@
 package com.pi.stepup.domain.user.api;
 
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,9 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.google.gson.Gson;
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
+import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.service.UserService;
 import java.util.ArrayList;
@@ -146,6 +150,43 @@ class UserApiControllerTest {
             .andExpect(status().isConflict());
     }
 
+    @DisplayName("아이디 중복 검사 테스트 - 중복 아님")
+    @Test
+    void checkIdDuplicatedTest_NoDuplicated() throws Exception {
+        // given
+        doNothing().when(userService).checkIdDuplicated(any(CheckIdRequestDto.class));
+        String content = makeJsonRequestDto(CheckIdRequestDto.class, TEST_ID);
+
+        //when, then
+        mockMvc.perform(
+                post(CHECK_ID_DUPLICATED_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding(UTF_8)
+                    .content(content)
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(CHECK_ID_DUPLICATED_SUCCESS.getMessage()));
+    }
+
+    @DisplayName("아이디 중복 검사 테스트 - 중복")
+    @Test
+    void checkIdDuplicatedTest_Duplicated() throws Exception {
+        // given
+        doThrow(IdDuplicatedException.class)
+            .when(userService)
+            .checkIdDuplicated(any(CheckIdRequestDto.class));
+        String content = makeJsonRequestDto(CheckIdRequestDto.class, TEST_ID);
+
+        // when, then
+        mockMvc.perform(
+                post(CHECK_ID_DUPLICATED_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding(UTF_8)
+                    .content(content)
+            )
+            .andExpect(status().isConflict());
+    }
+
     private String makeJsonRequestDto(Class<?> dtoType, String param) {
 
         if (dtoType == CheckEmailRequestDto.class) {
@@ -159,6 +200,13 @@ class UserApiControllerTest {
             return gson.toJson(
                 CheckNicknameRequestDto.builder()
                     .nickname(param).build()
+            );
+        }
+
+        if (dtoType == CheckIdRequestDto.class) {
+            return gson.toJson(
+                CheckIdRequestDto.builder()
+                    .id(TEST_ID).build()
             );
         }
 
