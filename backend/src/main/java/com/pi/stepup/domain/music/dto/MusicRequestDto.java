@@ -4,7 +4,6 @@ import com.pi.stepup.domain.music.domain.Music;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class MusicRequestDto {
@@ -31,5 +30,12 @@ public class MusicRequestDto {
         }
     }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MusicFindByKeywordRequestDto {
+        private String keyword;
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicFindByKeywordRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 
@@ -13,4 +14,6 @@ public interface MusicService {
     Optional<Music> readOne(Long musicId);
 
     List<MusicFindResponseDto> readAll();
+
+    List<MusicFindResponseDto> readAllByKeyword(MusicFindByKeywordRequestDto musicFindByKeywordRequestDto);
 }
