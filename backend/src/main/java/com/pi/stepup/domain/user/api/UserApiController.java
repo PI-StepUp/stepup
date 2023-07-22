@@ -1,9 +1,11 @@
 package com.pi.stepup.domain.user.api;
 
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,16 @@ public class UserApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(CHECK_EMAIL_DUPLICATED_SUCCESS.getMessage())
+        );
+    }
+
+    @PostMapping("/dupnick")
+    public ResponseEntity<ResponseDto<?>> checkNicknameDuplicated(
+        @RequestBody CheckNicknameRequestDto checkNicknameRequestDto) {
+        userService.checkNicknameDuplicated(checkNicknameRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(CHECK_NICKNAME_DUPLICATED_SUCCESS.getMessage())
         );
     }
 }
