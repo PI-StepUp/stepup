@@ -1,21 +1,24 @@
 package com.pi.stepup.domain.music.dto;
 
-import lombok.AllArgsConstructor;
+import com.pi.stepup.domain.music.domain.Music;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 public class MusicResponseDto {
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
+    @Getter
     public static class MusicFindResponseDto {
-        private Long musicId;
-        private String title;
-        private String artist;
-        private String answer;
-        private String URL;
+        private final String title;
+        private final String artist;
+        private final String answer;
+        private final String URL;
+
+        @Builder
+        public MusicFindResponseDto(Music music) {
+            this.title = music.getTitle();
+            this.artist = music.getArtist();
+            this.answer = music.getAnswer();
+            this.URL = music.getURL();
+        }
     }
 }
