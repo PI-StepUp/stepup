@@ -12,4 +12,6 @@ public interface MusicRepository {
     Optional<Music> findOne(Long musicId);
 
     List<Music> findAll();
+
+    List<Music> findAllByKeyword(String keyword);
 }

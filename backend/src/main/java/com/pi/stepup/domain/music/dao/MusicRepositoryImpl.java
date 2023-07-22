@@ -40,4 +40,15 @@ public class MusicRepositoryImpl implements MusicRepository {
                 )
                 .getResultList();
     }
+
+    @Override
+    public List<Music> findAllByKeyword(String keyword) {
+        return em.createQuery(
+                        "SELECT m FROM Music m " +
+                                "WHERE m.title LIKE concat('%', :keyword, '%') OR " +
+                                "m.artist LIKE concat('%', :keyword, '%')", Music.class
+                )
+                .setParameter("keyword", keyword)
+                .getResultList();
+    }
 }
