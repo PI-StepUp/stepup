@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.user.service;
 
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_FAIL;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_FAIL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_FAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -13,9 +14,11 @@ import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
+import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,6 +133,37 @@ class UserServiceImplTest {
             .isInstanceOf(NicknameDuplicatedException.class)
             .hasMessageContaining(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
 
+    }
+
+    @DisplayName("아이디 중복 검사 - 중복 아님")
+    @Test
+    void checkIdDuplicatedTest_NoDuplicated() {
+        // given
+        when(userRepository.findById(any(String.class)))
+            .thenReturn(Optional.empty());
+
+        CheckIdRequestDto checkIdRequestDto = CheckIdRequestDto.builder()
+            .id(TEST_ID).build();
+
+        // when, then
+        assertThatNoException()
+            .isThrownBy(() -> userService.checkIdDuplicated(checkIdRequestDto));
+    }
+
+    @DisplayName("아이디 중복 검사 - 중복")
+    @Test
+    void checkIdDuplicatedTest_Duplicated() {
+        // given
+        when(userRepository.findById(any(String.class)))
+            .thenReturn(Optional.of(User.builder().build()));
+
+        CheckIdRequestDto checkIdRequestDto = CheckIdRequestDto.builder()
+            .id(TEST_ID).build();
+
+        // then
+        assertThatThrownBy(() -> userService.checkIdDuplicated(checkIdRequestDto))
+            .isInstanceOf(IdDuplicatedException.class)
+            .hasMessageContaining(CHECK_ID_DUPLICATED_FAIL.getMessage());
     }
 
     private List<Country> makeCountries() {
