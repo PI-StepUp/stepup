@@ -144,7 +144,7 @@ const Index = () => {
             </div>
             <div className="ad-banner-wrap">
                 <div className="ad-banner-title-wrap">
-                    <h3>SSAFY의 멤버가 되어 <b className="bold">더 많은 랜플댄을 즐겨보세요</b></h3>
+                    <h3>STEP UP의 멤버가 되어 <b className="bold">더 많은 랜플댄을 즐겨보세요</b></h3>
                 </div>
                 <div className="ad-banner-button-wrap">
                     <button><Link href="/">회원가입 후 이용하기</Link></button>

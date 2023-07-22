@@ -103,4 +103,36 @@
             }
         }
     }
+    .floating-box{
+        position: fixed;
+        top:50%;
+        right:40px;
+        transform: translateY(-50%);
+        ul{
+            li{
+                @include setSize(100px, 100px);
+                border:1px solid #9A9BA1;
+                
+                text-align:center;
+                @include font(11px, 700, #515151);
+                background-color:#FFF;
+                cursor:pointer;
+                a{
+                    @include setSize(100%, 100%);
+                    @include flex(center, center);
+                    flex-direction: column;
+                }
+                &:first-child{
+                    border-radius: 50px 50px 0px 0px;
+                }
+                &:last-child{
+                    border-radius: 0px 0px 50px 50px;
+                }
+                span{
+                    display:inline-block;
+                    margin-top:7px;
+                }
+            }
+        }
+    }
 }
