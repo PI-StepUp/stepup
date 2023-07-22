@@ -43,7 +43,7 @@ class UserServiceImplTest {
 
     @DisplayName("국가 정보 목록 조회")
     @Test
-    void readAllCountries() {
+    void readAllCountriesTest() {
         // given
         List<Country> countryResponseDtos = makeCountries();
         doReturn(countryResponseDtos)
@@ -66,7 +66,7 @@ class UserServiceImplTest {
 
     @DisplayName("이메일 중복 검사 - 중복 아님")
     @Test
-    void checkEmailDuplicated_NoDuplicated() {
+    void checkEmailDuplicatedTest_NoDuplicated() {
         // given
         when(userRepository.findByEmail(any(String.class)))
             .thenReturn(Optional.empty());
@@ -83,7 +83,7 @@ class UserServiceImplTest {
 
     @DisplayName("이메일 중복 검사 - 중복")
     @Test
-    void checkEmailDuplicated_Duplicated() {
+    void checkEmailDuplicatedTest_Duplicated() {
         // given
         when(userRepository.findByEmail(any(String.class)))
             .thenReturn(Optional.of(User.builder().build()));
@@ -131,7 +131,6 @@ class UserServiceImplTest {
             .hasMessageContaining(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
 
     }
-
 
     private List<Country> makeCountries() {
         return new ArrayList<>(Arrays.asList(
