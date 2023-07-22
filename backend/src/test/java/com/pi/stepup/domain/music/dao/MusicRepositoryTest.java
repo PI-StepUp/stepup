@@ -76,7 +76,7 @@ class MusicRepositoryTest {
     private List<Music> makeMusic() {
         List<Music> music = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            Music tmp = Music.builder().title("title" + i).build();
+            Music tmp = Music.builder().title("title" + i).artist("artist" + (i + 1)).build();
             music.add(tmp);
         }
         return music;
@@ -94,6 +94,6 @@ class MusicRepositoryTest {
 
         String keyword = "1";
         List<Music> music = musicRepository.findAllByKeyword(keyword);
-        assertThat(music.size()).isEqualTo(1);
+        assertThat(music.size()).isEqualTo(2);
     }
 }
