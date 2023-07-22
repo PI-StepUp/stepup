@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,11 +29,11 @@ class MusicRepositoryTest {
     @BeforeEach
     public void init() {
         music = Music.builder()
-            .title("spicy")
-            .artist("aespa")
-            .answer("")
-            .URL("url")
-            .build();
+                .title("spicy")
+                .artist("aespa")
+                .answer("")
+                .URL("url")
+                .build();
     }
 
     @Test
@@ -51,12 +52,12 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
     public void findOneMusicRepoTest() {
-       em.persist(music);
+        em.persist(music);
 
         Long musicId = music.getMusicId();
         Optional<Music> result = musicRepository.findOne(musicId);
         Music resultMusic = null;
-        if(result.isPresent()){
+        if (result.isPresent()) {
             resultMusic = result.get();
         }
         assertThat(music.getTitle()).isEqualTo(resultMusic.getTitle());
@@ -64,13 +65,18 @@ class MusicRepositoryTest {
 
     @Test
     @DisplayName("노래 전체 목록 조회 테스트")
-    public void findAllMusicRepoTest(){
+    public void findAllMusicRepoTest() {
+        for (int i = 0; i < 5; i++) {
+            em.persist(music);
+        }
 
+        List<Music> musics = musicRepository.findAll();
+        assertThat(musics.size()).isEqualTo(5);
     }
 
     @Test
     @DisplayName("노래 전체 목록 키워드 조회 테스트")
-    public void findAllMusicByKeywordRepoTest(){
+    public void findAllMusicByKeywordRepoTest() {
 
     }
 }
