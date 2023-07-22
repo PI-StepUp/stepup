@@ -16,11 +16,11 @@ public class MusicApiController {
     private final MusicService musicService;
 
     @PostMapping
-    public ResponseEntity<?> createMusic(@RequestBody MusicSaveRequestDto music){
-        Long musicId = musicService.create(music).getMusicId();
+    public ResponseEntity<?> createMusic(@RequestBody MusicSaveRequestDto musicSaveRequestDto){
+        Long musicId = musicService.create(musicSaveRequestDto).getMusicId();
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             "노래 등록 완료",
-            musicId
+            musicService.readOne(musicId)
         ));
     }
 
