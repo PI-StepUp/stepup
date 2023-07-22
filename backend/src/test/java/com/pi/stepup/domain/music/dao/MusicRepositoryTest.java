@@ -90,6 +90,10 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 전체 목록 키워드 조회 테스트")
     public void findAllMusicByKeywordRepoTest() {
+        insertMusic();
 
+        String keyword = "1";
+        List<Music> music = musicRepository.findAllByKeyword(keyword);
+        assertThat(music.size()).isEqualTo(1);
     }
 }
