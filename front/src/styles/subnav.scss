@@ -11,7 +11,11 @@
             border-radius: 50px;
             background-color:#F7F7F7;
             margin-left:4px;
-            @include font(20px, 400, #8F8F8F);
+            @include font(20px, 500, #8F8F8F);
+            &:hover{
+                background-color: #FF9100;
+                @include font(20px, 700, #FFFFFF);
+            }
         }
     }
 }
