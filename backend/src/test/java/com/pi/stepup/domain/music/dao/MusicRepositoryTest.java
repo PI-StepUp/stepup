@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,12 +67,24 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 전체 목록 조회 테스트")
     public void findAllMusicRepoTest() {
-        for (int i = 0; i < 5; i++) {
-            em.persist(music);
-        }
+        insertMusic();
 
-        List<Music> musics = musicRepository.findAll();
-        assertThat(musics.size()).isEqualTo(5);
+        List<Music> music = musicRepository.findAll();
+        assertThat(music.size()).isEqualTo(5);
+    }
+
+    private List<Music> makeMusic() {
+        List<Music> music = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Music tmp = Music.builder().title("title" + i).build();
+            music.add(tmp);
+        }
+        return music;
+    }
+
+    private void insertMusic() {
+        List<Music> music = makeMusic();
+        music.forEach(em::persist);
     }
 
     @Test
