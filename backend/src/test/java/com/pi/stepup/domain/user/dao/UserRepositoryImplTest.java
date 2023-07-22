@@ -75,6 +75,19 @@ class UserRepositoryImplTest {
         assertThat(user).isEqualTo(findUser);
     }
 
+    @DisplayName("아이디 기준 조회 테스트")
+    @Test
+    void findByIdTest() {
+        // given
+        User user = setUserSample();
+
+        // when
+        User findUser = userRepository.findById(TEST_ID).orElse(User.builder().build());
+
+        // then
+        assertThat(findUser).isEqualTo(user);
+    }
+
     private User setUserSample() {
         Country country = Country.builder()
             .code(testCountryCodes[0])
