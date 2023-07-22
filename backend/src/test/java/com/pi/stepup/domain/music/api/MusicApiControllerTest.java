@@ -1,50 +1,52 @@
 package com.pi.stepup.domain.music.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.google.gson.Gson;
+import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
+import com.pi.stepup.domain.music.service.MusicService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(MusicApiController.class)
 class MusicApiControllerTest {
 
     @Autowired
-    private MusicApiController musicApiController;
     private MockMvc mockMvc;
+
+    @MockBean
+    private MusicService musicService;
+
     private Gson gson;
-    private MusicSaveRequestDto music;
+    private MusicSaveRequestDto musicSaveRequestDto;
+    private Music music;
 
     @BeforeEach
     public void init() {
         gson = new Gson();
-        mockMvc = MockMvcBuilders.standaloneSetup(musicApiController).build();
+        musicSaveRequestDto = MusicSaveRequestDto.builder()
+                .musicId(1L)
+                .title("spicy")
+                .artist("aespa")
+                .answer("")
+                .URL("url")
+                .build();
 
-        music = new MusicSaveRequestDto(
-            "spicy",
-            "aespa",
-            "",
-            "url"
-        );
-    }
-
-
-    @Test
-    @DisplayName("musicApiController가 null이 아님을 테스트")
-    public void setMusicApiControllerNotNullTest() {
-        assertThat(musicApiController).isNotNull();
+        music = musicSaveRequestDto.toEntity();
     }
 
     @Test
@@ -52,13 +54,10 @@ class MusicApiControllerTest {
     public void createMusicControllerTest() throws Exception {
         String url = "/api/music";
 
-//        String json = new ObjectMapper().writeValueAsString(music);
-//        String json = "";
-
         final ResultActions actions = mockMvc.perform(
-            MockMvcRequestBuilders.post(url)
-                .content(gson.toJson(music))
-                .contentType(MediaType.APPLICATION_JSON)
+                MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(musicSaveRequestDto))
+                        .contentType(MediaType.APPLICATION_JSON)
         );
 
         actions.andExpect(status().isCreated());
@@ -66,23 +65,12 @@ class MusicApiControllerTest {
 
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
-    @Transactional
     public void readOneMusicControllerTest() throws Exception {
-        // insert
-        StringBuilder url = new StringBuilder();
+        when(musicService.readOne(any())).thenReturn(Optional.of(music));
 
-        url.append("/api/music");
-        final ResultActions postAction = mockMvc.perform(
-            MockMvcRequestBuilders.post(url.toString())
-                .content(gson.toJson(music))
-                .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        // select
-        Long musicId = 1L;
-        url.append("/").append(musicId);
+        long musicId = 1L;
         final ResultActions getAction = mockMvc.perform(
-            MockMvcRequestBuilders.get(url.toString())
+                MockMvcRequestBuilders.get("/api/music/" + musicId)
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
