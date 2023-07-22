@@ -3,6 +3,7 @@ package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicFindByKeywordRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,6 +91,23 @@ class MusicServiceTest {
             music.add(tmp);
         }
         return music;
+    }
+
+    @Test
+    @DisplayName("노래 키워드 조회 테스트")
+    public void readAllByKeywordServiceTest() {
+        List<Music> makedMusic = makeMusic();
+        String keyword = "1";
+        doReturn(makedMusic)
+                .when(musicRepository)
+                .findAllByKeyword(keyword);
+
+        MusicFindByKeywordRequestDto requestDto = MusicFindByKeywordRequestDto.builder()
+                .keyword(keyword)
+                .build();
+        List<MusicFindResponseDto> foundMusic = musicService.readAllByKeyword(requestDto);
+
+        assertThat(makedMusic.size()).isEqualTo(foundMusic.size());
     }
 
 }
