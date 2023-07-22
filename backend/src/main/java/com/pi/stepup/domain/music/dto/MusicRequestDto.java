@@ -14,6 +14,7 @@ public class MusicRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MusicSaveRequestDto {
+        private Long musicId;
         private String title;
         private String artist;
         private String answer;
@@ -21,6 +22,7 @@ public class MusicRequestDto {
 
         public Music toEntity(){
             return Music.builder()
+                    .musicId(this.musicId)
                     .title(this.title)
                     .artist(this.artist)
                     .answer(this.answer)

@@ -12,6 +12,7 @@ public class MusicResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MusicFindResponseDto {
+        private Long musicId;
         private String title;
         private String artist;
         private String answer;

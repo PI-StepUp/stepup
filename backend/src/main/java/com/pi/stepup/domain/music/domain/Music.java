@@ -26,7 +26,8 @@ public class Music {
     private String URL;
 
     @Builder
-    public Music(String title, String artist, String answer, String URL) {
+    public Music(Long musicId, String title, String artist, String answer, String URL) {
+        this.musicId = musicId;
         this.title = title;
         this.artist = artist;
         this.answer = answer;
