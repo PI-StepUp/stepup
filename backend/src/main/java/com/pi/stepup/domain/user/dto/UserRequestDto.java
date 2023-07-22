@@ -24,4 +24,13 @@ public class UserRequestDto {
 
         private String nickname;
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CheckIdRequestDto {
+
+        private String id;
+    }
 }

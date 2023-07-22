@@ -1,13 +1,16 @@
 package com.pi.stepup.domain.user.service;
 
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_FAIL;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_FAIL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_FAIL;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
+import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +44,13 @@ public class UserServiceImpl implements UserService {
     public void checkNicknameDuplicated(CheckNicknameRequestDto checkNicknameRequestDto) {
         if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
             throw new NicknameDuplicatedException(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
+        }
+    }
+
+    @Override
+    public void checkIdDuplicated(CheckIdRequestDto checkIdRequestDto) {
+        if (userRepository.findById(checkIdRequestDto.getId()).isPresent()) {
+            throw new IdDuplicatedException(CHECK_ID_DUPLICATED_FAIL.getMessage());
         }
     }
 }
