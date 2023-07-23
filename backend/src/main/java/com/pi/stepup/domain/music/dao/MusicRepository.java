@@ -14,4 +14,6 @@ public interface MusicRepository {
     List<Music> findAll();
 
     List<Music> findAllByKeyword(String keyword);
+
+    void delete(Long musicId);
 }

@@ -51,4 +51,10 @@ public class MusicRepositoryImpl implements MusicRepository {
                 .setParameter("keyword", keyword)
                 .getResultList();
     }
+
+    @Override
+    public void delete(Long musicId) {
+        Music music = em.find(Music.class, musicId);
+        em.remove(music);
+    }
 }
