@@ -2,11 +2,12 @@ package com.pi.stepup.domain.board.domain;
 
 import com.pi.stepup.domain.user.domain.User;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -16,6 +17,8 @@ public class Meeting extends Board {
     private String region;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
+
+    @ColumnDefault("0")
     private int commentCnt;
 
     @Builder
@@ -27,4 +30,24 @@ public class Meeting extends Board {
         this.commentCnt = commentCnt;
     }
 
+    public void updateCommentCnt() {
+        if (getComments() != null) {
+            this.commentCnt = getComments().size();
+        } else {
+            this.commentCnt = 0;
+        }
+    }
+
+    // 댓글이 추가될 때 호출
+    @PostPersist
+    public void updateCommentCntOnCommentAdd() {
+        updateCommentCnt();
+    }
+
+    // 댓글이 삭제될 때 호출
+    @PostRemove
+    public void updateCommentCntOnCommentRemove() {
+        updateCommentCnt();
+    }
 }
+
