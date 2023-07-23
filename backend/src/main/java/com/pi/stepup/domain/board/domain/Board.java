@@ -1,23 +1,12 @@
 package com.pi.stepup.domain.board.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.global.entity.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import lombok.*;
 
@@ -39,15 +28,33 @@ public abstract class Board extends BaseEntity {
     @JoinColumn(name = "WRITER")
     private User writer;
 
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    //댓글 정렬 최신순
+    @OrderBy("commentId desc")
+    @JsonIgnoreProperties({"board"})
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     @Column(name = "FILE_URL")
     private String fileURL;
 
+    @Builder
+    public Board(String title, String content, List<Comment> comments, String fileURL) {
+        this.writer = writer;
+        this.title = title;
+        this.content = content;
+        this.comments = comments;
+        this.fileURL = fileURL;
+    }
+
+    public void update(String title, String content, String fileURL) {
+        this.title = title;
+        this.content = content;
+        this.fileURL = fileURL;
+    }
 }
