@@ -86,7 +86,7 @@ class MusicApiControllerTest {
         when(musicService.readAll()).thenReturn(makeMusic());
 
         final ResultActions getAction = mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/music")
+                MockMvcRequestBuilders.get("/api/music?keyword=")
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
