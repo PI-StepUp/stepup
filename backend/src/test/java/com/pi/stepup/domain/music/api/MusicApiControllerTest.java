@@ -84,7 +84,8 @@ class MusicApiControllerTest {
     @Test
     @DisplayName("노래 목록 조회 테스트")
     public void readAllMusicControllerTest() throws Exception {
-        when(musicService.readAll()).thenReturn(makeMusic());
+        String keyword = "";
+        when(musicService.readAll(keyword)).thenReturn(makeMusic());
 
         final ResultActions getAction = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/music?keyword=")
@@ -99,8 +100,7 @@ class MusicApiControllerTest {
     @DisplayName("노래 목록 키워드 조회 테스트")
     public void readAllByKeywordMusicControllerTest() throws Exception {
         String keyword = "1";
-
-        when(musicService.readAllByKeyword(keyword)).thenReturn(keywordMusic(keyword));
+        when(musicService.readAll(keyword)).thenReturn(keywordMusic(keyword));
 
         final ResultActions getAction = mockMvc.perform(
                 MockMvcRequestBuilders.get("/api/music?keyword=" + keyword)

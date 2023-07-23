@@ -37,22 +37,19 @@ public class MusicServiceImpl implements MusicService {
         return musicRepository.findOne(musicId);
     }
 
-    public List<MusicFindResponseDto> readAll() {
-        return musicRepository.findAll().stream()
+    public List<MusicFindResponseDto> readAll(String keyword) {
+        List<Music> result;
+
+        if (keyword.equals("")) {
+            result = musicRepository.findAll();
+        } else {
+            result = musicRepository.findAllByKeyword(keyword);
+        }
+
+        return result.stream()
                 .map(music -> MusicFindResponseDto.builder()
                         .music(music)
                         .build())
                 .collect(Collectors.toList());
     }
-
-    @Override
-    public List<MusicFindResponseDto> readAllByKeyword(String keyword) {
-        return musicRepository.findAllByKeyword(keyword).stream()
-                .map(music -> MusicFindResponseDto.builder()
-                        .music(music)
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-
 }

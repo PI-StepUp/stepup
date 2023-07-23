@@ -12,7 +12,5 @@ public interface MusicService {
 
     Optional<Music> readOne(Long musicId);
 
-    List<MusicFindResponseDto> readAll();
-
-    List<MusicFindResponseDto> readAllByKeyword(String keyword);
+    List<MusicFindResponseDto> readAll(String keyword);
 }

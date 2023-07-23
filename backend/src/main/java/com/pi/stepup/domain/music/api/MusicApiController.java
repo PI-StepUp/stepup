@@ -38,14 +38,9 @@ public class MusicApiController {
     public ResponseEntity<?> readAllMusic(
             @RequestParam(required = false, name = "keyword") String keyword) {
         List<MusicFindResponseDto> result;
-        if (keyword == null) {
-            result = musicService.readAll();
-        } else {
-            result = musicService.readAllByKeyword(keyword);
-        }
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 "노래 목록 조회 완료",
-                result
+                musicService.readAll(keyword)
         ));
     }
 }

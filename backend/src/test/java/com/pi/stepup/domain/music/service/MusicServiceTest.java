@@ -78,7 +78,22 @@ class MusicServiceTest {
                 .when(musicRepository)
                 .findAll();
 
-        List<MusicFindResponseDto> foundMusic = musicService.readAll();
+        String keyword = "";
+        List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
+
+        assertThat(makedMusic.size()).isEqualTo(foundMusic.size());
+    }
+
+    @Test
+    @DisplayName("노래 키워드 조회 테스트")
+    public void readAllByKeywordServiceTest() {
+        List<Music> makedMusic = makeMusic();
+        String keyword = "1";
+        doReturn(makedMusic)
+                .when(musicRepository)
+                .findAllByKeyword(keyword);
+
+        List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
         assertThat(makedMusic.size()).isEqualTo(foundMusic.size());
     }
@@ -91,19 +106,4 @@ class MusicServiceTest {
         }
         return music;
     }
-
-    @Test
-    @DisplayName("노래 키워드 조회 테스트")
-    public void readAllByKeywordServiceTest() {
-        List<Music> makedMusic = makeMusic();
-        String keyword = "1";
-        doReturn(makedMusic)
-                .when(musicRepository)
-                .findAllByKeyword(keyword);
-
-        List<MusicFindResponseDto> foundMusic = musicService.readAllByKeyword(keyword);
-
-        assertThat(makedMusic.size()).isEqualTo(foundMusic.size());
-    }
-
 }
