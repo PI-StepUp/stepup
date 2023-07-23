@@ -20,6 +20,7 @@ public class MusicServiceImpl implements MusicService {
     private final MusicRepository musicRepository;
 
     @Override
+    @Transactional
     public Music create(MusicSaveRequestDto musicSaveRequestDto) {
         Music music = Music.builder()
                 .title(musicSaveRequestDto.getTitle())
