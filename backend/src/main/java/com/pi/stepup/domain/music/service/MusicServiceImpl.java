@@ -52,4 +52,9 @@ public class MusicServiceImpl implements MusicService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void delete(Long musicId) {
+        musicRepository.delete(musicId);
+    }
 }

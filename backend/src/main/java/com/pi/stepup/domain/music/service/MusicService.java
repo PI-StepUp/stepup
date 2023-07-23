@@ -13,4 +13,6 @@ public interface MusicService {
     Optional<Music> readOne(Long musicId);
 
     List<MusicFindResponseDto> readAll(String keyword);
+
+    void delete(Long musicId);
 }
