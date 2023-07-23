@@ -73,6 +73,29 @@ class MusicRepositoryTest {
         assertThat(music.size()).isEqualTo(5);
     }
 
+    @Test
+    @DisplayName("노래 전체 목록 키워드 조회 테스트")
+    public void findAllMusicByKeywordRepoTest() {
+        insertMusic();
+
+        String keyword = "1";
+        List<Music> music = musicRepository.findAllByKeyword(keyword);
+        assertThat(music.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("노래 삭제 테스트")
+    public void deleteMusicRepoTest(){
+        insertMusic();
+
+        Long musicId = 1L;
+        musicRepository.delete(musicId);
+
+        // 아래 방법 사용 안하고 테스트 어떻게..??
+        Optional<Music> result = musicRepository.findOne(musicId);
+        assertThat(result).isNotPresent();
+    }
+
     private List<Music> makeMusic() {
         List<Music> music = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -85,15 +108,5 @@ class MusicRepositoryTest {
     private void insertMusic() {
         List<Music> music = makeMusic();
         music.forEach(em::persist);
-    }
-
-    @Test
-    @DisplayName("노래 전체 목록 키워드 조회 테스트")
-    public void findAllMusicByKeywordRepoTest() {
-        insertMusic();
-
-        String keyword = "1";
-        List<Music> music = musicRepository.findAllByKeyword(keyword);
-        assertThat(music.size()).isEqualTo(2);
     }
 }
