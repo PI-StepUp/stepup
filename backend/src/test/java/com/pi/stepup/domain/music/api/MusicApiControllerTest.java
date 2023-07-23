@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -109,6 +109,19 @@ class MusicApiControllerTest {
         getAction.andExpect(status().isOk())
                 .andExpect(jsonPath("data[3]").doesNotExist())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("노래 삭제 테스트")
+    public void deleteMusicControllerTest() throws Exception {
+        Long musicId = 1L;
+
+        final ResultActions deleteAction = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/api/music/" + musicId)
+        );
+
+        verify(musicService, only()).delete(musicId);
+        deleteAction.andExpect(status().isOk());
     }
 
     private List<MusicFindResponseDto> makeMusic() {
