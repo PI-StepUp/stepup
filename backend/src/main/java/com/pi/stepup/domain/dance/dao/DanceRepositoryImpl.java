@@ -1,35 +1,45 @@
 package com.pi.stepup.domain.dance.dao;
 
-
-import com.pi.stepup.domain.dance.domain.Dance;
+import com.pi.stepup.domain.dance.domain.RandomDance;
+import java.util.List;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-//@Repository
+@Repository
 @RequiredArgsConstructor
 public class DanceRepositoryImpl implements DanceRepository {
 
     private final EntityManager em;
 
     @Override
-    public Dance insert(Dance dance) {
-        if(dance.getId()==null) {
-            em.persist(dance);
-        } else {
-            em.merge(dance);
-        }
-        return dance;
+    public RandomDance insert(RandomDance randomDance) {
+        em.persist(randomDance);
+        return randomDance;
     }
 
-//    @Override
-//    public Dance update(Dance dance) {
-//        return dance;
-//    }
+    //상세 페이지는 없지만 수정할 때 필요?
+    @Override
+    public RandomDance findOne(Long randomDanceId) {
+        return em.find(RandomDance.class, randomDanceId);
+    }
 
-//    @Override
-//    public Dance findOne(Long id) {
-//        return em.find(Dance.class, id);
-//    }
+    @Override
+    public RandomDance update(RandomDance randomDance) {
+        RandomDance updateDance = em.merge(randomDance);
+        return updateDance;
+    }
+
+    @Override
+    public void delete(Long randomDanceId) {
+        RandomDance randomDance = em.find(RandomDance.class, randomDanceId);
+        em.remove(randomDance);
+    }
+
+    @Override
+    public List<RandomDance> findAllHeldDance() {
+        return em.createQuery("SELECT r FROM RandomDance r", RandomDance.class)
+            .getResultList();
+    }
+
 }
