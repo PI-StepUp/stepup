@@ -23,8 +23,12 @@ public class Notice extends Board {
 
     @Builder
     public Notice(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, RandomDance randomDance) {
-        super(boardId, writer, title, content, comments, fileURL);
+        super(boardId, writer, title, content, comments, fileURL );
         this.randomDance = randomDance;
     }
 
+    public void updateNotice(String title, String content, String fileUrl, RandomDance randomDance) {
+        super.update(title, content, fileUrl);
+        this.randomDance = randomDance;
+    }
 }
