@@ -10,6 +10,7 @@ public enum UserResponseMessage {
     CHECK_ID_DUPLICATED_FAIL("아이디 중복"),
     SIGN_UP_SUCCESS("회원가입 완료"),
     LOGIN_SUCCESS("로그인 완료"),
+    LOGIN_FAIL("아이디, 비밀번호 미일치"),
     READ_ONE_SUCCESS("회원정보 조회 완료");
 
     private final String message;

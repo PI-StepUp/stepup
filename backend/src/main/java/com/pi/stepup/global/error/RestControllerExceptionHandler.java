@@ -2,6 +2,7 @@ package com.pi.stepup.global.error;
 
 import com.pi.stepup.global.dto.ResponseDto;
 import com.pi.stepup.global.error.exception.DuplicatedException;
+import javax.naming.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,13 @@ public class RestControllerExceptionHandler {
     public ResponseEntity<ResponseDto<String>> handleDuplicatedException(
         DuplicatedException exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
+            ResponseDto.create(exception.getMessage())
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ResponseDto<String>> handleAuthenticationException(AuthenticationException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
             ResponseDto.create(exception.getMessage())
         );
     }
