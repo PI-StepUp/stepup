@@ -1,46 +1,66 @@
 package com.pi.stepup.domain.dance.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.pi.stepup.domain.dance.constant.DanceType;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
-import com.pi.stepup.domain.dance.domain.Dance;
+import com.pi.stepup.domain.dance.domain.RandomDance;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSaveRequestDto;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
-public class DanceServiceTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-    @Autowired
+
+@ExtendWith(MockitoExtension.class)
+class DanceServiceTest {
+
+    @InjectMocks
+    private DanceServiceImpl danceService;
+    @Mock
     private DanceRepository danceRepository;
 
+    private final String title = "랜덤 플레이 댄스";
+    private final String content = "함께 합시다";
+    private final String userCountry = "Asia/Seoul";
+    private final LocalDateTime time = LocalDateTime.now(ZoneId.of(userCountry));
+    private final DanceType type = DanceType.BASIC;
+    private final int max = 30;
+    private final String url = "url";
+
     @Test
-    @DisplayName("랜플댄 개최 케이스 테스트")
-    @Transactional
-    public Dance insert(Dance Dance) {
-        //개최할 랜플댄
-        Dance insertDance = Dance.builder()
-            .title("제1회 랜덤 플레이 댄스")
-            .content("같이 놀아요")
-            //유저의 국가 코드 전달
-            .startAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
-            .endAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
-            .danceType(DanceType.BASIC)
-            .maxUser(30)
-            .thumbnail("url")
+    @DisplayName("랜덤 플레이 댄스 개최 테스트")
+    public void createDanceTest() {
+        RandomDance randomDance = RandomDance.builder()
+            .title(title)
+            .content(content)
+            .startAt(time)
+            .endAt(time)
+            .danceType(type)
+            .maxUser(max)
+            .thumbnail(url)
             .build();
 
-        Dance saveDance = danceRepository.save(insertDance);
+        DanceSaveRequestDto danceSaveRequestDto
+            = DanceSaveRequestDto.builder().randomDance(randomDance).build();
 
-        assertThat(saveDance.getId()).isNotNull();
-        assertThat(insertDance).isEqualTo(saveDance);
+        when(danceRepository.insert(any(RandomDance.class))).thenReturn(randomDance);
 
-        return insertDance;
+        RandomDance createDance = danceService.create(danceSaveRequestDto);
+
+        assertThat(createDance.getTitle()).isEqualTo(title);
+        assertThat(createDance.getContent()).isEqualTo(content);
+
+        verify(danceRepository, times(1)).insert(any(RandomDance.class));
     }
 
 }
