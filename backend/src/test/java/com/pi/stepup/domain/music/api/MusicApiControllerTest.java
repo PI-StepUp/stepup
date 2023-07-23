@@ -23,6 +23,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(MusicApiController.class)
@@ -89,7 +90,25 @@ class MusicApiControllerTest {
                 MockMvcRequestBuilders.get("/api/music?keyword=")
         );
 
-        getAction.andExpect(status().isOk()).andDo(print());
+        getAction.andExpect(status().isOk())
+                .andExpect(jsonPath("data").isNotEmpty())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("노래 목록 키워드 조회 테스트")
+    public void readAllByKeywordMusicControllerTest() throws Exception {
+        String keyword = "1";
+
+        when(musicService.readAllByKeyword(keyword)).thenReturn(keywordMusic(keyword));
+
+        final ResultActions getAction = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/music?keyword=" + keyword)
+        );
+
+        getAction.andExpect(status().isOk())
+                .andExpect(jsonPath("data[3]").doesNotExist())
+                .andDo(print());
     }
 
     private List<MusicFindResponseDto> makeMusic() {
@@ -100,4 +119,16 @@ class MusicApiControllerTest {
         }
         return music;
     }
+
+    private List<MusicFindResponseDto> keywordMusic(String keyword) {
+        List<MusicFindResponseDto> music = makeMusic();
+        List<MusicFindResponseDto> result = new ArrayList<>();
+        for (MusicFindResponseDto dto : music) {
+            if (dto.getTitle().contains(keyword) || dto.getArtist().contains(keyword)) {
+                result.add(dto);
+            }
+        }
+        return result;
+    }
+
 }
