@@ -2,7 +2,6 @@ package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
-import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicFindByKeywordRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +45,8 @@ public class MusicServiceImpl implements MusicService {
     }
 
     @Override
-    public List<MusicFindResponseDto> readAllByKeyword(MusicFindByKeywordRequestDto musicFindByKeywordRequestDto) {
-        return musicRepository.findAllByKeyword(musicFindByKeywordRequestDto.getKeyword()).stream()
+    public List<MusicFindResponseDto> readAllByKeyword(String keyword) {
+        return musicRepository.findAllByKeyword(keyword).stream()
                 .map(music -> MusicFindResponseDto.builder()
                         .music(music)
                         .build())

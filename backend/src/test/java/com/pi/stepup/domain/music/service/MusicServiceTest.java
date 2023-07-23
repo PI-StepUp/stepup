@@ -3,7 +3,6 @@ package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
-import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicFindByKeywordRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,10 +101,7 @@ class MusicServiceTest {
                 .when(musicRepository)
                 .findAllByKeyword(keyword);
 
-        MusicFindByKeywordRequestDto requestDto = MusicFindByKeywordRequestDto.builder()
-                .keyword(keyword)
-                .build();
-        List<MusicFindResponseDto> foundMusic = musicService.readAllByKeyword(requestDto);
+        List<MusicFindResponseDto> foundMusic = musicService.readAllByKeyword(keyword);
 
         assertThat(makedMusic.size()).isEqualTo(foundMusic.size());
     }
