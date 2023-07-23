@@ -54,6 +54,7 @@ public class MusicServiceImpl implements MusicService {
     }
 
     @Override
+    @Transactional
     public void delete(Long musicId) {
         musicRepository.delete(musicId);
     }
