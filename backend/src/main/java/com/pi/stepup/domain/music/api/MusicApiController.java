@@ -43,4 +43,12 @@ public class MusicApiController {
                 musicService.readAll(keyword)
         ));
     }
+
+    @DeleteMapping("/{musicId}")
+    public ResponseEntity<?> deleteMusic(@PathVariable("musicId") Long musicId){
+        musicService.delete(musicId);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                "노래 삭제 완료"
+        ));
+    }
 }
