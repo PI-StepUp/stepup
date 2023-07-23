@@ -7,7 +7,10 @@ public enum UserResponseMessage {
     CHECK_NICKNAME_DUPLICATED_SUCCESS("닉네임 사용 가능"),
     CHECK_NICKNAME_DUPLICATED_FAIL("닉네임 중복"),
     CHECK_ID_DUPLICATED_SUCCESS("아이디 사용 가능"),
-    CHECK_ID_DUPLICATED_FAIL("아이디 중복");
+    CHECK_ID_DUPLICATED_FAIL("아이디 중복"),
+    SIGN_UP_SUCCESS("회원가입 완료"),
+    LOGIN_SUCCESS("로그인 완료"),
+    READ_ONE_SUCCESS("회원정보 조회 완료");
 
     private final String message;
 
