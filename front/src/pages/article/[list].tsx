@@ -3,6 +3,8 @@ import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
+import Link from "next/link";
+
 const ArticleList = () => {
     return (
         <>
@@ -101,7 +103,12 @@ const ArticleList = () => {
                             <td>2013.07.15</td>
                         </tr>
                     </tbody>
+                    
                 </table>
+                <div className="button-wrap">
+                    <button><Link href="/article/create">글 작성하기</Link></button>
+                </div>
+                
                 <div className="pagination">
                     <ul>
                         <li>1</li>
