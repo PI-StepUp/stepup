@@ -10,4 +10,6 @@ public interface MusicApplyService {
     MusicApply create(MusicApplySaveRequestDto musicApplySaveRequestDto);
 
     List<MusicApplyFindResponseDto> readAll(String keyword);
+
+    MusicApplyFindResponseDto readOne(Long musicApplyId);
 }

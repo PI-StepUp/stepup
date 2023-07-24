@@ -22,12 +22,12 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     @Transactional
     public MusicApply create(MusicApplySaveRequestDto musicApplySaveRequestDto) {
-        // TODO : user optional 예외 처리
+        // TODO : user not found exception 예외 처리
         MusicApply musicApply = MusicApply.builder()
                 .title(musicApplySaveRequestDto.getTitle())
                 .artist(musicApplySaveRequestDto.getArtist())
                 .content(musicApplySaveRequestDto.getContent())
-                .writer(userRepository.findById(musicApplySaveRequestDto.getWriterId()).get())
+                .writer(userRepository.findById(musicApplySaveRequestDto.getWriterId()).orElseThrow())
                 .build();
 
         return musicApplyRepository.insert(musicApply);
@@ -39,5 +39,12 @@ public class MusicApplyServiceImpl implements MusicApplyService {
                         .musicApply(musicApply)
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public MusicApplyFindResponseDto readOne(Long musicApplyId) {
+        // TODO : not found exception 구현
+        return MusicApplyFindResponseDto.builder()
+                .musicApply(musicApplyRepository.findOne(musicApplyId).orElseThrow())
+                .build();
     }
 }
