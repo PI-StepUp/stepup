@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DanceApiController {
 
-    private DanceService danceService;
+    private final DanceService danceService;
 
     @PostMapping("")
     public ResponseEntity<ResponseDto<?>> createRandomDance
