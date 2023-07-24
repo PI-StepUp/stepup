@@ -2,7 +2,7 @@ package com.pi.stepup.domain.user.domain;
 
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.global.entity.BaseEntity;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,11 +17,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "USERS")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class User extends BaseEntity {
 
     @Id
@@ -42,7 +44,7 @@ public class User extends BaseEntity {
 
     private String nickname;
 
-    private LocalDateTime birth;
+    private LocalDate birth;
 
     private String profileImg;
 
@@ -51,12 +53,14 @@ public class User extends BaseEntity {
 
     private Integer point;
 
+    private String refreshToken;
+
     // TODO: Rank 엔티티 연관관계 설정
 
     @Builder
     public User(Long userId, String id, String password, String email, Integer emailAlert,
-        Country country, String nickname, LocalDateTime birth, String profileImg,
-        UserRole role, Integer point) {
+        Country country, String nickname, LocalDate birth, String profileImg,
+        UserRole role, Integer point, String refreshToken) {
         this.userId = userId;
         this.id = id;
         this.password = password;
@@ -68,5 +72,10 @@ public class User extends BaseEntity {
         this.profileImg = profileImg;
         this.role = role;
         this.point = point;
+        this.refreshToken = refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

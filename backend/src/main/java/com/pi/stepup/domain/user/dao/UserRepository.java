@@ -9,10 +9,14 @@ public interface UserRepository {
 
     List<Country> findAllCountries();
 
+    Country findOneCountry(Long countryId);
+
     Optional<User> findByEmail(String email);
 
     Optional<User> findByNickname(String nickname);
 
     Optional<User> findById(String id);
+
+    void insert(User user);
 
 }

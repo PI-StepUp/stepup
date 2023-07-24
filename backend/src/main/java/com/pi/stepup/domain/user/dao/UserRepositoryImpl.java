@@ -22,6 +22,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Country findOneCountry(Long countryId) {
+        return em.find(Country.class, countryId);
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         Optional<User> user = null;
 
@@ -76,5 +81,10 @@ public class UserRepositoryImpl implements UserRepository {
         } finally {
             return user;
         }
+    }
+
+    @Override
+    public void insert(User user) {
+        em.persist(user);
     }
 }

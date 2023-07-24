@@ -1,0 +1,27 @@
+@import "./function.scss";
+
+.sidemenu-wrap{
+    @include setSize(8vw, 100vh);
+    @include flex(center, center);
+    ul{
+        li{
+            margin-top:46px;
+            cursor:pointer;
+            text-align:center;
+            &:first-child{
+                margin-top:0px;
+            }
+            img{
+                @include setSize(38px, 38px);
+            }
+            .big-icon{
+                @include setSize(60px, 60px);
+            }
+            span{
+                display:block;
+                @include font(10px, 700, #808080);
+                margin-top:4px;
+            }
+        }
+    }
+}

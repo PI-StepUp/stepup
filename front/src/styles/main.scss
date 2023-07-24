@@ -198,7 +198,8 @@
         margin-top:20px;
         @include flex();
         button{
-            @include setSize(228px, 52px);
+            height:52px;
+            padding: 0px 40px;
             border-radius:14px;
             border:none;
             background-color:#FFFFFF;

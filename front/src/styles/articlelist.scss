@@ -30,7 +30,7 @@
             input[type="submit"]{
                 @include setSize(108px, 44px);
                 background-color:#343434;
-                @include font(16px, 400, #FFFFFF);
+                @include font(16px, 500, #FFFFFF);
                 margin-left:18px;
             }
         }
@@ -56,6 +56,18 @@
                     padding:22px 0px;
                 }
             }
+        }   
+    }
+    .button-wrap{
+        @include block-center(1100px);
+        @include flex(flex-end, center);
+        margin-top:16px;
+        button{
+            @include setSize(120px, 44px);
+            background-color:#343434;
+            border:none;
+            @include font(16px, 500, #FFFFFF);
+            cursor:pointer;
         }
     }
     .pagination{

@@ -3,6 +3,7 @@ import MainBanner from "components/MainBanner";
 import Footer from "components/Footer";
 
 import Image from "next/image";
+import Link from "next/link";
 import DefaultProfileImage from "/public/images/playlist-default-profile-img.svg";
 
 const PlayList = () => {
@@ -19,7 +20,7 @@ const PlayList = () => {
                     </h3>
                 </div>
                 <div className="playlist-create-button-wrap">
-                    <button>신곡 신청하기</button>
+                    <button><Link href="/playlist/create">신곡 신청하기</Link></button>
                 </div>
                 <div className="playlist-content-wrap">
                     <ul>

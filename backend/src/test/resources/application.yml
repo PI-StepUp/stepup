@@ -7,6 +7,9 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
+jwt:
+  secret: XUrYUhZfrEWLtykR7h80CrcITM59YLt5CRi3AdqZu33
+
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type: trace #스프링 부트 2.x, hibernate5
