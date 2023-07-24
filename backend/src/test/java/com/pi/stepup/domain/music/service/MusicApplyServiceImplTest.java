@@ -13,10 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +40,6 @@ class MusicApplyServiceImplTest {
     @Test
     @BeforeEach
     public void init() {
-        // TODO: musicApplySaveRequestDto 생성
         musicApplySaveRequestDto = MusicApplySaveRequestDto.builder()
                 .artist("artist")
                 .title("title")
@@ -67,5 +69,25 @@ class MusicApplyServiceImplTest {
         assertThat(result.getTitle()).isEqualTo(musicApply.getTitle());
     }
 
+    @Test
+    @DisplayName("노래 신청 목록 조회 테스트")
+    public void readAllMusicApplyServiceTest() {
+        String keyword = "";
+        List<MusicApply> makedMusicApply = makeMusicApply();
+        doReturn(makedMusicApply)
+                .when(musicApplyRepository).findAll(keyword);
+
+        List<MusicApply> musicApplies = musicApplyService.readAll(keyword);
+        assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
+    }
+
+    private List<MusicApply> makeMusicApply() {
+        List<MusicApply> musicApplies = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MusicApply tmp = MusicApply.builder().title("title" + i).artist("artist" + (i + 1)).build();
+            musicApplies.add(tmp);
+        }
+        return musicApplies;
+    }
 
 }
