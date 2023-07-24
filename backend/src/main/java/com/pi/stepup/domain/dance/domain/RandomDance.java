@@ -31,7 +31,7 @@ public class RandomDance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "RANDOM_DANCE_ID")
-    private Long id;
+    private Long randomDanceId;
 
     private String title;
 
@@ -68,7 +68,7 @@ public class RandomDance {
     @Builder
     public RandomDance(Long id, String title, String content, LocalDateTime startAt,
         LocalDateTime endAt, DanceType danceType, int maxUser, String thumbnail) {
-        this.id = id;
+        this.randomDanceId = id;
         this.title = title;
         this.content = content;
         this.startAt = startAt;

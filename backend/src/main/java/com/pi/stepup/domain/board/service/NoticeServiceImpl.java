@@ -37,8 +37,7 @@ public class NoticeServiceImpl implements NoticeService {
         User writer = userRepository.findById(noticeSaveRequestDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID: " + noticeSaveRequestDto.getId()));
 
-        RandomDance randomDance = danceRepository.findOne(noticeSaveRequestDto.getRandomDanceId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 랜덤댄 ID: " + noticeSaveRequestDto.getRandomDanceId()));
+        RandomDance randomDance = danceRepository.findOne(noticeSaveRequestDto.getRandomDanceId());
 
         Notice notice = Notice.builder()
                 .writer(writer)
