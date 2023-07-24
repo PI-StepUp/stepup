@@ -9,12 +9,11 @@ public interface MeetingRepository {
 
     Meeting insert(Meeting meeting);
 
-    Optional<Meeting> findById(Long boardId);
+    Optional<Meeting> findOne(Long boardId);
 
     List<Meeting> findAll();
 
     List<Meeting> findAllByKeyword(String keyword);
 
     void delete(Long boardId);
-}
 }

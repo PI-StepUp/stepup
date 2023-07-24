@@ -1,7 +1,5 @@
 package com.pi.stepup.domain.board.dto;
 
-import com.pi.stepup.domain.board.domain.Meeting;
-import com.pi.stepup.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +14,8 @@ public class MeetingRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MeetingSaveRequestDto {
-        private User writer;
+
+        private String id;
         private String title;
         private String content;
         private String fileURL;
@@ -25,18 +24,6 @@ public class MeetingRequestDto {
         private String region;
         private int commentCnt;
 
-        public Meeting toEntity(){
-            return Meeting.builder()
-                    .writer(writer)
-                    .title(title)
-                    .content(content)
-                    .fileURL(fileURL)
-                    .startAt(startAt)
-                    .endAt(endAt)
-                    .region(region)
-                    .commentCnt(commentCnt)
-                    .build();
-        }
     }
 
     @Data
