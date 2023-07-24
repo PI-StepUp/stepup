@@ -11,4 +11,6 @@ public interface MusicApplyRepository {
     List<MusicApply> findAll(String keyword);
 
     Optional<MusicApply> findOne(Long musicApplyId);
+
+    void delete(Long musicApplyId);
 }

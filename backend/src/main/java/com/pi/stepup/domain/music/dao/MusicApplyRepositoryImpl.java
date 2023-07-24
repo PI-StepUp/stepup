@@ -44,4 +44,10 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
         }
         return musicApply;
     }
+
+    @Override
+    public void delete(Long musicApplyId) {
+        MusicApply musicApply = em.find(MusicApply.class, musicApplyId);
+        em.remove(musicApply);
+    }
 }
