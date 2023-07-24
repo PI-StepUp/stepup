@@ -92,6 +92,17 @@ class MusicApplyRepositoryTest {
         assertThat(resultMusicApply).isEqualTo(musicApply);
     }
 
+    @Test
+    @DisplayName("노래 신청 삭제 테스트")
+    public void deleteMusicApplyRepositoryTest() {
+        em.persist(musicApply);
+
+        Long musicApplyId = musicApply.getMusicApplyId();
+        musicApplyRepository.delete(musicApplyId);
+
+        assertThat(musicApplyRepository.findOne(musicApplyId)).isEmpty();
+    }
+
     private List<MusicApply> makeMusicApply() {
         List<MusicApply> musicApplies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
