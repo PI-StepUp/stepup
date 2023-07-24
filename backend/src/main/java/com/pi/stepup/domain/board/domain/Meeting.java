@@ -1,13 +1,18 @@
 package com.pi.stepup.domain.board.domain;
 
 import com.pi.stepup.domain.user.domain.User;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
 
 @Entity
 @Getter

@@ -2,7 +2,10 @@ package com.pi.stepup.domain.board.domain;
 
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.global.entity.BaseEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 

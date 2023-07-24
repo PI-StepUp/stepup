@@ -20,7 +20,7 @@ public class CommentRequestDto {
         private Long userId;
         private String content;
 
-        public Comment toEntity (Board board, User writer) {
+        public Comment toEntity(Board board, User writer) {
             return Comment.builder()
                     .writer(writer)
                     .board(board)

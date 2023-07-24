@@ -1,7 +1,10 @@
 package com.pi.stepup.domain.board.domain;
 
 import com.pi.stepup.domain.user.domain.User;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.DiscriminatorValue;

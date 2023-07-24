@@ -3,7 +3,8 @@ package com.pi.stepup.domain.board.dto;
 import com.pi.stepup.domain.board.domain.Comment;
 import com.pi.stepup.domain.board.domain.Meeting;
 import com.pi.stepup.domain.user.domain.User;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
