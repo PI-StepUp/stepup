@@ -1,10 +1,10 @@
 @import "./function.scss";
 
-.notice-create-wrap{
+.create-wrap{
     @include block-center(1200px);
     padding-top:73px;
     padding-bottom:165px;
-    .notice-create-title{
+    .create-title{
         span{
             @include font(28px, 700, #6BBDA7);
         }
@@ -21,7 +21,7 @@
             }
         }
     }
-    .notice-create-content{
+    .create-content{
         margin-top:110px;
         form{
             table{
@@ -68,7 +68,7 @@
                                     }
                                 }
                             }
-                            .notice-create-button-wrap{
+                            .create-button-wrap{
                                 ul{
                                     @include flex(flex-end, center);
                                     li{
