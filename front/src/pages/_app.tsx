@@ -15,6 +15,8 @@ import "../styles/randomplaylist.scss"
 import "../styles/sidemenu.scss"
 import "../styles/practiceroom.scss"
 import "../styles/language.scss"
+import "../styles/mypage.css"
+import "../styles/mypageedit.css"
 
 import type {AppProps} from 'next/app';
 import Head from "next/head";

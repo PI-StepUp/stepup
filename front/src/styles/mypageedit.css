@@ -1,0 +1,136 @@
+.background-color {
+  background-color: #F2F3F8;
+}
+
+.mt-25 {
+  margin-top: 25px;
+}
+
+.mt-40 {
+  margin-top: 40px;
+}
+
+.mt-70 {
+  margin-top: 70px;
+}
+
+.myinfo {
+  position: relative;
+  margin: auto;
+  /* top: -135px; */
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  width: 1200px;
+  background-color: white;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+  list-style-type: none;
+}
+
+.list-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #A1A0A5;
+  margin-left: 130px;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-box {
+  width: 240px;
+  height: 240px;
+  border-radius: 70%;
+  overflow: hidden;
+  margin-top: 44px;
+  margin-bottom: 50px;
+}
+
+.img-box>.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn {
+  width: 300px;
+  height: 50px;
+  border-radius: 10px;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn-profile {
+  background-color: #F2F5FE;
+  color: #C1C0CE;
+}
+
+.btn-profile:hover {
+  color: #A1A0A5;
+}
+
+#input-file {
+  display: none;
+}
+
+.btn-profile-remove {
+  margin-left: 50px;
+}
+
+.warning {
+  width: 650px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #536BF6;
+  margin-top: 10px;
+}
+
+.option-overlapping {
+  display: flex;
+  flex-direction: row;
+}
+
+.option-overlapping-title {
+  width: 96px;
+  height: 50px;
+  line-height: 50px;
+}
+
+.input-overlapping {
+  display: inline-block;
+  width: 500px;
+  height: 50px;
+  background-color: #F2F5FE;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #A1A0A5;
+  letter-spacing: 5px;
+  margin: 40px 37px 0px 52px;
+  padding: 0px 20px 0px;
+}
+
+.overlapping {
+  background-color: #F2F5FE;
+  color: #C1C0CE;
+  margin-top: 40px;
+}
+
+.overlapping:hover {
+  color: #A1A0A5;
+}
+
+#display-overlapping {
+  margin-left: 278px;
+}
