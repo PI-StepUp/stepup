@@ -38,15 +38,7 @@ public class MusicServiceImpl implements MusicService {
     }
 
     public List<MusicFindResponseDto> readAll(String keyword) {
-        List<Music> result;
-
-        if (keyword.equals("")) {
-            result = musicRepository.findAll();
-        } else {
-            result = musicRepository.findAllByKeyword(keyword);
-        }
-
-        return result.stream()
+        return musicRepository.findAll(keyword).stream()
                 .map(music -> MusicFindResponseDto.builder()
                         .music(music)
                         .build())

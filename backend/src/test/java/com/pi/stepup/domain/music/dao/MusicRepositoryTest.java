@@ -69,7 +69,8 @@ class MusicRepositoryTest {
     public void findAllMusicRepoTest() {
         insertMusic();
 
-        List<Music> music = musicRepository.findAll();
+        String keyword = "";
+        List<Music> music = musicRepository.findAll(keyword);
         assertThat(music.size()).isEqualTo(5);
     }
 
@@ -79,13 +80,13 @@ class MusicRepositoryTest {
         insertMusic();
 
         String keyword = "1";
-        List<Music> music = musicRepository.findAllByKeyword(keyword);
+        List<Music> music = musicRepository.findAll(keyword);
         assertThat(music.size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("노래 삭제 테스트")
-    public void deleteMusicRepoTest(){
+    public void deleteMusicRepoTest() {
         insertMusic();
 
         Long musicId = 1L;

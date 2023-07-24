@@ -34,24 +34,23 @@ public class MusicRepositoryImpl implements MusicRepository {
     }
 
     @Override
-    public List<Music> findAll() {
+    public List<Music> findAll(String keyword) {
+        String sql;
+
+        if (keyword.equals("")) {
+            sql = "SELECT m FROM Music m";
+        } else {
+            sql = "SELECT m FROM Music m " +
+                    "WHERE m.title LIKE concat('%', :keyword, '%') OR " +
+                    "m.artist LIKE concat('%', :keyword, '%')";
+        }
+
         return em.createQuery(
-                        "SELECT m FROM Music m", Music.class
+                        sql, Music.class
                 )
                 .getResultList();
     }
-
-    @Override
-    public List<Music> findAllByKeyword(String keyword) {
-        return em.createQuery(
-                        "SELECT m FROM Music m " +
-                                "WHERE m.title LIKE concat('%', :keyword, '%') OR " +
-                                "m.artist LIKE concat('%', :keyword, '%')", Music.class
-                )
-                .setParameter("keyword", keyword)
-                .getResultList();
-    }
-
+    
     @Override
     public void delete(Long musicId) {
         Music music = em.find(Music.class, musicId);

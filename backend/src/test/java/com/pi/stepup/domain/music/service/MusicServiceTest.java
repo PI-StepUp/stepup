@@ -74,11 +74,12 @@ class MusicServiceTest {
     @DisplayName("노래 전체 목록 조회 테스트")
     public void readAllMusicServiceTest() {
         List<Music> makedMusic = makeMusic();
+        String keyword = "";
+
         doReturn(makedMusic)
                 .when(musicRepository)
-                .findAll();
+                .findAll(keyword);
 
-        String keyword = "";
         List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
         assertThat(makedMusic.size()).isEqualTo(foundMusic.size());
@@ -91,7 +92,7 @@ class MusicServiceTest {
         String keyword = "1";
         doReturn(makedMusic)
                 .when(musicRepository)
-                .findAllByKeyword(keyword);
+                .findAll(keyword);
 
         List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
