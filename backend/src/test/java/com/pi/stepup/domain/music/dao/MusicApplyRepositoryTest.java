@@ -66,6 +66,16 @@ class MusicApplyRepositoryTest {
         assertThat(musicApplies.size()).isEqualTo(5);
     }
 
+    @Test
+    @DisplayName("노래 신청 목록 키워드 조회 테스트")
+    public void findAllMusicApplyByKeywordRepositoryTest() {
+        String keyword = "1";
+        insertMusicApply();
+
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
+        assertThat(musicApplies.size()).isEqualTo(2);
+    }
+
     private List<MusicApply> makeMusicApply() {
         List<MusicApply> musicApplies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
