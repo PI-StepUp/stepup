@@ -9,6 +9,7 @@
         padding-top:113px;
         .geography-wrap{
             height:600px;
+            margin-bottom: 144px;
             @include background("/images/geography.png");
             @include flex(flex-start, center);
             .geography-title{
@@ -28,8 +29,17 @@
                 }
             }
         }
+        .button-wrap{
+            @include flex(flex-end, center);
+            button{
+                @include setSize(120px, 44px);
+                background-color:#343434;
+                border:none;
+                @include font(16px, 500, #FFFFFF);
+                cursor:pointer;
+            }
+        }
         .meeting-content-wrap{
-            margin-top:144px;
             ul{
                 @include flex(center, center);
                 flex-wrap: wrap;

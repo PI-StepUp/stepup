@@ -22,7 +22,7 @@ const Index = () => {
                             <li><h2><Link href="/randomplay/list">랜덤플레이</Link></h2></li>
                             <li><h2><Link href="/notice/list">커뮤니티</Link></h2></li>
                             <li><h2><Link href="/playlist/list">신곡신청</Link></h2></li>
-                            <li><h2><Link href="/">연습실참가</Link></h2></li>
+                            <li><h2><Link href="/practiceroom">연습실입장</Link></h2></li>
                         </ul>
                     </nav>
                     <div className="login-wrap">

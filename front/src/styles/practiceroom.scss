@@ -5,14 +5,17 @@
     .practice-video-wrap{
         @include box-padding(20px);
         @include setSize(68vw,100vh);
+        @include flex;
+        flex-direction: column;
         background-color:#F5F5F5;
         .practice-title{
             @include flex(flex-start, center);
             .pre-icon{
-                @include setSize(80px, 80px);
+                @include setSize(76px, 76px);
                 background-color:#FFFFFF;
                 border-radius:100%;
                 @include flex(center,center);
+                cursor:pointer;
                 img{
                     @include setSize(40px, 40px);
                 }
@@ -29,42 +32,8 @@
                 }
             }
         }
-        .participle-wrap{
-            margin-top:28px;
-            @include flex(flex-start, center);
-            .participle-icon{
-                @include setSize(130px, 50px);
-                background-color:#FFFFFF;
-                border-radius:50px;
-                @include flex(center, center);
-                img{
-
-                }
-                span{
-                    @include font(22px, 700, #717277);
-                    display:inline-block;
-                    margin-left:10px;
-                }
-            }
-            button{
-                @include setSize(250px, 50px);
-                background-color:#3D84F6;
-                border:none;
-                border-radius:50px;
-                margin-left:16px;
-                cursor:pointer;
-                img{
-
-                }
-                span{
-                    @include font(22px, 500, #FFFFFF);
-                    display:inline-block;
-                    margin-left:13px;
-                }
-            }
-        }
         .video-content{
-            height:60%;
+            flex:1;
             @include flex(center, center);
             margin-top:25px;
             .my-video{
@@ -91,7 +60,7 @@
             .control-wrap{
                 width:100%;
                 position:fixed;
-                bottom:20px;
+                bottom:36px;
                 @include flex(center,center);
                 ul{
                     @include flex(center, center);
@@ -135,11 +104,15 @@
                     @include font(28px, 900, #2D2D2F);
                 }
                 span{
+                    img{
+                        @include setSize(20px, 20px);
+                        margin-right:5px;
+                    }
                     display:inline-block;
-                    @include setSize(60px, 35px);
+                    @include setSize(90px, 35px);
                     background-color:#3D84F6;
                     border-radius:50px;
-                    @include font(22px, 900, #FFFFFF);
+                    @include font(20px, 700, #FFFFFF);
                     @include flex(center, center);
                     position: absolute;
                     top:0px;
@@ -235,6 +208,74 @@
                         @include flex(center, center);
                         @include box-padding(20px);
                         cursor:pointer;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.practiceroom-wrap{
+    .musiclist{
+        @include setSize(24vw);
+        @include box-padding(30px);
+        .musiclist-title{
+            position:relative;
+            h3{
+                @include font(28px, 900, #2D2D2F);
+            }
+            span{
+                display:inline-block;
+                @include setSize(60px, 35px);
+                background-color:#3D84F6;
+                border-radius:50px;
+                @include font(22px, 900, #FFFFFF);
+                @include flex(center, center);
+                position: absolute;
+                top:0px;
+                right:0px;
+            }
+        }
+        .musiclist-content{
+            margin-top:38px;
+            ul{
+                li{
+                    @include flex(space-between, center);
+                    cursor:pointer;
+                    margin-top:28px;
+                    &:first-child{
+                        margin-top:0px;
+                    }
+                    .flex-wrap{
+                        @include flex(null, center);
+                        .musiclist-content-thumbnail{
+                            @include setSize(80px, 80px);
+                            img{
+                                @include setSize(80px, 80px);
+                            }
+                        }
+                        .musiclist-content-info{
+                            margin-left:16px;
+                            h4{
+                                @include font(24px, 700, #3A3635);
+                                line-height:28px;
+                            }
+                            span{
+                                @include font(14px, 400, #3A3635);
+                                display:inline-block;
+                                margin-top:8px;
+                            }
+                        }
+                    }
+                    .musiclist-content-control-icon{
+                        margin-left:10px;
+                        span{
+                            @include setSize(32px, 32px);
+                            display:inline-block;
+                            border:1px solid #B1B0B2;
+                            border-radius:50px;
+                            @include flex(center, center);
+                        }
                     }
                 }
             }

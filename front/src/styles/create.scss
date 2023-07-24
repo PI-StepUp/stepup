@@ -68,6 +68,36 @@
                                     }
                                 }
                             }
+                            .input-date{
+                                @include setSize(900px, 70px);
+                                background-color:#EDEDED;
+                                border:none;
+                                border-radius:10px;
+                                @include box-padding(20px);
+                                @include font(14px, 500, #454545);
+                            }
+                            .input-region{
+                                @include setSize(900px, 70px);
+                                background-color:#EDEDED;
+                                border:none;
+                                border-radius:10px;
+                                @include box-padding(20px);
+                                @include font(14px, 500, #454545);
+                            }
+                            .input-time{
+                                @include setSize(425px, 70px);
+                                background-color:#EDEDED;
+                                border:none;
+                                border-radius:10px;
+                                @include box-padding(20px);
+                                @include font(14px, 500, #454545);
+                                &:first-child{
+                                    margin-right:20px;
+                                }
+                                &:last-child{
+                                    margin-left:20px;
+                                }
+                            }
                             .create-button-wrap{
                                 ul{
                                     @include flex(flex-end, center);
