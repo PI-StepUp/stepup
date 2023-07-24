@@ -138,6 +138,8 @@ public class DanceRepositoryTest {
 
         Long randomDanceId = insertDance.getId();
         RandomDance findDance1 = em.find(RandomDance.class, randomDanceId);
+        System.out.println(findDance1.getTitle() + " " + findDance1.getContent());
+        assertThat(findDance1).isNotNull();
 
         danceRepository.delete(randomDanceId);
 
