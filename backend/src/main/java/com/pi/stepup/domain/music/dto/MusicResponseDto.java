@@ -36,7 +36,7 @@ public class MusicResponseDto {
 
         @Builder
         public MusicApplyFindResponseDto(MusicApply musicApply){
-            this.musicApplyId = musicApply.getMusicRequestId();
+            this.musicApplyId = musicApply.getMusicApplyId();
             this.title = musicApply.getTitle();
             this.artist = musicApply.getArtist();
             this.writerName = musicApply.getWriter().getNickname();
