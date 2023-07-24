@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DanceServiceImpl implements DanceService {
 
-    private DanceRepository danceRepository;
+    private final DanceRepository danceRepository;
 
     @Override
     @Transactional
@@ -27,7 +27,9 @@ public class DanceServiceImpl implements DanceService {
             .thumbnail(danceSaveRequestDto.getThumbnail())
             .build();
 
-        return danceRepository.insert(randomDance);
+        RandomDance createdDance = danceRepository.insert(randomDance);
+
+        return createdDance;
     }
 
     @Override
