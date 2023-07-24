@@ -20,8 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MusicApplyServiceTest {
@@ -104,6 +103,16 @@ class MusicApplyServiceTest {
         MusicApplyFindResponseDto result = musicApplyService.readOne(musicApply.getMusicApplyId());
 
         assertThat(result.getTitle()).isEqualTo(musicApply.getTitle());
+    }
+
+    @Test
+    @DisplayName("노래 신청 삭제 테스트")
+    public void deleteMusicApplyServiceTest() {
+        Long musicId = 1L;
+
+        musicApplyService.delete(musicId);
+
+        verify(musicApplyRepository, only()).delete(musicId);
     }
 
     private List<MusicApply> makeMusicApply() {
