@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,14 +45,42 @@ class MusicApplyRepositoryTest {
 
     @Test
     @DisplayName("repository가 null이 아님을 테스트")
-    public void musicRequestRepositoryNotNullTest() {
+    public void musicApplyRepositoryNotNullTest() {
         assertThat(musicApplyRepository).isNotNull();
     }
 
     @Test
     @DisplayName("노래 신청 등록 테스트")
-    public void insertMusicRequestRepositoryTest() {
+    public void insertMusicApplyRepositoryTest() {
         MusicApply result = musicApplyRepository.insert(musicApply);
         assertThat(result).isEqualTo(musicApply);
+    }
+
+    @Test
+    @DisplayName("노래 신청 목록 조회 테스트")
+    public void findAllMusicApplyRepositoryTest() {
+        String keyword = "";
+        insertMusicApply();
+
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
+        assertThat(musicApplies.size()).isEqualTo(5);
+    }
+
+    private List<MusicApply> makeMusicApply() {
+        List<MusicApply> musicApplies = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MusicApply musicApply = MusicApply.builder()
+                    .title("t" + i)
+                    .artist("a" + (i + 1))
+                    .build();
+
+            musicApplies.add(musicApply);
+        }
+        return musicApplies;
+    }
+
+    private void insertMusicApply() {
+        List<MusicApply> musicApplies = makeMusicApply();
+        musicApplies.forEach(em::persist);
     }
 }
