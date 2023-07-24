@@ -3,11 +3,16 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +68,36 @@ public class UserApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(CHECK_ID_DUPLICATED_SUCCESS.getMessage())
+        );
+    }
+
+    @PostMapping("")
+    public ResponseEntity<ResponseDto<?>> signUp(@RequestBody SignUpRequestDto signUpRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ResponseDto.create(
+                SIGN_UP_SUCCESS.getMessage(),
+                userService.signUp(signUpRequestDto)
+            )
+        );
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseDto<?>> login(@RequestBody LoginRequestDto loginRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                LOGIN_SUCCESS.getMessage(),
+                userService.login(loginRequestDto)
+            )
+        );
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ResponseDto<?>> readOne(String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                READ_ONE_SUCCESS.getMessage(),
+                userService.readOne(id)
+            )
         );
     }
 }
