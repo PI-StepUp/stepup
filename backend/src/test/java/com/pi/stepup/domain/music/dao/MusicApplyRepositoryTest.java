@@ -1,6 +1,6 @@
 package com.pi.stepup.domain.music.dao;
 
-import com.pi.stepup.domain.music.domain.MusicRequest;
+import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,41 +16,41 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class MusicRequestRepositoryTest {
+class MusicApplyRepositoryTest {
     @PersistenceContext
     private EntityManager em;
 
     @Autowired
-    private MusicRequestRepository musicRequestRepository;
+    private MusicApplyRepository musicApplyRepository;
 
-    private MusicRequest musicRequest;
-    private User user;
+    private MusicApply musicApply;
+    private User writer;
 
     @Test
     @BeforeEach
     public void init() {
-        user = User.builder()
+        writer = User.builder()
                 .id("user")
                 .build();
 
-        musicRequest = MusicRequest.builder()
+        musicApply = MusicApply.builder()
                 .title("title")
                 .artist("artist")
                 .content("content")
-                .user(user)
+                .writer(writer)
                 .build();
     }
 
     @Test
     @DisplayName("repository가 null이 아님을 테스트")
     public void musicRequestRepositoryNotNullTest() {
-        assertThat(musicRequestRepository).isNotNull();
+        assertThat(musicApplyRepository).isNotNull();
     }
 
     @Test
     @DisplayName("노래 신청 등록 테스트")
     public void insertMusicRequestRepositoryTest() {
-        MusicRequest result = musicRequestRepository.insert(musicRequest);
-        assertThat(result).isEqualTo(musicRequest);
+        MusicApply result = musicApplyRepository.insert(musicApply);
+        assertThat(result).isEqualTo(musicApply);
     }
 }
