@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public TokenInfo signUp(SignUpRequestDto signUpRequestDto) {
         User user = signUpRequestDto.toUser(
-            passwordEncoder,
+            passwordEncoder.encode(signUpRequestDto.getPassword()),
             userRepository.findOneCountry(signUpRequestDto.getCountryId()));
 
         userRepository.insert(user);

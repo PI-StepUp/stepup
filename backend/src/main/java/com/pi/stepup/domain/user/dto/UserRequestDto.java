@@ -66,12 +66,12 @@ public class UserRequestDto {
         private String profileImg;
         private UserRole role;
 
-        public User toUser(PasswordEncoder passwordEncoder, Country country) {
+        public User toUser(String encodedPassword, Country country) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
             return User.builder()
                 .id(this.id)
-                .password(passwordEncoder.encode(password))
+                .password(encodedPassword)
                 .email(this.email)
                 .country(country)
                 .emailAlert(this.emailAlert)
