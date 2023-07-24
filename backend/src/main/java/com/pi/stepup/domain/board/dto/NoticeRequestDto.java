@@ -2,12 +2,10 @@ package com.pi.stepup.domain.board.dto;
 
 import com.pi.stepup.domain.board.domain.Notice;
 import com.pi.stepup.domain.dance.domain.RandomDance;
-import com.pi.stepup.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 public class NoticeRequestDto {
 
@@ -16,21 +14,11 @@ public class NoticeRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NoticeSaveRequestDto {
-        private User writer;
-        private RandomDance randomDance;
+        private String id;
+        private Long randomDanceId;
         private String title;
         private String content;
         private String fileURL;
-
-        public Notice toEntity(){
-            return Notice.builder()
-                    .writer(writer)
-                    .randomDance(randomDance)
-                    .title(title)
-                    .content(content)
-                    .fileURL(fileURL)
-                    .build();
-        }
     }
 
     @Data
