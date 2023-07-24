@@ -1,0 +1,80 @@
+@import "./function.scss";
+
+.playlist-wrap{
+    @include block-center(1200px);
+    padding-top:154px;
+    padding-bottom:120px;
+    .playlist-title{
+        span{
+            @include font(28px, 700, #6BBDA7);
+        }
+        h3{
+            @include font(50px, 700, #0B0B0B);
+            line-height:64px;
+            margin-top:2px;
+        }
+    }
+    .playlist-create-button-wrap{
+        float:right;
+        button{
+            @include setSize(136px, 44px);
+            background-color:#343434;
+            @include font(16px, 400, #FFFFFF);
+            cursor:pointer;
+        }
+    }
+    .playlist-content-wrap{
+        margin-top:58px;
+        ul{
+            @include flex;
+            flex-wrap: wrap;
+            li{
+                width:390px;
+                margin-top:38px;
+                margin-left:15px;
+                @include box-padding(34px);
+                &:nth-child(3n+1){
+                    margin-left:0px;
+                }
+                > span{
+                    @include font(14px, 700, #6BBDA7);
+                }
+                h4{
+                    @include font(26px, 700, #000000);
+                    line-height:34px;
+                    margin-top:7px;
+                }
+                p{
+                    @include font(22px, 400, #BEBEBE);
+                    line-height:32px;
+                    margin-top:26px;
+                }
+                .user-wrap{
+                    margin-top:53px;
+                    @include flex(flex-start, center);
+                    span{
+                        @include font(20px, 700, #6BBDA7);
+                        margin-left:17px;
+                    }
+                }
+            }
+        }
+    }
+    .pagination{
+        margin-top:75px;
+        ul{
+            @include flex(center, center);
+            li{
+                @include setSize(25px, 25px);
+                border: 1px solid #B1B1B1;
+                @include font(14px, 500, #B1B1B1);
+                @include flex(center, center);
+                margin-left:2px;
+                cursor:pointer;
+                &:first-child{
+                    margin-left:0px;
+                }
+            }
+        }
+    }
+}
