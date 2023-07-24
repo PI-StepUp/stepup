@@ -12,4 +12,6 @@ public interface MusicApplyService {
     List<MusicApplyFindResponseDto> readAll(String keyword);
 
     MusicApplyFindResponseDto readOne(Long musicApplyId);
+
+    void delete(Long musicId);
 }

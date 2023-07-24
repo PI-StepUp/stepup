@@ -47,4 +47,10 @@ public class MusicApplyServiceImpl implements MusicApplyService {
                 .musicApply(musicApplyRepository.findOne(musicApplyId).orElseThrow())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public void delete(Long musicId) {
+        musicApplyRepository.delete(musicId);
+    }
 }
