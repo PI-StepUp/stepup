@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 public class MusicRequestDto {
-
     @Data
     @Builder
     @NoArgsConstructor
@@ -19,7 +18,7 @@ public class MusicRequestDto {
         private String answer;
         private String URL;
 
-        public Music toEntity(){
+        public Music toEntity() {
             return Music.builder()
                     .musicId(this.musicId)
                     .title(this.title)
@@ -34,8 +33,11 @@ public class MusicRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MusicFindByKeywordRequestDto {
-        private String keyword;
+    public static class MusicApplySaveRequestDto {
+        private String writerId;
+        private String title;
+        private String artist;
+        private String content;
     }
 
 }
