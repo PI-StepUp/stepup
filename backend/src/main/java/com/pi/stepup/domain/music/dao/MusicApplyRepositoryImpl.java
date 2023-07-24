@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,5 +31,17 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
         }
 
         return em.createQuery(sql, MusicApply.class).getResultList();
+    }
+
+    @Override
+    public Optional<MusicApply> findOne(Long musicApplyId) {
+        Optional<MusicApply> musicApply = null;
+
+        try {
+            musicApply = Optional.ofNullable(em.find(MusicApply.class, musicApplyId));
+        } catch (NoResultException e) {
+            musicApply = Optional.empty();
+        }
+        return musicApply;
     }
 }
