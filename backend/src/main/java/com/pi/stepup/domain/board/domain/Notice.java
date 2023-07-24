@@ -2,13 +2,12 @@ package com.pi.stepup.domain.board.domain;
 
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.domain.User;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -23,12 +22,14 @@ public class Notice extends Board {
 
     @Builder
     public Notice(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, RandomDance randomDance) {
-        super(boardId, writer, title, content, comments, fileURL );
+        super(boardId, writer, title, content, comments, fileURL);
         this.randomDance = randomDance;
     }
 
-    public void updateNotice(String title, String content, String fileUrl, RandomDance randomDance) {
-        super.update(title, content, fileUrl);
+    public void update(String title, String content, String fileURL, RandomDance randomDance) {
+        this.title = title;
+        this.content = content;
+        this.fileURL = fileURL;
         this.randomDance = randomDance;
     }
 }
