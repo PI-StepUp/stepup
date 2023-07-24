@@ -49,6 +49,23 @@ class UserRepositoryImplTest {
         }
     }
 
+    @DisplayName("국가 정보 조회 테스트")
+    @Test
+    void findOneCountryTest() {
+        // given
+        Country country = Country.builder()
+            .code("ko")
+            .build();
+
+        em.persist(country);
+
+        // when
+        Country findCountry = userRepository.findOneCountry(country.getCountryId());
+
+        // then
+        assertThat(findCountry).isEqualTo(country);
+    }
+
     @DisplayName("이메일 기준 조회 테스트")
     @Test
     void findByEmailTest() {
