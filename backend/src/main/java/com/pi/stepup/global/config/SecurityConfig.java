@@ -1,5 +1,7 @@
 package com.pi.stepup.global.config;
 
+import com.pi.stepup.global.util.jwt.JwtAccessDeniedHandler;
+import com.pi.stepup.global.util.jwt.JwtAuthenticationEntryPoint;
 import com.pi.stepup.global.util.jwt.JwtAuthenticationFilter;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,11 +38,15 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET,"/api/user/**").authenticated()
-            .antMatchers(HttpMethod.DELETE, "/api/user/**").authenticated()
+            .antMatchers(HttpMethod.GET, "/api/user/{id}").authenticated()
+            .antMatchers(HttpMethod.DELETE, "/api/user/{id}").authenticated()
             .antMatchers(HttpMethod.PUT, "/api/user").authenticated()
             .antMatchers(HttpMethod.POST, "/api/user/checkpw").authenticated()
             .anyRequest().permitAll()
+            .and()
+            .exceptionHandling()
+            .accessDeniedHandler(jwtAccessDeniedHandler)
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             .and()
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class);

@@ -1,8 +1,8 @@
 package com.pi.stepup.global.util.jwt;
 
-import com.pi.stepup.domain.user.constant.UserResponseMessage;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.global.error.constant.ExceptionMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -24,7 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // TODO : UsernameNotFountException 예외처리 확인
         User user = userRepository.findById(username).orElseThrow(
-            () -> new UsernameNotFoundException(UserResponseMessage.LOGIN_FAIL.getMessage()));
+            () -> new UsernameNotFoundException(
+                ExceptionMessage.AUTHENTICATION_FAILED.getMessage()));
         logger.debug("loadUserByUsername user : {}", user);
 
         return new CustomUserDetails(user);
