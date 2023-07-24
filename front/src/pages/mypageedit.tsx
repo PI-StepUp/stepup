@@ -3,23 +3,22 @@ import Footer from "../components/Footer"
 import Image from "next/image"
 import img_profile from "../public/images/img_profile_default.png"
 
-const componentDidMount = () =>{
+const componentDidMount = () => {
 	// 중복 확인 버튼 클릭 이벤트
 	const displayWarning = document.getElementById("display-overlapping");
 	const clickWarning = (ev: Event) => {
-		if(ev.target instanceof HTMLInputElement){
+		if (ev.target instanceof HTMLInputElement) {
 			displayWarning!.textContent = '중복된 닉네임입니다';
 			ev.target;
 		}
 	}
 	const btnElements = document.getElementById("btn-overlapping");
 	btnElements?.addEventListener("click", clickWarning);
-
 }
 
 const MyPageEdit = () => {
 
-	
+
 	return (
 		<>
 			<Header />
@@ -42,13 +41,29 @@ const MyPageEdit = () => {
 						</li>
 						{/* end - profile image */}
 						<li>
-							<div className="nickname">
-								<div className="list-title nickname-title mt-40">닉네임</div>
-								<input type="text" className="input-nickname" />
+							<div className="option-overlapping">
+								<div className="list-title option-overlapping-title mt-40">닉네임</div>
+								<input type="text" className="input-overlapping" />
 								<input type="button" className="btn overlapping" id="btn-overlapping" value={"중복 확인"} />
 							</div>
 							<p className="warning" id="display-overlapping">사용 가능한 닉네임입니다</p>
 						</li>
+						{/* end - nickname */}
+						<li>
+							<div className="option-overlapping">
+								<div className="list-title option-overlapping-title mt-40">이메일</div>
+								<input type="email" className="input-overlapping" />
+								<input type="button" className="btn overlapping" id="btn-overlapping" value={"중복 확인"} />
+							</div>
+							<p className="warning" id="display-overlapping">사용 가능한 이메일입니다</p>
+						</li>
+						{/* end - email */}
+						<li>
+							<div>
+
+							</div>
+						</li>
+						{/* end - nation */}
 					</ul>
 				</div>
 				{/* end - my information */}

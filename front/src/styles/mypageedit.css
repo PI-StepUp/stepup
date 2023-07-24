@@ -94,18 +94,18 @@
   margin-top: 10px;
 }
 
-.nickname {
+.option-overlapping {
   display: flex;
   flex-direction: row;
 }
 
-.nickname-title {
+.option-overlapping-title {
   width: 96px;
   height: 50px;
   line-height: 50px;
 }
 
-.input-nickname {
+.input-overlapping {
   display: inline-block;
   width: 500px;
   height: 50px;
