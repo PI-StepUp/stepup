@@ -12,12 +12,18 @@ import "../styles/signup.scss"
 import "../styles/playlist.scss"
 import "../styles/noticecreate.scss"
 import "../styles/randomplaylist.scss"
+import "../styles/sidemenu.scss"
+import "../styles/practiceroom.scss"
 
 import type {AppProps} from 'next/app';
+import Head from "next/head";
 
 const StepUp = ({Component} : AppProps) => {
     return (
         <>
+            <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Head>
             <Component/>
         </>
     )
