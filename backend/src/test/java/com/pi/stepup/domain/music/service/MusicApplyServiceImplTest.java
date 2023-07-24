@@ -82,6 +82,20 @@ class MusicApplyServiceImplTest {
         assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
     }
 
+    @Test
+    @DisplayName("노래 신청 목록 키워드 조회 테스트")
+    public void readAllMusicApplyByKeywordServiceTest() {
+        String keyword = "1";
+        List<MusicApply> madeMusicApply = makeMusicApply();
+        List<MusicApply> keywordMusicApply = makeMusicApplyByKeyword(madeMusicApply, keyword);
+
+        doReturn(keywordMusicApply)
+                .when(musicApplyRepository).findAll(keyword);
+
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAll(keyword);
+        assertThat(musicApplies.size()).isEqualTo(keywordMusicApply.size());
+    }
+
     private List<MusicApply> makeMusicApply() {
         List<MusicApply> musicApplies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -93,6 +107,17 @@ class MusicApplyServiceImplTest {
             musicApplies.add(tmp);
         }
         return musicApplies;
+    }
+
+    private List<MusicApply> makeMusicApplyByKeyword(List<MusicApply> musicApplies, String keyword) {
+        List<MusicApply> result = new ArrayList<>();
+
+        for (MusicApply m : musicApplies) {
+            if(m.getTitle().contains(keyword) || m.getArtist().contains(keyword)){
+                result.add(m);
+            }
+        }
+        return result;
     }
 
 }
