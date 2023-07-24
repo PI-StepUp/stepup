@@ -5,6 +5,9 @@ import Footer from "components/Footer"
 import Image from "next/image"
 import ArticleIcon from "/public/images/article-icon.svg"
 import RandomplayThumbnail from "/public/images/randomplay-thumbnail.png"
+import TopIcon from "/public/images/icon-top.svg"
+import NowIcon from "/public/images/icon-now.svg"
+import SoonIcon from "/public/images/icon-soon.svg"
 
 const RandomPlayList = () => {
     return(
@@ -12,7 +15,7 @@ const RandomPlayList = () => {
             <Header/>
             <MainBanner/>
             <div className="randomplay-list-wrap">
-                <section>
+                <section id="popular">
                     <div className="section-title">
                         <div className="flex-wrap">
                             <Image src={ArticleIcon} alt=""/>
@@ -70,7 +73,7 @@ const RandomPlayList = () => {
                         <button>더보기</button>
                     </div>
                 </section>
-                <section>
+                <section id="now">
                     <div className="section-title">
                         <div className="flex-wrap">
                             <Image src={ArticleIcon} alt=""/>
@@ -127,7 +130,7 @@ const RandomPlayList = () => {
                         <button>더보기</button>
                     </div>
                 </section>
-                <section>
+                <section id="soon">
                     <div className="section-title">
                         <div className="flex-wrap">
                             <Image src={ArticleIcon} alt=""/>
@@ -184,6 +187,28 @@ const RandomPlayList = () => {
                         <button>더보기</button>
                     </div>
                 </section>
+                <div className="floating-box">
+                    <ul>
+                        <li>
+                            <a href="#popular">
+                                <Image src={TopIcon} alt=""/>
+                                <span>인기 랜덤플</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#now">
+                                <Image src={NowIcon} alt=""/>
+                                <span>진행중인 랜덤플</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#soon">
+                                <Image src={SoonIcon} alt=""/>
+                                <span>진행예정 랜덤플</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <Footer/>
         </>

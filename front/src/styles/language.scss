@@ -1,0 +1,29 @@
+@import "./function.scss";
+
+.language-button-wrap{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    .language-content{
+        ul{
+            li{
+                @include flex(flex-end, center);
+                margin-top:20px;
+                cursor:pointer;
+                &:first-child{
+                    margin-top:0px;
+                }
+                span{
+                    @include font(18px, 700, #3D4938);
+                }
+                .language-img{
+                    @include setSize(70px, 70px);
+                    background-color: #0282FF;
+                    border-radius:50px;
+                    @include flex(center, center);
+                    margin-left:20px;
+                }
+            }
+        }
+    }
+}

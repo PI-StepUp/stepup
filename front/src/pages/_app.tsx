@@ -14,9 +14,13 @@ import "../styles/create.scss"
 import "../styles/randomplaylist.scss"
 import "../styles/sidemenu.scss"
 import "../styles/practiceroom.scss"
+import "../styles/language.scss"
 
 import type {AppProps} from 'next/app';
 import Head from "next/head";
+import {RecoilRoot} from "recoil";
+
+import LanguageButton from "components/LanguageButton"
 
 const StepUp = ({Component} : AppProps) => {
     return (
@@ -24,7 +28,10 @@ const StepUp = ({Component} : AppProps) => {
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             </Head>
-            <Component/>
+            <RecoilRoot>
+                <Component/>
+                <LanguageButton/>
+            </RecoilRoot>
         </>
     )
 }

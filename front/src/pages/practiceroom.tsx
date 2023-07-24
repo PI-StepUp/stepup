@@ -1,3 +1,4 @@
+import React, {useState} from "react";
 import SideMenu from "components/SideMenu";
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
@@ -7,11 +8,43 @@ import MicIcon from "/public/images/icon-mic.svg"
 import MoreIcon from "/public/images/icon-more-dot.svg"
 import PlayThumbnail from "/public/images/room-playlist-thumbnail.png"
 import PlayIcon from "/public/images/icon-play.svg"
+import ReflectHoverIcon from "/public/images/icon-hover-reflect.svg"
+import MicHoverIcon from "/public/images/icon-hover-mic.svg"
+import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
+import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
 import Image from "next/image"
 import Link from "next/link"
 
 const PracticeRoom = () => {
+    const [reflect, setReflect] = useState(false);
+    const [mic, setMic] = useState(false);
+    const [camera, setCamera] = useState(false);
+    const [moredot, setMoredot] = useState(false);
+    const reflectHover = () => {
+        setReflect(true);
+    }
+    const reflectLeave = () => {
+        setReflect(false);
+    }
+    const micHover = () => {
+        setMic(true);
+    }
+    const micLeave = () => {
+        setMic(false);
+    }
+    const cameraHover = () => {
+        setCamera(true);
+    }
+    const cameraLeave = () => {
+        setCamera(false);
+    }
+    const moreDotHover = () => {
+        setMoredot(true);
+    }
+    const moreDotLeave = () => {
+        setMoredot(false);
+    }
     return(
         <>
             <div className="practiceroom-wrap">
@@ -49,11 +82,27 @@ const PracticeRoom = () => {
                         </div>
                         <div className="control-wrap">
                             <ul>
-                                <li><button><Image src={ReflectIcon} alt=""/></button></li>
-                                <li><button><Image src={MicIcon} alt=""/></button></li>
+                                <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave}>
+                                    <button>
+                                        {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                    <button>
+                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
+                                    </button>
+                                </li>
                                 <li><button className="exit-button">연습 종료하기</button></li>
-                                <li><button><Image src={CameraIcon} alt=""/></button></li>
-                                <li><button><Image src={MoreIcon} alt=""/></button></li>
+                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                    <button>
+                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
+                                    <button>
+                                        {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                     </div>
