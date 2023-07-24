@@ -3,6 +3,7 @@ package com.pi.stepup.domain.music.service;
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
+import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,14 +78,18 @@ class MusicApplyServiceImplTest {
         doReturn(makedMusicApply)
                 .when(musicApplyRepository).findAll(keyword);
 
-        List<MusicApply> musicApplies = musicApplyService.readAll(keyword);
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAll(keyword);
         assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
     }
 
     private List<MusicApply> makeMusicApply() {
         List<MusicApply> musicApplies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            MusicApply tmp = MusicApply.builder().title("title" + i).artist("artist" + (i + 1)).build();
+            MusicApply tmp = MusicApply.builder().
+                    title("title" + i)
+                    .artist("artist" + (i + 1))
+                    .writer(user)
+                    .build();
             musicApplies.add(tmp);
         }
         return musicApplies;
