@@ -3,6 +3,7 @@ package com.pi.stepup.domain.music.dao;
 import com.pi.stepup.domain.music.domain.Music;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -35,22 +36,16 @@ public class MusicRepositoryImpl implements MusicRepository {
 
     @Override
     public List<Music> findAll(String keyword) {
-        String sql;
+        String sql = "SELECT m FROM Music m ";
 
-        if (keyword.equals("")) {
-            sql = "SELECT m FROM Music m";
-        } else {
-            sql = "SELECT m FROM Music m " +
-                    "WHERE m.title LIKE concat('%', :keyword, '%') OR " +
-                    "m.artist LIKE concat('%', :keyword, '%')";
+        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
+            sql += "WHERE m.title LIKE concat('%', " + keyword + ", '%') OR " +
+                    "m.artist LIKE concat('%', " + keyword + ", '%')";
         }
 
-        return em.createQuery(
-                        sql, Music.class
-                )
-                .getResultList();
+        return em.createQuery(sql, Music.class).getResultList();
     }
-    
+
     @Override
     public void delete(Long musicId) {
         Music music = em.find(Music.class, musicId);
