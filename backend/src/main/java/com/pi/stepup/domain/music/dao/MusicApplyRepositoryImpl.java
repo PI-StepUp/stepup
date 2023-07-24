@@ -21,11 +21,11 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public List<MusicApply> findAll(String keyword) {
-        String sql = "SELECT ma FROM MusicApply ma";
+        String sql = "SELECT ma FROM MusicApply ma ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "WHERE m.title LIKE concat('%', " + keyword + ", '%') OR " +
-                    "m.artist LIKE concat('%', " + keyword + ", '%')";
+            sql += "WHERE ma.title LIKE concat('%', " + keyword + ", '%') OR " +
+                    "ma.artist LIKE concat('%', " + keyword + ", '%')";
         }
 
         return em.createQuery(sql, MusicApply.class).getResultList();
