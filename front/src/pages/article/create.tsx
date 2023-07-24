@@ -3,7 +3,7 @@ import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
-const NoticeCreate = () => {
+const ArticleCreate = () => {
     return(
         <>
             <Header/>
@@ -52,4 +52,4 @@ const NoticeCreate = () => {
     )
 }
 
-export default NoticeCreate;
+export default ArticleCreate;
