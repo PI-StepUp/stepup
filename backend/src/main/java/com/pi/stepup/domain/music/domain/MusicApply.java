@@ -15,8 +15,8 @@ import javax.persistence.*;
 public class MusicApply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MUSIC_REQUEST_ID")
-    private Long musicRequestId;
+    @Column(name = "MUSIC_APPLY_ID")
+    private Long musicApplyId;
 
     private String title;
 
@@ -32,8 +32,8 @@ public class MusicApply {
     private Integer likeCnt;
 
     @Builder
-    public MusicApply(Long musicRequestId, String title, String artist, String content, User writer, Integer likeCnt) {
-        this.musicRequestId = musicRequestId;
+    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer likeCnt) {
+        this.musicApplyId = musicApplyId;
         this.title = title;
         this.artist = artist;
         this.content = content;
