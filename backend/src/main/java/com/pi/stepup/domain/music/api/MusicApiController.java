@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.pi.stepup.domain.music.constant.MusicResponseMessage.*;
+
 @RestController
 @RequestMapping("/api/music")
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class MusicApiController {
     public ResponseEntity<?> createMusic(@RequestBody MusicSaveRequestDto musicSaveRequestDto) {
         Long musicId = musicService.create(musicSaveRequestDto).getMusicId();
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
-                "노래 등록 완료",
+                CREATE_MUSIC_SUCCESS.getMessage(),
                 musicService.readOne(musicId)
         ));
     }
@@ -29,7 +31,7 @@ public class MusicApiController {
     @GetMapping("/{musicId}")
     public ResponseEntity<?> readOneMusic(@PathVariable("musicId") Long musicId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                "노래 조회 완료",
+                READ_ONE_MUSIC_SUCCESS.getMessage(),
                 musicService.readOne(musicId)
         ));
     }
@@ -39,16 +41,16 @@ public class MusicApiController {
             @RequestParam(required = false, name = "keyword") String keyword) {
         List<MusicFindResponseDto> result;
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                "노래 목록 조회 완료",
+                READ_ALL_MUSIC_SUCCESS.getMessage(),
                 musicService.readAll(keyword)
         ));
     }
 
     @DeleteMapping("/{musicId}")
-    public ResponseEntity<?> deleteMusic(@PathVariable("musicId") Long musicId){
+    public ResponseEntity<?> deleteMusic(@PathVariable("musicId") Long musicId) {
         musicService.delete(musicId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                "노래 삭제 완료"
+                DELETE_MUSIC_SUCCESS.getMessage()
         ));
     }
 }
