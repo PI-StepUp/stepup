@@ -1,4 +1,4 @@
-package com.pi.stepup.global.util.jwt;
+package com.pi.stepup.global.config.security;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;

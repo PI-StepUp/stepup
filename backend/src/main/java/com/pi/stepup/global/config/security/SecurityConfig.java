@@ -1,8 +1,8 @@
-package com.pi.stepup.global.config;
+package com.pi.stepup.global.config.security;
 
-import com.pi.stepup.global.util.jwt.JwtAccessDeniedHandler;
-import com.pi.stepup.global.util.jwt.JwtAuthenticationEntryPoint;
-import com.pi.stepup.global.util.jwt.JwtAuthenticationFilter;
+import com.pi.stepup.global.util.jwt.filter.JwtAccessDeniedHandler;
+import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationEntryPoint;
+import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationFilter;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

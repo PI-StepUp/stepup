@@ -1,5 +1,6 @@
-package com.pi.stepup.global.util.jwt;
+package com.pi.stepup.global.util.jwt.filter;
 
+import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
