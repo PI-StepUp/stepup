@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,6 +75,21 @@ class MusicApplyRepositoryTest {
 
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
         assertThat(musicApplies.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("노래 신청 상세 조회 테스트")
+    public void findOneMusicApplyRepositoryTest() {
+        em.persist(musicApply);
+
+        Long musicApplyId = musicApply.getMusicApplyId();
+        Optional<MusicApply> result = musicApplyRepository.findOne(musicApplyId);
+        MusicApply resultMusicApply = null;
+        if (result.isPresent()) {
+            resultMusicApply = result.get();
+        }
+
+        assertThat(resultMusicApply).isEqualTo(musicApply);
     }
 
     private List<MusicApply> makeMusicApply() {
