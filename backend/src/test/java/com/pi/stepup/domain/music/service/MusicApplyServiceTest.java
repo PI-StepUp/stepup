@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.pi.stepup.domain.music.constant.MusicApplyLikeStatus.ADD;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -194,10 +195,22 @@ class MusicApplyServiceTest {
         when(musicApplyRepository.insert(any(Heart.class))).thenReturn(heart);
 
         // TODO : heartCnt default value null pointer 예외 해결 할 것 (DB에는 잘 들어감)
-        when(musicApplyRepository.update(any(MusicApply.class))).thenReturn(updateMusicApply());
+        when(musicApplyRepository.update(any(MusicApply.class), ADD)).thenReturn(updateMusicApply());
 
         musicApplyService.createHeart(heartSaveRequestDto);
         assertThat(musicApply.getHeartCnt()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("노래 신청 좋아요 취소 테스트")
+    public void musicApplyLikeCancelServiceTest() {
+        Long heartId = heart.getHeartId();
+        // TODO : user, musicApply 더미 데이터 넣기
+        when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
+
+        musicApplyService.deleteHeart(user.getId(), musicApply.getMusicApplyId());
+
+        verify(musicApplyRepository, only()).deleteHeart(heartId);
     }
 
     private MusicApply updateMusicApply() {
