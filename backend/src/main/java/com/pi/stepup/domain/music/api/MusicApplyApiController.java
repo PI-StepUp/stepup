@@ -44,4 +44,11 @@ public class MusicApplyApiController {
                 musicApplyService.readOne(musicRequestId)
         ));
     }
+
+    @DeleteMapping("/{musicRequestId}")
+    public ResponseEntity<?> deleteMusicApply(@PathVariable("musicRequestId") Long musicRequestId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                DELETE_MUSIC_APPLY_SUCCESS.getMessage()
+        ));
+    }
 }
