@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.dance.dao;
 
+import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,13 @@ public class DanceRepositoryImpl implements DanceRepository {
     public List<RandomDance> findAllHeldDance() {
         return em.createQuery("SELECT r FROM RandomDance r", RandomDance.class)
             .getResultList();
+    }
+
+    @Override
+    public List<DanceMusic> readAllDanceMusic(Long randomDanceId) {
+        return em.createQuery("SELECT d FROM DanceMusic d WHERE d.randomDance.randomDanceId = :randomDanceId", DanceMusic.class)
+                .setParameter("randomDanceId", randomDanceId)
+                .getResultList();
     }
 
 }

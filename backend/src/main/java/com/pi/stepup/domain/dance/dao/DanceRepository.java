@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.dance.dao;
 
+import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import java.util.List;
 import java.util.Optional;
@@ -20,5 +21,8 @@ public interface DanceRepository {
 
     //개최 랜덤 플레이 댄스 전체 목록 조회
     List<RandomDance> findAllHeldDance();
+
+    //랜덤 플레이 댄스 노래 목록 조회
+    List<DanceMusic> readAllDanceMusic(Long randomDanceId);
 
 }
