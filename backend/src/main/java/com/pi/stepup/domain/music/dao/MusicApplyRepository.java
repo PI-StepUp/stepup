@@ -19,5 +19,7 @@ public interface MusicApplyRepository {
 
     void delete(Long musicApplyId);
 
+    void deleteHeart(Long heartId);
+
     MusicApply update(MusicApply musicApply);
 }

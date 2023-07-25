@@ -69,6 +69,12 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    public void deleteHeart(Long heartId) {
+        Heart heart = em.find(Heart.class, heartId);
+        em.remove(heart);
+    }
+
+    @Override
     public MusicApply update(MusicApply musicApply) {
         musicApply.addHeart();
         return musicApply;
