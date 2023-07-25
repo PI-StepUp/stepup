@@ -43,7 +43,7 @@ public class UserRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LoginRequestDto {
+    public static class AuthenticationRequestDto {
 
         private String id;
         private String password;

@@ -9,10 +9,10 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_CO
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 
+import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
@@ -84,11 +84,12 @@ public class UserApiController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<?>> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<ResponseDto<?>> login(
+        @RequestBody AuthenticationRequestDto authenticationRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 LOGIN_SUCCESS.getMessage(),
-                userService.login(loginRequestDto)
+                userService.login(authenticationRequestDto)
             )
         );
     }

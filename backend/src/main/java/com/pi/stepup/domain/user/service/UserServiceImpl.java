@@ -8,10 +8,10 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_F
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
+import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
@@ -76,12 +76,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TokenInfo login(LoginRequestDto loginRequestDto) {
-        TokenInfo tokenInfo = setFirstAuthentication(loginRequestDto.getId(),
-            loginRequestDto.getPassword());
+    public TokenInfo login(AuthenticationRequestDto authenticationRequestDto) {
+        TokenInfo tokenInfo = setFirstAuthentication(authenticationRequestDto.getId(),
+            authenticationRequestDto.getPassword());
         logger.debug("login token : {}", tokenInfo);
 
-        User user = userRepository.findById(loginRequestDto.getId()).get();
+        User user = userRepository.findById(authenticationRequestDto.getId()).get();
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
         return tokenInfo;
