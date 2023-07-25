@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -37,6 +36,7 @@ class MusicApiControllerTest {
 
     private Gson gson;
     private MusicSaveRequestDto musicSaveRequestDto;
+    private MusicFindResponseDto musicFindResponseDto;
     private Music music;
 
     @BeforeEach
@@ -51,6 +51,8 @@ class MusicApiControllerTest {
                 .build();
 
         music = musicSaveRequestDto.toEntity();
+
+        musicFindResponseDto = MusicFindResponseDto.builder().music(music).build();
     }
 
     @Test
@@ -71,7 +73,7 @@ class MusicApiControllerTest {
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
     public void readOneMusicControllerTest() throws Exception {
-        when(musicService.readOne(any())).thenReturn(Optional.of(music));
+        when(musicService.readOne(any())).thenReturn(musicFindResponseDto);
 
         long musicId = 1L;
         final ResultActions getAction = mockMvc.perform(

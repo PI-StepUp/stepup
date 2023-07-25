@@ -1,22 +1,27 @@
 package com.pi.stepup.domain.user.service;
 
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_FAIL;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_FAIL;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_FAIL;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.EMAIL_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
+import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
+import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +35,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -55,31 +61,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public void checkEmailDuplicated(CheckEmailRequestDto checkEmailRequestDto) {
         if (userRepository.findByEmail(checkEmailRequestDto.getEmail()).isPresent()) {
-            throw new EmailDuplicatedException(CHECK_EMAIL_DUPLICATED_FAIL.getMessage());
+            throw new EmailDuplicatedException(EMAIL_DUPLICATED.getMessage());
         }
     }
 
     @Override
     public void checkNicknameDuplicated(CheckNicknameRequestDto checkNicknameRequestDto) {
         if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
-            throw new NicknameDuplicatedException(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
+            throw new NicknameDuplicatedException(NICKNAME_DUPLICATED.getMessage());
         }
     }
 
     @Override
     public void checkIdDuplicated(CheckIdRequestDto checkIdRequestDto) {
         if (userRepository.findById(checkIdRequestDto.getId()).isPresent()) {
-            throw new IdDuplicatedException(CHECK_ID_DUPLICATED_FAIL.getMessage());
+            throw new IdDuplicatedException(ID_DUPLICATED.getMessage());
         }
     }
 
     @Override
-    public TokenInfo login(LoginRequestDto loginRequestDto) {
-        TokenInfo tokenInfo = setFirstAuthentication(loginRequestDto.getId(),
-            loginRequestDto.getPassword());
+    public TokenInfo login(AuthenticationRequestDto authenticationRequestDto) {
+        TokenInfo tokenInfo = setFirstAuthentication(authenticationRequestDto.getId(),
+            authenticationRequestDto.getPassword());
         logger.debug("login token : {}", tokenInfo);
 
-        User user = userRepository.findById(loginRequestDto.getId()).get();
+        User user = userRepository.findById(authenticationRequestDto.getId()).get();
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
         return tokenInfo;
@@ -88,6 +94,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public TokenInfo signUp(SignUpRequestDto signUpRequestDto) {
+        validateSignUpUserInfo(signUpRequestDto);
+
         User user = signUpRequestDto.toUser(
             passwordEncoder.encode(signUpRequestDto.getPassword()),
             userRepository.findOneCountry(signUpRequestDto.getCountryId()));
@@ -109,8 +117,84 @@ public class UserServiceImpl implements UserService {
     public UserInfoResponseDto readOne(String id) {
         // TODO: user not found exception 설정
         return UserInfoResponseDto.builder()
-            .user(userRepository.findById(id).orElseThrow())
+            .user(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(
+                USER_NOT_FOUND.getMessage())))
             .build();
+    }
+
+    @Override
+    @Transactional
+    public void delete(String id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        logger.debug("[delete()] user : {}", user);
+
+        userRepository.delete(user);
+    }
+
+    @Override
+    public void checkPassword(AuthenticationRequestDto authenticationRequestDto) {
+        User user = userRepository.findById(authenticationRequestDto.getId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        if (!isSamePassword(user.getPassword(), authenticationRequestDto.getPassword())) {
+            throw new UserNotFoundException(WRONG_PASSWORD.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void update(UpdateUserRequestDto updateUserRequestDto) {
+        User user = userRepository.findById(updateUserRequestDto.getId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        validateUpdateUserInfo(user, updateUserRequestDto);
+
+        Country country = userRepository.findOneCountry(updateUserRequestDto.getCountryId());
+
+        if (StringUtils.hasText(updateUserRequestDto.getPassword())) {
+            if (!isSamePassword(user.getPassword(), updateUserRequestDto.getPassword())) {
+                user.updatePassword(passwordEncoder.encode(updateUserRequestDto.getPassword()));
+            }
+        }
+
+        user.updateUserBasicInfo(updateUserRequestDto, country);
+    }
+
+    private void validateSignUpUserInfo(SignUpRequestDto signUpRequestDto) {
+        checkIdDuplicated(CheckIdRequestDto.builder().id(signUpRequestDto.getId()).build());
+        checkNicknameDuplicated(
+            CheckNicknameRequestDto.builder().nickname(signUpRequestDto.getNickname()).build());
+        checkEmailDuplicated(
+            CheckEmailRequestDto.builder().email(signUpRequestDto.getEmail()).build());
+    }
+
+    private void validateUpdateUserInfo(User user, UpdateUserRequestDto updateUserRequestDto) {
+        if (StringUtils.hasText(updateUserRequestDto.getEmail()) &&
+            !user.getEmail().equals(updateUserRequestDto.getEmail())) {
+            checkEmailDuplicated(
+                CheckEmailRequestDto.builder().email(updateUserRequestDto.getEmail()).build());
+        }
+
+        if (StringUtils.hasText(updateUserRequestDto.getNickname()) &&
+            !user.getNickname().equals(updateUserRequestDto.getNickname())) {
+            checkNicknameDuplicated(
+                CheckNicknameRequestDto.builder().nickname(updateUserRequestDto.getNickname())
+                    .build());
+        }
+    }
+
+    private boolean isSamePassword(String answerPassword, String comparePassword) {
+        if (!StringUtils.hasText(comparePassword)) {
+            return false;
+        }
+
+        if (!passwordEncoder.matches(comparePassword, answerPassword)) {
+            return false;
+        }
+
+        return true;
     }
 
     private TokenInfo setFirstAuthentication(String id, String password) {

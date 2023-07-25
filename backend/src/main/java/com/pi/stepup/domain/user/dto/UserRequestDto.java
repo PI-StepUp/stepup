@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserRequestDto {
 
@@ -44,7 +43,7 @@ public class UserRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LoginRequestDto {
+    public static class AuthenticationRequestDto {
 
         private String id;
         private String password;
@@ -81,5 +80,21 @@ public class UserRequestDto {
                 .role(this.role)
                 .build();
         }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateUserRequestDto {
+
+        private String id;
+        private String password;
+        private String email;
+        private Integer emailAlert;
+        private Long countryId;
+        private String nickname;
+        private String profileImg;
+
     }
 }
