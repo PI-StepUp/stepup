@@ -82,6 +82,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     }
 
     @Override
+    @Transactional
     public void deleteHeart(String id, Long musicRequestId) {
         Heart heart = musicApplyRepository.findHeart(id, musicRequestId).orElseThrow();
 

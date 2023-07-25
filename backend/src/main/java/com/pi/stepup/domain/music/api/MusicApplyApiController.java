@@ -66,8 +66,18 @@ public class MusicApplyApiController {
     public ResponseEntity<?> addMusicApplyHeart(@RequestBody HeartSaveRequestDto heartSaveRequestDto) {
         musicApplyService.createHeart(heartSaveRequestDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
                 ADD_MUSIC_APPLY_LIKE_SUCCESS.getMessage()
+        ));
+    }
+
+    @DeleteMapping("/heart")
+    public ResponseEntity<?> deleteMusicApplyHeart(@RequestParam(name = "id") String id,
+                                                   @RequestParam(name = "musicApplyId") Long musicApplyId) {
+        musicApplyService.deleteHeart(id, musicApplyId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                DELETE_MUSIC_APPLY_LIKE_SUCCESS.getMessage()
         ));
     }
 }
