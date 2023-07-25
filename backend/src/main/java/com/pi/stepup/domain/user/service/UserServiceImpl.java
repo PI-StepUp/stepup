@@ -11,7 +11,6 @@ import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.DeleteUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -117,9 +116,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(DeleteUserRequestDto deleteUserRequestDto) {
-        User user = userRepository.findById(deleteUserRequestDto.getId())
+    @Transactional
+    public void delete(String id) {
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        logger.debug("[user/UserServiceImpl.delete] user : {}", user);
 
         userRepository.delete(user);
     }

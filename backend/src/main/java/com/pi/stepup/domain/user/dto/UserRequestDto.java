@@ -81,13 +81,4 @@ public class UserRequestDto {
                 .build();
         }
     }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DeleteUserRequestDto {
-
-        private String id;
-    }
 }

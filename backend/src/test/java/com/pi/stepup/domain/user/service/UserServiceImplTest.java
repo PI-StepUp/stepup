@@ -17,7 +17,6 @@ import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.DeleteUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
@@ -175,12 +174,10 @@ class UserServiceImplTest {
         // given
         when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
 
-        String testId = "testId";
-        DeleteUserRequestDto deleteUserRequestDto = DeleteUserRequestDto.builder().id(testId)
-            .build();
+        String testId = "testID";
 
         // when, then
-        assertThatThrownBy(() -> userService.delete(deleteUserRequestDto))
+        assertThatThrownBy(() -> userService.delete(testId))
             .isInstanceOf(UserNotFoundException.class)
             .hasMessageContaining(USER_NOT_FOUND.getMessage());
     }
@@ -192,12 +189,10 @@ class UserServiceImplTest {
         when(userRepository.findById(any(String.class))).thenReturn(
             Optional.of(User.builder().build()));
 
-        String testId = "testId";
-        DeleteUserRequestDto deleteUserRequestDto = DeleteUserRequestDto.builder().id(testId)
-            .build();
+        String testId = "testID";
 
         // when, then
-        assertThatNoException().isThrownBy(() -> userService.delete(deleteUserRequestDto));
+        assertThatNoException().isThrownBy(() -> userService.delete(testId));
     }
 
     private List<Country> makeCountries() {
