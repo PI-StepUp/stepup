@@ -81,4 +81,20 @@ public class UserRequestDto {
                 .build();
         }
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateUserRequestDto {
+
+        private String id;
+        private String password;
+        private String email;
+        private Integer emailAlert;
+        private Long countryId;
+        private String nickname;
+        private String profileImg;
+
+    }
 }

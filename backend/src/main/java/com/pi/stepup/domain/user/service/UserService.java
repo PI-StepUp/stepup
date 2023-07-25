@@ -6,6 +6,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import java.util.List;
@@ -29,4 +30,6 @@ public interface UserService {
     void delete(String id);
 
     void checkPassword(AuthenticationRequestDto authenticationRequestDto);
+
+    void update(UpdateUserRequestDto updateUserRequestDto);
 }

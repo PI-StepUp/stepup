@@ -7,6 +7,7 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_F
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
+import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
@@ -14,6 +15,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
@@ -132,12 +134,30 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(authenticationRequestDto.getId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        if (!isPasswordCorrect(user.getPassword(), authenticationRequestDto.getPassword())) {
+        if (!isSamePassword(user.getPassword(), authenticationRequestDto.getPassword())) {
             throw new UserNotFoundException(WRONG_PASSWORD.getMessage());
         }
     }
 
-    private boolean isPasswordCorrect(String answerPassword, String comparePassword) {
+    @Override
+    @Transactional
+    public void update(UpdateUserRequestDto updateUserRequestDto) {
+        User user = userRepository.findById(updateUserRequestDto.getId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        Country country = userRepository.findOneCountry(updateUserRequestDto.getCountryId());
+
+        if ((updateUserRequestDto.getPassword() != null) &&
+            (!"".equals(updateUserRequestDto.getPassword()))) {
+            if (!isSamePassword(user.getPassword(), updateUserRequestDto.getPassword())) {
+                user.updatePassword(passwordEncoder.encode(updateUserRequestDto.getPassword()));
+            }
+        }
+
+        user.updateUserBasicInfo(updateUserRequestDto, country);
+    }
+
+    private boolean isSamePassword(String answerPassword, String comparePassword) {
         if (comparePassword == null || comparePassword.equals("")) {
             return false;
         }
