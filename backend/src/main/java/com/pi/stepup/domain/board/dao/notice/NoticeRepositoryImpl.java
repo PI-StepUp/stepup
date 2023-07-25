@@ -1,4 +1,4 @@
-package com.pi.stepup.domain.board.dao;
+package com.pi.stepup.domain.board.dao.notice;
 
 import com.pi.stepup.domain.board.domain.Notice;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +35,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     public List<Notice> findAll(String keyword) {
         try {
             String jpql = "SELECT n FROM Notice n WHERE n.title LIKE :keyword OR n.content LIKE :keyword";
-            return em.createQuery(jpql, Notice.class)
-                    .setParameter("keyword", "%" + keyword + "%")
-                    .getResultList();
+            return em.createQuery(jpql, Notice.class).setParameter("keyword", "%" + keyword + "%").getResultList();
         } catch (Exception e) {
             throw new RuntimeException("공지사항 검색 오류", e);
         }

@@ -1,4 +1,4 @@
-package com.pi.stepup.domain.board.dao;
+package com.pi.stepup.domain.board.dao.meeting;
 
 import com.pi.stepup.domain.board.domain.Meeting;
 
