@@ -1,7 +1,9 @@
 package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
+import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
+import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -34,8 +36,10 @@ class MusicApplyServiceTest {
     UserRepository userRepository;
 
     private MusicApplySaveRequestDto musicApplySaveRequestDto;
+    private HeartSaveRequestDto heartSaveRequestDto;
     private MusicApply musicApply;
     private User user;
+    private Heart heart;
 
     @Test
     @BeforeEach
@@ -56,6 +60,16 @@ class MusicApplyServiceTest {
                 .artist(musicApplySaveRequestDto.getArtist())
                 .content(musicApplySaveRequestDto.getContent())
                 .writer(user)
+                .build();
+
+        heartSaveRequestDto = HeartSaveRequestDto.builder()
+                .musicApplyId(musicApply.getMusicApplyId())
+                .id(user.getId())
+                .build();
+
+        heart = Heart.builder()
+                .user(user)
+                .musicApply(musicApply)
                 .build();
     }
 
@@ -174,4 +188,20 @@ class MusicApplyServiceTest {
         return result;
     }
 
+    @Test
+    @DisplayName("노래 신청 좋아요 테스트")
+    public void musicApplyLikeServiceTest() {
+        when(musicApplyRepository.insert(any(Heart.class))).thenReturn(heart);
+
+        // TODO : heartCnt default value null pointer 예외 해결 할 것 (DB에는 잘 들어감)
+        when(musicApplyRepository.update(any(MusicApply.class))).thenReturn(updateMusicApply());
+
+        musicApplyService.createHeart(heartSaveRequestDto);
+        assertThat(musicApply.getHeartCnt()).isEqualTo(1);
+    }
+
+    private MusicApply updateMusicApply() {
+        musicApply.addHeart();
+        return musicApply;
+    }
 }
