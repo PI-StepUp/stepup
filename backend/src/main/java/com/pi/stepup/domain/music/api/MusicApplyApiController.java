@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.api;
 
+import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.service.MusicApplyService;
 import com.pi.stepup.global.dto.ResponseDto;
@@ -58,6 +59,15 @@ public class MusicApplyApiController {
     public ResponseEntity<?> deleteMusicApply(@PathVariable("musicRequestId") Long musicRequestId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 DELETE_MUSIC_APPLY_SUCCESS.getMessage()
+        ));
+    }
+
+    @PostMapping("/heart")
+    public ResponseEntity<?> addMusicApplyHeart(@RequestBody HeartSaveRequestDto heartSaveRequestDto) {
+        musicApplyService.createHeart(heartSaveRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                ADD_MUSIC_APPLY_LIKE_SUCCESS.getMessage()
         ));
     }
 }
