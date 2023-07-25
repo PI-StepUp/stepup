@@ -18,5 +18,7 @@ public interface DanceService {
 
     void deleteDance(Long randomDanceId);
 
-    List<Music> readAllMusic(Long randomDanceId);
+    List<Music> readAllDanceMusic(Long randomDanceId);
+
+    List<RandomDance> readAllMyHeldDance(String id);
 }
