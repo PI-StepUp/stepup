@@ -31,15 +31,15 @@ public class MusicApply {
     private User writer;
 
     @ColumnDefault("0")
-    private Integer likeCnt;
+    private Integer heartCnt;
 
     @Builder
-    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer likeCnt) {
+    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer heartCnt) {
         this.musicApplyId = musicApplyId;
         this.title = title;
         this.artist = artist;
         this.content = content;
         this.writer = writer;
-        this.likeCnt = likeCnt;
+        this.heartCnt = heartCnt;
     }
 }
