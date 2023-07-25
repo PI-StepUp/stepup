@@ -78,6 +78,15 @@ class MusicApplyRepositoryTest {
     }
 
     @Test
+    @DisplayName("노래 신청 목록 사용자 아이디로 조회 테스트")
+    public void findAllMusicApplyByUserRepositoryTest() {
+        insertMusicApply();
+
+        List<MusicApply> musicApplies = musicApplyRepository.findById(writer.getId());
+        assertThat(musicApplies.size()).isEqualTo(5);
+    }
+
+    @Test
     @DisplayName("노래 신청 상세 조회 테스트")
     public void findOneMusicApplyRepositoryTest() {
         em.persist(musicApply);
@@ -109,6 +118,7 @@ class MusicApplyRepositoryTest {
             MusicApply musicApply = MusicApply.builder()
                     .title("t" + i)
                     .artist("a" + (i + 1))
+                    .writer(writer)
                     .build();
 
             musicApplies.add(musicApply);
