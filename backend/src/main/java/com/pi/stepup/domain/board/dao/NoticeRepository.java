@@ -11,9 +11,7 @@ public interface NoticeRepository {
 
     Optional<Notice> findOne(Long boardId);
 
-    List<Notice> findAll();
-
-    List<Notice> findAllByKeyword(String keyword);
+    List<Notice> findAll(String keyword);
 
     void delete(Long boardId);
 

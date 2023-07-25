@@ -32,17 +32,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public List<Notice> findAll() {
-        try {
-            String jpql = "SELECT n FROM Notice n";
-            return em.createQuery(jpql, Notice.class).getResultList();
-        } catch (Exception e) {
-            throw new RuntimeException("공지사항 조회 오류", e);
-        }
-    }
-
-    @Override
-    public List<Notice> findAllByKeyword(String keyword) {
+    public List<Notice> findAll(String keyword) {
         try {
             String jpql = "SELECT n FROM Notice n WHERE n.title LIKE :keyword OR n.content LIKE :keyword";
             return em.createQuery(jpql, Notice.class)
