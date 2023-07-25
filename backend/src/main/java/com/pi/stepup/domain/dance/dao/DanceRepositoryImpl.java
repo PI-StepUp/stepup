@@ -2,12 +2,13 @@ package com.pi.stepup.domain.dance.dao;
 
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
-import java.util.List;
-import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,7 +22,6 @@ public class DanceRepositoryImpl implements DanceRepository {
         return randomDance;
     }
 
-    //상세 페이지는 없지만 수정할 때 필요?
     @Override
     public Optional<RandomDance> findOne(Long randomDanceId) {
         Optional<RandomDance> randomDance = null;
@@ -47,16 +47,27 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public List<RandomDance> findAllHeldDance() {
-        return em.createQuery("SELECT r FROM RandomDance r", RandomDance.class)
-            .getResultList();
-    }
-
-    @Override
-    public List<DanceMusic> readAllDanceMusic(Long randomDanceId) {
-        return em.createQuery("SELECT d FROM DanceMusic d WHERE d.randomDance.randomDanceId = :randomDanceId", DanceMusic.class)
+    public List<DanceMusic> findAllDanceMusic(Long randomDanceId) {
+        return em.createQuery("SELECT d FROM DanceMusic d "
+                        + "WHERE d.randomDance.randomDanceId = :randomDanceId", DanceMusic.class)
                 .setParameter("randomDanceId", randomDanceId)
                 .getResultList();
     }
+
+    @Override
+    public List<RandomDance> findAllDance() {
+        return em.createQuery("SELECT r FROM RandomDance r", RandomDance.class)
+                .getResultList();
+    }
+
+    @Override
+    public List<RandomDance> findAllMyHeldDance(String id) {
+        return em.createQuery("SELECT r FROM RandomDance r "
+                        + "JOIN r.host u "
+                        + "WHERE u.id = :id", RandomDance.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
 
 }
