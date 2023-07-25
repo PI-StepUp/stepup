@@ -1,19 +1,22 @@
 package com.pi.stepup.domain.board.service;
 
-import com.pi.stepup.domain.board.dto.NoticeRequestDto.NoticeSaveRequestDto;
-import com.pi.stepup.domain.board.dto.NoticeResponseDto;
+import com.pi.stepup.domain.board.domain.Notice;
+import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeSaveRequestDto;
+import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeUpdateRequestDto;
+import com.pi.stepup.domain.board.dto.notice.NoticeResponseDto.NoticeInfoResponseDto;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface NoticeService {
-    public void create(NoticeSaveRequestDto noticeSaveRequestDto);
+    Notice create(NoticeSaveRequestDto noticeSaveRequestDto);
 
-    // public Long update(Long boardId, NoticeUpdateRequestDto noticeUpdateRequestDto);
+    Notice update(NoticeUpdateRequestDto noticeUpdateRequestDto);
 
-    // public List<NoticeResponseDto> readAll();
+    List<NoticeInfoResponseDto> readAll(String keyword);
 
-    public NoticeResponseDto readOne(Long boardId);
+    Optional<NoticeInfoResponseDto> readOne(Long boardId);
 
-    // public void delete(Long boardId);
-
-    // public List<NoticeSaveRequestDto> searchNotice(String keyword);
+    void delete(Long boardId);
 
 }

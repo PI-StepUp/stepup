@@ -2,19 +2,25 @@ package com.pi.stepup.domain.board.service;
 
 import com.pi.stepup.domain.board.dao.NoticeRepository;
 import com.pi.stepup.domain.board.domain.Notice;
-import com.pi.stepup.domain.board.dto.NoticeRequestDto.NoticeSaveRequestDto;
-import com.pi.stepup.domain.board.dto.NoticeResponseDto;
+import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeSaveRequestDto;
+import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeUpdateRequestDto;
+import com.pi.stepup.domain.board.dto.notice.NoticeResponseDto.NoticeInfoResponseDto;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
@@ -22,22 +28,17 @@ public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository noticeRepository;
     private final DanceRepository danceRepository;
     private final UserRepository userRepository;
+    private final Logger logger = LoggerFactory.getLogger(NoticeServiceImpl.class);
 
-
-    //게시글 저장
-//    @Transactional
-//    @Override
-//    public Long create(NoticeSaveRequestDto noticeSaveRequestDto) {
-//        return noticeRepositoryImpl.insert(noticeSaveRequestDto.toEntity()).getBoardId();
-//    }
 
     @Transactional
     @Override
-    public void create(NoticeSaveRequestDto noticeSaveRequestDto) {
+    public Notice create(NoticeSaveRequestDto noticeSaveRequestDto) {
         User writer = userRepository.findById(noticeSaveRequestDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID: " + noticeSaveRequestDto.getId()));
 
-        RandomDance randomDance = danceRepository.findOne(noticeSaveRequestDto.getRandomDanceId());
+        RandomDance randomDance = danceRepository.findOne(noticeSaveRequestDto.getRandomDanceId())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 랜덤댄 ID: " + noticeSaveRequestDto.getRandomDanceId()));
 
         Notice notice = Notice.builder()
                 .writer(writer)
@@ -47,74 +48,56 @@ public class NoticeServiceImpl implements NoticeService {
                 .fileURL(noticeSaveRequestDto.getFileURL())
                 .build();
 
-        noticeRepository.insert(notice);
+        Notice insertedNotice = noticeRepository.insert(notice);
+
+        logger.debug("[create()] insertedNotice : {}", insertedNotice);
+
+        return notice;
     }
 
-    //게시글 수정
-//    @Transactional
-//    @Override
-//    public Long update(Long boardId, NoticeUpdateRequestDto noticeUpdateRequestDto){
-//        Notice notice = noticeRepository.findOne(boardId).orElseThrow(()-> new IllegalArgumentException("게시글 없음"));
-//
-//        notice.update(noticeUpdateRequestDto.getTitle(), noticeUpdateRequestDto.getContent(),
-//                noticeUpdateRequestDto.getFileURL(), noticeUpdateRequestDto.getRandomDance());
-//
-//        return boardId;
-//    }
-//
-//    //게시글 전체 조회
-//    @Transactional
-//    public List<NoticeResponseDto> readAll() {
-//        List<Notice> allNotices = noticeRepository.findAll();
-//        return allNotices.stream()
-//                .map(NoticeResponseDto::new)
-//                .collect(Collectors.toList());
-//    }
-//
+    // 게시글 수정
+    @Transactional
+    @Override
+    public Notice update(NoticeUpdateRequestDto noticeUpdateRequestDto) {
+
+        Notice notice = noticeRepository.findOne(noticeUpdateRequestDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+
+        RandomDance randomDance = danceRepository.findOne(noticeUpdateRequestDto.getRandomDanceId())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 랜덤댄 ID: " + noticeUpdateRequestDto.getRandomDanceId()));
+
+        notice.update(noticeUpdateRequestDto.getTitle(), noticeUpdateRequestDto.getContent(),
+                noticeUpdateRequestDto.getFileURL(), randomDance);
+        return notice;
+    }
+
+
+    //게시글 전체 조회
+    @Transactional
+    @Override
+    public List<NoticeInfoResponseDto> readAll(String keyword) {
+        List<Notice> allNotices = noticeRepository.findAll(keyword);
+        return allNotices.stream()
+                .map(c -> NoticeInfoResponseDto.builder().notice(c).build())
+                .collect(Collectors.toList());
+    }
+
+
     //게시글 상세
     @Transactional
     @Override
-    public NoticeResponseDto readOne(Long boardId) {
-        Optional<Notice> noticeWrapper = noticeRepository.findOne(boardId);
-        //Notice notice = noticeWrapper.get();
-        Notice notice = noticeWrapper.orElseThrow(() -> new EntityNotFoundException("게시글이 존재하지않음"));
+    public Optional<NoticeInfoResponseDto> readOne(Long boardId) {
 
-        NoticeResponseDto noticeResponseDto = NoticeResponseDto.builder()
-                .notice(notice)
-                .build();
-
-        return noticeResponseDto;
-
+        return Optional.ofNullable(NoticeInfoResponseDto.builder()
+                .notice(noticeRepository.findOne(boardId).orElseThrow())
+                .build());
     }
-//
-//    //게시글 삭제
-//    @Transactional
-//    @Override
-//    public void delete(Long boardId) {
-//        noticeRepository.delete(boardId);
-//    }
 
-    //게시글 검색
-//    @Transactional
-//    @Override
-//    public List<NoticeSaveRequestDto> searchNotice(String keyword) {
-//
-//        List<Notice> noticeEntities = noticeRepository.findAllByKeyword(keyword);
-//        List<NoticeSaveRequestDto> noticeList = new ArrayList<>();
-//
-//        if (noticeEntities.isEmpty()) return noticeList;
-//
-//        for (Notice notice : noticeEntities) {
-//            NoticeSaveRequestDto noticeSaveRequestDto = NoticeSaveRequestDto.builder()
-//                    .writer(notice.getWriter())
-//                    .randomDance(notice.getRandomDance())
-//                    .title(notice.getTitle())
-//                    .content(notice.getContent())
-//                    .fileURL(notice.getFileURL())
-//                    .build();
-//            noticeList.add(noticeSaveRequestDto);
-//        }
-//
-//        return noticeList;
-//    }
+    //게시글 삭제
+    @Transactional
+    @Override
+    public void delete(Long boardId) {
+        noticeRepository.delete(boardId);
+    }
+
 }
