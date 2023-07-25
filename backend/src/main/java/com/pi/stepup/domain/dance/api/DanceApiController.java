@@ -2,13 +2,16 @@ package com.pi.stepup.domain.dance.api;
 
 import com.pi.stepup.domain.dance.constant.DanceResponseMessage;
 import com.pi.stepup.domain.dance.domain.RandomDance;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSaveRequestDto;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
+import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceSaveResponseDto;
 import com.pi.stepup.domain.dance.service.DanceService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,8 +28,8 @@ public class DanceApiController {
 
     @PostMapping("")
     public ResponseEntity<ResponseDto<?>> createRandomDance
-        (@RequestBody DanceSaveRequestDto danceSaveRequestDto) {
-        RandomDance createDance = danceService.create(danceSaveRequestDto);
+        (@RequestBody DanceCreateRequestDto danceCreateRequestDto) {
+        RandomDance createDance = danceService.create(danceCreateRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             DanceResponseMessage.CREATE_RANDOM_DANCE.getMessage(),
@@ -36,8 +39,8 @@ public class DanceApiController {
 
     @PutMapping("/my")
     public ResponseEntity<ResponseDto<?>> updateRandomDance
-        (@RequestBody DanceSaveRequestDto danceSaveRequestDto) {
-        RandomDance updateDance = danceService.update(danceSaveRequestDto);
+        (@RequestBody DanceUpdateRequestDto danceUpdateRequestDto) {
+        RandomDance updateDance = danceService.update(danceUpdateRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DanceResponseMessage.UPDATE_CREATED_RANDOM_DANCE.getMessage(),
@@ -51,8 +54,18 @@ public class DanceApiController {
         danceService.delete(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-            DanceResponseMessage.DELETE_CREATED_RANDOM_DANCE.getMessage(),
-            null
+            DanceResponseMessage.DELETE_CREATED_RANDOM_DANCE.getMessage()
+        ));
+    }
+
+    @GetMapping("/playlist/{randomDanceId}")
+    public ResponseEntity<ResponseDto<?>> readAllMusic
+        (@PathVariable("randomDanceId") Long randomDanceId) {
+        danceService.readAllMusic(randomDanceId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+            DanceResponseMessage.SELECT_ALL_MUSIC.getMessage(),
+            danceService.readAllMusic(randomDanceId)
         ));
     }
 
