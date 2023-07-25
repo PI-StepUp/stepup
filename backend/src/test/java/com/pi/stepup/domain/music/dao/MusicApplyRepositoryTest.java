@@ -78,6 +78,16 @@ class MusicApplyRepositoryTest {
     }
 
     @Test
+    @DisplayName("노래 신청 목록 사용자 아이디로 조회 테스트")
+    public void findAllMusicApplyByUserRepositoryTest() {
+        insertWriter();
+        insertMusicApplyWithDifferentWriter();
+
+        List<MusicApply> musicApplies = musicApplyRepository.findById(writer.getId());
+        assertThat(musicApplies.size()).isEqualTo(5);
+    }
+
+    @Test
     @DisplayName("노래 신청 상세 조회 테스트")
     public void findOneMusicApplyRepositoryTest() {
         em.persist(musicApply);
@@ -109,6 +119,7 @@ class MusicApplyRepositoryTest {
             MusicApply musicApply = MusicApply.builder()
                     .title("t" + i)
                     .artist("a" + (i + 1))
+                    .writer(writer)
                     .build();
 
             musicApplies.add(musicApply);
@@ -116,8 +127,26 @@ class MusicApplyRepositoryTest {
         return musicApplies;
     }
 
+    private void insertMusicApplyWithDifferentWriter() {
+        List<MusicApply> musicApplies = makeMusicApply();
+
+        User tmp = User.builder().id("another").password("password").build();
+        em.persist(tmp);
+
+        musicApplies.add(MusicApply.builder()
+                .title("title")
+                .writer(tmp)
+                .build());
+
+        musicApplies.forEach(em::persist);
+    }
+
     private void insertMusicApply() {
         List<MusicApply> musicApplies = makeMusicApply();
         musicApplies.forEach(em::persist);
+    }
+
+    private void insertWriter() {
+        em.persist(writer);
     }
 }

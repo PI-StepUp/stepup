@@ -85,7 +85,7 @@ class MusicApplyApiControllerTest {
     @DisplayName("노래 신청 목록 조회 테스트")
     public void MusicApplyReadAllControllerTest() throws Exception {
         String keyword = "";
-        when(musicApplyService.readAll(keyword)).thenReturn(makeMusicApply());
+        when(musicApplyService.readAllByKeyword(keyword)).thenReturn(makeMusicApply());
 
         String url = "/api/music/apply?keyword=" + keyword;
         final ResultActions getAction = mockMvc.perform(
