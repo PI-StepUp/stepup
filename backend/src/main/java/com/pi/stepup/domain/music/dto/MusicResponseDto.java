@@ -32,16 +32,16 @@ public class MusicResponseDto {
         private final String artist;
         private final String writerName;
         private final String writerProfileImg;
-        private final Integer likeCnt;
+        private final Integer heartCnt;
 
         @Builder
-        public MusicApplyFindResponseDto(MusicApply musicApply){
+        public MusicApplyFindResponseDto(MusicApply musicApply) {
             this.musicApplyId = musicApply.getMusicApplyId();
             this.title = musicApply.getTitle();
             this.artist = musicApply.getArtist();
             this.writerName = musicApply.getWriter().getNickname();
             this.writerProfileImg = musicApply.getWriter().getProfileImg();
-            this.likeCnt = musicApply.getLikeCnt();
+            this.heartCnt = musicApply.getHeartCnt();
         }
     }
 }
