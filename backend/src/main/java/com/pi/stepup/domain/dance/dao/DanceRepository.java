@@ -2,6 +2,7 @@ package com.pi.stepup.domain.dance.dao;
 
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import java.util.List;
+import java.util.Optional;
 
 public interface DanceRepository {
 
@@ -9,7 +10,7 @@ public interface DanceRepository {
     RandomDance insert(RandomDance randomDance);
 
     //개최 랜덤 플레이 댄스 하나 조회
-    RandomDance findOne(Long randomDanceId);
+    Optional<RandomDance> findOne(Long randomDanceId);
 
     //개최 랜덤 플레이 댄스 수정
     RandomDance update(RandomDance randomDance);
