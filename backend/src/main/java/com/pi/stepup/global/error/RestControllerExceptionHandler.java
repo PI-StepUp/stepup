@@ -30,7 +30,7 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ResponseDto<String>> handleNotFoundException(NotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             ResponseDto.create(exception.getMessage())
         );
     }
