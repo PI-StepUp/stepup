@@ -33,7 +33,7 @@ public class MusicApplyApiController {
             @RequestParam(required = false, name = "keyword") String keyword) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_ALL_MUSIC_APPLY_SUCCESS.getMessage(),
-                musicApplyService.readAll(keyword)
+                musicApplyService.readAllByKeyword(keyword)
         ));
     }
 
