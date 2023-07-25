@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.board.domain;
 
+import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,6 +27,12 @@ public class Talk extends Board {
     public Talk(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, String boardType, int commentCnt) {
         super(boardId, writer, title, content, comments, fileURL, boardType);
         this.commentCnt = commentCnt;
+    }
+
+    public void update(String title, String content, String fileURL) {
+        this.title = title;
+        this.content = content;
+        this.fileURL = fileURL;
     }
 
     public void updateCommentCnt() {
