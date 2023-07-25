@@ -9,7 +9,8 @@ public enum UserResponseMessage {
     LOGIN_SUCCESS("로그인 완료"),
     READ_ONE_SUCCESS("회원정보 조회 완료"),
     DELETE_SUCCESS("회원 탈퇴 완료"),
-    CHECK_PASSWORD_SUCCESS("비밀번호 일치");
+    CHECK_PASSWORD_SUCCESS("비밀번호 일치"),
+    UPDATE_USER_SUCCESS("회원정보 수정 완료");
 
     private final String message;
 
