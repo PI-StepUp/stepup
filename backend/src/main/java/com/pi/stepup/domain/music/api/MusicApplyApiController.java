@@ -28,12 +28,21 @@ public class MusicApplyApiController {
         );
     }
 
+    // TODO : 아래 두개(readAllBy~) 리팩토링 가능?
     @GetMapping
-    public ResponseEntity<?> readAllMusicApply(
+    public ResponseEntity<?> readAllByKeywordMusicApply(
             @RequestParam(required = false, name = "keyword") String keyword) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_ALL_MUSIC_APPLY_SUCCESS.getMessage(),
-                musicApplyService.readAll(keyword)
+                musicApplyService.readAllByKeyword(keyword)
+        ));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<?> readAllByIdMusicApply(@RequestParam(name = "id") String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                READ_MY_MUSIC_APPLY_SUCCESS.getMessage(),
+                musicApplyService.readAllById(id)
         ));
     }
 

@@ -33,8 +33,17 @@ public class MusicApplyServiceImpl implements MusicApplyService {
         return musicApplyRepository.insert(musicApply);
     }
 
-    public List<MusicApplyFindResponseDto> readAll(String keyword) {
+    public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
         return musicApplyRepository.findAll(keyword).stream()
+                .map(musicApply -> MusicApplyFindResponseDto.builder()
+                        .musicApply(musicApply)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MusicApplyFindResponseDto> readAllById(String id) {
+        return musicApplyRepository.findById(id).stream()
                 .map(musicApply -> MusicApplyFindResponseDto.builder()
                         .musicApply(musicApply)
                         .build())
