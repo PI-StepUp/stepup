@@ -3,6 +3,7 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
@@ -111,6 +112,18 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 DELETE_SUCCESS.getMessage()
+            )
+        );
+    }
+
+    @PostMapping("/checkpw")
+    public ResponseEntity<ResponseDto<?>> checkPw(
+        @RequestBody AuthenticationRequestDto authenticationRequestDto) {
+        userService.checkPassword(authenticationRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                CHECK_PASSWORD_SUCCESS.getMessage()
             )
         );
     }
