@@ -1,4 +1,4 @@
-package com.pi.stepup.domain.board.dto;
+package com.pi.stepup.domain.board.dto.meeting;
 
 import com.pi.stepup.domain.board.domain.Comment;
 import com.pi.stepup.domain.board.domain.Meeting;

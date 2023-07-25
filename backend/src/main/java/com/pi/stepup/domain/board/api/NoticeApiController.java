@@ -3,7 +3,7 @@ package com.pi.stepup.domain.board.api;
 import com.pi.stepup.domain.board.constant.BoardResponseMessage;
 import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeSaveRequestDto;
 import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeUpdateRequestDto;
-import com.pi.stepup.domain.board.service.NoticeService;
+import com.pi.stepup.domain.board.service.notice.NoticeService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

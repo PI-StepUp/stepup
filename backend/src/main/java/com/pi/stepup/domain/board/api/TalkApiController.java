@@ -1,6 +1,6 @@
 package com.pi.stepup.domain.board.api;
 
-import com.pi.stepup.domain.board.service.TalkService;
+import com.pi.stepup.domain.board.service.talk.TalkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,22 +1,27 @@
-package com.pi.stepup.domain.board.dto;
+package com.pi.stepup.domain.board.dto.meeting;
 
-import com.pi.stepup.domain.board.domain.Talk;
-import com.pi.stepup.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-public class TalkRequestDto {
+import java.time.LocalDateTime;
+
+public class MeetingRequestDto {
+
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TalkSaveRequestDto {
+    public static class MeetingSaveRequestDto {
+
         private String id;
         private String title;
         private String content;
         private String fileURL;
+        private LocalDateTime startAt;
+        private LocalDateTime endAt;
+        private String region;
         private int commentCnt;
 
     }
@@ -25,7 +30,7 @@ public class TalkRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TalkFindOneRequestDto {
+    public static class MeetingFindOneRequestDto {
         private Long boardId;
     }
 
@@ -33,7 +38,8 @@ public class TalkRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TalkFindByKeywordRequestDto {
+    public static class MeetingFindByKeywordRequestDto {
         private String keyword;
     }
+
 }
