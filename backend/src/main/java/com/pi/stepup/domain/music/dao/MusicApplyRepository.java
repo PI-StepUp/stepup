@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface MusicApplyRepository {
     MusicApply insert(MusicApply musicApply);
 
+    Heart insert(Heart heart);
+
     Optional<MusicApply> findOne(Long musicApplyId);
 
     List<MusicApply> findAll(String keyword);
@@ -16,6 +18,4 @@ public interface MusicApplyRepository {
     List<MusicApply> findById(String id);
 
     void delete(Long musicApplyId);
-
-    Heart insertLike(Heart heart);
 }

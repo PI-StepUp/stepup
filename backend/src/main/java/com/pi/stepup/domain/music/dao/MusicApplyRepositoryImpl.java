@@ -23,6 +23,12 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    public Heart insert(Heart heart) {
+        em.persist(heart);
+        return heart;
+    }
+
+    @Override
     public List<MusicApply> findAll(String keyword) {
         String sql = "SELECT ma FROM MusicApply ma ";
 
@@ -61,11 +67,4 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
         MusicApply musicApply = em.find(MusicApply.class, musicApplyId);
         em.remove(musicApply);
     }
-
-    @Override
-    public Heart insertLike(Heart heart) {
-        em.persist(heart);
-        return heart;
-    }
-
 }

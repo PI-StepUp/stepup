@@ -162,7 +162,7 @@ class MusicApplyRepositoryTest {
     public void musicApplyHeartRepositoryTest() {
         em.persist(heart);
 
-        Heart result = musicApplyRepository.insertLike(heart);
+        Heart result = musicApplyRepository.insert(heart);
 
         assertThat(result).isEqualTo(heart);
     }
