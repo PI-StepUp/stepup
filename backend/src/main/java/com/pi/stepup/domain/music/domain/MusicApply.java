@@ -42,4 +42,12 @@ public class MusicApply {
         this.writer = writer;
         this.heartCnt = heartCnt;
     }
+
+    public void addHeart() {
+        this.heartCnt += 1;
+    }
+
+    public void removeHeart() {
+        this.heartCnt -= 1;
+    }
 }
