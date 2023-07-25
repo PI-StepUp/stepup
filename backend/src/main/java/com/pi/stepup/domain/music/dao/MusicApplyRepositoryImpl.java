@@ -67,4 +67,10 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
         MusicApply musicApply = em.find(MusicApply.class, musicApplyId);
         em.remove(musicApply);
     }
+
+    @Override
+    public MusicApply update(MusicApply musicApply) {
+        musicApply.addHeart();
+        return musicApply;
+    }
 }

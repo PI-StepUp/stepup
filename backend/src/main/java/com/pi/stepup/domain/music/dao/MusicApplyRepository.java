@@ -18,4 +18,6 @@ public interface MusicApplyRepository {
     List<MusicApply> findById(String id);
 
     void delete(Long musicApplyId);
+
+    MusicApply update(MusicApply musicApply);
 }

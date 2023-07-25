@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.domain.MusicApply;
+import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 
@@ -16,4 +17,6 @@ public interface MusicApplyService {
     void delete(Long musicId);
 
     List<MusicApplyFindResponseDto> readAllById(String id);
+
+    void createHeart(HeartSaveRequestDto heart);
 }

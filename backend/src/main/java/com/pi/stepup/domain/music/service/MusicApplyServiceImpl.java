@@ -1,7 +1,9 @@
 package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
+import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
+import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -61,5 +63,18 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Transactional
     public void delete(Long musicId) {
         musicApplyRepository.delete(musicId);
+    }
+
+    @Override
+    @Transactional
+    public void createHeart(HeartSaveRequestDto heartSaveRequestDto) {
+        Heart heart = Heart.builder()
+                .user(userRepository.findById(heartSaveRequestDto.getId()).orElseThrow())
+                .musicApply(musicApplyRepository.findOne(heartSaveRequestDto.getMusicApplyId()).orElseThrow())
+                .build();
+
+        musicApplyRepository.insert(heart);
+
+        musicApplyRepository.update(heart.getMusicApply());
     }
 }

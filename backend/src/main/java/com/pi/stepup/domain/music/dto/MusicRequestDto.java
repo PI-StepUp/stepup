@@ -40,4 +40,12 @@ public class MusicRequestDto {
         private String content;
     }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class HeartSaveRequestDto {
+        private String id;
+        private Long musicApplyId;
+    }
 }
