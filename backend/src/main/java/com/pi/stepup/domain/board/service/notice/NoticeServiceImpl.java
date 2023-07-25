@@ -42,8 +42,6 @@ public class NoticeServiceImpl implements NoticeService {
                 .fileURL(noticeSaveRequestDto.getFileURL())
                 .build();
 
-        Notice insertedNotice = noticeRepository.insert(notice);
-
         return notice;
     }
 
@@ -70,7 +68,7 @@ public class NoticeServiceImpl implements NoticeService {
     public List<NoticeInfoResponseDto> readAll(String keyword) {
         List<Notice> allNotices = noticeRepository.findAll(keyword);
         return allNotices.stream()
-                .map(c -> NoticeInfoResponseDto.builder().notice(c).build())
+                .map(n -> NoticeInfoResponseDto.builder().notice(n).build())
                 .collect(Collectors.toList());
     }
 
