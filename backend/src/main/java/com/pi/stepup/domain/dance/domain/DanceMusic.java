@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.dance.domain;
 
+import com.pi.stepup.domain.music.domain.Music;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,13 +30,14 @@ public class DanceMusic {
     @JoinColumn(name = "RANDOM_DANCE_ID")
     private RandomDance randomDance;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "MUSIC_ID")
-//    private Music music;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MUSIC_ID")
+    private Music music;
 
     @Builder
-    public DanceMusic(Long id, RandomDance randomDance) {
-        this.danceMusicId = id;
+    public DanceMusic(Long danceMusicId, RandomDance randomDance, Music music) {
+        this.danceMusicId = danceMusicId;
         this.randomDance = randomDance;
+        this.music = music;
     }
 }
