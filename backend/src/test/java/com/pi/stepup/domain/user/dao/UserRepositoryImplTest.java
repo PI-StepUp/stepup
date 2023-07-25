@@ -105,6 +105,22 @@ class UserRepositoryImplTest {
         assertThat(findUser).isEqualTo(user);
     }
 
+    @DisplayName("사용자가 삭제될 경우, DB에서 조회했을 때 null이 반환된다.")
+    @Test
+    void deleteTest() {
+        // given
+        User user = setUserSample();
+        em.persist(user);
+
+        Long userId = user.getUserId();
+
+        // when
+        userRepository.delete(user);
+
+        // then
+        assertThat(em.find(User.class, userId)).isNull();
+    }
+
     private User setUserSample() {
         Country country = Country.builder()
             .code(testCountryCodes[0])
