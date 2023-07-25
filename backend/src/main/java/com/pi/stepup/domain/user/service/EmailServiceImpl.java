@@ -1,11 +1,12 @@
 package com.pi.stepup.domain.user.service;
 
 import com.pi.stepup.domain.user.domain.EmailMessage;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,10 +20,9 @@ public class EmailServiceImpl implements EmailService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo(emailMessage.getTo());
-            mimeMessageHelper.setSubject(emailMessage.getSubject());
-            mimeMessageHelper.setText(emailMessage.getMessage());
+            mimeMessage.setSubject(emailMessage.getSubject());
+            mimeMessage.addRecipient(RecipientType.TO, new InternetAddress(emailMessage.getTo()));
+            mimeMessage.setText(emailMessage.getMessage(), "UTF-8", "html");
 
             javaMailSender.send(mimeMessage);
 
