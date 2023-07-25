@@ -34,6 +34,16 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    public List<MusicApply> findById(String id) {
+        return em.createQuery(
+                        "SELECT ma FROM MusicApply ma " +
+                                "WHERE ma.writer.id = :id", MusicApply.class
+                )
+                .setParameter("id", id)
+                .getResultList();
+    }
+
+    @Override
     public Optional<MusicApply> findOne(Long musicApplyId) {
         Optional<MusicApply> musicApply = null;
 

@@ -8,9 +8,12 @@ import java.util.Optional;
 public interface MusicApplyRepository {
     MusicApply insert(MusicApply musicApply);
 
-    List<MusicApply> findAll(String keyword);
-
     Optional<MusicApply> findOne(Long musicApplyId);
 
+    List<MusicApply> findAll(String keyword);
+
+    List<MusicApply> findById(String id);
+
     void delete(Long musicApplyId);
+
 }
