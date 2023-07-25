@@ -19,8 +19,12 @@ public class TalkRequestDto {
         private String fileURL;
     }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class TalkUpdateRequestDto {
-        private int boardId;
+        private Long boardId;
         private String title;
         private String content;
         private String writerName;
