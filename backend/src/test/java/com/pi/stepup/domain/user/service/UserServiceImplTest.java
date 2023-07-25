@@ -1,8 +1,9 @@
 package com.pi.stepup.domain.user.service;
 
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_FAIL;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_FAIL;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_FAIL;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.EMAIL_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,6 +21,7 @@ import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +46,7 @@ class UserServiceImplTest {
     private final String TEST_ID = "testId";
     private final String TEST_NICKNAME = "testNickname";
 
-    @DisplayName("국가 정보 목록 조회")
+    @DisplayName("국가 정보 목록을 조회했을 때 전체 목록 dto가 반환된다.")
     @Test
     void readAllCountriesTest() {
         // given
@@ -67,7 +69,7 @@ class UserServiceImplTest {
         }
     }
 
-    @DisplayName("이메일 중복 검사 - 중복 아님")
+    @DisplayName("이메일 중복 검사를 할 때 중복이 아니면 예외가 발생하지 않는다.")
     @Test
     void checkEmailDuplicatedTest_NoDuplicated() {
         // given
@@ -84,7 +86,7 @@ class UserServiceImplTest {
             () -> userService.checkEmailDuplicated(checkEmailRequestDto));
     }
 
-    @DisplayName("이메일 중복 검사 - 중복")
+    @DisplayName("이메일 중복 검사를 할 때 중복이면 예외가 발생한다.")
     @Test
     void checkEmailDuplicatedTest_Duplicated() {
         // given
@@ -99,10 +101,10 @@ class UserServiceImplTest {
         // then
         assertThatThrownBy(() -> userService.checkEmailDuplicated(checkEmailRequestDto))
             .isInstanceOf(EmailDuplicatedException.class)
-            .hasMessageContaining(CHECK_EMAIL_DUPLICATED_FAIL.getMessage());
+            .hasMessageContaining(EMAIL_DUPLICATED.getMessage());
     }
 
-    @DisplayName("닉네임 중복 검사 - 중복 아님")
+    @DisplayName("닉네임 중복 검사를 할 때 중복이 아니면 예외가 발생하지 않는다.")
     @Test
     void checkNicknameDuplicatedTest_NoDuplicated() {
         // given
@@ -118,7 +120,7 @@ class UserServiceImplTest {
 
     }
 
-    @DisplayName("닉네임 중복 검사 - 중복")
+    @DisplayName("닉네임 중복 검사를 할 때 중복이면 예외가 발생한다.")
     @Test
     void checkNicknameDuplicatedTest_Duplicated() {
         // given
@@ -131,11 +133,11 @@ class UserServiceImplTest {
         // when, then
         assertThatThrownBy(() -> userService.checkNicknameDuplicated(checkNicknameRequestDto))
             .isInstanceOf(NicknameDuplicatedException.class)
-            .hasMessageContaining(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
+            .hasMessageContaining(NICKNAME_DUPLICATED.getMessage());
 
     }
 
-    @DisplayName("아이디 중복 검사 - 중복 아님")
+    @DisplayName("아이디 중복 검사를 할 때 중복이 아니면 예외가 발생하지 않는다.")
     @Test
     void checkIdDuplicatedTest_NoDuplicated() {
         // given
@@ -150,7 +152,7 @@ class UserServiceImplTest {
             .isThrownBy(() -> userService.checkIdDuplicated(checkIdRequestDto));
     }
 
-    @DisplayName("아이디 중복 검사 - 중복")
+    @DisplayName("아이디 중복 검사를 할 때 중복이면 예외가 발생한다.")
     @Test
     void checkIdDuplicatedTest_Duplicated() {
         // given
@@ -163,7 +165,34 @@ class UserServiceImplTest {
         // then
         assertThatThrownBy(() -> userService.checkIdDuplicated(checkIdRequestDto))
             .isInstanceOf(IdDuplicatedException.class)
-            .hasMessageContaining(CHECK_ID_DUPLICATED_FAIL.getMessage());
+            .hasMessageContaining(ID_DUPLICATED.getMessage());
+    }
+
+    @DisplayName("사용자를 삭제할 때 해당 유저를 찾을 수 없을 경우 예외가 발생한다.")
+    @Test
+    void deleteTest_NotFound() {
+        // given
+        when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
+
+        String testId = "testID";
+
+        // when, then
+        assertThatThrownBy(() -> userService.delete(testId))
+            .isInstanceOf(UserNotFoundException.class)
+            .hasMessageContaining(USER_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("사용자를 삭제할 때 성공할 경우 예외가 발생하지 않는다.")
+    @Test
+    void deleteTest_Success() {
+        // given
+        when(userRepository.findById(any(String.class))).thenReturn(
+            Optional.of(User.builder().build()));
+
+        String testId = "testID";
+
+        // when, then
+        assertThatNoException().isThrownBy(() -> userService.delete(testId));
     }
 
     private List<Country> makeCountries() {
