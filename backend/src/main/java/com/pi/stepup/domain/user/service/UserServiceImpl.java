@@ -117,7 +117,8 @@ public class UserServiceImpl implements UserService {
     public UserInfoResponseDto readOne(String id) {
         // TODO: user not found exception 설정
         return UserInfoResponseDto.builder()
-            .user(userRepository.findById(id).orElseThrow())
+            .user(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(
+                USER_NOT_FOUND.getMessage())))
             .build();
     }
 
