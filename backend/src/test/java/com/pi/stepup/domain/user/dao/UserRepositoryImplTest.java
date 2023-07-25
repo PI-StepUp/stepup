@@ -31,7 +31,7 @@ class UserRepositoryImplTest {
     private final String TEST_NICKNAME = "testNickname";
 
 
-    @DisplayName("국가 정보 목록 조회 테스트")
+    @DisplayName("국가 정보 목록을 조회했을 때 전체 데이터가 반환된다.")
     @Test
     void findAllCountriesTest() {
         // given : 국가 목록 생성
@@ -49,7 +49,7 @@ class UserRepositoryImplTest {
         }
     }
 
-    @DisplayName("국가 정보 조회 테스트")
+    @DisplayName("국가 정보 pk로 조회했을 때 해당 데이터가 반환된다.")
     @Test
     void findOneCountryTest() {
         // given
@@ -66,7 +66,7 @@ class UserRepositoryImplTest {
         assertThat(findCountry).isEqualTo(country);
     }
 
-    @DisplayName("이메일 기준 조회 테스트")
+    @DisplayName("이메일 기준으로 조회했을 때 해당 데이터가 반환된다.")
     @Test
     void findByEmailTest() {
         // given
@@ -79,7 +79,7 @@ class UserRepositoryImplTest {
         assertThat(findUser).isEqualTo(user);
     }
 
-    @DisplayName("닉네임 기준 조회 테스트")
+    @DisplayName("닉네임 기준으로 조회했을 때 해당 데이터가 반환된다.")
     @Test
     void findByNicknameTest() {
         // given
@@ -92,7 +92,7 @@ class UserRepositoryImplTest {
         assertThat(user).isEqualTo(findUser);
     }
 
-    @DisplayName("아이디 기준 조회 테스트")
+    @DisplayName("아이디 기준으로 조회했을 때 해당 데이터가 반환된다.")
     @Test
     void findByIdTest() {
         // given
@@ -103,6 +103,22 @@ class UserRepositoryImplTest {
 
         // then
         assertThat(findUser).isEqualTo(user);
+    }
+
+    @DisplayName("사용자가 삭제될 경우, DB에서 조회했을 때 null이 반환된다.")
+    @Test
+    void deleteTest() {
+        // given
+        User user = setUserSample();
+        em.persist(user);
+
+        Long userId = user.getUserId();
+
+        // when
+        userRepository.delete(user);
+
+        // then
+        assertThat(em.find(User.class, userId)).isNull();
     }
 
     private User setUserSample() {

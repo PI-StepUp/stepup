@@ -23,7 +23,7 @@ public class DanceMusic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DANCE_MUSIC_ID")
-    private Long id;
+    private Long danceMusicId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RANDOM_DANCE_ID")
@@ -35,7 +35,7 @@ public class DanceMusic {
 
     @Builder
     public DanceMusic(Long id, RandomDance randomDance) {
-        this.id = id;
+        this.danceMusicId = id;
         this.randomDance = randomDance;
     }
 }

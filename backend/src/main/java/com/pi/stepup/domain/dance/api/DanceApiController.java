@@ -30,7 +30,7 @@ public class DanceApiController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             DanceResponseMessage.CREATE_RANDOM_DANCE.getMessage(),
-            danceService.readOne(createDance.getId())
+            danceService.readOne(createDance.getRandomDanceId())
         ));
     }
 
@@ -41,7 +41,7 @@ public class DanceApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DanceResponseMessage.UPDATE_CREATED_RANDOM_DANCE.getMessage(),
-            danceService.readOne(updateDance.getId())
+            danceService.readOne(updateDance.getRandomDanceId())
         ));
     }
 

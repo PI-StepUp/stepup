@@ -28,7 +28,7 @@ public class DanceRequestDto {
 
         @Builder
         private DanceSaveRequestDto(RandomDance randomDance) {
-            this.randomDanceId = randomDance.getId();
+            this.randomDanceId = randomDance.getRandomDanceId();
             this.title = randomDance.getTitle();
             this.content = randomDance.getContent();
             this.startAt = randomDance.getStartAt();

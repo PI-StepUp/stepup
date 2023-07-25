@@ -17,6 +17,7 @@ public interface UserRepository {
 
     Optional<User> findById(String id);
 
-    void insert(User user);
+    User insert(User user);
 
+    void delete(User user);
 }

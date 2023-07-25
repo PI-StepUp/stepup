@@ -48,12 +48,12 @@ public class DanceRepositoryTest {
 
         RandomDance saveDance = danceRepository.insert(insertDance);
 
-        assertThat(saveDance.getId()).isNotNull();
+        assertThat(saveDance.getRandomDanceId()).isNotNull();
         assertThat(saveDance.getTitle()).isEqualTo(title);
         assertThat(saveDance.getContent()).isEqualTo(content);
 
         System.out.println(">>> insertDanceTest 통과");
-        System.out.println(saveDance.getId());
+        System.out.println(saveDance.getRandomDanceId());
     }
 
     @Test
@@ -70,15 +70,15 @@ public class DanceRepositoryTest {
             .build();
 
         em.persist(insertDance);
-        RandomDance findDance1 = em.find(RandomDance.class, insertDance.getId());
-        RandomDance findDance2 = danceRepository.findOne(insertDance.getId());
+        RandomDance findDance1 = em.find(RandomDance.class, insertDance.getRandomDanceId());
+        RandomDance findDance2 = danceRepository.findOne(insertDance.getRandomDanceId());
 
         assertThat(findDance2).isNotNull();
         assertThat(findDance2.getTitle()).isEqualTo(findDance1.getTitle());
         assertThat(findDance2.getContent()).isEqualTo(findDance1.getContent());
 
         System.out.println(">>> findRandomDanceTest 통과");
-        System.out.println(findDance2.getId());
+        System.out.println(findDance2.getRandomDanceId());
     }
 
     @Test
@@ -95,13 +95,13 @@ public class DanceRepositoryTest {
             .build();
         em.persist(insertDance);
 
-        RandomDance findDance = em.find(RandomDance.class, insertDance.getId());
+        RandomDance findDance = em.find(RandomDance.class, insertDance.getRandomDanceId());
 
         String updatedTitle = "제목 업데이트";
         String updatedContent = "내용 업데이트";
 
         RandomDance updatedDance = RandomDance.builder()
-            .id(findDance.getId())
+            .id(findDance.getRandomDanceId())
             .title(updatedTitle)
             .content(updatedContent)
             .startAt(findDance.getStartAt())
@@ -117,7 +117,7 @@ public class DanceRepositoryTest {
         assertThat(findDance.getContent()).isEqualTo(updatedContent);
 
         System.out.println(">>> updateDanceTest 통과");
-        System.out.println(findDance.getId());
+        System.out.println(findDance.getRandomDanceId());
         System.out.println(findDance.getTitle());
     }
 
@@ -136,7 +136,7 @@ public class DanceRepositoryTest {
             .build();
         em.persist(insertDance);
 
-        Long randomDanceId = insertDance.getId();
+        Long randomDanceId = insertDance.getRandomDanceId();
         RandomDance findDance1 = em.find(RandomDance.class, randomDanceId);
         System.out.println(findDance1.getTitle() + " " + findDance1.getContent());
         assertThat(findDance1).isNotNull();
