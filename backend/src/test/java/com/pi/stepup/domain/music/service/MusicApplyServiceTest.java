@@ -77,7 +77,7 @@ class MusicApplyServiceTest {
         doReturn(makedMusicApply)
                 .when(musicApplyRepository).findAll(keyword);
 
-        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAll(keyword);
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(keyword);
         assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
     }
 
@@ -91,9 +91,23 @@ class MusicApplyServiceTest {
         doReturn(keywordMusicApply)
                 .when(musicApplyRepository).findAll(keyword);
 
-        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAll(keyword);
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(keyword);
         assertThat(musicApplies.size()).isEqualTo(keywordMusicApply.size());
     }
+
+    @Test
+    @DisplayName("내 노래 신청 목록 조회 테스트")
+    public void readAllMusicApplyByUserServiceTest() {
+        List<MusicApply> madeMusicApply = makeMusicApply();
+        List<MusicApply> writerMusicApply = makeMusicApplyByUser(madeMusicApply, user);
+
+        doReturn(writerMusicApply)
+                .when(musicApplyRepository).findById(user.getId());
+
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById(user.getId());
+        assertThat(musicApplies.size()).isEqualTo(writerMusicApply.size());
+    }
+
 
     @Test
     @DisplayName("노래 신청 상세 조회 테스트")
@@ -125,6 +139,16 @@ class MusicApplyServiceTest {
                     .build();
             musicApplies.add(tmp);
         }
+
+        User tmp = User.builder()
+                .id("tmp")
+                .password("password")
+                .build();
+        musicApplies.add(MusicApply.builder().
+                title("title")
+                .artist("artist")
+                .writer(tmp)
+                .build());
         return musicApplies;
     }
 
@@ -133,6 +157,17 @@ class MusicApplyServiceTest {
 
         for (MusicApply m : musicApplies) {
             if (m.getTitle().contains(keyword) || m.getArtist().contains(keyword)) {
+                result.add(m);
+            }
+        }
+        return result;
+    }
+
+    private List<MusicApply> makeMusicApplyByUser(List<MusicApply> musicApplies, User user) {
+        List<MusicApply> result = new ArrayList<>();
+
+        for (MusicApply m : musicApplies) {
+            if (m.getWriter().getId().equals(user.getId())) {
                 result.add(m);
             }
         }

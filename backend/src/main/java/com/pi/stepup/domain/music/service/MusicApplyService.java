@@ -9,9 +9,11 @@ import java.util.List;
 public interface MusicApplyService {
     MusicApply create(MusicApplySaveRequestDto musicApplySaveRequestDto);
 
-    List<MusicApplyFindResponseDto> readAll(String keyword);
+    List<MusicApplyFindResponseDto> readAllByKeyword(String keyword);
 
     MusicApplyFindResponseDto readOne(Long musicApplyId);
 
     void delete(Long musicId);
+
+    List<MusicApplyFindResponseDto> readAllById(String id);
 }
