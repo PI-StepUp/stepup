@@ -3,6 +3,7 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
@@ -18,6 +19,7 @@ import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -97,6 +99,17 @@ public class UserApiController {
             ResponseDto.create(
                 READ_ONE_SUCCESS.getMessage(),
                 userService.readOne(id)
+            )
+        );
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<ResponseDto<?>> delete(String id) {
+        userService.delete(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                DELETE_SUCCESS.getMessage()
             )
         );
     }

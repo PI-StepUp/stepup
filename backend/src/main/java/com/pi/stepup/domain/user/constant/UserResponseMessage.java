@@ -7,7 +7,8 @@ public enum UserResponseMessage {
     CHECK_ID_DUPLICATED_SUCCESS("아이디 사용 가능"),
     SIGN_UP_SUCCESS("회원가입 완료"),
     LOGIN_SUCCESS("로그인 완료"),
-    READ_ONE_SUCCESS("회원정보 조회 완료");
+    READ_ONE_SUCCESS("회원정보 조회 완료"),
+    DELETE_SUCCESS("회원 탈퇴 완료");
 
     private final String message;
 
