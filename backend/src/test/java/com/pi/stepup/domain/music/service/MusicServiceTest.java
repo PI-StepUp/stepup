@@ -62,12 +62,9 @@ class MusicServiceTest {
     public void readOneMusicServiceTest() {
         when(musicRepository.findOne(any())).thenReturn(Optional.of(music));
 
-        Optional<Music> result = musicService.readOne(music.getMusicId());
-        Music foundMusic = null;
-        if (result.isPresent()) {
-            foundMusic = result.get();
-        }
-        assertThat(music).isEqualTo(foundMusic);
+        MusicFindResponseDto result = musicService.readOne(music.getMusicId());
+
+        assertThat(music.getTitle()).isEqualTo(result.getTitle());
     }
 
     @Test
