@@ -1,4 +1,4 @@
-package com.pi.stepup.domain.board.dao;
+package com.pi.stepup.domain.board.dao.talk;
 
 import com.pi.stepup.domain.board.domain.Talk;
 
@@ -10,9 +10,7 @@ public interface TalkRepository {
 
     Optional<Talk> findOne(Long boardId);
 
-    List<Talk> findAll();
-
-    List<Talk> findAllByKeyword(String keyword);
+    List<Talk> findAll(String keyword);
 
     void delete(Long boardId);
 }
