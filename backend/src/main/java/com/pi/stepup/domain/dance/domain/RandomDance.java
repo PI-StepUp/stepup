@@ -1,5 +1,7 @@
 package com.pi.stepup.domain.dance.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pi.stepup.domain.dance.constant.DanceType;
 import com.pi.stepup.domain.user.domain.User;
 import java.time.LocalDateTime;
@@ -50,7 +52,9 @@ public class RandomDance {
     private String thumbnail;
 
     //호스트
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "USER_ID")
     private User host;
 
@@ -62,6 +66,10 @@ public class RandomDance {
     @OneToMany(mappedBy = "randomDance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservation = new ArrayList<>();
 
+    public void addDanceMusicAndSetThis(DanceMusic danceMusic) {
+        this.danceMusicList.add(danceMusic);
+//        danceMusic.setRandomDanceAndAddThis(this);
+    }
     @Builder
     public RandomDance(Long randomDanceId, String title, String content, LocalDateTime startAt,
         LocalDateTime endAt, DanceType danceType, int maxUser, String thumbnail, User host) {
@@ -75,4 +83,5 @@ public class RandomDance {
         this.thumbnail = thumbnail;
         this.host = host;
     }
+
 }
