@@ -1,8 +1,8 @@
 package com.pi.stepup.domain.board.service;
 
 import com.pi.stepup.domain.board.domain.Comment;
-import com.pi.stepup.domain.board.dto.CommentRequestDto.CommentSaveRequestDto;
-import com.pi.stepup.domain.board.dto.CommentResponseDto;
+import com.pi.stepup.domain.board.dto.comment.CommentRequestDto.CommentSaveRequestDto;
+import com.pi.stepup.domain.board.dto.comment.CommentResponseDto;
 
 import java.util.List;
 
