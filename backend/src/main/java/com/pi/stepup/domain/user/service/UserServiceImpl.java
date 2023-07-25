@@ -4,6 +4,7 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.EMAIL_DUPL
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -121,9 +122,31 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        logger.debug("[user/UserServiceImpl.delete] user : {}", user);
+        logger.debug("[delete()] user : {}", user);
 
         userRepository.delete(user);
+    }
+
+    @Override
+    public void checkPassword(AuthenticationRequestDto authenticationRequestDto) {
+        User user = userRepository.findById(authenticationRequestDto.getId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        if (!isPasswordCorrect(user.getPassword(), authenticationRequestDto.getPassword())) {
+            throw new UserNotFoundException(WRONG_PASSWORD.getMessage());
+        }
+    }
+
+    private boolean isPasswordCorrect(String answerPassword, String comparePassword) {
+        if (comparePassword == null || comparePassword.equals("")) {
+            return false;
+        }
+
+        if (!passwordEncoder.matches(comparePassword, answerPassword)) {
+            return false;
+        }
+
+        return true;
     }
 
     private TokenInfo setFirstAuthentication(String id, String password) {

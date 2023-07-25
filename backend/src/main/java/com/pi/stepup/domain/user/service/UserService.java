@@ -27,4 +27,6 @@ public interface UserService {
     UserInfoResponseDto readOne(String id);
 
     void delete(String id);
+
+    void checkPassword(AuthenticationRequestDto authenticationRequestDto);
 }
