@@ -8,8 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.CREATE_MUSIC_APPLY_SUCCESS;
-import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.READ_ALL_MUSIC_APPLY_SUCCESS;
+import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.*;
 
 @RestController
 @RequestMapping("/api/music/apply")
@@ -35,6 +34,14 @@ public class MusicApplyApiController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_ALL_MUSIC_APPLY_SUCCESS.getMessage(),
                 musicApplyService.readAll(keyword)
+        ));
+    }
+
+    @GetMapping("/{musicRequestId}")
+    public ResponseEntity<?> readOneMusicApply(@PathVariable("musicRequestId") Long musicRequestId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                READ_ONE_MUSIC_APPLY_SUCCESS.getMessage(),
+                musicApplyService.readOne(musicRequestId)
         ));
     }
 }
