@@ -7,7 +7,7 @@ public enum DanceResponseMessage {
     DELETE_CREATED_RANDOM_DANCE("랜덤 플레이 댄스 삭제 완료"),
     SELECT_ALL_MUSIC("노래 목록 조회 완료"),
     SELECT_ALL_RANDOM_DANCE("랜덤 플레이 댄스 목록 조회 완료"),
-    SELECT_CREATED_RANDOM_DANCE("내가 개최한 랜덤 플레이 댄스 목록 조회 완료"),
+    SELECT_HELD_RANDOM_DANCE("내가 개최한 랜덤 플레이 댄스 목록 조회 완료"),
     JOINED_RANDOM_DANCE("랜덤 플레이 댄스 예약"),
     SELECT_JOINED_RANDOM_DANCE("내가 예약한 랜덤 플레이 댄스 목록 조회 완료"),
     DELETE_JOINED_RANDOM_DANCE("랜덤 플레이 댄스 예약 취소");
