@@ -44,7 +44,7 @@ class UserServiceImplTest {
     private final String TEST_ID = "testId";
     private final String TEST_NICKNAME = "testNickname";
 
-    @DisplayName("국가 정보 목록 조회")
+    @DisplayName("국가 정보 목록을 조회했을 때 전체 목록 dto가 반환된다.")
     @Test
     void readAllCountriesTest() {
         // given
@@ -67,7 +67,7 @@ class UserServiceImplTest {
         }
     }
 
-    @DisplayName("이메일 중복 검사 - 중복 아님")
+    @DisplayName("이메일 중복 검사를 할 때 중복이 아니면 예외가 발생하지 않는다.")
     @Test
     void checkEmailDuplicatedTest_NoDuplicated() {
         // given
@@ -84,7 +84,7 @@ class UserServiceImplTest {
             () -> userService.checkEmailDuplicated(checkEmailRequestDto));
     }
 
-    @DisplayName("이메일 중복 검사 - 중복")
+    @DisplayName("이메일 중복 검사를 할 때 중복이면 예외가 발생한다.")
     @Test
     void checkEmailDuplicatedTest_Duplicated() {
         // given
@@ -102,7 +102,7 @@ class UserServiceImplTest {
             .hasMessageContaining(CHECK_EMAIL_DUPLICATED_FAIL.getMessage());
     }
 
-    @DisplayName("닉네임 중복 검사 - 중복 아님")
+    @DisplayName("닉네임 중복 검사를 할 때 중복이 아니면 예외가 발생하지 않는다.")
     @Test
     void checkNicknameDuplicatedTest_NoDuplicated() {
         // given
@@ -118,7 +118,7 @@ class UserServiceImplTest {
 
     }
 
-    @DisplayName("닉네임 중복 검사 - 중복")
+    @DisplayName("닉네임 중복 검사를 할 때 중복이면 예외가 발생한다.")
     @Test
     void checkNicknameDuplicatedTest_Duplicated() {
         // given
@@ -135,7 +135,7 @@ class UserServiceImplTest {
 
     }
 
-    @DisplayName("아이디 중복 검사 - 중복 아님")
+    @DisplayName("아이디 중복 검사를 할 때 중복이 아니면 예외가 발생하지 않는다.")
     @Test
     void checkIdDuplicatedTest_NoDuplicated() {
         // given
@@ -150,7 +150,7 @@ class UserServiceImplTest {
             .isThrownBy(() -> userService.checkIdDuplicated(checkIdRequestDto));
     }
 
-    @DisplayName("아이디 중복 검사 - 중복")
+    @DisplayName("아이디 중복 검사를 할 때 중복이면 예외가 발생한다.")
     @Test
     void checkIdDuplicatedTest_Duplicated() {
         // given
