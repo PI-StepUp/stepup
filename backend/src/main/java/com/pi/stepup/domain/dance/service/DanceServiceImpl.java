@@ -17,16 +17,7 @@ public class DanceServiceImpl implements DanceService {
     @Override
     @Transactional
     public RandomDance create(DanceSaveRequestDto danceSaveRequestDto) {
-        RandomDance randomDance = RandomDance.builder()
-            .title(danceSaveRequestDto.getTitle())
-            .content(danceSaveRequestDto.getContent())
-            .startAt(danceSaveRequestDto.getStartAt())
-            .endAt(danceSaveRequestDto.getEndAt())
-            .danceType(danceSaveRequestDto.getDanceType())
-            .maxUser(danceSaveRequestDto.getMaxUser())
-            .thumbnail(danceSaveRequestDto.getThumbnail())
-            .build();
-
+        RandomDance randomDance = danceSaveRequestDto.toEntity();
         RandomDance createdDance = danceRepository.insert(randomDance);
 
         return createdDance;
@@ -40,16 +31,7 @@ public class DanceServiceImpl implements DanceService {
     @Override
     @Transactional
     public RandomDance update(DanceSaveRequestDto danceSaveRequestDto) {
-        RandomDance randomDance = RandomDance.builder()
-            .title(danceSaveRequestDto.getTitle())
-            .content(danceSaveRequestDto.getContent())
-            .startAt(danceSaveRequestDto.getStartAt())
-            .endAt(danceSaveRequestDto.getEndAt())
-            .danceType(danceSaveRequestDto.getDanceType())
-            .maxUser(danceSaveRequestDto.getMaxUser())
-            .thumbnail(danceSaveRequestDto.getThumbnail())
-            .build();
-
+        RandomDance randomDance = danceSaveRequestDto.toEntity();
         return danceRepository.update(randomDance);
     }
 
