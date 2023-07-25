@@ -35,6 +35,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -93,6 +94,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public TokenInfo signUp(SignUpRequestDto signUpRequestDto) {
+        validateSignUpUserInfo(signUpRequestDto);
+
         User user = signUpRequestDto.toUser(
             passwordEncoder.encode(signUpRequestDto.getPassword()),
             userRepository.findOneCountry(signUpRequestDto.getCountryId()));
@@ -145,16 +148,40 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(updateUserRequestDto.getId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
+        validateUpdateUserInfo(user, updateUserRequestDto);
+
         Country country = userRepository.findOneCountry(updateUserRequestDto.getCountryId());
 
-        if ((updateUserRequestDto.getPassword() != null) &&
-            (!"".equals(updateUserRequestDto.getPassword()))) {
+        if (StringUtils.hasText(updateUserRequestDto.getPassword())) {
             if (!isSamePassword(user.getPassword(), updateUserRequestDto.getPassword())) {
                 user.updatePassword(passwordEncoder.encode(updateUserRequestDto.getPassword()));
             }
         }
 
         user.updateUserBasicInfo(updateUserRequestDto, country);
+    }
+
+    private void validateSignUpUserInfo(SignUpRequestDto signUpRequestDto) {
+        checkIdDuplicated(CheckIdRequestDto.builder().id(signUpRequestDto.getId()).build());
+        checkNicknameDuplicated(
+            CheckNicknameRequestDto.builder().nickname(signUpRequestDto.getNickname()).build());
+        checkEmailDuplicated(
+            CheckEmailRequestDto.builder().email(signUpRequestDto.getEmail()).build());
+    }
+
+    private void validateUpdateUserInfo(User user, UpdateUserRequestDto updateUserRequestDto) {
+        if (StringUtils.hasText(updateUserRequestDto.getEmail()) &&
+            !user.getEmail().equals(updateUserRequestDto.getEmail())) {
+            checkEmailDuplicated(
+                CheckEmailRequestDto.builder().email(updateUserRequestDto.getEmail()).build());
+        }
+
+        if (StringUtils.hasText(updateUserRequestDto.getNickname()) &&
+            !user.getNickname().equals(updateUserRequestDto.getNickname())) {
+            checkNicknameDuplicated(
+                CheckNicknameRequestDto.builder().nickname(updateUserRequestDto.getNickname())
+                    .build());
+        }
     }
 
     private boolean isSamePassword(String answerPassword, String comparePassword) {
