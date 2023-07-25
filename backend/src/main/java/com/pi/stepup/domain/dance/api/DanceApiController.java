@@ -29,29 +29,29 @@ public class DanceApiController {
     @PostMapping("")
     public ResponseEntity<ResponseDto<?>> createRandomDance
         (@RequestBody DanceCreateRequestDto danceCreateRequestDto) {
-        RandomDance createDance = danceService.create(danceCreateRequestDto);
+        RandomDance createDance = danceService.createDance(danceCreateRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             DanceResponseMessage.CREATE_RANDOM_DANCE.getMessage(),
-            danceService.readOne(createDance.getRandomDanceId())
+            danceService.readDance(createDance.getRandomDanceId())
         ));
     }
 
     @PutMapping("/my")
     public ResponseEntity<ResponseDto<?>> updateRandomDance
         (@RequestBody DanceUpdateRequestDto danceUpdateRequestDto) {
-        RandomDance updateDance = danceService.update(danceUpdateRequestDto);
+        RandomDance updateDance = danceService.updateDance(danceUpdateRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DanceResponseMessage.UPDATE_CREATED_RANDOM_DANCE.getMessage(),
-            danceService.readOne(updateDance.getRandomDanceId())
+            danceService.readDance(updateDance.getRandomDanceId())
         ));
     }
 
     @DeleteMapping("/my/{randomDanceId}")
     public ResponseEntity<ResponseDto<?>> deleteRandomDance
         (@PathVariable("randomDanceId") Long randomDanceId) {
-        danceService.delete(randomDanceId);
+        danceService.deleteDance(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DanceResponseMessage.DELETE_CREATED_RANDOM_DANCE.getMessage()
