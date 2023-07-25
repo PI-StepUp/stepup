@@ -2,12 +2,16 @@ package com.pi.stepup.domain.board.dao.talk;
 
 import com.pi.stepup.domain.board.dao.talk.TalkRepository;
 import com.pi.stepup.domain.board.domain.Talk;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
+@RequiredArgsConstructor
 public class TalkRepositoryImpl implements TalkRepository {
 
     @PersistenceContext
