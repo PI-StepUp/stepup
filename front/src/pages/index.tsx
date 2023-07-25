@@ -1,4 +1,3 @@
-import React, {useState} from "react";
 import Link from "next/link"
 import Image from "next/image"
 import motionIcons from "/public/images/motion-icon.svg"
@@ -9,6 +8,7 @@ import musicNoteIcon from "/public/images/musicnote-icon.svg"
 import realtimeRandomPlay1 from "/public/images/realtimeRandomplayImg1.png"
 
 import Footer from "components/Footer"
+import LanguageButton from "components/LanguageButton";
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
@@ -160,6 +160,7 @@ const Index = () => {
                 </div>
             </div>
             <Footer/>
+            <LanguageButton/>
         </>
     )
 }

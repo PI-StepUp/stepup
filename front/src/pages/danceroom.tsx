@@ -1,4 +1,5 @@
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
+import socketIOClient from "socket.io-client";
 
 import SideMenu from "components/SideMenu";
 
@@ -17,6 +18,19 @@ import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
 import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
 const DanceRoom = () => {
+    const socket = socketIOClient("localhost:4002");
+    const roomName = 1;
+    socket.emit("enter_room", roomName);
+    const [msg, setMsg] = useState('');
+    const inputChat = useRef(null);
+    const sendMessage = () => {
+        socket.emit("send_message", msg);
+    }
+    socket.on("message", (message) => {
+        
+    });
+
+
     const [reflect, setReflect] = useState(false);
     const [mic, setMic] = useState(false);
     const [camera, setCamera] = useState(false);
@@ -185,8 +199,8 @@ const DanceRoom = () => {
                                 </ul>
                             </div>
                             <div className="chat-write">
-                                <input type="text" placeholder="모두에게 전송"/>
-                                <button><Image src={sendImg} alt=""/></button>
+                                <input type="text" placeholder="모두에게 전송" ref={inputChat} onChange={(e) => setMsg(e.target.value)}/>
+                                <button onClick={sendMessage}><Image src={sendImg} alt=""/></button>
                             </div>
                         </div>
                     </div>
