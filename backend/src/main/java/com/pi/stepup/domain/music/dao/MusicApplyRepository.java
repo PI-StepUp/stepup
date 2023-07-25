@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.dao;
 
+import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface MusicApplyRepository {
 
     void delete(Long musicApplyId);
 
+    Heart insertLike(Heart heart);
 }

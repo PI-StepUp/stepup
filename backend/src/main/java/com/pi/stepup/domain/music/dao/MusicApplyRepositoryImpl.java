@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.dao;
 
+import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -60,4 +61,11 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
         MusicApply musicApply = em.find(MusicApply.class, musicApplyId);
         em.remove(musicApply);
     }
+
+    @Override
+    public Heart insertLike(Heart heart) {
+        em.persist(heart);
+        return heart;
+    }
+
 }
