@@ -97,4 +97,19 @@ public class UserRequestDto {
         private String profileImg;
 
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindIdRequestDto {
+        private String id;
+        private String birth;
+
+        public LocalDate getBirth() {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            return LocalDate.parse(birth, formatter);
+        }
+    }
 }

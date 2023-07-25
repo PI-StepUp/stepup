@@ -15,6 +15,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
@@ -146,6 +147,17 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 UPDATE_USER_SUCCESS.getMessage()
+            )
+        );
+    }
+
+    @PostMapping("/findid")
+    public ResponseEntity<ResponseDto<?>> findId(@RequestBody FindIdRequestDto findIdRequestDto) {
+        userService.findId(findIdRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                "아이디 전송 완료"
             )
         );
     }

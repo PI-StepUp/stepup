@@ -2,6 +2,7 @@ package com.pi.stepup.domain.user.dao;
 
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
@@ -93,5 +94,26 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void delete(User user) {
         em.remove(user);
+    }
+
+    @Override
+    public Optional<User> findByIdAndBirth(String id, LocalDate birth) {
+        Optional<User> user = null;
+
+        try {
+            user = Optional.ofNullable(
+                em.createQuery(
+                    "SELECT u FROM User u "
+                        + "WHERE u.id = :id AND u.birth = :birth", User.class
+                )
+                    .setParameter("id", id)
+                    .setParameter("birth", birth)
+                    .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            user = Optional.empty();
+        } finally {
+            return user;
+        }
     }
 }

@@ -12,6 +12,20 @@ spring:
         #      show_sql: true
         format_sql: true
         default_batch_fetch_size: 100
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: pi3.14stepup@gmail.com
+    password: cbbrvkwbayqcqjrq
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: false
+          timeout: 5000
+          starttls:
+            enable: true
+            required: true
 
 jwt:
   secret: XUrYUhZfrEWLtykR7h80CrcITM59YLt5CRi3AdqZu33

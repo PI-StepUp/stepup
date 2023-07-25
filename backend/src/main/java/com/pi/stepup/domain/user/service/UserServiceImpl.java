@@ -8,12 +8,14 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASS
 
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
+import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -22,6 +24,7 @@ import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +52,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public List<CountryResponseDto> readAllCountries() {
@@ -160,6 +164,24 @@ public class UserServiceImpl implements UserService {
         }
 
         user.updateUserBasicInfo(updateUserRequestDto, country);
+    }
+
+    @Override
+    public void findId(FindIdRequestDto findIdRequestDto) {
+        User user = userRepository.findByIdAndBirth(findIdRequestDto.getId(), findIdRequestDto.getBirth())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        String emailContent = EmailMessageMaker.makeEmailMessage("아이디 찾기 결과", "아이디", user.getId());
+
+        EmailMessage emailMessage = EmailMessage.builder()
+            .to(user.getEmail())
+            .subject("아이디 찾기 결과입니다.")
+            .message(emailContent)
+            .build();
+
+        logger.debug("[findId()] emailMessage : {}", emailMessage);
+
+        emailService.sendFindIdMail(emailMessage);
     }
 
     private void validateSignUpUserInfo(SignUpRequestDto signUpRequestDto) {
