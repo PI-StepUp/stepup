@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.dance.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pi.stepup.domain.music.domain.Music;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,18 +27,38 @@ public class DanceMusic {
     @Column(name = "DANCE_MUSIC_ID")
     private Long danceMusicId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RANDOM_DANCE_ID")
-    private RandomDance randomDance;
-
+//    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MUSIC_ID")
     private Music music;
 
-    @Builder
-    public DanceMusic(Long danceMusicId, RandomDance randomDance, Music music) {
-        this.danceMusicId = danceMusicId;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RANDOM_DANCE_ID")
+    private RandomDance randomDance;
+
+    public void setRandomDanceAndAddThis(RandomDance randomDance) {
         this.randomDance = randomDance;
+        randomDance.addDanceMusicAndSetThis(this);
+    }
+
+    public void setMusicAndAddThis(Music music) {
         this.music = music;
+    }
+
+//    @Builder
+//    public DanceMusic(Long danceMusicId, Music music, RandomDance randomDance) {
+//        this.danceMusicId = danceMusicId;
+//        this.music = music;
+//        this.randomDance = randomDance;
+//    }
+
+    public static DanceMusic createDanceMusic(Music music, RandomDance randomDance) {
+        DanceMusic danceMusic = new DanceMusic();
+
+        danceMusic.setMusicAndAddThis(music);
+        danceMusic.setRandomDanceAndAddThis(randomDance);
+
+        return danceMusic;
     }
 }
