@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,8 +32,10 @@ public class MusicServiceImpl implements MusicService {
     }
 
     @Override
-    public Optional<Music> readOne(Long musicId) {
-        return musicRepository.findOne(musicId);
+    public MusicFindResponseDto readOne(Long musicId) {
+        return MusicFindResponseDto.builder()
+                .music(musicRepository.findOne(musicId).orElseThrow())
+                .build();
     }
 
     public List<MusicFindResponseDto> readAll(String keyword) {
