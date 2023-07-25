@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.pi.stepup.domain.music.constant.MusicApplyLikeStatus.ADD;
+import static com.pi.stepup.domain.music.constant.MusicApplyLikeStatus.CANCEL;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -75,6 +78,15 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
         musicApplyRepository.insert(heart);
 
-        musicApplyRepository.update(heart.getMusicApply());
+        musicApplyRepository.update(heart.getMusicApply(), ADD);
+    }
+
+    @Override
+    public void deleteHeart(String id, Long musicRequestId) {
+        Heart heart = musicApplyRepository.findHeart(id, musicRequestId).orElseThrow();
+
+        musicApplyRepository.deleteHeart(heart.getHeartId());
+
+        musicApplyRepository.update(heart.getMusicApply(), CANCEL);
     }
 }

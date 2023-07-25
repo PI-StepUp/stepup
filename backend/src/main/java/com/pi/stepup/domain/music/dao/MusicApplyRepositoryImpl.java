@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.dao;
 
+import com.pi.stepup.domain.music.constant.MusicApplyLikeStatus;
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
+
+import static com.pi.stepup.domain.music.constant.MusicApplyLikeStatus.ADD;
 
 @Repository
 @RequiredArgsConstructor
@@ -63,6 +66,27 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    public Optional<Heart> findHeart(String id, Long musicApplyId) {
+        Optional<Heart> heart;
+
+        try {
+            heart = Optional.ofNullable(em.createQuery(
+                                    "SELECT h FROM Heart h " +
+                                            "WHERE h.user.id = :id " +
+                                            "AND h.musicApply.musicApplyId = :musicApplyId", Heart.class
+                            )
+                            .setParameter("id", id)
+                            .setParameter("musicApplyId", musicApplyId)
+                            .getSingleResult()
+
+            );
+        } catch (NoResultException e) {
+            heart = Optional.empty();
+        }
+        return heart;
+    }
+
+    @Override
     public void delete(Long musicApplyId) {
         MusicApply musicApply = em.find(MusicApply.class, musicApplyId);
         em.remove(musicApply);
@@ -75,8 +99,12 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public MusicApply update(MusicApply musicApply) {
-        musicApply.addHeart();
+    public MusicApply update(MusicApply musicApply, MusicApplyLikeStatus musicApplyLikeStatus) {
+        if (musicApplyLikeStatus == ADD) {
+            musicApply.addHeart();
+        } else {
+            musicApply.removeHeart();
+        }
         return musicApply;
     }
 }

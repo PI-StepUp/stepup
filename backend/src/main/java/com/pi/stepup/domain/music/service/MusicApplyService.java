@@ -18,5 +18,7 @@ public interface MusicApplyService {
 
     List<MusicApplyFindResponseDto> readAllById(String id);
 
-    void createHeart(HeartSaveRequestDto heart);
+    void createHeart(HeartSaveRequestDto heartSaveRequestDto);
+
+    void deleteHeart(String id, Long musicRequestId);
 }

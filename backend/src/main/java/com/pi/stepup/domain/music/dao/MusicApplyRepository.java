@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.dao;
 
+import com.pi.stepup.domain.music.constant.MusicApplyLikeStatus;
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 
@@ -13,6 +14,8 @@ public interface MusicApplyRepository {
 
     Optional<MusicApply> findOne(Long musicApplyId);
 
+    Optional<Heart> findHeart(String id, Long musicApplyId);
+
     List<MusicApply> findAll(String keyword);
 
     List<MusicApply> findById(String id);
@@ -21,5 +24,5 @@ public interface MusicApplyRepository {
 
     void deleteHeart(Long heartId);
 
-    MusicApply update(MusicApply musicApply);
+    MusicApply update(MusicApply musicApply, MusicApplyLikeStatus musicApplyLikeStatus);
 }
