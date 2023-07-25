@@ -1,8 +1,9 @@
 package com.pi.stepup.domain.user.service;
 
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_FAIL;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_FAIL;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_FAIL;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.EMAIL_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -10,6 +11,7 @@ import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.DeleteUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -17,6 +19,7 @@ import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,21 +58,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public void checkEmailDuplicated(CheckEmailRequestDto checkEmailRequestDto) {
         if (userRepository.findByEmail(checkEmailRequestDto.getEmail()).isPresent()) {
-            throw new EmailDuplicatedException(CHECK_EMAIL_DUPLICATED_FAIL.getMessage());
+            throw new EmailDuplicatedException(EMAIL_DUPLICATED.getMessage());
         }
     }
 
     @Override
     public void checkNicknameDuplicated(CheckNicknameRequestDto checkNicknameRequestDto) {
         if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
-            throw new NicknameDuplicatedException(CHECK_NICKNAME_DUPLICATED_FAIL.getMessage());
+            throw new NicknameDuplicatedException(NICKNAME_DUPLICATED.getMessage());
         }
     }
 
     @Override
     public void checkIdDuplicated(CheckIdRequestDto checkIdRequestDto) {
         if (userRepository.findById(checkIdRequestDto.getId()).isPresent()) {
-            throw new IdDuplicatedException(CHECK_ID_DUPLICATED_FAIL.getMessage());
+            throw new IdDuplicatedException(ID_DUPLICATED.getMessage());
         }
     }
 
@@ -111,6 +114,14 @@ public class UserServiceImpl implements UserService {
         return UserInfoResponseDto.builder()
             .user(userRepository.findById(id).orElseThrow())
             .build();
+    }
+
+    @Override
+    public void delete(DeleteUserRequestDto deleteUserRequestDto) {
+        User user = userRepository.findById(deleteUserRequestDto.getId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        userRepository.delete(user);
     }
 
     private TokenInfo setFirstAuthentication(String id, String password) {

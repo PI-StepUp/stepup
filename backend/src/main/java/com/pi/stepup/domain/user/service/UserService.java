@@ -4,6 +4,7 @@ import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.DeleteUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -25,4 +26,6 @@ public interface UserService {
     TokenInfo signUp(SignUpRequestDto signUpRequestDto);
 
     UserInfoResponseDto readOne(String id);
+
+    void delete(DeleteUserRequestDto deleteUserRequestDto);
 }
