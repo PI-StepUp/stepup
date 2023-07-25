@@ -101,7 +101,7 @@ public class DanceRepositoryTest {
         String updatedContent = "내용 업데이트";
 
         RandomDance updatedDance = RandomDance.builder()
-            .id(findDance.getRandomDanceId())
+            .randomDanceId(findDance.getRandomDanceId())
             .title(updatedTitle)
             .content(updatedContent)
             .startAt(findDance.getStartAt())
