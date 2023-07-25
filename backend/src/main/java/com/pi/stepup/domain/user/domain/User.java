@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.user.domain;
 
 import com.pi.stepup.domain.user.constant.UserRole;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.global.entity.BaseEntity;
 import java.time.LocalDate;
 import javax.persistence.Entity;
@@ -78,4 +79,18 @@ public class User extends BaseEntity {
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
+    public void updateUserBasicInfo(UpdateUserRequestDto updateUserRequestDto, Country country) {
+        this.email = updateUserRequestDto.getEmail();
+        this.emailAlert = updateUserRequestDto.getEmailAlert();
+        this.country = country;
+        this.nickname = updateUserRequestDto.getNickname();
+        this.profileImg = updateUserRequestDto.getProfileImg();
+    }
+
+    public void updatePassword(String encodedUpdatePassword) {
+        this.password = encodedUpdatePassword;
+    }
+
+    // TODO : 포인트, 랭크 수정 메서드 추가
 }
