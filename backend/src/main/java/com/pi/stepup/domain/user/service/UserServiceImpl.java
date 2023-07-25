@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean isSamePassword(String answerPassword, String comparePassword) {
-        if (comparePassword == null || comparePassword.equals("")) {
+        if (!StringUtils.hasText(comparePassword)) {
             return false;
         }
 
