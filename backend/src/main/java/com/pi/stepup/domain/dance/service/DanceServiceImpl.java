@@ -10,6 +10,7 @@ import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class DanceServiceImpl implements DanceService {
 
     @Override
     @Transactional
-    public RandomDance create(DanceCreateRequestDto danceCreateRequestDto) {
+    public RandomDance createDance(DanceCreateRequestDto danceCreateRequestDto) {
         RandomDance randomDance
             = RandomDance.builder()
             .title(danceCreateRequestDto.getTitle())
@@ -45,15 +46,7 @@ public class DanceServiceImpl implements DanceService {
         List<Long> danceMusicIdList = danceCreateRequestDto.getDanceMusicIdList();
         for (int i = 0; i < danceMusicIdList.size(); i++) {
             Music music = musicRepository.findOne(danceMusicIdList.get(i)).orElseThrow();
-//            DanceMusic danceMusic
-//                = DanceMusic.builder()
-////                .randomDance(randomDance)
-//                .music(music)
-//                .build();
             DanceMusic.createDanceMusic(music, randomDance);
-
-//            randomDance.addDanceMusicAndSetThis(danceMusic);
-//            danceMusic.setRandomDanceAndAddThis(randomDance);
         }
 
         RandomDance createdDance = danceRepository.insert(randomDance);
@@ -61,13 +54,13 @@ public class DanceServiceImpl implements DanceService {
     }
 
     @Override
-    public RandomDance readOne(Long randomDanceId) {
+    public RandomDance readDance(Long randomDanceId) {
         return danceRepository.findOne(randomDanceId).orElseThrow();
     }
 
     @Override
     @Transactional
-    public RandomDance update(DanceUpdateRequestDto danceUpdateRequestDto) {
+    public RandomDance updateDance(DanceUpdateRequestDto danceUpdateRequestDto) {
 //        RandomDance randomDance = danceUpdateRequestDto.toEntity();
 //        return danceRepository.update(randomDance);
         return null;
@@ -75,16 +68,26 @@ public class DanceServiceImpl implements DanceService {
 
     @Override
     @Transactional
-    public void delete(Long randomDanceId) {
+    public void deleteDance(Long randomDanceId) {
         danceRepository.delete(randomDanceId);
     }
 
+//    @Override
+//    public List<DanceMusic> readAllDanceMusic(Long randomDanceId) {
+//        return danceRepository.readAllDanceMusic(randomDanceId);
+//    }
+
     @Override
-    public List<DanceMusic> readAllMusic(Long randomDanceId) {
-//        RandomDance findDance = danceRepository.findOne(randomDanceId);
-//        danceRepository.findAllMusic(randomDanceId);
-//        return findDance.getDanceMusicList();
-        return null;
+    public List<Music> readAllMusic(Long randomDanceId) {
+        List<Music> allMusic = new ArrayList<>();
+
+        List<DanceMusic> danceMusicList = danceRepository.readAllDanceMusic(randomDanceId);
+        for(int i=0; i<danceMusicList.size(); i++) {
+            Long musicId = danceMusicList.get(i).getMusic().getMusicId();
+            Music findMusic = musicRepository.findOne(musicId).orElseThrow();
+            allMusic.add(findMusic);
+        }
+        return allMusic;
     }
 
 }

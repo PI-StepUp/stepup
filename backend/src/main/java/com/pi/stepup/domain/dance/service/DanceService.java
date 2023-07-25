@@ -4,17 +4,19 @@ import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
+import com.pi.stepup.domain.music.domain.Music;
+
 import java.util.List;
 
 public interface DanceService {
 
-    RandomDance create(DanceCreateRequestDto danceCreateRequestDto);
+    RandomDance createDance(DanceCreateRequestDto danceCreateRequestDto);
 
-    RandomDance readOne(Long randomDanceId);
+    RandomDance readDance(Long randomDanceId);
 
-    RandomDance update(DanceUpdateRequestDto danceUpdateRequestDto);
+    RandomDance updateDance(DanceUpdateRequestDto danceUpdateRequestDto);
 
-    void delete(Long randomDanceId);
+    void deleteDance(Long randomDanceId);
 
-    List<DanceMusic> readAllMusic(Long randomDanceId);
+    List<Music> readAllMusic(Long randomDanceId);
 }
