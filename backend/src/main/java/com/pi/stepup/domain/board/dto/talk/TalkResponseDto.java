@@ -2,6 +2,7 @@ package com.pi.stepup.domain.board.dto.talk;
 
 import com.pi.stepup.domain.board.domain.Comment;
 import com.pi.stepup.domain.board.domain.Talk;
+import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,10 +19,10 @@ public class TalkResponseDto {
         private final String fileURL;
         private final String boardType;
         private final int commentCnt;
-        private List<Comment> comments;
+        private final List<CommentInfoResponseDto> comments;
 
         @Builder
-        public TalkInfoResponseDto(Talk talk) {
+        public TalkInfoResponseDto(Talk talk, List<CommentInfoResponseDto> comments) {
             this.boardId = talk.getBoardId();
             this.title = talk.getTitle();
             this.content = talk.getContent();
@@ -30,7 +31,7 @@ public class TalkResponseDto {
             this.fileURL = talk.getFileURL();
             this.boardType = talk.getBoardType();
             this.commentCnt = talk.getCommentCnt();
-            this.comments = talk.getComments();
+            this.comments = comments;
         }
     }
 }
