@@ -5,6 +5,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DU
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
@@ -157,7 +158,7 @@ public class UserApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
-                "아이디 전송 완료"
+                FIND_ID_SUCCESS.getMessage()
             )
         );
     }
