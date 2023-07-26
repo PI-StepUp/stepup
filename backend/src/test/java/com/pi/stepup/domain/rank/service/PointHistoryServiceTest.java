@@ -55,7 +55,7 @@ class PointHistoryServiceTest {
         makeUser();
         makePointHistory();
         makePointUpdateReqeustDto();
-
+        makeRandomDance();
     }
 
     @Test
@@ -111,6 +111,7 @@ class PointHistoryServiceTest {
 
     private void makeRandomDance() {
         randomDance = RandomDance.builder()
+                .id(1L)
                 .title("title")
                 .content("content")
                 .danceType(DanceType.RANKING)
@@ -123,6 +124,7 @@ class PointHistoryServiceTest {
             PointHistory tmp = PointHistory.builder()
                     .user(user)
                     .randomDance(randomDance)
+                    .pointPolicy(pointPolicy)
                     .count(0)
                     .build();
             pointHistories.add(tmp);
