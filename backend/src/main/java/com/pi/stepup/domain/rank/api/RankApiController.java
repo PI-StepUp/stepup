@@ -2,6 +2,7 @@ package com.pi.stepup.domain.rank.api;
 
 import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
 import com.pi.stepup.domain.rank.service.PointHistoryService;
+import com.pi.stepup.domain.rank.service.RankService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import static com.pi.stepup.domain.rank.constant.RankResponseMessage.*;
 @Slf4j
 public class RankApiController {
     private final PointHistoryService pointHistoryService;
+    private final RankService rankService;
 
     @PostMapping("/point")
     public ResponseEntity<ResponseDto<?>> updatePoint(@RequestBody PointUpdateRequestDto pointUpdateRequestDto) {
@@ -40,6 +42,14 @@ public class RankApiController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_POINT_SUCCESS.getMessage(),
                 pointHistoryService.readPoint(id)
+        ));
+    }
+
+    @GetMapping("/my/grade/{id}")
+    public ResponseEntity<ResponseDto<?>> readUserRank(@PathVariable("id") String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                READ_RANK_SUCCESS.getMessage(),
+                rankService.readOne(id)
         ));
     }
 }
