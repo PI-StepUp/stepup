@@ -3,13 +3,14 @@ package com.pi.stepup.domain.dance.api;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.CREATE_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RANDOM_DANCE;
+//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_IN_PROGRESS_RANDOM_DANCE;
+//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_SCHEDULED_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RESERVE_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.UPDATE_OPEN_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_OPEN_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_DANCE_MUSIC;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_OPEN_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_DANCE_MUSIC;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RANDOM_DANCE;
+
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.RESERVE_RANDOM_DANCE;
 //import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
 //import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.ATTEND_RANDOM_DANCE;
