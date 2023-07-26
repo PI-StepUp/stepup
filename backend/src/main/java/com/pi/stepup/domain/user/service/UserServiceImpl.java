@@ -18,6 +18,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -27,6 +28,7 @@ import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.util.EmailMessageMaker;
+import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -189,6 +191,29 @@ public class UserServiceImpl implements UserService {
             .build();
 
         logger.debug("[findId()] emailMessage : {}", emailMessage);
+
+        emailService.sendFindIdMail(emailMessage);
+    }
+
+    @Override
+    public void findPassword(FindPasswordRequestDto findPasswordRequestDto) {
+        User user = userRepository.findByIdAndEmail(findPasswordRequestDto.getId(),
+                findPasswordRequestDto.getEmail())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        EmailContent emailContent = EmailContent.builder()
+            .emailGuideContent(EmailGuideContent.FIND_PASSWORD_GUIDE)
+            .nickname(user.getNickname())
+            .data(RandomPasswordGenerator.generateRandomPassword())
+            .build();
+
+        String convertedContent = EmailMessageMaker.makeEmailMessage(emailContent);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+            .to(user.getEmail())
+            .subject(emailContent.getEmailGuideContent().getMailTitle())
+            .message(convertedContent)
+            .build();
 
         emailService.sendFindIdMail(emailMessage);
     }

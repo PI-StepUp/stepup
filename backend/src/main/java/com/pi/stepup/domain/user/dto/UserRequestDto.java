@@ -103,6 +103,7 @@ public class UserRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FindIdRequestDto {
+
         private String id;
         private String birth;
 
@@ -111,5 +112,15 @@ public class UserRequestDto {
 
             return LocalDate.parse(birth, formatter);
         }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindPasswordRequestDto {
+
+        private String id;
+        private String email;
     }
 }
