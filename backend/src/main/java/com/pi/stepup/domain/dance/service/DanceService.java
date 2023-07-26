@@ -24,4 +24,6 @@ public interface DanceService {
     void createReservation(DanceReserveRequestDto danceReservationRequestDto);
 
     void deleteReservation(Long reservationId, String id);
+
+    List<DanceFindResponseDto> readAllMyReserveDance(String id);
 }

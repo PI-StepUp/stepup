@@ -124,4 +124,21 @@ public class DanceServiceImpl implements DanceService {
         danceRepository.deleteReserevation(reservation.getReservationId());
     }
 
+    @Override
+    public List<DanceFindResponseDto> readAllMyReserveDance(String id) {
+        List<DanceFindResponseDto> allMyRandomDance = new ArrayList<>();
+
+        Long userId = userRepository.findById(id).orElseThrow().getUserId();
+        List<Reservation> allMyReservation = danceRepository.findAllReservation(userId);
+        for(int i=0; i<allMyReservation.size(); i++) {
+            Long randomDanceId = allMyReservation.get(i).getRandomDance().getRandomDanceId();
+            RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow();
+            DanceFindResponseDto danceFindResponseDto
+                = DanceFindResponseDto.builder().randomDance(randomDance).build();
+            allMyRandomDance.add(danceFindResponseDto);
+        }
+
+        return allMyRandomDance;
+    }
+
 }
