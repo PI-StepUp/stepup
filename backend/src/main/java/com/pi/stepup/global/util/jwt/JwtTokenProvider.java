@@ -1,6 +1,14 @@
 package com.pi.stepup.global.util.jwt;
 
+import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.EXPIRED_TOKEN;
+import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.INVALID_TOKEN;
+import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.MALFORMED_HEADER;
+
 import com.pi.stepup.domain.user.dto.TokenInfo;
+import com.pi.stepup.global.error.exception.TokenException;
+import com.pi.stepup.global.util.jwt.exception.ExpiredTokenException;
+import com.pi.stepup.global.util.jwt.exception.InvalidTokenException;
+import com.pi.stepup.global.util.jwt.exception.MalformedHeaderException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -80,8 +88,8 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
-            // TODO : 권한 정보 없는 토큰에 대한 예외처리 필요
-            throw new RuntimeException("권한 정보가 없는 토큰");
+            // 권한 정보 없는 토큰
+            throw new InvalidTokenException(INVALID_TOKEN.getMessage());
         }
 
         // 클레임에서 권한 정보 가져오기
@@ -96,25 +104,15 @@ public class JwtTokenProvider {
     }
 
     // 토큰 검증 메서드
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws TokenException {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            // TODO : INVALID JWT TOKEN 예외처리
-            e.printStackTrace();
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new InvalidTokenException(INVALID_TOKEN.getMessage());
         } catch (ExpiredJwtException e) {
-            // TODO : 만료된 토큰에 대한 예외처리
-            e.printStackTrace();
-        } catch (UnsupportedJwtException e) {
-            // TODO : 지원하지 않는 jwt 토큰 형식에 대한 예외 처리
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO : jwt claim 정보가 비정상 적인 경우에 대한 예외 처리
-            e.printStackTrace();
+            throw new ExpiredTokenException(EXPIRED_TOKEN.getMessage());
         }
-
-        return false;
     }
 
     private Claims parseClaims(String accessToken) {
@@ -125,7 +123,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(accessToken)
                 .getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new ExpiredTokenException(EXPIRED_TOKEN.getMessage());
         }
 
     }
@@ -133,10 +131,14 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-            int tokenStartIndex = 7;
-            return bearerToken.substring(tokenStartIndex);
+        if (StringUtils.hasText(bearerToken)) {
+            if (bearerToken.startsWith("Bearer")) {
+                int tokenStartIndex = 7;
+                return bearerToken.substring(tokenStartIndex);
+            }
+            throw new MalformedHeaderException(MALFORMED_HEADER.getMessage());
         }
-        return null;
+
+        return bearerToken;
     }
 }
