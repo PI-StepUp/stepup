@@ -14,9 +14,6 @@ public interface DanceRepository {
     //개최 랜덤 플레이 댄스 하나 조회
     Optional<RandomDance> findOne(Long randomDanceId);
 
-    //개최 랜덤 플레이 댄스 수정
-    RandomDance update(RandomDance randomDance);
-
     //개최 랜덤 플레이 댄스 삭제
     void delete(Long randomDanceId);
 
@@ -27,7 +24,7 @@ public interface DanceRepository {
     List<RandomDance> findAllMyOpenDance(String id);
 
     //랜덤 플레이 댄스 전체 목록 조회
-    List<RandomDance> findAllDance();
+    List<RandomDance> findAllDance(String keyword);
 
     //랜덤 플레이 댄스 예약
     Reservation insertReservation(Reservation reservation);

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,13 +33,6 @@ public class DanceRepositoryImpl implements DanceRepository {
         } finally {
             return randomDance;
         }
-    }
-
-    //수정하기
-    @Override
-    public RandomDance update(RandomDance randomDance) {
-        RandomDance findDance = em.find(RandomDance.class, randomDance.getRandomDanceId());
-        return em.merge(findDance);
     }
 
     @Override
@@ -66,9 +60,15 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public List<RandomDance> findAllDance() {
-        return em.createQuery("SELECT r FROM RandomDance r", RandomDance.class)
-            .getResultList();
+    public List<RandomDance> findAllDance(String keyword) {
+        String sql = "SELECT r FROM RandomDance r ";
+
+        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
+            sql += "WHERE r.title LIKE concat('%', " + keyword + ", '%') OR " +
+                "r.content LIKE concat('%', " + keyword + ", '%')";
+        }
+
+        return em.createQuery(sql, RandomDance.class).getResultList();
     }
 
     @Override
