@@ -5,10 +5,12 @@ import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
+import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,34 +26,36 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     @Transactional
-    public MusicApply create(MusicApplySaveRequestDto musicApplySaveRequestDto) {
+    public void create(MusicApplySaveRequestDto musicApplySaveRequestDto) {
         // TODO : user not found exception 예외 처리
         User writer = userRepository.findById(musicApplySaveRequestDto.getWriterId()).orElseThrow();
         MusicApply musicApply = musicApplySaveRequestDto.toEntity(writer);
-        return musicApplyRepository.insert(musicApply);
+        musicApplyRepository.insert(musicApply);
     }
 
-    public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
+    public List<AllMusicApplyFindResponseDto> readAllByKeyword(String keyword) {
         return musicApplyRepository.findAll(keyword).stream()
-            .map(musicApply -> MusicApplyFindResponseDto.builder()
+            .map(musicApply -> AllMusicApplyFindResponseDto.builder()
                 .musicApply(musicApply)
                 .build())
             .collect(Collectors.toList());
     }
 
     @Override
-    public List<MusicApplyFindResponseDto> readAllById(String id) {
+    public List<AllMusicApplyFindResponseDto> readAllById(String id) {
         return musicApplyRepository.findById(id).stream()
-            .map(musicApply -> MusicApplyFindResponseDto.builder()
+            .map(musicApply -> AllMusicApplyFindResponseDto.builder()
                 .musicApply(musicApply)
                 .build())
             .collect(Collectors.toList());
     }
 
-    public MusicApplyFindResponseDto readOne(Long musicApplyId) {
+    @Override
+    public MusicApplyFindResponseDto readOne(String id, Long musicApplyId) {
         // TODO : not found exception 구현
         return MusicApplyFindResponseDto.builder()
             .musicApply(musicApplyRepository.findOne(musicApplyId).orElseThrow())
+            .canHeart(findHeartStatus(id, musicApplyId))
             .build();
     }
 
@@ -78,11 +82,23 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     @Transactional
     public void deleteHeart(String id, Long musicRequestId) {
-        Heart heart = musicApplyRepository.findHeart(id, musicRequestId);
+        Heart heart = musicApplyRepository.findHeart(id, musicRequestId).orElseThrow();
 
         musicApplyRepository.deleteHeart(heart.getHeartId());
 
+        // 이 부분 때문에 findHeart 안날림
         MusicApply musicApply = heart.getMusicApply();
         musicApply.removeHeart();
+    }
+
+    @Override
+    public Integer findHeartStatus(String id, Long musicApplyId) {
+        Optional<Heart> heart = musicApplyRepository.findHeart(id, musicApplyId);
+
+        if (heart.isPresent()) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 }

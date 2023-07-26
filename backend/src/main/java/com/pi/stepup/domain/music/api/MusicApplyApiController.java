@@ -5,6 +5,7 @@ import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.CREA
 import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.DELETE_MUSIC_APPLY_LIKE_SUCCESS;
 import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.DELETE_MUSIC_APPLY_SUCCESS;
 import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.READ_ALL_MUSIC_APPLY_SUCCESS;
+import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.READ_MUSIC_APPLY_HEART_STATUS_SUCCESS;
 import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.READ_MY_MUSIC_APPLY_SUCCESS;
 import static com.pi.stepup.domain.music.constant.MusicApplyResponseMessage.READ_ONE_MUSIC_APPLY_SUCCESS;
 
@@ -34,12 +35,11 @@ public class MusicApplyApiController {
     @PostMapping
     public ResponseEntity<ResponseDto<?>> createMusicApply(
         @RequestBody MusicApplySaveRequestDto musicApplySaveRequestDto) {
-        Long musicApplyId = musicApplyService.create(musicApplySaveRequestDto).getMusicApplyId();
+        musicApplyService.create(musicApplySaveRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ResponseDto.create(
-                CREATE_MUSIC_APPLY_SUCCESS.getMessage(),
-                musicApplyService.readOne(musicApplyId)
+                CREATE_MUSIC_APPLY_SUCCESS.getMessage()
             )
         );
     }
@@ -63,18 +63,19 @@ public class MusicApplyApiController {
         ));
     }
 
-    @GetMapping("/{musicRequestId}")
+    @GetMapping("/detail")
     public ResponseEntity<ResponseDto<?>> readOneMusicApply(
-        @PathVariable("musicRequestId") Long musicRequestId) {
+        @RequestParam(name = "id") String id,
+        @RequestParam(name = "musicApplyId") Long musicApplyId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             READ_ONE_MUSIC_APPLY_SUCCESS.getMessage(),
-            musicApplyService.readOne(musicRequestId)
+            musicApplyService.readOne(id, musicApplyId)
         ));
     }
 
-    @DeleteMapping("/{musicRequestId}")
+    @DeleteMapping("/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> deleteMusicApply(
-        @PathVariable("musicRequestId") Long musicRequestId) {
+        @PathVariable("musicApplyId") Long musicApplyId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_MUSIC_APPLY_SUCCESS.getMessage()
         ));
@@ -98,6 +99,16 @@ public class MusicApplyApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_MUSIC_APPLY_LIKE_SUCCESS.getMessage()
+        ));
+    }
+
+    @GetMapping("/heart")
+    public ResponseEntity<ResponseDto<?>> readMusicApplyHeartStatus(
+        @RequestParam(name = "id") String id,
+        @RequestParam(name = "musicApplyId") Long musicApplyId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+            READ_MUSIC_APPLY_HEART_STATUS_SUCCESS.getMessage(),
+            musicApplyService.findHeartStatus(id, musicApplyId)
         ));
     }
 }

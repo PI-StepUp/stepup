@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.google.gson.Gson;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
-import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
+import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.service.MusicApplyService;
 import com.pi.stepup.domain.user.domain.User;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ class MusicApplyApiControllerTest {
     @DisplayName("노래 신청 등록 테스트")
     @WithMockUser
     public void MusicApplyCreateControllerTest() throws Exception {
-        when(musicApplyService.create(musicApplySaveRequestDto)).thenReturn(musicApply);
+//        when(musicApplyService.create(musicApplySaveRequestDto)).thenReturn(musicApply);
 
         String url = "/api/music/apply";
         final ResultActions postAction = mockMvc.perform(
@@ -96,17 +96,16 @@ class MusicApplyApiControllerTest {
             .andDo(print());
     }
 
-    private List<MusicApplyFindResponseDto> makeMusicApply() {
-        List<MusicApplyFindResponseDto> musicApplies = new ArrayList<>();
+    private List<AllMusicApplyFindResponseDto> makeMusicApply() {
+        List<AllMusicApplyFindResponseDto> musicApplies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             MusicApply tmp = MusicApply.builder()
                 .title("title" + i)
                 .artist("artist" + (i + 1))
                 .writer(user)
                 .build();
-            musicApplies.add(new MusicApplyFindResponseDto(tmp));
+            musicApplies.add(new AllMusicApplyFindResponseDto(tmp));
         }
         return musicApplies;
     }
-
 }

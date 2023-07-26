@@ -12,6 +12,7 @@ import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
+import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -82,8 +83,8 @@ class MusicApplyServiceTest {
         when(musicApplyRepository.insert(any(MusicApply.class))).thenReturn(musicApply);
         when(userRepository.findById(any(String.class))).thenReturn(Optional.of(user));
 
-        MusicApply result = musicApplyService.create(musicApplySaveRequestDto);
-        assertThat(result.getTitle()).isEqualTo(musicApply.getTitle());
+        musicApplyService.create(musicApplySaveRequestDto);
+//        verify
     }
 
     @Test
@@ -94,7 +95,8 @@ class MusicApplyServiceTest {
         doReturn(makedMusicApply)
             .when(musicApplyRepository).findAll(keyword);
 
-        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(keyword);
+        List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
+            keyword);
         assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
     }
 
@@ -108,7 +110,8 @@ class MusicApplyServiceTest {
         doReturn(keywordMusicApply)
             .when(musicApplyRepository).findAll(keyword);
 
-        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(keyword);
+        List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
+            keyword);
         assertThat(musicApplies.size()).isEqualTo(keywordMusicApply.size());
     }
 
@@ -121,7 +124,8 @@ class MusicApplyServiceTest {
         doReturn(writerMusicApply)
             .when(musicApplyRepository).findById(user.getId());
 
-        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById(user.getId());
+        List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById(
+            user.getId());
         assertThat(musicApplies.size()).isEqualTo(writerMusicApply.size());
     }
 
@@ -131,7 +135,8 @@ class MusicApplyServiceTest {
     public void readOneMusicApplyServiceTest() {
         when(musicApplyRepository.findOne(any())).thenReturn(Optional.of(musicApply));
 
-        MusicApplyFindResponseDto result = musicApplyService.readOne(musicApply.getMusicApplyId());
+        MusicApplyFindResponseDto result = musicApplyService.readOne(user.getId(),
+            musicApply.getMusicApplyId());
 
         assertThat(result.getTitle()).isEqualTo(musicApply.getTitle());
     }
@@ -194,7 +199,7 @@ class MusicApplyServiceTest {
 
     @Test
     @DisplayName("노래 신청 좋아요 테스트")
-    public void musicApplyLikeServiceTest() {
+    public void musicApplyHeartServiceTest() {
         when(musicApplyRepository.insert(any(Heart.class))).thenReturn(heart);
 
         // TODO : heartCnt default value null pointer 예외 해결 할 것 (DB에는 잘 들어감)
@@ -205,14 +210,28 @@ class MusicApplyServiceTest {
 
     @Test
     @DisplayName("노래 신청 좋아요 취소 테스트")
-    public void musicApplyLikeCancelServiceTest() {
+    public void musicApplyHeartCancelServiceTest() {
         Long heartId = heart.getHeartId();
         // TODO : user, musicApply 더미 데이터 넣기
-        when(musicApplyRepository.findHeart(any(), any())).thenReturn(heart);
+        when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
 
         musicApplyService.deleteHeart(user.getId(), musicApply.getMusicApplyId());
 
         verify(musicApplyRepository, only()).deleteHeart(heartId);
+    }
+
+    @Test
+    @DisplayName("노래 신청 좋아요 상태 체크 테스트")
+    public void musicApplyHeartStatusTest() {
+        // TODO : Heart 테이블에 해당하는 user && musicApply 있는지 확인
+        when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
+
+        Integer canHeart = musicApplyService.findHeartStatus(user.getId(),
+            musicApply.getMusicApplyId());
+
+        // TODO : 좋아요 안눌렸으면 1, 눌려있으면 0
+        final Integer CAN_HEART = 1, CANNOT_HEART = 0;
+        assertThat(canHeart).isEqualTo(CAN_HEART);
     }
 
     private MusicApply updateMusicApply() {
