@@ -6,6 +6,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKN
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
@@ -17,6 +18,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
@@ -159,6 +161,18 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 FIND_ID_SUCCESS.getMessage()
+            )
+        );
+    }
+
+    @PostMapping("/findpw")
+    public ResponseEntity<ResponseDto<?>> findPassword(
+        @RequestBody FindPasswordRequestDto findPasswordRequestDto) {
+        userService.findPassword(findPasswordRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                FIND_PASSWORD_SUCCESS.getMessage()
             )
         );
     }
