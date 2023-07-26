@@ -2,6 +2,7 @@ package com.pi.stepup.domain.dance.api;
 
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.CREATE_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RESERVE_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.UPDATE_OPEN_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_OPEN_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_DANCE_MUSIC;
@@ -10,7 +11,6 @@ import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_AL
 //import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.RESERVE_RANDOM_DANCE;
 //import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RESERVE_RANDOM_DANCE;
 //import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.ATTEND_RANDOM_DANCE;
 //import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_ATTEND_RANDOM_DANCE;
 //import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_ATTEND_RANDOM_DANCE;
@@ -112,6 +112,19 @@ public class DanceApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_RESERVE_RANDOM_DANCE.getMessage()
+        ));
+    }
+
+    @GetMapping("/my/reserve")
+    public ResponseEntity<ResponseDto<?>> readAllMyReserveDance
+        (@RequestParam("id") String id) {
+
+        List<DanceFindResponseDto> allMyRandomDance
+            = danceService.readAllMyReserveDance(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+            SELECT_ALL_RESERVE_RANDOM_DANCE.getMessage(),
+            allMyRandomDance
         ));
     }
 
