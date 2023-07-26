@@ -6,12 +6,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
 public class MusicApply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,15 +31,23 @@ public class MusicApply {
     private User writer;
 
     @ColumnDefault("0")
-    private Integer likeCnt;
+    private Integer heartCnt;
 
     @Builder
-    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer likeCnt) {
+    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer heartCnt) {
         this.musicApplyId = musicApplyId;
         this.title = title;
         this.artist = artist;
         this.content = content;
         this.writer = writer;
-        this.likeCnt = likeCnt;
+        this.heartCnt = heartCnt;
+    }
+
+    public void addHeart() {
+        this.heartCnt += 1;
+    }
+
+    public void removeHeart() {
+        this.heartCnt -= 1;
     }
 }

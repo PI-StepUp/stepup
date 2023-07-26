@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.dao;
 
+import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ class MusicApplyRepositoryTest {
 
     private MusicApply musicApply;
     private User writer;
+    private Heart heart;
 
     @Test
     @BeforeEach
@@ -41,6 +43,11 @@ class MusicApplyRepositoryTest {
                 .artist("artist")
                 .content("content")
                 .writer(writer)
+                .build();
+
+        heart = Heart.builder()
+                .user(writer)
+                .musicApply(musicApply)
                 .build();
     }
 
@@ -148,5 +155,15 @@ class MusicApplyRepositoryTest {
 
     private void insertWriter() {
         em.persist(writer);
+    }
+
+    @Test
+    @DisplayName("노래 신청 좋아요 테스트")
+    public void musicApplyHeartRepositoryTest() {
+        em.persist(heart);
+
+        Heart result = musicApplyRepository.insert(heart);
+
+        assertThat(result).isEqualTo(heart);
     }
 }
