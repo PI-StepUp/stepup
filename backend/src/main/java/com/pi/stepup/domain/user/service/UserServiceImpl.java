@@ -19,6 +19,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -29,6 +30,7 @@ import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
+import com.pi.stepup.global.config.security.CustomUserDetails;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -198,6 +200,23 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    @Transactional
+    public TokenInfo reissueTokens(String refreshToken,
+        ReissueTokensRequestDto reissueTokensRequestDto) {
+        User user = userRepository.findById(reissueTokensRequestDto.getId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        if (jwtTokenProvider.validateToken(refreshToken) &&
+            refreshToken.equals(user.getRefreshToken())) {
+            TokenInfo tokenInfo = reissueTokensFromUser(user);
+            user.setRefreshToken(tokenInfo.getRefreshToken());
+            return tokenInfo;
+        }
+
+        throw new IllegalArgumentException("토큰 정보 미일치");
+    }
+
     private EmailMessage makeEmailMessage(
         EmailGuideContent emailGuideContent,
         String nickname,
@@ -254,6 +273,13 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    private TokenInfo reissueTokensFromUser(User user) {
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+        return jwtTokenProvider.generateToken(customUserDetails.getAuthorities(),
+            customUserDetails.getUsername());
+    }
+
     private TokenInfo setFirstAuthentication(String id, String password) {
         // 1. id, pw 기반 Authentication 객체 생성, 해당 객체는 인증 여부를 확인하는 authenticated 값이 false.
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -264,6 +290,7 @@ public class UserServiceImpl implements UserService {
             .authenticate(authenticationToken);
 
 //        return jwtTokenProvider.generateToken(authentication);
-        return jwtTokenProvider.generateToken(authentication.getAuthorities(), authentication.getName());
+        return jwtTokenProvider.generateToken(authentication.getAuthorities(),
+            authentication.getName());
     }
 }

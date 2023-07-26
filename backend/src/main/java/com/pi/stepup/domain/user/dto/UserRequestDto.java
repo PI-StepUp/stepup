@@ -123,4 +123,13 @@ public class UserRequestDto {
         private String id;
         private String email;
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ReissueTokensRequestDto {
+
+        private String id;
+    }
 }
