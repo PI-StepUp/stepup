@@ -133,6 +133,14 @@ progress {
 	font-size: 26px;
 }
 
+.history {
+	cursor: pointer;
+}
+
+.history:hover .img-profile{
+	transform: scale(1.05);
+}
+
 /* 내 예약 */
 .list {
 	position: relative;
@@ -277,7 +285,7 @@ details[open] summary p {
 	width: 104px;
 	height: 104px;
 	background-image: url("/public/images/icon-settings.svg");
-
+	
 }
 
 summary:hover .img-setting {
@@ -356,6 +364,8 @@ details[open] summary .img-vector {
 	color: #C1C0CE;
 	font-size: 24px;
 	font-weight: bold;
+	text-align: center;
+	line-height: 50px;
 }
 
 .rank>p {
