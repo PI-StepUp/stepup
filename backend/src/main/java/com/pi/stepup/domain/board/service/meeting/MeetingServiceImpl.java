@@ -1,11 +1,12 @@
 package com.pi.stepup.domain.board.service.meeting;
 
-import com.pi.stepup.domain.board.dao.comment.CommentRepository;
 import com.pi.stepup.domain.board.dao.meeting.MeetingRepository;
 import com.pi.stepup.domain.board.domain.Meeting;
-import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingUpdateRequestDto;
+import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResponseDto;
 import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingSaveRequestDto;
+import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto.MeetingInfoResponseDto;
+import com.pi.stepup.domain.board.service.comment.CommentService;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     private final MeetingRepository meetingRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
     @Transactional
     @Override
@@ -47,7 +48,14 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     @Override
     public Meeting update(MeetingUpdateRequestDto meetingUpdateRequestDto) {
-        return null;
+        Meeting meeting = meetingRepository.findOne(meetingUpdateRequestDto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+
+        meeting.update(meetingUpdateRequestDto.getTitle(), meetingUpdateRequestDto.getContent(),
+                meetingUpdateRequestDto.getFileURL(), meetingUpdateRequestDto.getRegion(),
+                meetingUpdateRequestDto.getStartAt(), meetingUpdateRequestDto.getEndAt());
+
+        return meeting;
     }
 
     @Transactional
@@ -62,8 +70,10 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     @Override
     public MeetingInfoResponseDto readOne(Long boardId) {
+        List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return MeetingInfoResponseDto.builder()
                 .meeting(meetingRepository.findOne(boardId).orElseThrow())
+                .comments(comments)
                 .build();
     }
 
