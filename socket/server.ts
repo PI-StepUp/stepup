@@ -54,8 +54,8 @@ io.on("connection", (socket) => {
       }
     });
 
-    socket.on("send_message", (data) => {
-      socket.to(data.room).emit("message", data);
+    socket.on("send_message", (data, roomName) => {
+      socket.to(roomName).emit("message", data);
     })
 
   
