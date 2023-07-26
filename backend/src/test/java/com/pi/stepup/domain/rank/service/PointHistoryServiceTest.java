@@ -83,6 +83,16 @@ class PointHistoryServiceTest {
         assertThat(pointHistories.size()).isEqualTo(pointHistoryFindResponseDtos.size());
     }
 
+    @Test
+    @DisplayName("포인트 조회 테스트")
+    public void readPointServiceTest() {
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
+
+        int point = pointHistoryService.readPoint(user.getId());
+
+        assertThat(point).isEqualTo(user.getPoint());
+    }
+
     private void makePointPolicy() {
         pointPolicy = PointPolicy.builder()
                 .pointType(FIRST_PRIZE)
