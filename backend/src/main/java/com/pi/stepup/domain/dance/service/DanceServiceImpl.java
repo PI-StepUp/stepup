@@ -2,9 +2,11 @@ package com.pi.stepup.domain.dance.service;
 
 import com.pi.stepup.domain.dance.constant.ProgressType;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
+import com.pi.stepup.domain.dance.domain.AttendHistory;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.domain.Reservation;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceAttendRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
@@ -50,8 +52,7 @@ public class DanceServiceImpl implements DanceService {
             randomDance.addDanceMusicAndSetThis(danceMusic);
         }
 
-        RandomDance createdDance = danceRepository.insert(randomDance);
-        log.debug("create: {}", createdDance);
+        danceRepository.insert(randomDance);
     }
 
     @Override
@@ -155,8 +156,7 @@ public class DanceServiceImpl implements DanceService {
         Reservation reservation
             = Reservation.builder().randomDance(randomDance).user(host).build();
 
-        Reservation createReservation = danceRepository.insertReservation(reservation);
-        log.debug("reserve: {}", createReservation);
+        danceRepository.insertReservation(reservation);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class DanceServiceImpl implements DanceService {
         Long userId = userRepository.findById(id).orElseThrow().getUserId();
         Reservation reservation = danceRepository.findReservation(randomDanceId, userId)
             .orElseThrow();
-        danceRepository.deleteReserevation(reservation.getReservationId());
+        danceRepository.deleteReservation(reservation.getReservationId());
     }
 
     @Override
@@ -172,9 +172,38 @@ public class DanceServiceImpl implements DanceService {
         List<DanceFindResponseDto> allMyRandomDance = new ArrayList<>();
 
         Long userId = userRepository.findById(id).orElseThrow().getUserId();
-        List<Reservation> allMyReservation = danceRepository.findAllReservation(userId);
+        List<Reservation> allMyReservation = danceRepository.findAllMyReservation(userId);
         for (int i = 0; i < allMyReservation.size(); i++) {
             Long randomDanceId = allMyReservation.get(i).getRandomDance().getRandomDanceId();
+            RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow();
+            DanceFindResponseDto danceFindResponseDto
+                = DanceFindResponseDto.builder().randomDance(randomDance).build();
+            allMyRandomDance.add(danceFindResponseDto);
+        }
+
+        return allMyRandomDance;
+    }
+
+    @Override
+    public void createAttend(DanceAttendRequestDto danceAttendRequestDto) {
+        User user = userRepository.findById(danceAttendRequestDto.getId()).orElseThrow();
+        RandomDance randomDance = danceRepository.findOne(danceAttendRequestDto.getRandomDanceId())
+            .orElseThrow();
+
+        AttendHistory attendHistory
+            = AttendHistory.builder().randomDance(randomDance).user(user).build();
+
+        AttendHistory createAttend = danceRepository.insertAttend(attendHistory);
+    }
+
+    @Override
+    public List<DanceFindResponseDto> readAllMyAttendDance(String id) {
+        List<DanceFindResponseDto> allMyRandomDance = new ArrayList<>();
+
+        Long userId = userRepository.findById(id).orElseThrow().getUserId();
+        List<AttendHistory> allMyAttend = danceRepository.findAllMyAttend(userId);
+        for (int i = 0; i < allMyAttend.size(); i++) {
+            Long randomDanceId = allMyAttend.get(i).getRandomDance().getRandomDanceId();
             RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow();
             DanceFindResponseDto danceFindResponseDto
                 = DanceFindResponseDto.builder().randomDance(randomDance).build();

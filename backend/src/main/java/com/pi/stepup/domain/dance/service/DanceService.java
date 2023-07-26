@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.dance.service;
 
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceAttendRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
@@ -29,4 +30,8 @@ public interface DanceService {
     void deleteReservation(Long reservationId, String id);
 
     List<DanceFindResponseDto> readAllMyReserveDance(String id);
+
+    void createAttend(DanceAttendRequestDto danceAttendRequestDto);
+
+    List<DanceFindResponseDto> readAllMyAttendDance(String id);
 }
