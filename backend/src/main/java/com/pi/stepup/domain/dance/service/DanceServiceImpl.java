@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.dance.service;
 
+import com.pi.stepup.domain.dance.constant.ProgressType;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
@@ -62,10 +63,10 @@ public class DanceServiceImpl implements DanceService {
     @Override
     @Transactional
     public void update(DanceUpdateRequestDto danceUpdateRequestDto) {
-        User host = userRepository.findById(danceUpdateRequestDto.getHostId()).orElseThrow();
-        RandomDance randomDance = danceUpdateRequestDto.toEntity(host);
-        RandomDance updateDance = danceRepository.update(randomDance);
-        log.debug("update: {}", updateDance);
+        RandomDance randomDance
+            = danceRepository.findOne(danceUpdateRequestDto.getRandomDanceId()).orElseThrow();
+
+        randomDance.update(danceUpdateRequestDto);
     }
 
     @Override
@@ -105,38 +106,39 @@ public class DanceServiceImpl implements DanceService {
     }
 
     @Override
-    public List<DanceFindResponseDto> readAllRandomDance(DanceSearchRequestDto danceSearchRequestDto) {
+    public List<DanceFindResponseDto> readAllRandomDance(
+        DanceSearchRequestDto danceSearchRequestDto) {
         List<DanceFindResponseDto> allScheduledDance = new ArrayList<>();
         List<DanceFindResponseDto> allInProgressDance = new ArrayList<>();
         List<DanceFindResponseDto> allDance = new ArrayList<>();
 
-        List<RandomDance> randomDanceList = danceRepository.findAllDance();
+        List<RandomDance> randomDanceList = danceRepository.findAllDance(
+            danceSearchRequestDto.getKeyword());
         LocalDateTime today = LocalDateTime.now();
-        for(int i=0; i<randomDanceList.size(); i++) {
+        for (int i = 0; i < randomDanceList.size(); i++) {
             DanceFindResponseDto danceFindResponseDto
                 = DanceFindResponseDto.builder().randomDance(randomDanceList.get(i)).build();
 
             //시작 시간이 현재보다 이후
-            if(danceFindResponseDto.getStartAt().isAfter(today)) {
+            if (danceFindResponseDto.getStartAt().isAfter(today)) {
                 allScheduledDance.add(danceFindResponseDto);
                 allDance.add(danceFindResponseDto);
 
-            //시작 시간이 현재보다 이전, 끝 시간이 현재보다 이후
-            } else if(danceFindResponseDto.getStartAt().isBefore(today)
+                //시작 시간이 현재보다 이전, 끝 시간이 현재보다 이후
+            } else if (danceFindResponseDto.getStartAt().isBefore(today)
                 && danceFindResponseDto.getEndAt().isAfter(today)) {
                 allInProgressDance.add(danceFindResponseDto);
                 allDance.add(danceFindResponseDto);
             }
         }
 
-        if(danceSearchRequestDto.getProgressType().equals("ALL")) {
-            log.debug("all: {}", allDance);
+        if (danceSearchRequestDto.getProgressType().equals(ProgressType.ALL.toString())) {
             return allDance;
-        } else if(danceSearchRequestDto.getProgressType().equals("IN_PROGRESS")) {
-            log.debug("in_progress: {}", allInProgressDance);
+        } else if (danceSearchRequestDto.getProgressType()
+            .equals(ProgressType.IN_PROGRESS.toString())) {
             return allInProgressDance;
-        } else if(danceSearchRequestDto.getProgressType().equals("SCHEDULED")) {
-            log.debug("scheduled: {}", allScheduledDance);
+        } else if (danceSearchRequestDto.getProgressType()
+            .equals(ProgressType.SCHEDULED.toString())) {
             return allScheduledDance;
         } else {
             return null;
@@ -160,7 +162,8 @@ public class DanceServiceImpl implements DanceService {
     @Override
     public void deleteReservation(Long randomDanceId, String id) {
         Long userId = userRepository.findById(id).orElseThrow().getUserId();
-        Reservation reservation = danceRepository.findReservation(randomDanceId, userId).orElseThrow();
+        Reservation reservation = danceRepository.findReservation(randomDanceId, userId)
+            .orElseThrow();
         danceRepository.deleteReserevation(reservation.getReservationId());
     }
 
@@ -170,7 +173,7 @@ public class DanceServiceImpl implements DanceService {
 
         Long userId = userRepository.findById(id).orElseThrow().getUserId();
         List<Reservation> allMyReservation = danceRepository.findAllReservation(userId);
-        for(int i=0; i<allMyReservation.size(); i++) {
+        for (int i = 0; i < allMyReservation.size(); i++) {
             Long randomDanceId = allMyReservation.get(i).getRandomDance().getRandomDanceId();
             RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow();
             DanceFindResponseDto danceFindResponseDto
