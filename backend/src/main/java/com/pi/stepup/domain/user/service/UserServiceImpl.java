@@ -6,8 +6,10 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_D
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 
+import com.pi.stepup.domain.user.constant.EmailGuideContent;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
+import com.pi.stepup.domain.user.domain.EmailContent;
 import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
@@ -168,15 +170,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void findId(FindIdRequestDto findIdRequestDto) {
-        User user = userRepository.findByIdAndBirth(findIdRequestDto.getId(), findIdRequestDto.getBirth())
+        User user = userRepository.findByIdAndBirth(findIdRequestDto.getId(),
+                findIdRequestDto.getBirth())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        String emailContent = EmailMessageMaker.makeEmailMessage("아이디 찾기 결과", "아이디", user.getId());
+        EmailContent emailContent = EmailContent.builder()
+            .emailGuideContent(EmailGuideContent.FIND_ID_GUIDE)
+            .nickname(user.getNickname())
+            .data(user.getId())
+            .build();
+
+        String convertedContent = EmailMessageMaker.makeEmailMessage(emailContent);
 
         EmailMessage emailMessage = EmailMessage.builder()
             .to(user.getEmail())
-            .subject("아이디 찾기 결과입니다.")
-            .message(emailContent)
+            .subject(emailContent.getEmailGuideContent().getMailTitle())
+            .message(convertedContent)
             .build();
 
         logger.debug("[findId()] emailMessage : {}", emailMessage);
