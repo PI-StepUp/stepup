@@ -267,6 +267,7 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = authenticationManagerBuilder.getObject()
             .authenticate(authenticationToken);
 
-        return jwtTokenProvider.generateToken(authentication);
+//        return jwtTokenProvider.generateToken(authentication);
+        return jwtTokenProvider.generateToken(authentication.getAuthorities(), authentication.getName());
     }
 }

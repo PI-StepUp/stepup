@@ -17,8 +17,6 @@ import java.util.Date;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,8 +31,6 @@ import org.springframework.util.StringUtils;
 @Component
 public class JwtTokenProvider {
 
-    private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
-
     private final Key key;
     private final long THIRTY_MINUTES = 1000 * 60 * 30;
     private final long ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -45,10 +41,11 @@ public class JwtTokenProvider {
     }
 
     // 유저 정보로 AccessToken, RefreshToken 생성하는 메서드
-    public TokenInfo generateToken(Authentication authentication) {
-        logger.debug("jwt token provide authentication : {}", authentication);
+    public TokenInfo generateToken(Collection<? extends GrantedAuthority> authorityInfo,
+        String id) {
+        log.debug("jwt token provide authentication : {}", authorityInfo);
         // 권한 가져옴
-        String authorities = authentication.getAuthorities().stream()
+        String authorities = authorityInfo.stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
@@ -57,7 +54,7 @@ public class JwtTokenProvider {
         // AccessToken 생성
         Date accessTokenExpiresIn = new Date(now + THIRTY_MINUTES);
         String accessToken = Jwts.builder()
-            .setSubject(authentication.getName())
+            .setSubject(id)
             .claim("auth", authorities)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -105,12 +102,16 @@ public class JwtTokenProvider {
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             // TODO : INVALID JWT TOKEN 예외처리
+            e.printStackTrace();
         } catch (ExpiredJwtException e) {
             // TODO : 만료된 토큰에 대한 예외처리
+            e.printStackTrace();
         } catch (UnsupportedJwtException e) {
             // TODO : 지원하지 않는 jwt 토큰 형식에 대한 예외 처리
+            e.printStackTrace();
         } catch (IllegalArgumentException e) {
             // TODO : jwt claim 정보가 비정상 적인 경우에 대한 예외 처리
+            e.printStackTrace();
         }
 
         return false;
