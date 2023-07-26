@@ -2,9 +2,11 @@ package com.pi.stepup.domain.board.service.talk;
 
 import com.pi.stepup.domain.board.dao.talk.TalkRepository;
 import com.pi.stepup.domain.board.domain.Talk;
+import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResponseDto;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkSaveRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkResponseDto.TalkInfoResponseDto;
+import com.pi.stepup.domain.board.service.comment.CommentService;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class TalkServiceImpl implements TalkService {
 
     private final TalkRepository talkRepository;
     private final UserRepository userRepository;
+    private final CommentService commentService;
 
     @Transactional
     @Override
@@ -35,13 +38,14 @@ public class TalkServiceImpl implements TalkService {
                 .fileURL(talkSaveRequestDto.getFileURL())
                 .build();
 
+        talkRepository.insert(talk);
+
         return talk;
     }
 
     @Transactional
     @Override
     public Talk update(TalkUpdateRequestDto talkUpdateRequestDto) {
-
         Talk talk = talkRepository.findOne(talkUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
 
@@ -63,9 +67,10 @@ public class TalkServiceImpl implements TalkService {
     @Transactional
     @Override
     public Optional<TalkInfoResponseDto> readOne(Long boardId) {
-
+        List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return Optional.ofNullable(TalkInfoResponseDto.builder()
                 .talk(talkRepository.findOne(boardId).orElseThrow())
+                .comments(comments)
                 .build());
     }
 
