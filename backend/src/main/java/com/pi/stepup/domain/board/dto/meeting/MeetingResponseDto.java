@@ -1,9 +1,7 @@
 package com.pi.stepup.domain.board.dto.meeting;
 
-import com.pi.stepup.domain.board.domain.Comment;
 import com.pi.stepup.domain.board.domain.Meeting;
-import com.pi.stepup.domain.board.domain.Notice;
-import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,11 +22,11 @@ public class MeetingResponseDto {
         private final String region;
         private final LocalDateTime startAt;
         private final LocalDateTime endAt;
-        private final List<Comment> comments;
-        private int commentCnt;
+        private final List<CommentInfoResponseDto> comments;
+        private final int commentCnt;
 
         @Builder
-        public MeetingInfoResponseDto(Meeting meeting) {
+        public MeetingInfoResponseDto(Meeting meeting, List<CommentInfoResponseDto> comments) {
             this.boardId = meeting.getBoardId();
             this.title = meeting.getTitle();
             this.content = meeting.getContent();
@@ -39,7 +37,7 @@ public class MeetingResponseDto {
             this.region = meeting.getRegion();
             this.startAt = meeting.getStartAt();
             this.endAt = meeting.getEndAt();
-            this.comments = meeting.getComments();
+            this.comments = comments;
             this.commentCnt = meeting.getCommentCnt();
         }
     }
