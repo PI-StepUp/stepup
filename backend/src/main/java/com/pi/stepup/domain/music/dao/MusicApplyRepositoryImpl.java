@@ -63,15 +63,24 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public Heart findHeart(String id, Long musicApplyId) {
-        return em.createQuery(
-                "SELECT h FROM Heart h " +
-                    "WHERE h.user.id = :id " +
-                    "AND h.musicApply.musicApplyId = :musicApplyId", Heart.class
-            )
-            .setParameter("id", id)
-            .setParameter("musicApplyId", musicApplyId)
-            .getSingleResult();
+    public Optional<Heart> findHeart(String id, Long musicApplyId) {
+        Optional<Heart> heart;
+
+        try {
+            heart = Optional.ofNullable(em.createQuery(
+                        "SELECT h FROM Heart h " +
+                            "WHERE h.user.id = :id " +
+                            "AND h.musicApply.musicApplyId = :musicApplyId", Heart.class
+                    )
+                    .setParameter("id", id)
+                    .setParameter("musicApplyId", musicApplyId)
+                    .getSingleResult()
+
+            );
+        } catch (NoResultException e) {
+            heart = Optional.empty();
+        }
+        return heart;
     }
 
     @Override
