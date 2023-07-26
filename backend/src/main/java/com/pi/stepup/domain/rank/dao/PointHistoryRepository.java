@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface PointHistoryRepository {
     List<PointHistory> findAll();
+
+    PointHistory insert(PointHistory pointHistory);
 }

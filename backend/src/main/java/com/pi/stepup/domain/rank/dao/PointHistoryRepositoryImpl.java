@@ -19,4 +19,10 @@ public class PointHistoryRepositoryImpl implements PointHistoryRepository {
                 )
                 .getResultList();
     }
+
+    @Override
+    public PointHistory insert(PointHistory pointHistory) {
+        em.persist(pointHistory);
+        return pointHistory;
+    }
 }
