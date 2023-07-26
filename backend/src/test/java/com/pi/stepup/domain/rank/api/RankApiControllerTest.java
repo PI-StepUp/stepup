@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.pi.stepup.domain.rank.constant.PointType.FIRST_PRIZE;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RankApiController.class)
@@ -62,6 +63,18 @@ class RankApiControllerTest {
         );
 
         postAction.andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("포인트 적립 내역 조회 api 테스트")
+    public void readAllPointHistoryApiTest() throws Exception{
+        String url = "/api/rank/my/history/" + user.getId();
+
+        final ResultActions getAction = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isOk()).andDo(print());
     }
 
     private void makePointPolicy() {
