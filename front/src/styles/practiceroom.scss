@@ -45,9 +45,10 @@
             }
             .yours-video{
                 @include setSize(50%, 100%);
+                @include flex(center, center);
                 background-color:#CBD1D1;
                 ul{
-                    @include flex;
+                    @include flex(center, center);
                     flex-wrap:wrap;
                     li{
                         @include setSize(100%, 100%);
