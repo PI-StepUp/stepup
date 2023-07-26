@@ -47,4 +47,10 @@ public class PointHistoryServiceImpl implements PointHistoryService {
                 )
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Integer readPoint(String id) {
+        User user = userRepository.findById(id).orElseThrow();
+        return user.getPoint();
+    }
 }

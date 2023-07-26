@@ -9,4 +9,6 @@ public interface PointHistoryService {
     void update(PointUpdateRequestDto pointUpdateRequestDto);
 
     List<PointHistoryFindResponseDto> readAll();
+
+    Integer readPoint(String id);
 }
