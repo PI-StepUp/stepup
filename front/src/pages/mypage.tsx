@@ -1,3 +1,6 @@
+import React, { useState, useRef } from "react";
+import Link from "next/link"
+
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import Image from "next/image"
@@ -7,8 +10,21 @@ import img_notice from "/public/images/icon-notice.png"
 import img_offline from "/public/images/icon-offline.png"
 import img_requestsong from "/public/images/icon-requestsong.png"
 import img_board from "/public/images/icon-board.png"
+import img_settings from "/public/images/icon-settings.svg"
+import img_vector from "/public/images/icon-vector.png"
+
+import { useRecoilState } from "recoil";
+import { LanguageState } from "states/states";
 
 const MyPage = () => {
+  const [lang, setLang] = useRecoilState(LanguageState);
+
+  // 작성한 게시글 목록으로 스크롤 이동
+  const list = useRef<HTMLDivElement>(null);
+  const scrollEvent = () => {
+    list.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <>
       <Header />
@@ -18,25 +34,26 @@ const MyPage = () => {
             <li>
               <div className="info">
                 <div className="cnt">3</div>
-                <div className="cnt-title">예약된 랜플댄</div>
+                <div className="cnt-title">{lang === "en" ? "RESERVATION" : lang === "cn" ? "预订" : "예약된 랜플댄"}</div>
                 <div className="btn-info">
-                  <a href="">랜플댄 시간표 보기</a>
+                  <Link href="/randomplay/list">{lang === "en" ? "RPDance LIST" : lang === "cn" ? "舞蹈清单" : "랜플댄 목록 보기"}</Link>
                 </div>
               </div>
             </li>
             <li>
-              <div className="info">
+              {/* 프로필 클릭 시 포인트 적립 내역 모달창 추가 필요 */}
+              <div className="info history">
                 <div className="img-profile">
                   <Image className="img" src={img_profile} alt="profile"></Image>
                 </div>
                 <div>
                   <progress value="985" max="2000"></progress>
                   <div className="progress-text">
-                    <p>다음 랭킹까지 1,015</p>
+                    <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} 1,015</p>
                     <p>985/2,000</p>
                   </div>
                   <div className="info-user">
-                    <p className="ranking">골드</p>
+                    <p className="ranking">{lang === "en" ? "GOLD" : lang === "cn" ? "金子" : "골드"}</p>
                     <p className="name">김싸피</p>
                   </div>
                 </div>
@@ -45,9 +62,9 @@ const MyPage = () => {
             <li>
               <div className="info">
                 <div className="cnt">3</div>
-                <div className="cnt-title">작성한 글 수</div>
+                <div className="cnt-title">{lang === "en" ? "Number of POSTS" : lang === "cn" ? "撰写的帖子数量" : "작성한 글 수"}</div>
                 <div className="btn-info">
-                  <a href="">게시글 확인하기</a>
+                  <div onClick={scrollEvent}>{lang === "en" ? "CHECK POSTS" : lang === "cn" ? "检查帖子" : "게시글 확인하기"}</div>
                 </div>
               </div>
             </li>
@@ -56,7 +73,7 @@ const MyPage = () => {
         {/* end - profile information */}
         <div>
           <ul className="list">
-            <div>내 예약</div>
+            <div>{lang === "en" ? "My Reservation" : lang === "cn" ? "我的预订" : "내 예약"}</div>
             <li className="contents">
               <div className="img-box">
                 <Image className="img" src={img_rpdance} alt="reserved"></Image>
@@ -67,8 +84,8 @@ const MyPage = () => {
                 <div className="learner">Learner</div>
               </div>
               <div className="btn-contents">
-                <a href="">예약 취소</a>
-                <a href="">방 생성 취소</a>
+                <a href="">{lang === "en" ? "Host - Cancel" : lang === "cn" ? "取消活动" : "방 생성 취소"}</a>
+                <a href="">{lang === "en" ? "Cancel" : lang === "cn" ? "取消参与" : "예약 취소"}</a>
               </div>
             </li>
             {/* end - one reservation*/}
@@ -82,8 +99,8 @@ const MyPage = () => {
                 <div className="learner">Learner</div>
               </div>
               <div className="btn-contents">
-                <a href="">예약 취소</a>
-                <a href="">방 생성 취소</a>
+                <a href="">{lang === "en" ? "Host - Cancel" : lang === "cn" ? "取消活动" : "방 생성 취소"}</a>
+                <a href="">{lang === "en" ? "Cancel" : lang === "cn" ? "取消参与" : "예약 취소"}</a>
               </div>
             </li>
             <li className="contents">
@@ -96,8 +113,8 @@ const MyPage = () => {
                 <div className="learner">Learner</div>
               </div>
               <div className="btn-contents">
-                <a href="">예약 취소</a>
-                <a href="">방 생성 취소</a>
+                <a href="">{lang === "en" ? "Host - Cancel" : lang === "cn" ? "取消活动" : "방 생성 취소"}</a>
+                <a href="">{lang === "en" ? "Cancel" : lang === "cn" ? "取消参与" : "예약 취소"}</a>
               </div>
             </li>
           </ul>
@@ -106,14 +123,16 @@ const MyPage = () => {
         <div className="settings">
           <details>
             <summary>
-              <div className="img-setting"></div>
-              <p className="settings-title">회원 정보 수정</p>
-              <div className="img-vector"></div>
+              <Image src={img_settings} className="img-setting"></Image>
+              <p className="settings-title">{lang === "en" ? "Edit My Info" : lang === "cn" ? "编辑会员信息" : "회원 정보 수정"}</p>
+              <Image className="img-vector" src={img_vector}></Image>
             </summary>
             <div className="enter-password">
-              <p>현재 비밀번호</p>
+              <p>{lang === "en" ? "Password" : lang === "cn" ? "密码" : "현재 비밀번호"}</p>
               <input className="pw" type="password" />
-              <input className="btn-submit" type="submit" />
+              <div className="btn-submit">
+                <Link href="/mypageedit">{lang === "en" ? "Enter" : lang === "cn" ? "输入" : "입력"}</Link>
+              </div>
             </div>
           </details>
         </div>
@@ -165,7 +184,7 @@ const MyPage = () => {
           </ul>
         </div>
         {/* end - past random play dance */}
-        <div>
+        <div ref={list}>
           <ul className="list">
             <div>작성한 글</div>
             <li className="contents">
@@ -230,3 +249,9 @@ const MyPage = () => {
 }
 
 export default MyPage;
+
+function ModalInfo() {
+  return {
+
+  }
+}
