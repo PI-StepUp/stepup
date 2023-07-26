@@ -1,6 +1,14 @@
 package com.pi.stepup.global.util.jwt;
 
+import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.EXPIRED_TOKEN;
+import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.INVALID_TOKEN;
+import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.MALFORMED_HEADER;
+
 import com.pi.stepup.domain.user.dto.TokenInfo;
+import com.pi.stepup.global.error.exception.TokenException;
+import com.pi.stepup.global.util.jwt.exception.ExpiredTokenException;
+import com.pi.stepup.global.util.jwt.exception.InvalidTokenException;
+import com.pi.stepup.global.util.jwt.exception.MalformedHeaderException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -15,9 +23,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,12 +33,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
-
-    private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     private final Key key;
     private final long THIRTY_MINUTES = 1000 * 60 * 30;
@@ -43,10 +49,11 @@ public class JwtTokenProvider {
     }
 
     // 유저 정보로 AccessToken, RefreshToken 생성하는 메서드
-    public TokenInfo generateToken(Authentication authentication) {
-        logger.debug("jwt token provide authentication : {}", authentication);
+    public TokenInfo generateToken(Collection<? extends GrantedAuthority> authorityInfo,
+        String id) {
+        log.debug("jwt token provide authentication : {}", authorityInfo);
         // 권한 가져옴
-        String authorities = authentication.getAuthorities().stream()
+        String authorities = authorityInfo.stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
@@ -55,7 +62,7 @@ public class JwtTokenProvider {
         // AccessToken 생성
         Date accessTokenExpiresIn = new Date(now + THIRTY_MINUTES);
         String accessToken = Jwts.builder()
-            .setSubject(authentication.getName())
+            .setSubject(id)
             .claim("auth", authorities)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS256)
@@ -81,8 +88,8 @@ public class JwtTokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
-            // TODO : 권한 정보 없는 토큰에 대한 예외처리 필요
-            throw new RuntimeException("권한 정보가 없는 토큰");
+            // 권한 정보 없는 토큰
+            throw new InvalidTokenException(INVALID_TOKEN.getMessage());
         }
 
         // 클레임에서 권한 정보 가져오기
@@ -97,21 +104,15 @@ public class JwtTokenProvider {
     }
 
     // 토큰 검증 메서드
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws TokenException {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            // TODO : INVALID JWT TOKEN 예외처리
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new InvalidTokenException(INVALID_TOKEN.getMessage());
         } catch (ExpiredJwtException e) {
-            // TODO : 만료된 토큰에 대한 예외처리
-        } catch (UnsupportedJwtException e) {
-            // TODO : 지원하지 않는 jwt 토큰 형식에 대한 예외 처리
-        } catch (IllegalArgumentException e) {
-            // TODO : jwt claim 정보가 비정상 적인 경우에 대한 예외 처리
+            throw new ExpiredTokenException(EXPIRED_TOKEN.getMessage());
         }
-
-        return false;
     }
 
     private Claims parseClaims(String accessToken) {
@@ -122,9 +123,22 @@ public class JwtTokenProvider {
                 .parseClaimsJws(accessToken)
                 .getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            throw new ExpiredTokenException(EXPIRED_TOKEN.getMessage());
         }
 
     }
 
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(bearerToken)) {
+            if (bearerToken.startsWith("Bearer")) {
+                int tokenStartIndex = 7;
+                return bearerToken.substring(tokenStartIndex);
+            }
+            throw new MalformedHeaderException(MALFORMED_HEADER.getMessage());
+        }
+
+        return bearerToken;
+    }
 }

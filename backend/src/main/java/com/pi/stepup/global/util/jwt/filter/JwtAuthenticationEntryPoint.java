@@ -1,13 +1,15 @@
 package com.pi.stepup.global.util.jwt.filter;
 
+import static com.pi.stepup.global.error.constant.ExceptionMessage.AUTHENTICATION_FAILED;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pi.stepup.global.dto.ResponseDto;
-import com.pi.stepup.global.error.constant.ExceptionMessage;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Component;
  * 인증 되지 않은 접근에 대한 예외 처리 클래스
  */
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -35,7 +38,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         response.getWriter().write(
             objectMapper.writeValueAsString(
-                ResponseDto.create(ExceptionMessage.AUTHENTICATION_FAILED.getMessage())
+                ResponseDto.create(AUTHENTICATION_FAILED.getMessage())
             )
         );
     }

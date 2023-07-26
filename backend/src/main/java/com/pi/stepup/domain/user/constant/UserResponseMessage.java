@@ -12,7 +12,8 @@ public enum UserResponseMessage {
     CHECK_PASSWORD_SUCCESS("비밀번호 일치"),
     UPDATE_USER_SUCCESS("회원정보 수정 완료"),
     FIND_ID_SUCCESS("아이디 전송 완료"),
-    FIND_PASSWORD_SUCCESS("임시 비밀번호 전송 완료");
+    FIND_PASSWORD_SUCCESS("임시 비밀번호 전송 완료"),
+    REISSUE_TOKENS_SUCCESS("토큰 재발급 완료");
 
     private final String message;
 
