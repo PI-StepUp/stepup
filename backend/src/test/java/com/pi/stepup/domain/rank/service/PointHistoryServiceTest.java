@@ -50,7 +50,7 @@ class PointHistoryServiceTest {
     }
 
     @Test
-    public void insertPointRepoTest() {
+    public void pointUpdateServiceTest() {
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
         when(pointPolicyRepository.findOne(any())).thenReturn(Optional.ofNullable(pointPolicy));
 
