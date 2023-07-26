@@ -24,16 +24,17 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User host;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RANDOM_DANCE_ID")
     private RandomDance randomDance;
 
     @Builder
-    public Reservation(Long reservationId, User host, RandomDance randomDance) {
+    public Reservation(Long reservationId, User user, RandomDance randomDance) {
         this.reservationId = reservationId;
-        this.host = host;
+        this.user = user;
         this.randomDance = randomDance;
     }
+
 }
