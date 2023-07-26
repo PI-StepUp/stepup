@@ -1,5 +1,7 @@
 package com.pi.stepup.domain.rank.dao;
 
+import com.pi.stepup.domain.dance.constant.DanceType;
+import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.rank.domain.PointHistory;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.user.domain.User;
@@ -32,6 +34,7 @@ class PointHistoryRepositoryTest {
     private User user;
     private PointPolicy pointPolicy;
     private List<PointHistory> pointHistories;
+    private RandomDance randomDance;
 
     @Test
     @BeforeEach
@@ -59,7 +62,12 @@ class PointHistoryRepositoryTest {
     private List<PointHistory> makePointHistories() {
         pointHistories = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            pointHistories.add(pointHistory);
+            PointHistory tmp = PointHistory.builder()
+                    .user(user)
+                    .randomDance(randomDance)
+                    .count(0)
+                    .build();
+            pointHistories.add(tmp);
         }
         return pointHistories;
     }
@@ -69,6 +77,7 @@ class PointHistoryRepositoryTest {
                 .pointType(FIRST_PRIZE)
                 .point(100)
                 .build();
+        em.persist(pointPolicy);
     }
 
     private void makeUser() {
@@ -77,14 +86,24 @@ class PointHistoryRepositoryTest {
                 .password("pass")
                 .point(0)
                 .build();
+        em.persist(user);
     }
 
     private void makePointHistory() {
         pointHistory = PointHistory.builder()
                 .pointPolicy(pointPolicy)
                 .user(user)
+                .randomDance(randomDance)
                 .count(0)
                 .build();
     }
 
+    private void makeRandomDance() {
+        randomDance = RandomDance.builder()
+                .title("title")
+                .content("content")
+                .danceType(DanceType.RANKING)
+                .build();
+        em.persist(randomDance);
+    }
 }
