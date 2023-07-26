@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -49,8 +47,6 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
-
-    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -91,7 +87,7 @@ public class UserServiceImpl implements UserService {
     public TokenInfo login(AuthenticationRequestDto authenticationRequestDto) {
         TokenInfo tokenInfo = setFirstAuthentication(authenticationRequestDto.getId(),
             authenticationRequestDto.getPassword());
-        logger.debug("login token : {}", tokenInfo);
+        log.debug("login token : {}", tokenInfo);
 
         User user = userRepository.findById(authenticationRequestDto.getId()).get();
         user.setRefreshToken(tokenInfo.getRefreshToken());
@@ -110,11 +106,11 @@ public class UserServiceImpl implements UserService {
 
         userRepository.insert(user);
 
-        logger.debug("user : {}", user);
+        log.debug("user : {}", user);
 
         TokenInfo tokenInfo = setFirstAuthentication(signUpRequestDto.getId(),
             signUpRequestDto.getPassword());
-        logger.debug("token : {}", tokenInfo);
+        log.debug("token : {}", tokenInfo);
 
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
@@ -136,7 +132,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        logger.debug("[delete()] user : {}", user);
+        log.debug("[delete()] user : {}", user);
 
         userRepository.delete(user);
     }

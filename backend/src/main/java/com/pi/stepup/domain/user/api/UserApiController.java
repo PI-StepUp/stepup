@@ -25,8 +25,6 @@ import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,7 +42,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserApiController {
 
     private final UserService userService;
-    private final Logger logger = LoggerFactory.getLogger(UserApiController.class);
 
     @GetMapping("/country")
     public ResponseEntity<ResponseDto<?>> readAllCountries() {
@@ -143,7 +140,7 @@ public class UserApiController {
     @PutMapping("")
     public ResponseEntity<ResponseDto<?>> update(
         @RequestBody UpdateUserRequestDto updateUserRequestDto) {
-        logger.debug("[update()] updateUserRequestDto : {}", updateUserRequestDto);
+        log.debug("[update()] updateUserRequestDto : {}", updateUserRequestDto);
 
         userService.update(updateUserRequestDto);
 
