@@ -11,9 +11,7 @@ public interface MeetingRepository {
 
     Optional<Meeting> findOne(Long boardId);
 
-    List<Meeting> findAll();
-
-    List<Meeting> findAllByKeyword(String keyword);
+    List<Meeting> findAll(String keyword);
 
     void delete(Long boardId);
 }
