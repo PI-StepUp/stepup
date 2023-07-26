@@ -1,13 +1,18 @@
 package com.pi.stepup.domain.rank.service;
 
+import com.pi.stepup.domain.rank.dao.PointHistoryRepository;
 import com.pi.stepup.domain.rank.dao.PointPolicyRepository;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
+import com.pi.stepup.domain.rank.dto.RankResponseDto.PointHistoryFindResponseDto;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointHistoryServiceImpl implements PointHistoryService {
     private final UserRepository userRepository;
     private final PointPolicyRepository pointPolicyRepository;
+    private final PointHistoryRepository pointHistoryRepository;
 
     @Override
     @Transactional
@@ -23,5 +29,16 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         PointPolicy pointPolicy = pointPolicyRepository.findOne(pointUpdateRequestDto.getPointPolicyId()).orElseThrow();
         Integer point = pointUpdateRequestDto.getCount() * pointPolicy.getPoint();
         user.updatePoint(point);
+    }
+
+    @Override
+    public List<PointHistoryFindResponseDto> readAll() {
+        return pointHistoryRepository.findAll().stream()
+                .map(
+                        pointHistory -> PointHistoryFindResponseDto.builder()
+                                .pointHistory(pointHistory)
+                                .build()
+                )
+                .collect(Collectors.toList());
     }
 }
