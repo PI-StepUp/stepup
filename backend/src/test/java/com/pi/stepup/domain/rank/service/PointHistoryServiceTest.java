@@ -67,6 +67,8 @@ class PointHistoryServiceTest {
         pointHistoryService.update(pointUpdateRequestDto);
 
         assertThat(user.getPoint()).isEqualTo(FIRST_PRIZE.getPoint() * 2);
+
+        // TODO : point history 테이블에 데이터 들어갔는지 테스트
     }
 
     @Test
