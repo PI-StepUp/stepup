@@ -1,22 +1,19 @@
 package com.pi.stepup.domain.music.dao;
 
-import com.pi.stepup.domain.music.constant.MusicApplyLikeStatus;
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import java.util.List;
-import java.util.Optional;
-
-import static com.pi.stepup.domain.music.constant.MusicApplyLikeStatus.ADD;
-
 @Repository
 @RequiredArgsConstructor
 public class MusicApplyRepositoryImpl implements MusicApplyRepository {
+
     private final EntityManager em;
 
     @Override
@@ -37,7 +34,7 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE concat('%', " + keyword + ", '%') OR " +
-                    "ma.artist LIKE concat('%', " + keyword + ", '%')";
+                "ma.artist LIKE concat('%', " + keyword + ", '%')";
         }
 
         return em.createQuery(sql, MusicApply.class).getResultList();
@@ -46,11 +43,11 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     @Override
     public List<MusicApply> findById(String id) {
         return em.createQuery(
-                        "SELECT ma FROM MusicApply ma " +
-                                "WHERE ma.writer.id = :id", MusicApply.class
-                )
-                .setParameter("id", id)
-                .getResultList();
+                "SELECT ma FROM MusicApply ma " +
+                    "WHERE ma.writer.id = :id", MusicApply.class
+            )
+            .setParameter("id", id)
+            .getResultList();
     }
 
     @Override
@@ -66,24 +63,15 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public Optional<Heart> findHeart(String id, Long musicApplyId) {
-        Optional<Heart> heart;
-
-        try {
-            heart = Optional.ofNullable(em.createQuery(
-                                    "SELECT h FROM Heart h " +
-                                            "WHERE h.user.id = :id " +
-                                            "AND h.musicApply.musicApplyId = :musicApplyId", Heart.class
-                            )
-                            .setParameter("id", id)
-                            .setParameter("musicApplyId", musicApplyId)
-                            .getSingleResult()
-
-            );
-        } catch (NoResultException e) {
-            heart = Optional.empty();
-        }
-        return heart;
+    public Heart findHeart(String id, Long musicApplyId) {
+        return em.createQuery(
+                "SELECT h FROM Heart h " +
+                    "WHERE h.user.id = :id " +
+                    "AND h.musicApply.musicApplyId = :musicApplyId", Heart.class
+            )
+            .setParameter("id", id)
+            .setParameter("musicApplyId", musicApplyId)
+            .getSingleResult();
     }
 
     @Override
@@ -96,15 +84,5 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     public void deleteHeart(Long heartId) {
         Heart heart = em.find(Heart.class, heartId);
         em.remove(heart);
-    }
-
-    @Override
-    public MusicApply update(MusicApply musicApply, MusicApplyLikeStatus musicApplyLikeStatus) {
-        if (musicApplyLikeStatus == ADD) {
-            musicApply.addHeart();
-        } else {
-            musicApply.removeHeart();
-        }
-        return musicApply;
     }
 }
