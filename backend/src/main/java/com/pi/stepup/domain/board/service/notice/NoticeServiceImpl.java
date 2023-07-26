@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +41,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .fileURL(noticeSaveRequestDto.getFileURL())
                 .build();
 
-            noticeRepository.insert(notice);
+        noticeRepository.insert(notice);
 
         return notice;
     }

@@ -18,7 +18,7 @@ public class NoticeApiController {
     private final NoticeService noticeService;
 
     @PostMapping("/notice")
-    public ResponseEntity<?> createNotice(@RequestBody NoticeSaveRequestDto noticeSaveRequestDto) {
+    public ResponseEntity<ResponseDto<?>> createNotice(@RequestBody NoticeSaveRequestDto noticeSaveRequestDto) {
 
         //Long boarId = noticeService.create(noticeSaveRequestDto).getBoardId();
         noticeService.create(noticeSaveRequestDto);
@@ -29,7 +29,7 @@ public class NoticeApiController {
 
 
     @PutMapping("/notice")
-    public ResponseEntity<?> updateNotice(@RequestBody NoticeUpdateRequestDto noticeUpdateRequestDto) {
+    public ResponseEntity<ResponseDto<?>> updateNotice(@RequestBody NoticeUpdateRequestDto noticeUpdateRequestDto) {
 
         noticeService.update(noticeUpdateRequestDto).getBoardId();
 
@@ -61,7 +61,7 @@ public class NoticeApiController {
 
 
     @DeleteMapping("notice/{boardId}")
-    public ResponseEntity<?> deleteNotice(@PathVariable("boardId") Long boardId) {
+    public ResponseEntity<ResponseDto<?>> deleteNotice(@PathVariable("boardId") Long boardId) {
         noticeService.delete(boardId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 BoardResponseMessage.DELETE_NOTICE.getMessage()
