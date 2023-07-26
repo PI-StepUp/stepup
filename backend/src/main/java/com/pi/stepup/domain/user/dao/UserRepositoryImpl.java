@@ -103,11 +103,32 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             user = Optional.ofNullable(
                 em.createQuery(
-                    "SELECT u FROM User u "
-                        + "WHERE u.id = :id AND u.birth = :birth", User.class
-                )
+                        "SELECT u FROM User u "
+                            + "WHERE u.id = :id AND u.birth = :birth", User.class
+                    )
                     .setParameter("id", id)
                     .setParameter("birth", birth)
+                    .getSingleResult()
+            );
+        } catch (NoResultException e) {
+            user = Optional.empty();
+        } finally {
+            return user;
+        }
+    }
+
+    @Override
+    public Optional<User> findByIdAndEmail(String id, String email) {
+        Optional<User> user = null;
+
+        try {
+            user = Optional.ofNullable(
+                em.createQuery(
+                        "SELECT u FROM User u "
+                            + "WHERE u.id = :id AND u.email = :email", User.class
+                    )
+                    .setParameter("id", id)
+                    .setParameter("email", email)
                     .getSingleResult()
             );
         } catch (NoResultException e) {
