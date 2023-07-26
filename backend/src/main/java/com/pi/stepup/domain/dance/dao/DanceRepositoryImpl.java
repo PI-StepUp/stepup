@@ -101,4 +101,12 @@ public class DanceRepositoryImpl implements DanceRepository {
         em.remove(reservation);
     }
 
+    @Override
+    public List<Reservation> findAllReservation(Long userId) {
+        return em.createQuery("SELECT r FROM Reservation r "
+                + "WHERE r.user.userId = :userId", Reservation.class)
+            .setParameter("userId", userId)
+            .getResultList();
+    }
+
 }
