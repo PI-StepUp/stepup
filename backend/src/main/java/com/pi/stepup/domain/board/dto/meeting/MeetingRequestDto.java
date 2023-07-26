@@ -14,7 +14,6 @@ public class MeetingRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MeetingSaveRequestDto {
-
         private String id;
         private String title;
         private String content;
@@ -22,24 +21,22 @@ public class MeetingRequestDto {
         private LocalDateTime startAt;
         private LocalDateTime endAt;
         private String region;
-        private int commentCnt;
-
     }
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MeetingFindOneRequestDto {
+    public static class MeetingUpdateRequestDto {
         private Long boardId;
+        private String title;
+        private String content;
+        private String writerName;
+        private String writerProfileImg;
+        private String fileURL;
+        private String boardType;
+        private String region;
+        private LocalDateTime startAt;
+        private LocalDateTime endAt;
     }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MeetingFindByKeywordRequestDto {
-        private String keyword;
-    }
-
 }
