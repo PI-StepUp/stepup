@@ -9,8 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.pi.stepup.domain.rank.constant.RankResponseMessage.READ_PONT_HISTORY_SUCCESS;
-import static com.pi.stepup.domain.rank.constant.RankResponseMessage.UPDATE_POINT_SUCCESS;
+import static com.pi.stepup.domain.rank.constant.RankResponseMessage.*;
 
 @RestController
 @RequestMapping("/api/rank")
@@ -33,6 +32,14 @@ public class RankApiController {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_PONT_HISTORY_SUCCESS.getMessage(),
                 pointHistoryService.readAll()
+        ));
+    }
+
+    @GetMapping("/my/point/{id}")
+    public ResponseEntity<ResponseDto<?>> readPoint(@PathVariable("id") String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                READ_POINT_SUCCESS.getMessage(),
+                pointHistoryService.readPoint(id)
         ));
     }
 }
