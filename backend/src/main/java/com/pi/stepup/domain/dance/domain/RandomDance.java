@@ -1,8 +1,10 @@
 package com.pi.stepup.domain.dance.domain;
 
 import com.pi.stepup.domain.dance.constant.DanceType;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.user.domain.User;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -67,15 +69,16 @@ public class RandomDance {
         danceMusic.setRandomDance(this);
     }
 
-    public void update(String title, String content, LocalDateTime startAt,
-        LocalDateTime endAt, DanceType danceType, int maxUser, String thumbnail) {
-        this.title = title;
-        this.content = content;
-        this.startAt = startAt;
-        this.endAt = endAt;
-        this.danceType = danceType;
-        this.maxUser = maxUser;
-        this.thumbnail = thumbnail;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd HH:mm");
+    public void update(DanceUpdateRequestDto danceUpdateRequestDto) {
+        this.title = danceUpdateRequestDto.getTitle();
+        this.content = danceUpdateRequestDto.getContent();
+        this.startAt = LocalDateTime.parse(danceUpdateRequestDto.getStartAt(), formatter);
+        this.endAt = LocalDateTime.parse(danceUpdateRequestDto.getEndAt(), formatter);
+        this.danceType = danceUpdateRequestDto.getDanceType();
+        this.maxUser = danceUpdateRequestDto.getMaxUser();
+        this.thumbnail = danceUpdateRequestDto.getThumbnail();
     }
 
     @Builder
