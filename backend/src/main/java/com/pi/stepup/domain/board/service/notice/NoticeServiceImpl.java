@@ -42,6 +42,8 @@ public class NoticeServiceImpl implements NoticeService {
                 .fileURL(noticeSaveRequestDto.getFileURL())
                 .build();
 
+            noticeRepository.insert(notice);
+
         return notice;
     }
 
@@ -76,11 +78,11 @@ public class NoticeServiceImpl implements NoticeService {
     //게시글 상세
     @Transactional
     @Override
-    public Optional<NoticeInfoResponseDto> readOne(Long boardId) {
+    public NoticeInfoResponseDto readOne(Long boardId) {
 
-        return Optional.ofNullable(NoticeInfoResponseDto.builder()
+        return NoticeInfoResponseDto.builder()
                 .notice(noticeRepository.findOne(boardId).orElseThrow())
-                .build());
+                .build();
     }
 
     //게시글 삭제

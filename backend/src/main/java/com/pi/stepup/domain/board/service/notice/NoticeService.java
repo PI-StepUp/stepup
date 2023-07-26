@@ -15,7 +15,7 @@ public interface NoticeService {
 
     List<NoticeInfoResponseDto> readAll(String keyword);
 
-    Optional<NoticeInfoResponseDto> readOne(Long boardId);
+    NoticeInfoResponseDto readOne(Long boardId);
 
     void delete(Long boardId);
 
