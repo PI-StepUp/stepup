@@ -12,9 +12,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 public class DanceRequestDto {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd HH:mm");
 
     @Data
     @Builder
@@ -31,18 +33,18 @@ public class DanceRequestDto {
         private String hostId;
         private List<Long> danceMusicIdList = new ArrayList<>();
 
-//        public RandomDance toEntity() {
-//            return RandomDance.builder()
-//                .title(this.title)
-//                .content(this.content)
-//                .startAt(LocalDateTime.parse(this.startAt, formatter))
-//                .endAt(LocalDateTime.parse(this.endAt, formatter))
-//                .danceType(this.danceType)
-//                .maxUser(this.maxUser)
-//                .thumbnail(this.thumbnail)
-//                .host(this.host)
-//                .build();
-//        }
+        public RandomDance toEntity(User host) {
+            return RandomDance.builder()
+                .title(this.title)
+                .content(this.content)
+                .startAt(LocalDateTime.parse(this.startAt, formatter))
+                .endAt(LocalDateTime.parse(this.endAt, formatter))
+                .danceType(this.danceType)
+                .maxUser(this.maxUser)
+                .thumbnail(this.thumbnail)
+                .host(host)
+                .build();
+        }
     }
 
     @Data
@@ -50,7 +52,6 @@ public class DanceRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DanceUpdateRequestDto {
-
         private Long randomDanceId;
         private String title;
         private String content;
@@ -60,6 +61,37 @@ public class DanceRequestDto {
         private int maxUser;
         private String thumbnail;
         private String hostId;
+        private List<Long> danceMusicIdList = new ArrayList<>();
 
+        public RandomDance toEntity(User host) {
+            return RandomDance.builder()
+                .title(this.title)
+                .content(this.content)
+                .startAt(LocalDateTime.parse(this.startAt, formatter))
+                .endAt(LocalDateTime.parse(this.endAt, formatter))
+                .danceType(this.danceType)
+                .maxUser(this.maxUser)
+                .thumbnail(this.thumbnail)
+                .host(host)
+                .build();
+        }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DanceReserveRequestDto {
+        private String id;
+        private Long randomDanceId;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DanceAttendRequestDto {
+        private String id;
+        private Long randomDanceId;
     }
 }
