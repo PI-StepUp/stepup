@@ -77,6 +77,18 @@ class RankApiControllerTest {
         getAction.andExpect(status().isOk()).andDo(print());
     }
 
+    @Test
+    @DisplayName("포인트 조회 api 테스트")
+    public void readPointApiTest() throws Exception{
+        String url = "/api/rank/my/point/" + user.getId();
+
+        final ResultActions getAction = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isOk()).andDo(print());
+    }
+
     private void makePointPolicy() {
         pointPolicy = PointPolicy.builder()
                 .pointType(FIRST_PRIZE)
