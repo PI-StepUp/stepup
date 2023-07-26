@@ -56,18 +56,18 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public List<RandomDance> findAllDance() {
-        return em.createQuery("SELECT r FROM RandomDance r", RandomDance.class)
-            .getResultList();
-    }
-
-    @Override
     public List<RandomDance> findAllMyOpenDance(String id) {
         return em.createQuery("SELECT r FROM RandomDance r "
                 + "WHERE r.host.id = :id", RandomDance.class)
 //                        + "JOIN r.host u "
 //                        + "WHERE u.id = :id", RandomDance.class)
             .setParameter("id", id)
+            .getResultList();
+    }
+
+    @Override
+    public List<RandomDance> findAllDance() {
+        return em.createQuery("SELECT r FROM RandomDance r", RandomDance.class)
             .getResultList();
     }
 

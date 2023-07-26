@@ -23,11 +23,11 @@ public interface DanceRepository {
     //랜덤 플레이 댄스 노래 목록 조회
     List<DanceMusic> findAllDanceMusic(Long randomDanceId);
 
-    //랜덤 플레이 댄스 전체 목록 조회
-    List<RandomDance> findAllDance();
-
     //개최 랜덤 플레이 댄스 전체 목록 조회
     List<RandomDance> findAllMyOpenDance(String id);
+
+    //랜덤 플레이 댄스 전체 목록 조회
+    List<RandomDance> findAllDance();
 
     //랜덤 플레이 댄스 예약
     Reservation insertReservation(Reservation reservation);

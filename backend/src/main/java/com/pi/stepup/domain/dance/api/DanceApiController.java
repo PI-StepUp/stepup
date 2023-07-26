@@ -2,6 +2,7 @@ package com.pi.stepup.domain.dance.api;
 
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.CREATE_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RESERVE_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.UPDATE_OPEN_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_OPEN_RANDOM_DANCE;
@@ -17,6 +18,7 @@ import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.RESERVE_R
 
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
 import com.pi.stepup.domain.dance.service.DanceService;
@@ -84,14 +86,28 @@ public class DanceApiController {
         ));
     }
 
-    // TODO: 쿼리스트링으로! ?id={id}
-    @GetMapping("/my/open/{id}")
+    @GetMapping("/my/open")
     public ResponseEntity<ResponseDto<?>> readAllMyOpenDance
-    (@PathVariable("id") String id) {
+    (@RequestParam("id") String id) {
         List<DanceFindResponseDto> allMyOpenDance = danceService.readAllMyOpenDance(id);
+
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             SELECT_ALL_OPEN_RANDOM_DANCE.getMessage(),
             allMyOpenDance
+        ));
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ResponseDto<?>> readAllRandomDance
+        (DanceSearchRequestDto danceSearchRequestDto) {
+
+        //해당 되는 목록 조회
+        List<DanceFindResponseDto> allDance
+            = danceService.readAllRandomDance(danceSearchRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+            SELECT_ALL_RANDOM_DANCE.getMessage(),
+            allDance
         ));
     }
 
@@ -105,7 +121,7 @@ public class DanceApiController {
         ));
     }
 
-    @DeleteMapping("/reserve/my")
+    @DeleteMapping("/my/reserve")
     public ResponseEntity<ResponseDto<?>> unreserveDance
         (@RequestParam("randomDanceId") Long randomDanceId, @RequestParam("id") String id) {
         danceService.deleteReservation(randomDanceId, id);

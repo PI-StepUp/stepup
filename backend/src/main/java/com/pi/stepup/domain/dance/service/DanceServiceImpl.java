@@ -6,6 +6,7 @@ import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.domain.Reservation;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
 import com.pi.stepup.domain.music.dao.MusicRepository;
@@ -13,6 +14,7 @@ import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,6 +104,45 @@ public class DanceServiceImpl implements DanceService {
         return allMyOpenDance;
     }
 
+    @Override
+    public List<DanceFindResponseDto> readAllRandomDance(DanceSearchRequestDto danceSearchRequestDto) {
+        List<DanceFindResponseDto> allScheduledDance = new ArrayList<>();
+        List<DanceFindResponseDto> allInProgressDance = new ArrayList<>();
+        List<DanceFindResponseDto> allDance = new ArrayList<>();
+
+        List<RandomDance> randomDanceList = danceRepository.findAllDance();
+        LocalDateTime today = LocalDateTime.now();
+        for(int i=0; i<randomDanceList.size(); i++) {
+            DanceFindResponseDto danceFindResponseDto
+                = DanceFindResponseDto.builder().randomDance(randomDanceList.get(i)).build();
+
+            //시작 시간이 현재보다 이후
+            if(danceFindResponseDto.getStartAt().isAfter(today)) {
+                allScheduledDance.add(danceFindResponseDto);
+                allDance.add(danceFindResponseDto);
+
+            //시작 시간이 현재보다 이전, 끝 시간이 현재보다 이후
+            } else if(danceFindResponseDto.getStartAt().isBefore(today)
+                && danceFindResponseDto.getEndAt().isAfter(today)) {
+                allInProgressDance.add(danceFindResponseDto);
+                allDance.add(danceFindResponseDto);
+            }
+        }
+
+        if(danceSearchRequestDto.getProgressType().equals("ALL")) {
+            log.debug("all: {}", allDance);
+            return allDance;
+        } else if(danceSearchRequestDto.getProgressType().equals("IN_PROGRESS")) {
+            log.debug("in_progress: {}", allInProgressDance);
+            return allInProgressDance;
+        } else if(danceSearchRequestDto.getProgressType().equals("SCHEDULED")) {
+            log.debug("scheduled: {}", allScheduledDance);
+            return allScheduledDance;
+        } else {
+            return null;
+        }
+    }
+
     // TODO : 자기가 개최한 거에 예약 못 하도록
     @Override
     public void createReservation(DanceReserveRequestDto danceReserveRequestDto) {
@@ -120,7 +161,6 @@ public class DanceServiceImpl implements DanceService {
     public void deleteReservation(Long randomDanceId, String id) {
         Long userId = userRepository.findById(id).orElseThrow().getUserId();
         Reservation reservation = danceRepository.findReservation(randomDanceId, userId).orElseThrow();
-//        danceRepository.findOne(reservation.getReservationId());
         danceRepository.deleteReserevation(reservation.getReservationId());
     }
 

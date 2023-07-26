@@ -94,4 +94,13 @@ public class DanceRequestDto {
         private String id;
         private Long randomDanceId;
     }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DanceSearchRequestDto {
+        private String progressType;
+        private String keyword;
+    }
 }
