@@ -17,6 +17,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     private final PointPolicyRepository pointPolicyRepository;
 
     @Override
+    @Transactional
     public void update(PointUpdateRequestDto pointUpdateRequestDto) {
         User user = userRepository.findById(pointUpdateRequestDto.getId()).orElseThrow();
         PointPolicy pointPolicy = pointPolicyRepository.findOne(pointUpdateRequestDto.getPointPolicyId()).orElseThrow();
