@@ -3,8 +3,10 @@ package com.pi.stepup.domain.dance.dao;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 
+import com.pi.stepup.domain.dance.domain.Reservation;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.text.html.Option;
 
 public interface DanceRepository {
 
@@ -27,5 +29,11 @@ public interface DanceRepository {
     List<RandomDance> findAllDance();
 
     //개최 랜덤 플레이 댄스 전체 목록 조회
-    List<RandomDance> findAllMyHeldDance(String id);
+    List<RandomDance> findAllMyOpenDance(String id);
+
+    Reservation insertReservation(Reservation reservation);
+
+    Optional<Reservation> findReservation(Long randomDanceId, Long userId);
+
+    void deleteReserevation(Long reservationId);
 }
