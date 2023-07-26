@@ -1,22 +1,18 @@
 package com.pi.stepup.domain.dance.api;
 
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.ATTEND_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.CREATE_RANDOM_DANCE;
-import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
-import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_IN_PROGRESS_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_SCHEDULED_RANDOM_DANCE;
-import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RESERVE_RANDOM_DANCE;
-import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.UPDATE_OPEN_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_OPEN_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.RESERVE_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_ATTEND_RANDOM_DANCE;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_DANCE_MUSIC;
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_OPEN_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_RESERVE_RANDOM_DANCE;
+import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.UPDATE_OPEN_RANDOM_DANCE;
 
-import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.RESERVE_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_RESERVE_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.ATTEND_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.DELETE_ATTEND_RANDOM_DANCE;
-//import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_ALL_ATTEND_RANDOM_DANCE;
-
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceAttendRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
@@ -89,7 +85,7 @@ public class DanceApiController {
 
     @GetMapping("/my/open")
     public ResponseEntity<ResponseDto<?>> readAllMyOpenDance
-    (@RequestParam("id") String id) {
+        (@RequestParam("id") String id) {
         List<DanceFindResponseDto> allMyOpenDance = danceService.readAllMyOpenDance(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -141,6 +137,29 @@ public class DanceApiController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             SELECT_ALL_RESERVE_RANDOM_DANCE.getMessage(),
+            allMyRandomDance
+        ));
+    }
+
+    @PostMapping("/attend")
+    public ResponseEntity<ResponseDto<?>> reserveDance
+        (@RequestBody DanceAttendRequestDto danceAttendRequestDto) {
+        danceService.createAttend(danceAttendRequestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
+            ATTEND_RANDOM_DANCE.getMessage()
+        ));
+    }
+
+    @GetMapping("/my/attend")
+    public ResponseEntity<ResponseDto<?>> readAllMyAttendDance
+        (@RequestParam("id") String id) {
+
+        List<DanceFindResponseDto> allMyRandomDance
+            = danceService.readAllMyAttendDance(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+            SELECT_ALL_ATTEND_RANDOM_DANCE.getMessage(),
             allMyRandomDance
         ));
     }
