@@ -1,24 +1,27 @@
 package com.pi.stepup.domain.dance.service;
 
-import com.pi.stepup.domain.dance.domain.DanceMusic;
-import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
-import com.pi.stepup.domain.music.domain.Music;
-
+import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
+import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import java.util.List;
 
 public interface DanceService {
 
-    RandomDance createDance(DanceCreateRequestDto danceCreateRequestDto);
+    void create(DanceCreateRequestDto danceCreateRequestDto);
 
-    RandomDance readDance(Long randomDanceId);
+    DanceFindResponseDto readOne(Long randomDanceId);
 
-    RandomDance updateDance(DanceUpdateRequestDto danceUpdateRequestDto);
+    void update(DanceUpdateRequestDto danceUpdateRequestDto);
 
-    void deleteDance(Long randomDanceId);
+    void delete(Long randomDanceId);
 
-    List<Music> readAllDanceMusic(Long randomDanceId);
+    List<MusicFindResponseDto> readAllDanceMusic(Long randomDanceId);
 
-    List<RandomDance> readAllMyHeldDance(String id);
+    List<DanceFindResponseDto> readAllMyOpenDance(String id);
+
+    void createReservation(DanceReserveRequestDto danceReservationRequestDto);
+
+    void deleteReservation(Long reservationId, String id);
 }
