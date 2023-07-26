@@ -3,7 +3,7 @@ package com.pi.stepup.global.error;
 import com.pi.stepup.global.dto.ResponseDto;
 import com.pi.stepup.global.error.exception.DuplicatedException;
 import com.pi.stepup.global.error.exception.NotFoundException;
-import javax.naming.AuthenticationException;
+import com.pi.stepup.global.error.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,15 +21,16 @@ public class RestControllerExceptionHandler {
         );
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ResponseDto<String>> handleAuthenticationException(AuthenticationException exception) {
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ResponseDto<String>> handleTokenException(TokenException exception) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
             ResponseDto.create(exception.getMessage())
         );
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ResponseDto<String>> handleNotFoundException(NotFoundException exception) {
+    public ResponseEntity<ResponseDto<String>> handleNotFoundException(
+        NotFoundException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             ResponseDto.create(exception.getMessage())
         );
