@@ -6,14 +6,19 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_D
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 
+import com.pi.stepup.domain.user.constant.EmailGuideContent;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
+import com.pi.stepup.domain.user.domain.EmailContent;
+import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -22,6 +27,8 @@ import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.domain.user.util.EmailMessageMaker;
+import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public List<CountryResponseDto> readAllCountries() {
@@ -160,6 +168,59 @@ public class UserServiceImpl implements UserService {
         }
 
         user.updateUserBasicInfo(updateUserRequestDto, country);
+    }
+
+    @Override
+    public void findId(FindIdRequestDto findIdRequestDto) {
+        User user = userRepository.findByIdAndBirth(findIdRequestDto.getId(),
+                findIdRequestDto.getBirth())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        emailService.sendFindIdMail(
+            makeEmailMessage(
+                EmailGuideContent.FIND_ID_GUIDE,
+                user.getNickname(),
+                user.getId(),
+                user.getEmail()
+            )
+        );
+    }
+
+    @Override
+    public void findPassword(FindPasswordRequestDto findPasswordRequestDto) {
+        User user = userRepository.findByIdAndEmail(findPasswordRequestDto.getId(),
+                findPasswordRequestDto.getEmail())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        emailService.sendFindIdMail(
+            makeEmailMessage(
+                EmailGuideContent.FIND_PASSWORD_GUIDE,
+                user.getNickname(),
+                RandomPasswordGenerator.generateRandomPassword(),
+                user.getEmail()
+            )
+        );
+    }
+
+    private EmailMessage makeEmailMessage(
+        EmailGuideContent emailGuideContent,
+        String nickname,
+        String data,
+        String to
+    ) {
+        EmailContent emailContent = EmailContent.builder()
+            .emailGuideContent(emailGuideContent)
+            .nickname(nickname)
+            .data(data)
+            .build();
+
+        String convertedContent = EmailMessageMaker.makeEmailMessage(emailContent);
+
+        return EmailMessage.builder()
+            .to(to)
+            .subject(emailContent.getEmailGuideContent().getMailTitle())
+            .message(convertedContent)
+            .build();
     }
 
     private void validateSignUpUserInfo(SignUpRequestDto signUpRequestDto) {
