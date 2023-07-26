@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface BoardRepository {
 
     Optional<Board> findOne(Long boardId);
+
 }

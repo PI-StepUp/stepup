@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.board.domain;
 
-import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;

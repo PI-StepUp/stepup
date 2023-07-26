@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.board.dao.talk;
 
-import com.pi.stepup.domain.board.dao.talk.TalkRepository;
 import com.pi.stepup.domain.board.domain.Talk;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,10 +24,10 @@ public class TalkRepositoryImpl implements TalkRepository {
     }
 
     @Override
-    public Optional<Talk> findOne(Long boardId){
-        try{
+    public Optional<Talk> findOne(Long boardId) {
+        try {
             return Optional.ofNullable(em.find(Talk.class, boardId));
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
     }
@@ -37,21 +36,21 @@ public class TalkRepositoryImpl implements TalkRepository {
     public List<Talk> findAll(String keyword) {
         try {
             String jpql = "SELECT t FROM Talk t WHERE t.title LIKE :keyword OR t.content LIKE :keyword";
-                    return em.createQuery(jpql, Talk.class)
-                            .setParameter("keyword", "%" + keyword + "%")
-                            .getResultList();
-        }catch (Exception e){
+            return em.createQuery(jpql, Talk.class)
+                    .setParameter("keyword", "%" + keyword + "%")
+                    .getResultList();
+        } catch (Exception e) {
             throw new RuntimeException("자유게시핀 검색 오류", e);
         }
     }
 
     @Override
     public void delete(Long boardId) {
-      Talk talk = em.find(Talk.class, boardId);
-      if(talk != null){
-          em.remove(talk);
-      }else {
-          throw new IllegalArgumentException("게시글 없음.");
-      }
+        Talk talk = em.find(Talk.class, boardId);
+        if (talk != null) {
+            em.remove(talk);
+        } else {
+            throw new IllegalArgumentException("게시글 없음.");
+        }
     }
 }

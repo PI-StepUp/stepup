@@ -1,8 +1,6 @@
 package com.pi.stepup.domain.board.dao.comment;
 
-import com.pi.stepup.domain.board.domain.Board;
 import com.pi.stepup.domain.board.domain.Comment;
-import com.pi.stepup.domain.board.domain.Notice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +10,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class CommentRepositoryImpl implements CommentRepository{
+public class CommentRepositoryImpl implements CommentRepository {
     @PersistenceContext
     private EntityManager em;
 
@@ -21,6 +19,7 @@ public class CommentRepositoryImpl implements CommentRepository{
         em.persist(comment);
         return comment;
     }
+
     @Override
     public List<Comment> findByBoardId(Long boardId) {
         try {
