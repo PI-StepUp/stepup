@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.dance.dao;
 
+import com.pi.stepup.domain.dance.domain.AttendHistory;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.domain.Reservation;
@@ -92,21 +93,33 @@ public class DanceRepositoryImpl implements DanceRepository {
         } finally {
             return reservation;
         }
-
     }
 
     @Override
-    public void deleteReserevation(Long reservationId) {
+    public void deleteReservation(Long reservationId) {
         Reservation reservation = em.find(Reservation.class, reservationId);
         em.remove(reservation);
     }
 
     @Override
-    public List<Reservation> findAllReservation(Long userId) {
+    public List<Reservation> findAllMyReservation(Long userId) {
         return em.createQuery("SELECT r FROM Reservation r "
                 + "WHERE r.user.userId = :userId", Reservation.class)
             .setParameter("userId", userId)
             .getResultList();
     }
 
+    @Override
+    public AttendHistory insertAttend(AttendHistory attendHistory) {
+        em.persist(attendHistory);
+        return attendHistory;
+    }
+
+    @Override
+    public List<AttendHistory> findAllMyAttend(Long userId) {
+        return em.createQuery("SELECT a FROM AttendHistory a "
+                + "WHERE a.user.userId = :userId", AttendHistory.class)
+            .setParameter("userId", userId)
+            .getResultList();
+    }
 }
