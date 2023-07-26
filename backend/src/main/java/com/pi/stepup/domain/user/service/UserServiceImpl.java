@@ -176,23 +176,14 @@ public class UserServiceImpl implements UserService {
                 findIdRequestDto.getBirth())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        EmailContent emailContent = EmailContent.builder()
-            .emailGuideContent(EmailGuideContent.FIND_ID_GUIDE)
-            .nickname(user.getNickname())
-            .data(user.getId())
-            .build();
-
-        String convertedContent = EmailMessageMaker.makeEmailMessage(emailContent);
-
-        EmailMessage emailMessage = EmailMessage.builder()
-            .to(user.getEmail())
-            .subject(emailContent.getEmailGuideContent().getMailTitle())
-            .message(convertedContent)
-            .build();
-
-        logger.debug("[findId()] emailMessage : {}", emailMessage);
-
-        emailService.sendFindIdMail(emailMessage);
+        emailService.sendFindIdMail(
+            makeEmailMessage(
+                EmailGuideContent.FIND_ID_GUIDE,
+                user.getNickname(),
+                user.getId(),
+                user.getEmail()
+            )
+        );
     }
 
     @Override
@@ -201,21 +192,35 @@ public class UserServiceImpl implements UserService {
                 findPasswordRequestDto.getEmail())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
+        emailService.sendFindIdMail(
+            makeEmailMessage(
+                EmailGuideContent.FIND_PASSWORD_GUIDE,
+                user.getNickname(),
+                RandomPasswordGenerator.generateRandomPassword(),
+                user.getEmail()
+            )
+        );
+    }
+
+    private EmailMessage makeEmailMessage(
+        EmailGuideContent emailGuideContent,
+        String nickname,
+        String data,
+        String to
+    ) {
         EmailContent emailContent = EmailContent.builder()
-            .emailGuideContent(EmailGuideContent.FIND_PASSWORD_GUIDE)
-            .nickname(user.getNickname())
-            .data(RandomPasswordGenerator.generateRandomPassword())
+            .emailGuideContent(emailGuideContent)
+            .nickname(nickname)
+            .data(data)
             .build();
 
         String convertedContent = EmailMessageMaker.makeEmailMessage(emailContent);
 
-        EmailMessage emailMessage = EmailMessage.builder()
-            .to(user.getEmail())
+        return EmailMessage.builder()
+            .to(to)
             .subject(emailContent.getEmailGuideContent().getMailTitle())
             .message(convertedContent)
             .build();
-
-        emailService.sendFindIdMail(emailMessage);
     }
 
     private void validateSignUpUserInfo(SignUpRequestDto signUpRequestDto) {
