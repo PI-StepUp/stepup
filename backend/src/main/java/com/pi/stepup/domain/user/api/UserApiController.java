@@ -57,8 +57,9 @@ public class UserApiController {
 
     @Operation(summary = "국가 코드 목록 조회", description = "선택 가능한 국가 코드 목록을 조회한다.")
     @ApiResponse(responseCode = "200",
-        description = "국가 코드 목록 조회 성공",
-        content = @Content(array = @ArraySchema(schema = @Schema(implementation = CountryResponseDto.class))))
+        description = "국가 코드 목록 조회 성공"
+//        content = @Content(array = @ArraySchema(schema = @Schema(implementation = CountryResponseDto.class)))
+    )
     @GetMapping("/country")
     public ResponseEntity<ResponseDto<?>> readAllCountries() {
         return ResponseEntity.ok(
@@ -83,6 +84,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "닉네임 중복 검사", description = "중복된 닉네임 데이터가 있는지 검사한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "닉네임 사용 가능")
+    })
     @PostMapping("/dupnick")
     public ResponseEntity<ResponseDto<?>> checkNicknameDuplicated(
         @RequestBody CheckNicknameRequestDto checkNicknameRequestDto) {
@@ -93,6 +98,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "아이디 중복 검사", description = "중복된 아이디 데이터가 있는지 검사한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "아이디 사용 가능")
+    })
     @PostMapping("/dupid")
     public ResponseEntity<ResponseDto<?>> checkIdDuplicated(
         @RequestBody CheckIdRequestDto checkIdRequestDto) {
@@ -103,6 +112,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "회원가입", description = "회원가입을 수행한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "회원가입 성공")
+    })
     @PostMapping("")
     public ResponseEntity<ResponseDto<?>> signUp(@RequestBody SignUpRequestDto signUpRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -113,6 +126,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "로그인", description = "로그인을 수행한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "로그인 성공")
+    })
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<?>> login(
         @RequestBody AuthenticationRequestDto authenticationRequestDto) {
@@ -124,6 +141,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "회원정보 조회", description = "아이디를 통해 회원 정보를 조회한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "회원정보 조회 성공")
+    })
     @GetMapping("")
     public ResponseEntity<ResponseDto<?>> readOne(String id) {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -134,6 +155,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "회원 탈퇴", description = "아이디에 해당하는 회원 데이터를 삭제한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
+    })
     @DeleteMapping("")
     public ResponseEntity<ResponseDto<?>> delete(String id) {
         userService.delete(id);
@@ -145,6 +170,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "비밀번호 일치 여부 확인", description = "비밀번호 일치 여부를 확인한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "비밀번호 일치")
+    })
     @PostMapping("/checkpw")
     public ResponseEntity<ResponseDto<?>> checkPw(
         @RequestBody AuthenticationRequestDto authenticationRequestDto) {
@@ -157,6 +186,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "회원정보 수정", description = "회원정보를 수정한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "회원정보 수정 성공")
+    })
     @PutMapping("")
     public ResponseEntity<ResponseDto<?>> update(
         @RequestBody UpdateUserRequestDto updateUserRequestDto) {
@@ -171,6 +204,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "아이디 찾기", description = "아이디를 이메일로 전송한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "이메일 전송 완료")
+    })
     @PostMapping("/findid")
     public ResponseEntity<ResponseDto<?>> findId(@RequestBody FindIdRequestDto findIdRequestDto) {
         userService.findId(findIdRequestDto);
@@ -182,6 +219,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "비밀번호 찾기", description = "임시 비밀번호를 발급하여 이메일로 전송한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "임시 비밀번호 이메일 전송 완료")
+    })
     @PostMapping("/findpw")
     public ResponseEntity<ResponseDto<?>> findPassword(
         @RequestBody FindPasswordRequestDto findPasswordRequestDto) {
@@ -194,6 +235,10 @@ public class UserApiController {
         );
     }
 
+    @Operation(summary = "토큰 재발급", description = "access token, refresh token을 재발급한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "토큰 재발급 성공")
+    })
     @PostMapping("/auth")
     public ResponseEntity<ResponseDto<?>> reissueTokens(
         @RequestHeader("refreshToken") String refreshToken,
