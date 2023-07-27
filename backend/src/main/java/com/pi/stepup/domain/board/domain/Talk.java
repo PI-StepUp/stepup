@@ -23,9 +23,15 @@ public class Talk extends Board {
     private int commentCnt;
 
     @Builder
-    public Talk(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, int commentCnt) {
-        super(boardId, writer, title, content, comments, fileURL);
+    public Talk(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, String boardType, int commentCnt) {
+        super(boardId, writer, title, content, comments, fileURL, boardType);
         this.commentCnt = commentCnt;
+    }
+
+    public void update(String title, String content, String fileURL) {
+        this.title = title;
+        this.content = content;
+        this.fileURL = fileURL;
     }
 
     public void updateCommentCnt() {

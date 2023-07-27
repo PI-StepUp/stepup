@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.board.domain;
 
+import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,12 +28,21 @@ public class Meeting extends Board {
     private int commentCnt;
 
     @Builder
-    public Meeting(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, String region, LocalDateTime startAt, LocalDateTime endAt, int commentCnt) {
-        super(boardId, writer, title, content, comments, fileURL);
+    public Meeting(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, String boardType, String region, LocalDateTime startAt, LocalDateTime endAt, int commentCnt) {
+        super(boardId, writer, title, content, comments, fileURL, boardType);
         this.region = region;
         this.startAt = startAt;
         this.endAt = endAt;
         this.commentCnt = commentCnt;
+    }
+
+    public void update(String title, String content, String fileURL, String region, LocalDateTime startAt, LocalDateTime endAt) {
+        this.title = title;
+        this.content = content;
+        this.fileURL = fileURL;
+        this.region = region;
+        this.startAt = startAt;
+        this.endAt = endAt;
     }
 
     public void updateCommentCnt() {

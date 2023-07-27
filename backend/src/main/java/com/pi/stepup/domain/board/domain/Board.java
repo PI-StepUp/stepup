@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -44,5 +43,8 @@ public abstract class Board extends BaseEntity {
 
     @Column(name = "FILE_URL")
     String fileURL;
+
+    @Column(name = "BOARD_TYPE", insertable = false, updatable = false)
+    String boardType;
 
 }
