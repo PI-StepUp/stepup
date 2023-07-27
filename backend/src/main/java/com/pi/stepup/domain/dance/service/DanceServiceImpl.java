@@ -148,6 +148,7 @@ public class DanceServiceImpl implements DanceService {
 
     // TODO : 자기가 개최한 거에 예약 못 하도록
     @Override
+    @Transactional
     public void createReservation(DanceReserveRequestDto danceReserveRequestDto) {
         User host = userRepository.findById(danceReserveRequestDto.getId()).orElseThrow();
         RandomDance randomDance = danceRepository.findOne(danceReserveRequestDto.getRandomDanceId())
@@ -160,11 +161,13 @@ public class DanceServiceImpl implements DanceService {
     }
 
     @Override
+    @Transactional
     public void deleteReservation(Long randomDanceId, String id) {
         Long userId = userRepository.findById(id).orElseThrow().getUserId();
-        Reservation reservation = danceRepository.findReservation(randomDanceId, userId)
-            .orElseThrow();
-        danceRepository.deleteReservation(reservation.getReservationId());
+        Long reservationId = danceRepository.findReservation(randomDanceId, userId)
+            .orElseThrow().getReservationId();
+        System.out.println(reservationId);
+        danceRepository.deleteReservation(reservationId);
     }
 
     @Override
@@ -185,6 +188,7 @@ public class DanceServiceImpl implements DanceService {
     }
 
     @Override
+    @Transactional
     public void createAttend(DanceAttendRequestDto danceAttendRequestDto) {
         User user = userRepository.findById(danceAttendRequestDto.getId()).orElseThrow();
         RandomDance randomDance = danceRepository.findOne(danceAttendRequestDto.getRandomDanceId())
