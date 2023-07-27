@@ -10,14 +10,19 @@ import com.pi.stepup.domain.board.domain.Meeting;
 import com.pi.stepup.domain.board.domain.Talk;
 import com.pi.stepup.domain.board.dto.comment.CommentRequestDto.CommentSaveRequestDto;
 import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResponseDto;
+import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +38,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment create(CommentSaveRequestDto commentSaveRequestDto) {
         User writer = userRepository.findById(commentSaveRequestDto.getId())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없음."));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         Board board = boardRepository.findOne(commentSaveRequestDto.getBoardId())
-                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없음."));
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
         Comment comment = Comment.builder()
                 .writer(writer)

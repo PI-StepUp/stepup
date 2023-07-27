@@ -22,23 +22,15 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public List<Comment> findByBoardId(Long boardId) {
-        try {
-            String jpql = "SELECT c FROM Comment c WHERE c.board.id = :boardId";
-            return em.createQuery(jpql, Comment.class)
-                    .setParameter("boardId", boardId)
-                    .getResultList();
-        } catch (Exception e) {
-            throw new RuntimeException("댓글 찾기 실패", e);
-        }
+        String jpql = "SELECT c FROM Comment c WHERE c.board.id = :boardId";
+        return em.createQuery(jpql, Comment.class)
+                .setParameter("boardId", boardId)
+                .getResultList();
     }
 
     @Override
     public void delete(Long commemtId) {
         Comment comment = em.find(Comment.class, commemtId);
-        if (comment != null) {
-            em.remove(comment);
-        } else {
-            throw new IllegalArgumentException("댓글 없음.");
-        }
+        em.remove(comment);
     }
 }

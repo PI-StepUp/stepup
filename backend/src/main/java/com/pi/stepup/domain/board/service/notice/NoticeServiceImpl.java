@@ -5,16 +5,21 @@ import com.pi.stepup.domain.board.domain.Notice;
 import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeSaveRequestDto;
 import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.notice.NoticeResponseDto.NoticeInfoResponseDto;
+import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +33,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public Notice create(NoticeSaveRequestDto noticeSaveRequestDto) {
         User writer = userRepository.findById(noticeSaveRequestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID: " + noticeSaveRequestDto.getId()));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         RandomDance randomDance = danceRepository.findOne(noticeSaveRequestDto.getRandomDanceId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 랜덤댄 ID: " + noticeSaveRequestDto.getRandomDanceId()));
@@ -52,7 +57,7 @@ public class NoticeServiceImpl implements NoticeService {
     public Notice update(NoticeUpdateRequestDto noticeUpdateRequestDto) {
 
         Notice notice = noticeRepository.findOne(noticeUpdateRequestDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
         RandomDance randomDance = danceRepository.findOne(noticeUpdateRequestDto.getRandomDanceId())
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 랜덤댄 ID: " + noticeUpdateRequestDto.getRandomDanceId()));
