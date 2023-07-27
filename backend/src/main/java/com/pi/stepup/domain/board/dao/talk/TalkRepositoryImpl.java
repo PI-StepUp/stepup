@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.board.dao.talk;
 
+import com.pi.stepup.domain.board.domain.Meeting;
 import com.pi.stepup.domain.board.domain.Talk;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -29,6 +30,18 @@ public class TalkRepositoryImpl implements TalkRepository {
             return Optional.ofNullable(em.find(Talk.class, boardId));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Talk> findById(String id) {
+        try {
+            String jpql = "SELECT m FROM Talk m WHERE m.writer.id = :id";
+            return em.createQuery(jpql, Talk.class)
+                    .setParameter("id", id)
+                    .getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException("자유게시핀 검색 오류", e);
         }
     }
 

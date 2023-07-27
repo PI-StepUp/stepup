@@ -10,6 +10,8 @@ public interface TalkRepository {
 
     Optional<Talk> findOne(Long boardId);
 
+    List<Talk> findById(String id);
+
     List<Talk> findAll(String keyword);
 
     void delete(Long boardId);
