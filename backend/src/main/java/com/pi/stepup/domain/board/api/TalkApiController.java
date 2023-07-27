@@ -57,7 +57,14 @@ public class TalkApiController {
                 )
         );
     }
-
+    @GetMapping("talk/my")
+    public ResponseEntity<ResponseDto<?>> readAllByIdTalk(
+            @RequestParam(name = "id") String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                BoardResponseMessage.READ_ALL_MY_TALK.getMessage(),
+                talkService.readAllById(id)
+        ));
+    }
 
     @DeleteMapping("talk/{boardId}")
     public ResponseEntity<ResponseDto<?>> deleteTalk(@PathVariable("boardId") Long boardId) {
