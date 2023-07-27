@@ -64,10 +64,6 @@ public class RandomDance {
     @OneToMany(mappedBy = "randomDance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservationList = new ArrayList<>();
 
-    //참여자 목록
-    @OneToMany(mappedBy = "randomDance", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AttendHistory> AttendList = new ArrayList<>();
-
     public void addDanceMusicAndSetThis(DanceMusic danceMusic) {
         this.danceMusicList.add(danceMusic);
         danceMusic.setRandomDance(this);
