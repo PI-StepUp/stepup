@@ -6,9 +6,11 @@ import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResp
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkSaveRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkResponseDto.TalkInfoResponseDto;
+import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -29,12 +34,12 @@ public class TalkServiceImpl implements TalkService {
     @Override
     public Talk create(TalkSaveRequestDto talkSaveRequestDto) {
         User writer = userRepository.findById(talkSaveRequestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID: " + talkSaveRequestDto.getId()));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         Talk talk = Talk.builder()
                 .writer(writer)
                 .title(talkSaveRequestDto.getTitle())
-                .content(talkSaveRequestDto.getTitle())
+                .content(talkSaveRequestDto.getContent())
                 .fileURL(talkSaveRequestDto.getFileURL())
                 .build();
 
@@ -47,7 +52,7 @@ public class TalkServiceImpl implements TalkService {
     @Override
     public Talk update(TalkUpdateRequestDto talkUpdateRequestDto) {
         Talk talk = talkRepository.findOne(talkUpdateRequestDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
         talk.update(talkUpdateRequestDto.getTitle(), talkUpdateRequestDto.getContent(),
                 talkUpdateRequestDto.getFileURL());
