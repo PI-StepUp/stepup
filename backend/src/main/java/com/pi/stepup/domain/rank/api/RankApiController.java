@@ -23,7 +23,7 @@ public class RankApiController {
     @PostMapping("/point")
     public ResponseEntity<ResponseDto<?>> updatePoint(@RequestBody PointUpdateRequestDto pointUpdateRequestDto) {
         pointHistoryService.update(pointUpdateRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 UPDATE_POINT_SUCCESS.getMessage()
         ));
     }
