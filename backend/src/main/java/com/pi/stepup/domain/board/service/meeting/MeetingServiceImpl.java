@@ -67,6 +67,15 @@ public class MeetingServiceImpl implements MeetingService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<MeetingInfoResponseDto> readAllById(String id) {
+        List<Meeting> allMyMeetings = meetingRepository.findById(id);
+        return allMyMeetings.stream()
+                .map(m -> MeetingInfoResponseDto.builder().meeting(m).build())
+                .collect(Collectors.toList());
+    }
+
+
     @Transactional
     @Override
     public MeetingInfoResponseDto readOne(Long boardId) {
