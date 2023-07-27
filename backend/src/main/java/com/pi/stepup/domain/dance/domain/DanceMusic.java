@@ -1,5 +1,7 @@
 package com.pi.stepup.domain.dance.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pi.stepup.domain.music.domain.Music;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,17 +26,34 @@ public class DanceMusic {
     @Column(name = "DANCE_MUSIC_ID")
     private Long danceMusicId;
 
+    //    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MUSIC_ID")
+    private Music music;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RANDOM_DANCE_ID")
     private RandomDance randomDance;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "MUSIC_ID")
-//    private Music music;
-
-    @Builder
-    public DanceMusic(Long id, RandomDance randomDance) {
-        this.danceMusicId = id;
+    public void setRandomDance(RandomDance randomDance) {
         this.randomDance = randomDance;
+    }
+
+    public void setMusic(Music music) {
+        this.music = music;
+    }
+
+    public static DanceMusic createDanceMusic(Music music) {
+        DanceMusic danceMusic = new DanceMusic();
+        danceMusic.setMusic(music);
+        return danceMusic;
+    }
+
+    @Override
+    public String toString() {
+        return "DanceMusic{" +
+            "music=" + music +
+            '}';
     }
 }

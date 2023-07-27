@@ -8,19 +8,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "ATTEND_HISTORY")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reservation {
+public class AttendHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reservationId;
+    private Long attendHistoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
@@ -31,10 +33,9 @@ public class Reservation {
     private RandomDance randomDance;
 
     @Builder
-    public Reservation(Long reservationId, User user, RandomDance randomDance) {
-        this.reservationId = reservationId;
+    public AttendHistory(Long attendHistoryId, User user, RandomDance randomDance) {
+        this.attendHistoryId = attendHistoryId;
         this.user = user;
         this.randomDance = randomDance;
     }
-
 }
