@@ -64,6 +64,15 @@ public class TalkServiceImpl implements TalkService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<TalkInfoResponseDto> readAllById(String id) {
+        List<Talk> allMyTalks = talkRepository.findById(id);
+        return allMyTalks.stream()
+                .map(m -> TalkInfoResponseDto.builder().talk(m).build())
+                .collect(Collectors.toList());
+    }
+
+
     @Transactional
     @Override
     public Optional<TalkInfoResponseDto> readOne(Long boardId) {
