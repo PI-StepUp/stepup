@@ -109,7 +109,7 @@ public class DanceApiController {
     }
 
     @PostMapping("/reserve")
-    public ResponseEntity<ResponseDto<?>> reserveDance
+    public ResponseEntity<ResponseDto<?>> createReservation
         (@RequestBody DanceReserveRequestDto danceReserveRequestDto) {
         danceService.createReservation(danceReserveRequestDto);
 
@@ -119,7 +119,7 @@ public class DanceApiController {
     }
 
     @DeleteMapping("/my/reserve")
-    public ResponseEntity<ResponseDto<?>> unreserveDance
+    public ResponseEntity<ResponseDto<?>> deleteReservation
         (@RequestParam("randomDanceId") Long randomDanceId, @RequestParam("id") String id) {
         danceService.deleteReservation(randomDanceId, id);
 
@@ -142,7 +142,7 @@ public class DanceApiController {
     }
 
     @PostMapping("/attend")
-    public ResponseEntity<ResponseDto<?>> reserveDance
+    public ResponseEntity<ResponseDto<?>> createAttend
         (@RequestBody DanceAttendRequestDto danceAttendRequestDto) {
         danceService.createAttend(danceAttendRequestDto);
 
