@@ -1,10 +1,9 @@
 package com.pi.stepup.domain.dance.dto;
 
 import com.pi.stepup.domain.dance.domain.RandomDance;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 public class DanceResponseDto {
 
@@ -19,7 +18,7 @@ public class DanceResponseDto {
         private final String danceType;
         private final int maxUser;
         private final String thumbnail;
-        private final String hostName;
+        private final String hostNickname;
 
         @Builder
         private DanceFindResponseDto(RandomDance randomDance) {
@@ -31,8 +30,7 @@ public class DanceResponseDto {
             this.danceType = String.valueOf(randomDance.getDanceType());
             this.maxUser = randomDance.getMaxUser();
             this.thumbnail = randomDance.getThumbnail();
-            this.hostName = randomDance.getHost().getNickname();
+            this.hostNickname = randomDance.getHost().getNickname();
         }
     }
-
 }
