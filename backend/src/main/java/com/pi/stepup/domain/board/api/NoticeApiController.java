@@ -20,7 +20,6 @@ public class NoticeApiController {
     @PostMapping("/notice")
     public ResponseEntity<ResponseDto<?>> createNotice(@RequestBody NoticeSaveRequestDto noticeSaveRequestDto) {
 
-        //Long boarId = noticeService.create(noticeSaveRequestDto).getBoardId();
         noticeService.create(noticeSaveRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
                 BoardResponseMessage.CREATE_NOTICE.getMessage()

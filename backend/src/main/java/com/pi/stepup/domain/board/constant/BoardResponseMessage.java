@@ -19,7 +19,7 @@ public enum BoardResponseMessage {
     DELETE_MEETING("정모 삭제 완료"),
     READ_ALL_MEETING("정모 목록 조회 완료"),
     READ_ALL_MY_MEETING("내가 작성한 정모 목록 조회"),
-    READ_ONE_MEETING("점모 게시글 조회 완료"),
+    READ_ONE_MEETING("정모 게시글 조회 완료"),
 
     CREATE_COMMENT("댓글 등록 완료"),
     DELETE_COMMENT("댓글 삭제 완료");
