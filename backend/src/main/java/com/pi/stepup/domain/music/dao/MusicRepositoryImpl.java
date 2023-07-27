@@ -1,18 +1,18 @@
 package com.pi.stepup.domain.music.dao;
 
 import com.pi.stepup.domain.music.domain.Music;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import java.util.List;
-import java.util.Optional;
-
 @Repository
 @RequiredArgsConstructor
 public class MusicRepositoryImpl implements MusicRepository {
+
     private final EntityManager em;
 
     @Override
@@ -39,8 +39,8 @@ public class MusicRepositoryImpl implements MusicRepository {
         String sql = "SELECT m FROM Music m ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "WHERE m.title LIKE concat('%', " + keyword + ", '%') OR " +
-                    "m.artist LIKE concat('%', " + keyword + ", '%')";
+            sql += "WHERE m.title LIKE '%" + keyword + "%' OR " +
+                "m.artist LIKE '%" + keyword + "%'";
         }
 
         return em.createQuery(sql, Music.class).getResultList();

@@ -32,10 +32,9 @@ public class MusicApiController {
     @PostMapping
     public ResponseEntity<ResponseDto<?>> createMusic(
         @RequestBody MusicSaveRequestDto musicSaveRequestDto) {
-        Long musicId = musicService.create(musicSaveRequestDto).getMusicId();
+        musicService.create(musicSaveRequestDto).getMusicId();
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
-            CREATE_MUSIC_SUCCESS.getMessage(),
-            musicService.readOne(musicId)
+            CREATE_MUSIC_SUCCESS.getMessage()
         ));
     }
 
