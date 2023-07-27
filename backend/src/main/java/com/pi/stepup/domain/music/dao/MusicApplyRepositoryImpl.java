@@ -33,8 +33,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
         String sql = "SELECT ma FROM MusicApply ma ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "WHERE ma.title LIKE concat('%', " + keyword + ", '%') OR " +
-                "ma.artist LIKE concat('%', " + keyword + ", '%')";
+            sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
+                "ma.artist LIKE '%" + keyword + "%'";
         }
 
         return em.createQuery(sql, MusicApply.class).getResultList();
