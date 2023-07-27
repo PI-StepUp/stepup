@@ -7,7 +7,6 @@ import com.pi.stepup.domain.rank.dao.RankRepository;
 import com.pi.stepup.domain.rank.domain.PointHistory;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.domain.Rank;
-import com.pi.stepup.domain.rank.domain.UserRank;
 import com.pi.stepup.domain.rank.dto.RankResponseDto.UserRankFindResponseDto;
 import com.pi.stepup.domain.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;

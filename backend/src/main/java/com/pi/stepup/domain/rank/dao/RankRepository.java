@@ -1,10 +1,12 @@
 package com.pi.stepup.domain.rank.dao;
 
-import com.pi.stepup.domain.rank.domain.UserRank;
-
+import com.pi.stepup.domain.rank.constant.RankName;
+import com.pi.stepup.domain.rank.domain.Rank;
 import java.util.Optional;
 
 public interface RankRepository {
 
-    Optional<UserRank> findByUserId(String id);
+    Optional<Rank> findOneByPoint(Integer point);
+
+    Optional<Rank> getRankByName(RankName rankName);
 }

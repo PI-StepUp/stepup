@@ -1,13 +1,25 @@
 package com.pi.stepup.domain.user.domain;
 
-import com.pi.stepup.domain.rank.domain.UserRank;
+import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.global.entity.BaseEntity;
-import lombok.*;
-
-import javax.persistence.*;
 import java.time.LocalDate;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "USERS")
@@ -46,13 +58,14 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     // TODO: Rank 엔티티 연관관계 설정
-    @OneToOne(mappedBy = "user")
-    private UserRank userRank;
+    @ManyToOne
+    @JoinColumn(name = "RANK_ID")
+    private Rank rank;
 
     @Builder
     public User(Long userId, String id, String password, String email, Integer emailAlert,
-                Country country, String nickname, LocalDate birth, String profileImg,
-                UserRole role, Integer point, String refreshToken, UserRank userRank) {
+        Country country, String nickname, LocalDate birth, String profileImg,
+        UserRole role, Integer point, String refreshToken, Rank rank) {
         this.userId = userId;
         this.id = id;
         this.password = password;
@@ -65,7 +78,7 @@ public class User extends BaseEntity {
         this.role = role;
         this.point = point;
         this.refreshToken = refreshToken;
-        this.userRank = userRank;
+        this.rank = rank;
     }
 
     public void setRefreshToken(String refreshToken) {
@@ -89,7 +102,7 @@ public class User extends BaseEntity {
         this.point += point;
     }
 
-    public void setRank(UserRank userRank) {
-        this.userRank = userRank;
+    public void setRank(Rank rank) {
+        this.rank = rank;
     }
 }
