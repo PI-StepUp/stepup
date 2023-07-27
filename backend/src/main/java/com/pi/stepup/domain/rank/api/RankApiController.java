@@ -4,6 +4,9 @@ import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
 import com.pi.stepup.domain.rank.service.PointHistoryService;
 import com.pi.stepup.domain.rank.service.RankService;
 import com.pi.stepup.global.dto.ResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.pi.stepup.domain.rank.constant.RankResponseMessage.*;
 
+@Tag(name = "rank", description = "rank domain apis")
 @RestController
 @RequestMapping("/api/rank")
 @RequiredArgsConstructor
@@ -20,6 +24,10 @@ public class RankApiController {
     private final PointHistoryService pointHistoryService;
     private final RankService rankService;
 
+    @Operation(summary = "포인트 적립",
+        description = "사용자가 랜플댄에 참여하여 수상하거나 노래를 맞힐 경우, 랜플댄 개최, 연습실 첨여할 경우 포인트를 적립한다.")
+    @ApiResponse(responseCode = "200",
+        description = "포인트 적립 완료")
     @PostMapping("/point")
     public ResponseEntity<ResponseDto<?>> updatePoint(@RequestBody PointUpdateRequestDto pointUpdateRequestDto) {
         pointHistoryService.update(pointUpdateRequestDto);
@@ -28,6 +36,10 @@ public class RankApiController {
         ));
     }
 
+    @Operation(summary = "포인트 적립 내역 조회",
+        description = "사용자의 포인트 적립 내역들을 상세히 보여준다.")
+    @ApiResponse(responseCode = "200",
+        description = "포인트 적립 내역 조회 완료")
     @GetMapping("/my/history/{id}")
     public ResponseEntity<ResponseDto<?>> readAllPointHistory(@PathVariable("id") String id) {
         log.info("포인트 적립 내역 : {}", pointHistoryService.readAll());
@@ -37,6 +49,10 @@ public class RankApiController {
         ));
     }
 
+    @Operation(summary = "포인트 조회",
+        description = "사용자의 포인트를 조회한다.")
+    @ApiResponse(responseCode = "200",
+        description = "포인트 조회 완료")
     @GetMapping("/my/point/{id}")
     public ResponseEntity<ResponseDto<?>> readPoint(@PathVariable("id") String id) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -45,6 +61,10 @@ public class RankApiController {
         ));
     }
 
+    @Operation(summary = "사용자 등급 조회",
+        description = "사용자의 등급을 조회한다.")
+    @ApiResponse(responseCode = "200",
+        description = "사용자 등급 조회 완료")
     @GetMapping("/my/grade/{id}")
     public ResponseEntity<ResponseDto<?>> readUserRank(@PathVariable("id") String id) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
