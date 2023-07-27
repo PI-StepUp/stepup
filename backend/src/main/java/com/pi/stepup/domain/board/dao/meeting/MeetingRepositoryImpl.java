@@ -30,11 +30,21 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             return Optional.empty();
         }
     }
+    @Override
+    public List<Meeting> findById(String id) {
+        try {
+            String jpql = "SELECT m FROM Meeting m WHERE m.writer.id = :id";
+        return em.createQuery(jpql, Meeting.class)
+                .setParameter("id", id)
+                .getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException("정모 검색 오류", e);
+        }
+    }
 
     @Override
     public List<Meeting> findAll(String keyword) {
         try {
-
             String jpql = "SELECT m FROM Meeting m WHERE m.title LIKE :keyword OR m.content Like :keyword";
             return em.createQuery(jpql, Meeting.class)
                     .setParameter("keyword", "%" + keyword + "%")
