@@ -10,13 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/comment")
+@RequestMapping("/api/board")
 @RestController
 public class CommentApiController {
 
     private final CommentService commentService;
 
-    @PostMapping("/{boardId}")
+    @PostMapping("comment/{boardId}")
     public ResponseEntity<ResponseDto<?>> createComment(@PathVariable Long boardId, @RequestBody CommentSaveRequestDto commentSaveRequestDto) {
         commentSaveRequestDto.setBoardId(boardId);
         commentService.create(commentSaveRequestDto);
@@ -25,7 +25,7 @@ public class CommentApiController {
         ));
     }
 
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("comment/{commentId}")
     public ResponseEntity<ResponseDto<?>> deleteComment(@PathVariable Long commentId){
         commentService.delete(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
