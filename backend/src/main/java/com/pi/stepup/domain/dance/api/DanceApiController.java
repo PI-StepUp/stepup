@@ -132,7 +132,6 @@ public class DanceApiController {
     @Operation(summary = "랜덤 플레이 댄스 예약",
         description = "참여하고 싶은 랜덤 플레이 댄스를 예약한다.")
     @ApiResponse(responseCode = "201", description = "랜덤 플레이 댄스 예약 완료")
-    @GetMapping("")
     @PostMapping("/reserve")
     public ResponseEntity<ResponseDto<?>> createReservation
         (@RequestBody DanceReserveRequestDto danceReserveRequestDto) {
