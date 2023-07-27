@@ -58,6 +58,15 @@ public class MeetingApiController {
         );
     }
 
+    @GetMapping("meeting/my")
+    public ResponseEntity<ResponseDto<?>> readAllByIdMeeting(
+            @RequestParam(name = "id") String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                BoardResponseMessage.READ_ALL_MY_MEETING.getMessage(),
+                meetingService.readAllById(id)
+        ));
+    }
+
 
     @DeleteMapping("meeting/{boardId}")
     public ResponseEntity<ResponseDto<?>> deleteMeeting(@PathVariable("boardId") Long boardId) {
