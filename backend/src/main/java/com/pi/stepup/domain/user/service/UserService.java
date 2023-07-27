@@ -5,6 +5,9 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -32,4 +35,10 @@ public interface UserService {
     void checkPassword(AuthenticationRequestDto authenticationRequestDto);
 
     void update(UpdateUserRequestDto updateUserRequestDto);
+
+    void findId(FindIdRequestDto findIdRequestDto);
+
+    void findPassword(FindPasswordRequestDto findPasswordRequestDto);
+
+    TokenInfo reissueTokens(String refreshToken, ReissueTokensRequestDto reissueTokensRequestDto);
 }

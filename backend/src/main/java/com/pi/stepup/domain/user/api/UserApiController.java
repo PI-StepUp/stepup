@@ -5,9 +5,12 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DU
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOKENS_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 
@@ -15,14 +18,15 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +45,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserApiController {
 
     private final UserService userService;
-    private final Logger logger = LoggerFactory.getLogger(UserApiController.class);
 
     @GetMapping("/country")
     public ResponseEntity<ResponseDto<?>> readAllCountries() {
@@ -139,13 +143,49 @@ public class UserApiController {
     @PutMapping("")
     public ResponseEntity<ResponseDto<?>> update(
         @RequestBody UpdateUserRequestDto updateUserRequestDto) {
-        logger.debug("[update()] updateUserRequestDto : {}", updateUserRequestDto);
+        log.debug("[update()] updateUserRequestDto : {}", updateUserRequestDto);
 
         userService.update(updateUserRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 UPDATE_USER_SUCCESS.getMessage()
+            )
+        );
+    }
+
+    @PostMapping("/findid")
+    public ResponseEntity<ResponseDto<?>> findId(@RequestBody FindIdRequestDto findIdRequestDto) {
+        userService.findId(findIdRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                FIND_ID_SUCCESS.getMessage()
+            )
+        );
+    }
+
+    @PostMapping("/findpw")
+    public ResponseEntity<ResponseDto<?>> findPassword(
+        @RequestBody FindPasswordRequestDto findPasswordRequestDto) {
+        userService.findPassword(findPasswordRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                FIND_PASSWORD_SUCCESS.getMessage()
+            )
+        );
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<ResponseDto<?>> reissueTokens(
+        @RequestHeader("refreshToken") String refreshToken,
+        @RequestBody ReissueTokensRequestDto reissueTokensRequestDto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ResponseDto.create(
+                REISSUE_TOKENS_SUCCESS.getMessage(),
+                userService.reissueTokens(refreshToken, reissueTokensRequestDto)
             )
         );
     }
