@@ -79,7 +79,7 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public Optional<Reservation> findReservation(Long randomDanceId, Long userId) {
+    public Optional<Reservation> findByRandomDanceIdAndUserId(Long randomDanceId, Long userId) {
         Optional<Reservation> reservation = null;
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "

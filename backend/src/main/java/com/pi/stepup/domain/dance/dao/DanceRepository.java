@@ -31,7 +31,7 @@ public interface DanceRepository {
     Reservation insertReservation(Reservation reservation);
 
     //예약 랜덤 플레이 댄스 하나 조회
-    Optional<Reservation> findReservation(Long randomDanceId, Long userId);
+    Optional<Reservation> findByRandomDanceIdAndUserId(Long randomDanceId, Long userId);
 
     //랜덤 플레이 댄스 예약 취소
     void deleteReservation(Long reservationId);
