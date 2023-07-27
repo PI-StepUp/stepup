@@ -22,7 +22,7 @@ public interface UserRepository {
 
     void delete(User user);
 
-    Optional<User> findByIdAndBirth(String id, LocalDate birth);
+    Optional<User> findByEmailAndBirth(String email, LocalDate birth);
 
     Optional<User> findByIdAndEmail(String id, String email);
 }

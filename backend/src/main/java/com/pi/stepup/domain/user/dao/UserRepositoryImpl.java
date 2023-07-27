@@ -97,16 +97,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByIdAndBirth(String id, LocalDate birth) {
+    public Optional<User> findByEmailAndBirth(String email, LocalDate birth) {
         Optional<User> user = null;
 
         try {
             user = Optional.ofNullable(
                 em.createQuery(
                         "SELECT u FROM User u "
-                            + "WHERE u.id = :id AND u.birth = :birth", User.class
+                            + "WHERE u.email = :email AND u.birth = :birth", User.class
                     )
-                    .setParameter("id", id)
+                    .setParameter("email", email)
                     .setParameter("birth", birth)
                     .getSingleResult()
             );

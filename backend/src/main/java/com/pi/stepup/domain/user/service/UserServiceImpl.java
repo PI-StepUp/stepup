@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void findId(FindIdRequestDto findIdRequestDto) {
-        User user = userRepository.findByIdAndBirth(findIdRequestDto.getId(),
+        User user = userRepository.findByEmailAndBirth(findIdRequestDto.getEmail(),
                 findIdRequestDto.getBirth())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 

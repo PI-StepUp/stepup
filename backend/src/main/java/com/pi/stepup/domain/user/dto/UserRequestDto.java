@@ -104,7 +104,7 @@ public class UserRequestDto {
     @AllArgsConstructor
     public static class FindIdRequestDto {
 
-        private String id;
+        private String email;
         private String birth;
 
         public LocalDate getBirth() {
