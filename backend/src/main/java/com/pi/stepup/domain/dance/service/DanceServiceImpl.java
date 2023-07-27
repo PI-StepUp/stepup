@@ -36,9 +36,6 @@ public class DanceServiceImpl implements DanceService {
     private final UserRepository userRepository;
     private final MusicRepository musicRepository;
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-        "yyyy-MM-dd HH:mm");
-
     @Override
     @Transactional
     public void create(DanceCreateRequestDto danceCreateRequestDto) {
@@ -164,7 +161,7 @@ public class DanceServiceImpl implements DanceService {
     @Transactional
     public void deleteReservation(Long randomDanceId, String id) {
         Long userId = userRepository.findById(id).orElseThrow().getUserId();
-        Long reservationId = danceRepository.findReservation(randomDanceId, userId)
+        Long reservationId = danceRepository.findByRandomDanceIdAndUserId(randomDanceId, userId)
             .orElseThrow().getReservationId();
         System.out.println(reservationId);
         danceRepository.deleteReservation(reservationId);
