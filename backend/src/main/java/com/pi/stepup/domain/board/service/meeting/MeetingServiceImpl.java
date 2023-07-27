@@ -6,15 +6,20 @@ import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResp
 import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingSaveRequestDto;
 import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto.MeetingInfoResponseDto;
+import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +33,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Meeting create(MeetingSaveRequestDto meetingSaveRequestDto) {
         User writer = userRepository.findById(meetingSaveRequestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자"));
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         Meeting meeting = Meeting.builder()
                 .writer(writer)
@@ -49,7 +54,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Meeting update(MeetingUpdateRequestDto meetingUpdateRequestDto) {
         Meeting meeting = meetingRepository.findOne(meetingUpdateRequestDto.getBoardId())
-                .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
         meeting.update(meetingUpdateRequestDto.getTitle(), meetingUpdateRequestDto.getContent(),
                 meetingUpdateRequestDto.getFileURL(), meetingUpdateRequestDto.getRegion(),
