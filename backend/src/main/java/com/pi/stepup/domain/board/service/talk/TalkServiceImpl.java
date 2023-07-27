@@ -34,7 +34,7 @@ public class TalkServiceImpl implements TalkService {
         Talk talk = Talk.builder()
                 .writer(writer)
                 .title(talkSaveRequestDto.getTitle())
-                .content(talkSaveRequestDto.getTitle())
+                .content(talkSaveRequestDto.getContent())
                 .fileURL(talkSaveRequestDto.getFileURL())
                 .build();
 
