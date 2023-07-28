@@ -30,10 +30,6 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     @Override
     @Transactional
-    /**
-     * TODO : 리팩토링
-     *  - 포인트 업데이트, 랭크 업데이트 메소드 두개로 분리
-     */
     public void update(PointUpdateRequestDto pointUpdateRequestDto) {
         User user = userRepository.findById(pointUpdateRequestDto.getId()).orElseThrow();
         PointPolicy pointPolicy = pointPolicyRepository.findOne(
@@ -46,6 +42,10 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         pointHistoryRepository.insert(
             pointUpdateRequestDto.toEntity(user, pointPolicy, randomDance));
 
+        updateUserRank(user);
+    }
+
+    public void updateUserRank(User user) {
         Integer userPoint = user.getPoint();
         Rank rank = rankRepository.findOneByPoint(userPoint).orElseThrow();
         user.setRank(rank);
