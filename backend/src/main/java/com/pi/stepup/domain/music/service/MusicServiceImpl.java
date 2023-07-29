@@ -4,6 +4,7 @@ import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
+import com.pi.stepup.domain.music.exception.MusicDuplicatedException;
 import com.pi.stepup.domain.music.exception.MusicNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 
 @Service
@@ -27,7 +29,11 @@ public class MusicServiceImpl implements MusicService {
     @Transactional
     public Music create(MusicSaveRequestDto musicSaveRequestDto) {
         Music music = musicSaveRequestDto.toEntity();
-        log.info("노래 생성 : {}", music.getURL());
+
+        if (musicRepository.findByTitleAndArtist(music.getTitle(), music.getArtist()).isPresent()) {
+            throw new MusicDuplicatedException(MUSIC_DUPLICATED.getMessage());
+        }
+
         return musicRepository.insert(music);
     }
 
