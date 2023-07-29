@@ -2,13 +2,18 @@ import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
+import LanguageButton from "components/LanguageButton";
 
 import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg"
+
+import { useRecoilState } from "recoil";
+import { LanguageState } from "states/states";
 
 import Image from "next/image"
 import Link from "next/link"
 
 const MeetingList = () => {
+    const [lang, setLang] = useRecoilState(LanguageState);
     return (
         <>
             <Header/>
@@ -26,7 +31,7 @@ const MeetingList = () => {
                         </div>
                     </div>
                     <div className="button-wrap">
-                        <button><Link href="/meeting/create">글 작성하기</Link></button>
+                        <button><Link href="/meeting/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
                     </div>
                     <div className="meeting-content-wrap">
                         <ul>
@@ -37,7 +42,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -47,7 +52,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -57,7 +62,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -67,7 +72,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -77,7 +82,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -87,7 +92,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -97,7 +102,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -107,7 +112,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                             <li>
@@ -117,7 +122,7 @@ const MeetingList = () => {
                                 </div>
                                 <div className="meeting-content">
                                     <p>16일 일요일! 역삼역 이프푸 찍으실 분 구합니다.</p>
-                                    <span>같이 갈 사람 제의하기</span>
+                                    <span>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                 </div>
                             </li>
                         </ul>
@@ -136,6 +141,7 @@ const MeetingList = () => {
                     </div>
                 </div>
             </div>
+            <LanguageButton/>
             <Footer/>
         </>
     )
