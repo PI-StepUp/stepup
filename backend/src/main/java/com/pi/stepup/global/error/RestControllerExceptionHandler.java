@@ -2,6 +2,7 @@ package com.pi.stepup.global.error;
 
 import com.pi.stepup.global.dto.ResponseDto;
 import com.pi.stepup.global.error.exception.DuplicatedException;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import com.pi.stepup.global.error.exception.NotFoundException;
 import com.pi.stepup.global.error.exception.TokenException;
 import org.springframework.http.HttpStatus;
@@ -35,4 +36,13 @@ public class RestControllerExceptionHandler {
             ResponseDto.create(exception.getMessage())
         );
     }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ResponseDto<String>> handleForbiddenException(
+            ForbiddenException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ResponseDto.create(exception.getMessage())
+        );
+    }
+
 }
