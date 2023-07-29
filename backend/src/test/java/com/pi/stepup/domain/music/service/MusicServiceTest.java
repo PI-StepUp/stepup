@@ -5,6 +5,7 @@ import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
+import com.pi.stepup.domain.music.exception.MusicDuplicatedException;
 import com.pi.stepup.domain.music.exception.MusicNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -59,6 +61,18 @@ class MusicServiceTest {
         Music result = musicService.create(musicSaveRequestDto);
         assertThat(result.getTitle()).isEqualTo(music.getTitle());
     }
+
+    @Test
+    @DisplayName("동일한 노래 추가 예외 처리 테스트")
+    @Transactional
+    public void createDuplicateMusicTest() {
+        when(musicRepository.findByTitleAndArtist(any(), any())).thenReturn(Optional.ofNullable(music));
+
+        assertThatThrownBy(() -> musicService.create(musicSaveRequestDto))
+                .isInstanceOf(MusicDuplicatedException.class)
+                .hasMessageContaining(MUSIC_DUPLICATED.getMessage());
+    }
+
 
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
