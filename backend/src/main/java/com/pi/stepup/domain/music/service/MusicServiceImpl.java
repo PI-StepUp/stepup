@@ -4,12 +4,16 @@ import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.pi.stepup.domain.music.exception.MusicNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -30,16 +34,16 @@ public class MusicServiceImpl implements MusicService {
     @Override
     public MusicFindResponseDto readOne(Long musicId) {
         return MusicFindResponseDto.builder()
-            .music(musicRepository.findOne(musicId).orElseThrow())
-            .build();
+                .music(musicRepository.findOne(musicId).orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage())))
+                .build();
     }
 
     public List<MusicFindResponseDto> readAll(String keyword) {
         return musicRepository.findAll(keyword).stream()
-            .map(music -> MusicFindResponseDto.builder()
-                .music(music)
-                .build())
-            .collect(Collectors.toList());
+                .map(music -> MusicFindResponseDto.builder()
+                        .music(music)
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override
