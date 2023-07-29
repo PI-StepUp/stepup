@@ -5,6 +5,7 @@ import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
+import com.pi.stepup.domain.music.exception.MusicNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -65,6 +68,16 @@ class MusicServiceTest {
         MusicFindResponseDto result = musicService.readOne(music.getMusicId());
 
         assertThat(music.getTitle()).isEqualTo(result.getTitle());
+    }
+
+    @Test
+    @DisplayName("없는 노래를 조회할 때 MUSIC_NOT_FOUND 예외 테스트")
+    public void readOneMusicNotFoundTest() {
+        when(musicRepository.findOne(any())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> musicService.readOne(music.getMusicId()))
+                .isInstanceOf(MusicNotFoundException.class)
+                .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
     }
 
     @Test
