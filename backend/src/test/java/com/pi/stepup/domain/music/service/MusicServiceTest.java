@@ -7,6 +7,7 @@ import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicDuplicatedException;
 import com.pi.stepup.domain.music.exception.MusicNotFoundException;
+import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,6 +56,7 @@ class MusicServiceTest {
     @DisplayName("노래 추가 서비스 테스트")
     @Transactional
     public void createMusicServiceTest() {
+        // TODO : ROLE_ADMIN return
         when(musicRepository.insert(any(Music.class))).thenReturn(music);
 
         Music result = musicService.create(musicSaveRequestDto);
@@ -121,6 +122,16 @@ class MusicServiceTest {
         List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
         assertThat(makedMusic.size()).isEqualTo(foundMusic.size());
+    }
+
+    @Test
+    @DisplayName("없는 노래를 삭제할 때 MUSIC_NOT_FOUND 예외 테스트")
+    public void deleteOneMusicNotFoundTest() {
+        when(musicRepository.findOne(any())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> musicService.delete(music.getMusicId()))
+                .isInstanceOf(MusicNotFoundException.class)
+                .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
     }
 
     private List<Music> makeMusic() {
