@@ -1,5 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
+
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
@@ -16,8 +18,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +57,8 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     public MusicApplyFindResponseDto readOne(String id, Long musicApplyId) {
         return MusicApplyFindResponseDto.builder()
             .musicApply(musicApplyRepository.findOne(musicApplyId)
-                    .orElseThrow(() -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()))
+                .orElseThrow(
+                    () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()))
             )
             .canHeart(findHeartStatus(id, musicApplyId))
             .build();
@@ -65,8 +66,14 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     @Transactional
-    public void delete(Long musicId) {
-        musicApplyRepository.delete(musicId);
+    public void delete(Long musicApplyId) {
+        // TODO : 현재 로그인 된 사용자가 노래 신청 등록한 사용자와 동일한 사용자인지 체크
+
+        musicApplyRepository.findOne(musicApplyId)
+            .orElseThrow(
+                () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage())
+            );
+        musicApplyRepository.delete(musicApplyId);
     }
 
     @Override

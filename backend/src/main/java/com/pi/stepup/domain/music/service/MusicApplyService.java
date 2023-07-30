@@ -14,7 +14,7 @@ public interface MusicApplyService {
 
     MusicApplyFindResponseDto readOne(String id, Long musicApplyId);
 
-    void delete(Long musicId);
+    void delete(Long musicApplyId);
 
     List<AllMusicApplyFindResponseDto> readAllById(String id);
 
