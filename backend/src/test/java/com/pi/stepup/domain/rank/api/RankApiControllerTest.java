@@ -1,11 +1,20 @@
 package com.pi.stepup.domain.rank.api;
 
+import static com.pi.stepup.domain.rank.constant.PointType.FIRST_PRIZE;
+import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.UNAUTHORIZED_USER_ACCESS;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.google.gson.Gson;
 import com.pi.stepup.domain.dance.constant.DanceType;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.rank.domain.PointHistory;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
+import com.pi.stepup.domain.rank.exception.UnauthorizedUserAccessException;
 import com.pi.stepup.domain.rank.service.PointHistoryService;
 import com.pi.stepup.domain.rank.service.RankService;
 import com.pi.stepup.domain.user.domain.User;
@@ -22,11 +31,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import static com.pi.stepup.domain.rank.constant.PointType.FIRST_PRIZE;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RankApiController.class)
 class RankApiControllerTest {
@@ -90,6 +94,26 @@ class RankApiControllerTest {
         );
 
         postAction.andExpect(status().isUnauthorized());
+    }
+
+    // TODO : 포인트 적립 - 비인가된 사용자 접근 (403) 예외 처리
+    @Test
+    @DisplayName("비인가 사용자 포인트 적립 예외 테스트")
+    @WithMockUser
+    public void NotAuthorizedUserPointUpdateApiTest() throws Exception {
+        String url = "/api/rank/point";
+        // TODO : service에서 throw 해줄 것
+        doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
+            .when(pointHistoryService)
+            .update(any());
+
+        final ResultActions postAction = mockMvc.perform(
+            MockMvcRequestBuilders.post(url).with(csrf())
+                .content(gson.toJson(pointUpdateRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        postAction.andExpect(status().isForbidden());
     }
 
     @Test
