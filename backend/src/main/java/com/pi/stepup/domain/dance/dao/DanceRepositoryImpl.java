@@ -4,13 +4,14 @@ import com.pi.stepup.domain.dance.domain.AttendHistory;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.domain.Reservation;
-import java.util.List;
-import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,19 +46,19 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<DanceMusic> findAllDanceMusic(Long randomDanceId) {
         return em.createQuery("SELECT d FROM DanceMusic d "
-                + "WHERE d.randomDance.randomDanceId = :randomDanceId", DanceMusic.class)
-            .setParameter("randomDanceId", randomDanceId)
-            .getResultList();
+                        + "WHERE d.randomDance.randomDanceId = :randomDanceId", DanceMusic.class)
+                .setParameter("randomDanceId", randomDanceId)
+                .getResultList();
     }
 
     @Override
     public List<RandomDance> findAllMyOpenDance(String id) {
         return em.createQuery("SELECT r FROM RandomDance r "
-                + "WHERE r.host.id = :id", RandomDance.class)
+                        + "WHERE r.host.id = :id", RandomDance.class)
 //                        + "JOIN r.host u "
 //                        + "WHERE u.id = :id", RandomDance.class)
-            .setParameter("id", id)
-            .getResultList();
+                .setParameter("id", id)
+                .getResultList();
     }
 
     @Override
@@ -66,7 +67,7 @@ public class DanceRepositoryImpl implements DanceRepository {
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE r.title LIKE concat('%', " + keyword + ", '%') OR " +
-                "r.content LIKE concat('%', " + keyword + ", '%')";
+                    "r.content LIKE concat('%', " + keyword + ", '%')";
         }
 
         return em.createQuery(sql, RandomDance.class).getResultList();
@@ -83,11 +84,11 @@ public class DanceRepositoryImpl implements DanceRepository {
         Optional<Reservation> reservation = null;
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
-                    + "WHERE r.randomDance.randomDanceId = :randomDanceId "
-                    + "AND r.user.userId = :userId", Reservation.class)
-                .setParameter("randomDanceId", randomDanceId)
-                .setParameter("userId", userId)
-                .getSingleResult());
+                            + "WHERE r.randomDance.randomDanceId = :randomDanceId "
+                            + "AND r.user.userId = :userId", Reservation.class)
+                    .setParameter("randomDanceId", randomDanceId)
+                    .setParameter("userId", userId)
+                    .getSingleResult());
         } catch (NoResultException e) {
             reservation = Optional.empty();
         } finally {
@@ -104,9 +105,9 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<Reservation> findAllMyReservation(Long userId) {
         return em.createQuery("SELECT r FROM Reservation r "
-                + "WHERE r.user.userId = :userId", Reservation.class)
-            .setParameter("userId", userId)
-            .getResultList();
+                        + "WHERE r.user.userId = :userId", Reservation.class)
+                .setParameter("userId", userId)
+                .getResultList();
     }
 
     @Override
@@ -135,8 +136,8 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<AttendHistory> findAllMyAttend(Long userId) {
         return em.createQuery("SELECT a FROM AttendHistory a "
-                + "WHERE a.user.userId = :userId", AttendHistory.class)
-            .setParameter("userId", userId)
-            .getResultList();
+                        + "WHERE a.user.userId = :userId", AttendHistory.class)
+                .setParameter("userId", userId)
+                .getResultList();
     }
 }
