@@ -175,6 +175,7 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("랭크 조회 api 테스트")
+    @WithMockUser
     public void readUserRankApiTest() throws Exception {
         String url = "/api/rank/my/grade/" + user.getId();
 
@@ -183,6 +184,37 @@ class RankApiControllerTest {
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
+    }
+
+    @Test
+    @DisplayName("비인증 사용자 랭크 조회 예외 테스트")
+    @WithAnonymousUser
+    public void notLoginUserReadUserRankApiTest() throws Exception {
+        String url = "/api/rank/my/grade/" + user.getId();
+
+        final ResultActions getAction = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isUnauthorized());
+    }
+
+    // TODO : 403 랭크 조회 예외 테스트
+    @Test
+    @DisplayName("비인증 사용자 랭크 조회 예외 테스트")
+    @WithMockUser
+    public void notAuthorizedUserReadUserRankApiTest() throws Exception {
+        String url = "/api/rank/my/grade/" + user.getId();
+        // TODO : service에서 throw 해줄 것
+        doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
+            .when(rankService)
+            .readOne(user.getId());
+
+        final ResultActions getAction = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isForbidden());
     }
 
     private void makePointPolicy() {
