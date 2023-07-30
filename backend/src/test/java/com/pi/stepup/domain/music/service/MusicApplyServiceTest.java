@@ -1,12 +1,5 @@
 package com.pi.stepup.domain.music.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
@@ -14,11 +7,9 @@ import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
+import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +17,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MusicApplyServiceTest {
@@ -48,33 +49,11 @@ class MusicApplyServiceTest {
     @Test
     @BeforeEach
     public void init() {
-        musicApplySaveRequestDto = MusicApplySaveRequestDto.builder()
-            .artist("artist")
-            .title("title")
-            .content("content")
-            .writerId("writer")
-            .build();
-
-        user = User.builder()
-            .id("writer")
-            .build();
-
-        musicApply = MusicApply.builder()
-            .title(musicApplySaveRequestDto.getTitle())
-            .artist(musicApplySaveRequestDto.getArtist())
-            .content(musicApplySaveRequestDto.getContent())
-            .writer(user)
-            .build();
-
-        heartSaveRequestDto = HeartSaveRequestDto.builder()
-            .musicApplyId(musicApply.getMusicApplyId())
-            .id(user.getId())
-            .build();
-
-        heart = Heart.builder()
-            .user(user)
-            .musicApply(musicApply)
-            .build();
+        makeMusicApplySaveRequestDto();
+        makeUser();
+        makeMusicApply();
+        makeHeartSaveRequestDto();
+        makeHeart();
     }
 
     @Test
@@ -91,12 +70,12 @@ class MusicApplyServiceTest {
     @DisplayName("노래 신청 목록 조회 테스트")
     public void readAllMusicApplyServiceTest() {
         String keyword = "";
-        List<MusicApply> makedMusicApply = makeMusicApply();
+        List<MusicApply> makedMusicApply = makeMusicApplies();
         doReturn(makedMusicApply)
-            .when(musicApplyRepository).findAll(keyword);
+                .when(musicApplyRepository).findAll(keyword);
 
         List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
-            keyword);
+                keyword);
         assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
     }
 
@@ -104,28 +83,28 @@ class MusicApplyServiceTest {
     @DisplayName("노래 신청 목록 키워드 조회 테스트")
     public void readAllMusicApplyByKeywordServiceTest() {
         String keyword = "1";
-        List<MusicApply> madeMusicApply = makeMusicApply();
+        List<MusicApply> madeMusicApply = makeMusicApplies();
         List<MusicApply> keywordMusicApply = makeMusicApplyByKeyword(madeMusicApply, keyword);
 
         doReturn(keywordMusicApply)
-            .when(musicApplyRepository).findAll(keyword);
+                .when(musicApplyRepository).findAll(keyword);
 
         List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
-            keyword);
+                keyword);
         assertThat(musicApplies.size()).isEqualTo(keywordMusicApply.size());
     }
 
     @Test
     @DisplayName("내 노래 신청 목록 조회 테스트")
     public void readAllMusicApplyByUserServiceTest() {
-        List<MusicApply> madeMusicApply = makeMusicApply();
+        List<MusicApply> madeMusicApply = makeMusicApplies();
         List<MusicApply> writerMusicApply = makeMusicApplyByUser(madeMusicApply, user);
 
         doReturn(writerMusicApply)
-            .when(musicApplyRepository).findById(user.getId());
+                .when(musicApplyRepository).findById(user.getId());
 
         List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById(
-            user.getId());
+                user.getId());
         assertThat(musicApplies.size()).isEqualTo(writerMusicApply.size());
     }
 
@@ -136,9 +115,19 @@ class MusicApplyServiceTest {
         when(musicApplyRepository.findOne(any())).thenReturn(Optional.of(musicApply));
 
         MusicApplyFindResponseDto result = musicApplyService.readOne(user.getId(),
-            musicApply.getMusicApplyId());
+                musicApply.getMusicApplyId());
 
         assertThat(result.getTitle()).isEqualTo(musicApply.getTitle());
+    }
+
+    @Test
+    @DisplayName("없는 노래 신청 상세 조회 예외 테스트")
+    public void readOneNotExistMusicApplyServiceTest() {
+        when(musicApplyRepository.findOne(any())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> musicApplyService.readOne(user.getId(), musicApply.getMusicApplyId()))
+                .isInstanceOf(MusicApplyNotFoundException.class)
+                .hasMessageContaining(MUSIC_APPLY_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -151,31 +140,8 @@ class MusicApplyServiceTest {
         verify(musicApplyRepository, only()).delete(musicId);
     }
 
-    private List<MusicApply> makeMusicApply() {
-        List<MusicApply> musicApplies = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            MusicApply tmp = MusicApply.builder().
-                title("title" + i)
-                .artist("artist" + (i + 1))
-                .writer(user)
-                .build();
-            musicApplies.add(tmp);
-        }
-
-        User tmp = User.builder()
-            .id("tmp")
-            .password("password")
-            .build();
-        musicApplies.add(MusicApply.builder().
-            title("title")
-            .artist("artist")
-            .writer(tmp)
-            .build());
-        return musicApplies;
-    }
-
     private List<MusicApply> makeMusicApplyByKeyword(List<MusicApply> musicApplies,
-        String keyword) {
+                                                     String keyword) {
         List<MusicApply> result = new ArrayList<>();
 
         for (MusicApply m : musicApplies) {
@@ -227,7 +193,7 @@ class MusicApplyServiceTest {
         when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
 
         Integer canHeart = musicApplyService.findHeartStatus(user.getId(),
-            musicApply.getMusicApplyId());
+                musicApply.getMusicApplyId());
 
         // TODO : 좋아요 안눌렸으면 1, 눌려있으면 0
         final Integer CAN_HEART = 1, CANNOT_HEART = 0;
@@ -237,5 +203,66 @@ class MusicApplyServiceTest {
     private MusicApply updateMusicApply() {
         musicApply.addHeart();
         return musicApply;
+    }
+
+    private void makeHeart() {
+        heart = Heart.builder()
+                .user(user)
+                .musicApply(musicApply)
+                .build();
+    }
+
+    private void makeHeartSaveRequestDto() {
+        heartSaveRequestDto = HeartSaveRequestDto.builder()
+                .musicApplyId(musicApply.getMusicApplyId())
+                .id(user.getId())
+                .build();
+    }
+
+    private void makeMusicApply() {
+        musicApply = MusicApply.builder()
+                .title(musicApplySaveRequestDto.getTitle())
+                .artist(musicApplySaveRequestDto.getArtist())
+                .content(musicApplySaveRequestDto.getContent())
+                .writer(user)
+                .build();
+    }
+
+    private void makeUser() {
+        user = User.builder()
+                .id("writer")
+                .build();
+    }
+
+    private void makeMusicApplySaveRequestDto() {
+        musicApplySaveRequestDto = MusicApplySaveRequestDto.builder()
+                .artist("artist")
+                .title("title")
+                .content("content")
+                .writerId("writer")
+                .build();
+    }
+
+    private List<MusicApply> makeMusicApplies() {
+        List<MusicApply> musicApplies = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MusicApply tmp = MusicApply.builder().
+                    title("title" + i)
+                    .artist("artist" + (i + 1))
+                    .writer(user)
+                    .build();
+            musicApplies.add(tmp);
+        }
+
+        User tmp = User.builder()
+                .id("tmp")
+                .password("password")
+                .build();
+        musicApplies.add(MusicApply.builder().
+                title("title")
+                .artist("artist")
+                .writer(tmp)
+                .build());
+        return musicApplies;
     }
 }
