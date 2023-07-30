@@ -2,6 +2,9 @@ package com.pi.stepup.domain.music.api;
 
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,7 +72,7 @@ class MusicApplyApiControllerTest {
     @Test
     @DisplayName("노래 신청 등록 테스트")
     @WithMockUser
-    public void MusicApplyCreateControllerTest() throws Exception {
+    public void createMusicApplyControllerTest() throws Exception {
         String url = "/api/music/apply";
 
         final ResultActions postAction = mockMvc.perform(
@@ -98,7 +101,7 @@ class MusicApplyApiControllerTest {
     @Test
     @DisplayName("노래 신청 목록 조회 테스트")
     @WithMockUser
-    public void MusicApplyReadAllControllerTest() throws Exception {
+    public void readAllMusicApplyControllerTest() throws Exception {
         String keyword = "";
         when(musicApplyService.readAllByKeyword(keyword)).thenReturn(makeMusicApplies());
 
@@ -154,6 +157,55 @@ class MusicApplyApiControllerTest {
 
         getAction.andExpect(status().isUnauthorized());
     }
+
+    @Test
+    @DisplayName("노래 신청 삭제 테스트")
+    @WithMockUser
+    public void deleteMusicControllerTest() throws Exception {
+        Long musicApplyId = 1L;
+
+        final ResultActions deleteAction = mockMvc.perform(
+            MockMvcRequestBuilders.delete("/api/music/apply/" + musicApplyId).with(csrf())
+        );
+
+        verify(musicApplyService, only()).delete(musicApplyId);
+        deleteAction.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("없는 노래 신청 삭제 예외 테스트")
+    @WithMockUser
+    public void deleteNotExistMusicControllerTest() throws Exception {
+        Long musicApplyId = 1L;
+        doThrow(new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()))
+            .when(musicApplyService)
+            .delete(musicApplyId);
+
+        final ResultActions deleteAction = mockMvc.perform(
+            MockMvcRequestBuilders.delete("/api/music/apply/" + musicApplyId).with(csrf())
+        );
+
+        verify(musicApplyService, only()).delete(musicApplyId);
+        deleteAction.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("message").value(MUSIC_APPLY_NOT_FOUND.getMessage()));
+    }
+
+    @Test
+    @DisplayName("비인증된 사용자 노래 신청 삭제 예외 테스트")
+    @WithAnonymousUser
+    public void notLoginUserDeleteMusicControllerTest() throws Exception {
+        Long musicApplyId = 1L;
+
+        final ResultActions deleteAction = mockMvc.perform(
+            MockMvcRequestBuilders.delete("/api/music/apply/" + musicApplyId).with(csrf())
+        );
+
+        deleteAction.andExpect(status().isUnauthorized());
+    }
+
+    // TODO : 노래 신청 삭제 403
+    //  등록자가 아닌 사용자가 삭제 요청
+
 
     private List<AllMusicApplyFindResponseDto> makeMusicApplies() {
         List<AllMusicApplyFindResponseDto> musicApplies = new ArrayList<>();
