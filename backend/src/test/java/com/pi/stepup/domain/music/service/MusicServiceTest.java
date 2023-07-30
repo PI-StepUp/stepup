@@ -1,6 +1,15 @@
 package com.pi.stepup.domain.music.service;
 
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
@@ -8,6 +17,9 @@ import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicDuplicatedException;
 import com.pi.stepup.domain.music.exception.MusicNotFoundException;
 import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,20 +29,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
 
 @ExtendWith(MockitoExtension.class)
 class MusicServiceTest {
+
     @InjectMocks
     private MusicServiceImpl musicService;
 
@@ -43,12 +45,7 @@ class MusicServiceTest {
     @Test
     @BeforeEach
     public void init() {
-        musicSaveRequestDto = MusicSaveRequestDto.builder()
-                .title("spicy")
-                .artist("aespa")
-                .answer("")
-                .URL("url")
-                .build();
+        makeMusicSaveRequestDto();
         music = musicSaveRequestDto.toEntity();
     }
 
@@ -67,11 +64,24 @@ class MusicServiceTest {
     @DisplayName("동일한 노래 추가 예외 처리 테스트")
     @Transactional
     public void createDuplicateMusicTest() {
-        when(musicRepository.findByTitleAndArtist(any(), any())).thenReturn(Optional.ofNullable(music));
+        when(musicRepository.findByTitleAndArtist(any(), any())).thenReturn(
+            Optional.ofNullable(music));
 
         assertThatThrownBy(() -> musicService.create(musicSaveRequestDto))
-                .isInstanceOf(MusicDuplicatedException.class)
-                .hasMessageContaining(MUSIC_DUPLICATED.getMessage());
+            .isInstanceOf(MusicDuplicatedException.class)
+            .hasMessageContaining(MUSIC_DUPLICATED.getMessage());
+    }
+
+    @Test
+    @DisplayName("관리자가 아닌 사용자가 노래 추가 예외 처리 테스트")
+    @Transactional
+    public void createMusicNotAdminTest() {
+        // TODO : ROLE_USER return
+//        when()
+
+        assertThatThrownBy(() -> musicService.create(musicSaveRequestDto))
+            .isInstanceOf(UnauthorizedUserAccessException.class)
+            .hasMessageContaining(UNAUTHORIZED_USER_ACCESS.getMessage());
     }
 
 
@@ -91,8 +101,8 @@ class MusicServiceTest {
         when(musicRepository.findOne(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> musicService.readOne(music.getMusicId()))
-                .isInstanceOf(MusicNotFoundException.class)
-                .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
+            .isInstanceOf(MusicNotFoundException.class)
+            .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -102,8 +112,8 @@ class MusicServiceTest {
         String keyword = "";
 
         doReturn(makedMusic)
-                .when(musicRepository)
-                .findAll(keyword);
+            .when(musicRepository)
+            .findAll(keyword);
 
         List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
@@ -116,8 +126,8 @@ class MusicServiceTest {
         List<Music> makedMusic = makeMusic();
         String keyword = "1";
         doReturn(makedMusic)
-                .when(musicRepository)
-                .findAll(keyword);
+            .when(musicRepository)
+            .findAll(keyword);
 
         List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
@@ -130,8 +140,8 @@ class MusicServiceTest {
         when(musicRepository.findOne(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> musicService.delete(music.getMusicId()))
-                .isInstanceOf(MusicNotFoundException.class)
-                .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
+            .isInstanceOf(MusicNotFoundException.class)
+            .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
     }
 
     private List<Music> makeMusic() {
@@ -141,5 +151,14 @@ class MusicServiceTest {
             music.add(tmp);
         }
         return music;
+    }
+
+    private void makeMusicSaveRequestDto() {
+        musicSaveRequestDto = MusicSaveRequestDto.builder()
+            .title("spicy")
+            .artist("aespa")
+            .answer("")
+            .URL("url")
+            .build();
     }
 }
