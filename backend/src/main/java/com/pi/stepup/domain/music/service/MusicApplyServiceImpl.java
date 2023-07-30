@@ -7,6 +7,7 @@ import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
+import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -52,9 +55,10 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     public MusicApplyFindResponseDto readOne(String id, Long musicApplyId) {
-        // TODO : not found exception 구현
         return MusicApplyFindResponseDto.builder()
-            .musicApply(musicApplyRepository.findOne(musicApplyId).orElseThrow())
+            .musicApply(musicApplyRepository.findOne(musicApplyId)
+                    .orElseThrow(() -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()))
+            )
             .canHeart(findHeartStatus(id, musicApplyId))
             .build();
     }
