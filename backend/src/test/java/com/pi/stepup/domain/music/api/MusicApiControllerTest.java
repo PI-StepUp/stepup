@@ -96,6 +96,17 @@ class MusicApiControllerTest {
     }
 
     @Test
+    @DisplayName("로그인 안한 사용자가 노래 한 곡 조회 할 경우 예외 처리 테스트")
+    public void readOneMusicNotLoginUserControllerTest() throws Exception {
+        long musicId = 1L;
+        final ResultActions getAction = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/music/" + musicId)
+        );
+
+        getAction.andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @DisplayName("노래 목록 조회 테스트")
     @WithMockUser
     public void readAllMusicControllerTest() throws Exception {
@@ -125,6 +136,16 @@ class MusicApiControllerTest {
         getAction.andExpect(status().isOk())
                 .andExpect(jsonPath("data[3]").doesNotExist())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 안한 사용자가 노래 목록 조회 할 경우 예외 처리 테스트")
+    public void readAllMusicNotLoginUserControllerTest() throws Exception {
+        final ResultActions getAction = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/music?keyword=")
+        );
+
+        getAction.andExpect(status().isUnauthorized());
     }
 
     @Test
