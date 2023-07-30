@@ -34,6 +34,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(RankApiController.class)
 class RankApiControllerTest {
+
     @Autowired
     MockMvc mockMvc;
 
@@ -73,9 +74,9 @@ class RankApiControllerTest {
         String url = "/api/rank/point";
 
         final ResultActions postAction = mockMvc.perform(
-                MockMvcRequestBuilders.post(url).with(csrf())
-                        .content(gson.toJson(pointUpdateRequestDto))
-                        .contentType(MediaType.APPLICATION_JSON)
+            MockMvcRequestBuilders.post(url).with(csrf())
+                .content(gson.toJson(pointUpdateRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
         );
 
         postAction.andExpect(status().isOk());
@@ -84,7 +85,7 @@ class RankApiControllerTest {
     @Test
     @DisplayName("비인증 유저 포인트 적립 예외 테스트")
     @WithAnonymousUser
-    public void NotLoginUserPointUpdateApiTest() throws Exception {
+    public void notLoginUserPointUpdateApiTest() throws Exception {
         String url = "/api/rank/point";
 
         final ResultActions postAction = mockMvc.perform(
@@ -100,7 +101,7 @@ class RankApiControllerTest {
     @Test
     @DisplayName("비인가 사용자 포인트 적립 예외 테스트")
     @WithMockUser
-    public void NotAuthorizedUserPointUpdateApiTest() throws Exception {
+    public void notAuthorizedUserPointUpdateApiTest() throws Exception {
         String url = "/api/rank/point";
         // TODO : service에서 throw 해줄 것
         doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
@@ -118,11 +119,11 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("포인트 적립 내역 조회 api 테스트")
-    public void readAllPointHistoryApiTest() throws Exception{
+    public void readAllPointHistoryApiTest() throws Exception {
         String url = "/api/rank/my/history/" + user.getId();
 
         final ResultActions getAction = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
+            MockMvcRequestBuilders.get(url)
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
@@ -130,23 +131,55 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("포인트 조회 api 테스트")
-    public void readPointApiTest() throws Exception{
+    @WithMockUser
+    public void readPointApiTest() throws Exception {
         String url = "/api/rank/my/point/" + user.getId();
 
         final ResultActions getAction = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
+            MockMvcRequestBuilders.get(url)
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
     }
 
     @Test
+    @DisplayName("비인증된 사용자 포인트 조회 예외 테스트")
+    @WithAnonymousUser
+    public void notLoginUserReadPointApiTest() throws Exception {
+        String url = "/api/rank/my/point/" + user.getId();
+
+        final ResultActions getAction = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isUnauthorized()).andDo(print());
+    }
+
+    // TODO : 포인트 조회 - 비인가된 사용자 접근 (403) 예외 처리
+    @Test
+    @DisplayName("비인가 사용자 포인트 조회 예외 테스트")
+    @WithMockUser
+    public void notAuthorizedUserReadPointApiTest() throws Exception {
+        String url = "/api/rank/my/point/" + user.getId();
+        // TODO : service에서 throw 해줄 것
+        doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
+            .when(pointHistoryService)
+            .readPoint(any(String.class));
+
+        final ResultActions getAction = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isForbidden());
+    }
+
+    @Test
     @DisplayName("랭크 조회 api 테스트")
-    public void readUserRankApiTest() throws Exception{
+    public void readUserRankApiTest() throws Exception {
         String url = "/api/rank/my/grade/" + user.getId();
 
         final ResultActions getAction = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
+            MockMvcRequestBuilders.get(url)
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
@@ -154,17 +187,17 @@ class RankApiControllerTest {
 
     private void makePointPolicy() {
         pointPolicy = PointPolicy.builder()
-                .pointType(FIRST_PRIZE)
-                .point(FIRST_PRIZE.getPoint())
-                .build();
+            .pointType(FIRST_PRIZE)
+            .point(FIRST_PRIZE.getPoint())
+            .build();
     }
 
     private void makeUser() {
         user = User.builder()
-                .id("user")
-                .password("pass")
-                .point(0)
-                .build();
+            .id("user")
+            .password("pass")
+            .point(0)
+            .build();
     }
 
     private void makePointHistory() {
@@ -173,18 +206,18 @@ class RankApiControllerTest {
 
     private void makePointUpdateReqeustDto() {
         pointUpdateRequestDto = PointUpdateRequestDto.builder()
-                .pointPolicyId(1L)
-                .count(2)
-                .randomDanceId(1L)
-                .id("user")
-                .build();
+            .pointPolicyId(1L)
+            .count(2)
+            .randomDanceId(1L)
+            .id("user")
+            .build();
     }
 
     private void makeRandomDance() {
         randomDance = RandomDance.builder()
-                .title("title")
-                .content("content")
-                .danceType(DanceType.RANKING)
-                .build();
+            .title("title")
+            .content("content")
+            .danceType(DanceType.RANKING)
+            .build();
     }
 }
