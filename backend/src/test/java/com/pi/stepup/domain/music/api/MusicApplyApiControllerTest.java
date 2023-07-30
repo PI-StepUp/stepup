@@ -1,10 +1,12 @@
 package com.pi.stepup.domain.music.api;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
@@ -105,8 +107,7 @@ class MusicApplyApiControllerTest {
             get(url)
         );
 
-        getAction.andExpect(status().isOk())
-            .andDo(print());
+        getAction.andExpect(status().isOk()).andDo(print());
     }
 
     @Test
@@ -128,7 +129,8 @@ class MusicApplyApiControllerTest {
     @DisplayName("없는 노래 신청 상세 조회 예외 테스트")
     @WithMockUser
     public void readOneNotExistMusicApplyControllerTest() throws Exception {
-        when(musicApplyService.readOne(any(), any())).thenThrow(MusicApplyNotFoundException.class);
+        when(musicApplyService.readOne(any(), any()))
+            .thenThrow(new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
 
         String url = "/api/music/apply/detail?id=" + user.getId()
             + "&musicApplyId=" + musicApply.getMusicApplyId();
@@ -136,7 +138,8 @@ class MusicApplyApiControllerTest {
             get(url)
         );
 
-        getAction.andExpect(status().isBadRequest());
+        getAction.andExpect(status().isBadRequest())
+            .andExpect(jsonPath("message").value(MUSIC_APPLY_NOT_FOUND.getMessage()));
     }
 
     @Test
