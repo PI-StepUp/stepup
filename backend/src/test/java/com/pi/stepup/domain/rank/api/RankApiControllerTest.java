@@ -7,7 +7,9 @@ import com.pi.stepup.domain.rank.domain.PointHistory;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
 import com.pi.stepup.domain.rank.service.PointHistoryService;
+import com.pi.stepup.domain.rank.service.RankService;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,11 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.pi.stepup.domain.rank.constant.PointType.FIRST_PRIZE;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,6 +34,12 @@ class RankApiControllerTest {
 
     @MockBean
     private PointHistoryService pointHistoryService;
+
+    @MockBean
+    private RankService rankService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     private Gson gson;
     private PointHistory pointHistory;
@@ -53,16 +63,17 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("포인트 적립 api 테스트")
+    @WithMockUser
     public void pointUpdateApiTest() throws Exception {
         String url = "/api/rank/point";
 
         final ResultActions postAction = mockMvc.perform(
-                MockMvcRequestBuilders.post(url)
+                MockMvcRequestBuilders.post(url).with(csrf())
                         .content(gson.toJson(pointUpdateRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
-        postAction.andExpect(status().isCreated());
+        postAction.andExpect(status().isOk());
     }
 
     @Test
