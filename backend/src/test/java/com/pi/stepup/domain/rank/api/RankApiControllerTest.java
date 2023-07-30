@@ -119,6 +119,7 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("포인트 적립 내역 조회 api 테스트")
+    @WithMockUser
     public void readAllPointHistoryApiTest() throws Exception {
         String url = "/api/rank/my/history/" + user.getId();
 
@@ -127,6 +128,37 @@ class RankApiControllerTest {
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
+    }
+
+    @Test
+    @DisplayName("비인증된 사용자 포인트 적립 내역 조회 예외 테스트")
+    @WithAnonymousUser
+    public void notLoginUserReadAllPointHistoryApiTest() throws Exception {
+        String url = "/api/rank/my/history/" + user.getId();
+
+        final ResultActions getAction = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isUnauthorized()).andDo(print());
+    }
+
+    // TODO : 포인트 적립 내역 - 비인가된 사용자 접근 (403) 예외 처리
+    @Test
+    @DisplayName("비인가 사용자 포인트 적립 내역 조회 예외 테스트")
+    @WithMockUser
+    public void notAuthorizedUserReadAllPointHistoryApiTest() throws Exception {
+        String url = "/api/rank/my/history/" + user.getId();
+        // TODO : service에서 throw 해줄 것
+        doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
+            .when(pointHistoryService)
+            .readAll();
+
+        final ResultActions getAction = mockMvc.perform(
+            MockMvcRequestBuilders.get(url)
+        );
+
+        getAction.andExpect(status().isForbidden());
     }
 
     @Test
