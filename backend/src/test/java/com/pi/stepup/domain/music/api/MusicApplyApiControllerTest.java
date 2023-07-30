@@ -3,6 +3,7 @@ package com.pi.stepup.domain.music.api;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -11,8 +12,10 @@ import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
+import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.music.service.MusicApplyService;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-@WebMvcTest(controllers = MusicApplyApiControllerTest.class)
+@WebMvcTest(controllers = MusicApplyApiController.class)
 class MusicApplyApiControllerTest {
 
     @Autowired
@@ -39,8 +42,10 @@ class MusicApplyApiControllerTest {
     private MusicApplyService musicApplyService;
 
     @MockBean
-    private JwtTokenProvider jwtTokenProvider;
+    private UserService userService;
 
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     private Gson gson;
     private MusicApplySaveRequestDto musicApplySaveRequestDto;
@@ -59,7 +64,6 @@ class MusicApplyApiControllerTest {
         makeMusicApplyFindResponseDto();
     }
 
-    // TODO : 왜 403 forbidden..?
     @Test
     @DisplayName("노래 신청 등록 테스트")
     @WithMockUser
@@ -67,7 +71,7 @@ class MusicApplyApiControllerTest {
         String url = "/api/music/apply";
 
         final ResultActions postAction = mockMvc.perform(
-            MockMvcRequestBuilders.post(url)
+            MockMvcRequestBuilders.post(url).with(csrf())
                 .content(gson.toJson(musicApplySaveRequestDto))
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -77,6 +81,7 @@ class MusicApplyApiControllerTest {
 
     @Test
     @DisplayName("로그인 안한 사용자가 노래 신청 등록 할 경우 예외 처리 테스트")
+    @WithAnonymousUser
     public void createMusicApplyNotLoginUserControllerTest() throws Exception {
         String url = "/api/music/apply";
         final ResultActions postAction = mockMvc.perform(
@@ -91,14 +96,13 @@ class MusicApplyApiControllerTest {
     @Test
     @DisplayName("노래 신청 목록 조회 테스트")
     @WithMockUser
-    // TODO : 404 해결 - user 때문인듯
     public void MusicApplyReadAllControllerTest() throws Exception {
         String keyword = "";
         when(musicApplyService.readAllByKeyword(keyword)).thenReturn(makeMusicApplies());
 
         String url = "/api/music/apply?keyword=" + keyword;
         final ResultActions getAction = mockMvc.perform(
-            MockMvcRequestBuilders.get(url)
+            get(url)
         );
 
         getAction.andExpect(status().isOk())
@@ -107,14 +111,14 @@ class MusicApplyApiControllerTest {
 
     @Test
     @DisplayName("노래 신청 상세 조회 테스트")
-    // TODO : 404 해결 해야 됨 - user 때문인듯
+    @WithMockUser
     public void readOneMusicControllerTest() throws Exception {
         when(musicApplyService.readOne(any(), any())).thenReturn(musicApplyFindResponseDto);
 
         String url = "/api/music/apply/detail?id=" + user.getId()
             + "&musicApplyId=" + musicApply.getMusicApplyId();
         final ResultActions getAction = mockMvc.perform(
-            MockMvcRequestBuilders.get(url)
+            get(url)
         );
 
         getAction.andExpect(status().isOk()).andDo(print());
@@ -123,15 +127,16 @@ class MusicApplyApiControllerTest {
     @Test
     @DisplayName("없는 노래 신청 상세 조회 예외 테스트")
     @WithMockUser
-    // TODO : 404
     public void readOneNotExistMusicApplyControllerTest() throws Exception {
+        when(musicApplyService.readOne(any(), any())).thenThrow(MusicApplyNotFoundException.class);
+
         String url = "/api/music/apply/detail?id=" + user.getId()
             + "&musicApplyId=" + musicApply.getMusicApplyId();
         final ResultActions getAction = mockMvc.perform(
-            MockMvcRequestBuilders.get(url)
+            get(url)
         );
 
-        getAction.andExpect(status().isNoContent());
+        getAction.andExpect(status().isBadRequest());
     }
 
     @Test
@@ -141,7 +146,7 @@ class MusicApplyApiControllerTest {
         String url = "/api/music/apply/detail?id=" + user.getId()
             + "&musicApplyId=" + musicApply.getMusicApplyId();
         final ResultActions getAction = mockMvc.perform(
-            MockMvcRequestBuilders.get(url)
+            get(url)
         );
 
         getAction.andExpect(status().isUnauthorized());
