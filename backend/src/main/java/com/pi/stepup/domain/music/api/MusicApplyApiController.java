@@ -99,6 +99,7 @@ public class MusicApplyApiController {
     @DeleteMapping("/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> deleteMusicApply(
         @PathVariable("musicApplyId") Long musicApplyId) {
+        musicApplyService.delete(musicApplyId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_MUSIC_APPLY_SUCCESS.getMessage()
         ));
