@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -74,6 +75,21 @@ class RankApiControllerTest {
         );
 
         postAction.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("비인증 유저 포인트 적립 예외 테스트")
+    @WithAnonymousUser
+    public void NotLoginUserPointUpdateApiTest() throws Exception {
+        String url = "/api/rank/point";
+
+        final ResultActions postAction = mockMvc.perform(
+            MockMvcRequestBuilders.post(url).with(csrf())
+                .content(gson.toJson(pointUpdateRequestDto))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        postAction.andExpect(status().isUnauthorized());
     }
 
     @Test
