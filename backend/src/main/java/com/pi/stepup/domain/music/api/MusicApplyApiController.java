@@ -78,9 +78,9 @@ public class MusicApplyApiController {
         ));
     }
 
-    @Operation(summary = "노래 삭제", description = "관리자만 노래 삭제가 가능하다.")
+    @Operation(summary = "노래 신청 상세 조회", description = "사용자가 신청한 노래의 상세 정보를 불러온다.")
     @ApiResponse(responseCode = "200",
-        description = "노래 삭제 완료")
+        description = "노래 신청 상세 조회 완료")
     @GetMapping("/detail")
     public ResponseEntity<ResponseDto<?>> readOneMusicApply(
         @RequestParam(name = "id") String id,
