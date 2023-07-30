@@ -5,6 +5,7 @@ import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.service.MusicService;
+import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,7 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(MusicApiController.class)
+@WebMvcTest(controllers = MusicApiController.class
+//,
+//        excludeFilters = {
+//                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class
+//                )}
+)
 class MusicApiControllerTest {
 
     @Autowired
@@ -33,6 +40,9 @@ class MusicApiControllerTest {
 
     @MockBean
     private MusicService musicService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider; // jwtTokenProvider 주입받기 실패했다고 떠서 추가
 
     private Gson gson;
     private MusicSaveRequestDto musicSaveRequestDto;
@@ -57,6 +67,7 @@ class MusicApiControllerTest {
 
     @Test
     @DisplayName("노래 추가 컨트롤러 테스트")
+    @WithMockUser
     public void createMusicControllerTest() throws Exception {
         when(musicService.create(any())).thenReturn(music);
 
@@ -72,6 +83,7 @@ class MusicApiControllerTest {
 
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
+    @WithMockUser
     public void readOneMusicControllerTest() throws Exception {
         when(musicService.readOne(any())).thenReturn(musicFindResponseDto);
 
@@ -85,6 +97,7 @@ class MusicApiControllerTest {
 
     @Test
     @DisplayName("노래 목록 조회 테스트")
+    @WithMockUser
     public void readAllMusicControllerTest() throws Exception {
         String keyword = "";
         when(musicService.readAll(keyword)).thenReturn(makeMusic());
@@ -100,6 +113,7 @@ class MusicApiControllerTest {
 
     @Test
     @DisplayName("노래 목록 키워드 조회 테스트")
+    @WithMockUser
     public void readAllByKeywordMusicControllerTest() throws Exception {
         String keyword = "1";
         when(musicService.readAll(keyword)).thenReturn(keywordMusic(keyword));
@@ -115,6 +129,7 @@ class MusicApiControllerTest {
 
     @Test
     @DisplayName("노래 삭제 테스트")
+    @WithMockUser
     public void deleteMusicControllerTest() throws Exception {
         Long musicId = 1L;
 
