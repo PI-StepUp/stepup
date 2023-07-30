@@ -55,6 +55,7 @@ public class MusicServiceImpl implements MusicService {
     @Override
     @Transactional
     public void delete(Long musicId) {
+        musicRepository.findOne(musicId).orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
         musicRepository.delete(musicId);
     }
 }
