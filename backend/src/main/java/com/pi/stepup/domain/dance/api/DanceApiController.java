@@ -1,35 +1,21 @@
 package com.pi.stepup.domain.dance.api;
 
 import com.pi.stepup.domain.dance.constant.ProgressType;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceDeleteRequestDto;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceAttendRequestDto;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
-import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceSearchResponseDto;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.*;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
+import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceSearchResponseDto;
 import com.pi.stepup.domain.dance.service.DanceService;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.global.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.*;
 
@@ -119,22 +105,27 @@ public class DanceApiController {
         List<DanceSearchResponseDto> allDance
                 = danceService.readAllRandomDance(danceSearchRequestDto);
 
-        if (allDance.get(0).getProgressType().equals(ProgressType.SCHEDULED.toString())) {
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                    SELECT_SCHEDULED_RANDOM_DANCE.getMessage(),
-                    allDance
-            ));
-        } else if (allDance.get(0).getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                    SELECT_IN_PROGRESS_RANDOM_DANCE.getMessage(),
-                    allDance
-            ));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+//        if (allDance.get(0).getProgressType().equals(ProgressType.SCHEDULED.toString())) {
+//            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+//                    SELECT_SCHEDULED_RANDOM_DANCE.getMessage(),
+//                    allDance
+//            ));
+//        } else if (allDance.get(0).getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
+//            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+//                    SELECT_IN_PROGRESS_RANDOM_DANCE.getMessage(),
+//                    allDance
+//            ));
+//        } else {
+//            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+//                    SELECT_ALL_RANDOM_DANCE.getMessage(),
+//                    allDance
+//            ));
+//        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                     SELECT_ALL_RANDOM_DANCE.getMessage(),
                     allDance
             ));
-        }
     }
 
     @Operation(summary = "랜덤 플레이 댄스 예약",
