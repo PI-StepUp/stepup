@@ -79,7 +79,7 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public Optional<Reservation> findByRandomDanceIdAndUserId(Long randomDanceId, Long userId) {
+    public Optional<Reservation> findReservationByRandomDanceIdAndUserId(Long randomDanceId, Long userId) {
         Optional<Reservation> reservation = null;
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
@@ -113,6 +113,23 @@ public class DanceRepositoryImpl implements DanceRepository {
     public AttendHistory insertAttend(AttendHistory attendHistory) {
         em.persist(attendHistory);
         return attendHistory;
+    }
+
+    @Override
+    public Optional<AttendHistory> findAttendByRandomDanceIdAndUserId(Long randomDanceId, Long userId) {
+        Optional<AttendHistory> attend = null;
+        try {
+            attend = Optional.ofNullable(em.createQuery("SELECT a FROM AttendHistory a "
+                            + "WHERE a.randomDance.randomDanceId = :randomDanceId "
+                            + "AND a.user.userId = :userId", AttendHistory.class)
+                    .setParameter("randomDanceId", randomDanceId)
+                    .setParameter("userId", userId)
+                    .getSingleResult());
+        } catch (NoResultException e) {
+            attend = Optional.empty();
+        } finally {
+            return attend;
+        }
     }
 
     @Override
