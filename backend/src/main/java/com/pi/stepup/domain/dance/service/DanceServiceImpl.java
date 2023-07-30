@@ -150,7 +150,6 @@ public class DanceServiceImpl implements DanceService {
         return allMyOpenDance;
     }
 
-    //수정해야 함
     @Override
     public List<DanceSearchResponseDto> readAllRandomDance(DanceSearchRequestDto danceSearchRequestDto) {
         List<DanceSearchResponseDto> allScheduledDance = new ArrayList<>();
@@ -171,30 +170,31 @@ public class DanceServiceImpl implements DanceService {
 
                 //시작 시간이 현재보다 이후
                 if (danceSearchResponseDto.getStartAt().isAfter(today)) {
-                    progressType = ProgressType.SCHEDULED.toString();
-                    danceSearchResponseDto.setProgressType(progressType);
                     allScheduledDance.add(danceSearchResponseDto);
                     allDance.add(danceSearchResponseDto);
 
                     //시작 시간이 현재보다 이전, 끝 시간이 현재보다 이후
                 } else if (danceSearchResponseDto.getStartAt().isBefore(today)
                         && danceSearchResponseDto.getEndAt().isAfter(today)) {
-                    progressType = ProgressType.IN_PROGRESS.toString();
-                    danceSearchResponseDto.setProgressType(progressType);
                     allInProgressDance.add(danceSearchResponseDto);
                     allDance.add(danceSearchResponseDto);
                 }
             }
 
-            for (DanceSearchResponseDto danceSearchResponseDto : allDance) {
-                danceSearchResponseDto.setProgressType(ProgressType.ALL.toString());
-            }
-
             if (danceSearchRequestDto.getProgressType().equals(ProgressType.ALL.toString())) {
+                for (DanceSearchResponseDto danceSearchResponseDto : allDance) {
+                    danceSearchResponseDto.setProgressType(ProgressType.ALL.toString());
+                }
                 return allDance;
             } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
+                for (DanceSearchResponseDto danceSearchResponseDto : allInProgressDance) {
+                    danceSearchResponseDto.setProgressType(ProgressType.IN_PROGRESS.toString());
+                }
                 return allInProgressDance;
             } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.SCHEDULED.toString())) {
+                for (DanceSearchResponseDto danceSearchResponseDto : allScheduledDance) {
+                    danceSearchResponseDto.setProgressType(ProgressType.SCHEDULED.toString());
+                }
                 return allScheduledDance;
             } else {
                 return null;

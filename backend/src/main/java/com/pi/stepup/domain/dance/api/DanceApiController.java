@@ -105,27 +105,22 @@ public class DanceApiController {
         List<DanceSearchResponseDto> allDance
                 = danceService.readAllRandomDance(danceSearchRequestDto);
 
-//        if (allDance.get(0).getProgressType().equals(ProgressType.SCHEDULED.toString())) {
-//            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-//                    SELECT_SCHEDULED_RANDOM_DANCE.getMessage(),
-//                    allDance
-//            ));
-//        } else if (allDance.get(0).getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
-//            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-//                    SELECT_IN_PROGRESS_RANDOM_DANCE.getMessage(),
-//                    allDance
-//            ));
-//        } else {
-//            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-//                    SELECT_ALL_RANDOM_DANCE.getMessage(),
-//                    allDance
-//            ));
-//        }
-
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+        if (allDance.get(0).getProgressType().equals(ProgressType.SCHEDULED.toString())) {
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                    SELECT_SCHEDULED_RANDOM_DANCE.getMessage(),
+                    allDance
+            ));
+        } else if (allDance.get(0).getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
+                    SELECT_IN_PROGRESS_RANDOM_DANCE.getMessage(),
+                    allDance
+            ));
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                     SELECT_ALL_RANDOM_DANCE.getMessage(),
                     allDance
             ));
+        }
     }
 
     @Operation(summary = "랜덤 플레이 댄스 예약",
