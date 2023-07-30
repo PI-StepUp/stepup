@@ -114,8 +114,7 @@ public class DanceServiceImpl implements DanceService {
         } else {
             for (int i = 0; i < danceMusicList.size(); i++) {
                 Long musicId = danceMusicList.get(i).getMusic().getMusicId();
-                Music music = musicRepository.findOne(
-                        musicId).orElseThrow();
+                Music music = musicRepository.findOne(musicId).orElseThrow();
                 // TODO: merge 후 추가하기
 //                     musicId).orElseThrow(
 //                    -> new MusicNotFoundException(.getMessage()));
