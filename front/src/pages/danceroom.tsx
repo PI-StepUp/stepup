@@ -33,17 +33,16 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'localhost:4002';
+const SOCKET_SERVER_URL = 'http://localhost:4002';
 
 const DanceRoom = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const socketRef = useRef<SocketIOClient.Socket>();
-    const localStreamRef = useRef<MediaStream>();
-    const sendPCRef = useRef<RTCPeerConnection>();
-    const receivePCsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
-    const [users, setUsers] = useState<Array<WebRTCUser>>([]);
+	const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
+	const localVideoRef = useRef<HTMLVideoElement>(null);
+	const localStreamRef = useRef<MediaStream>();
+	const [users, setUsers] = useState<WebRTCUser[]>([]);
 
-    const localVideoRef = useRef<HTMLVideoElement>(null);
     const [msgList, setMsgList] = useState<any[]>([]);
     const inputChat = useRef(null);
     const chatContent = useRef(null);
@@ -81,10 +80,9 @@ const DanceRoom = () => {
 
     const sendMessage = () => {
         socketRef.current.emit("send_message", inputChat.current?.value, roomName);
-        socketRef.current.on("message", (message: any) => {
-            console.log("실행되나요?");
-            setMsgList(msgList => [...msgList, message]);
-        });
+        socketRef.current.on('message', (data:any) => {
+            setMsgList([...msgList, data]);
+        })
         if(inputChat.current != null){
             inputChat.current.value = "";
         }
@@ -100,6 +98,9 @@ const DanceRoom = () => {
     const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             socketRef.current.emit("send_message", inputChat.current?.value, roomName);
+            socketRef.current.on('message', (data:any) => {
+                setMsgList([...msgList, data]);
+            })
             if(inputChat.current != null){
                 inputChat.current.value = "";
             }
@@ -107,274 +108,180 @@ const DanceRoom = () => {
         }
     };
 
-
-
-    const closeReceivePC = useCallback((id: string) => {
-        if (!receivePCsRef.current[id]) return;
-        receivePCsRef.current[id].close();
-        delete receivePCsRef.current[id];
-    }, []);
-
-    const createReceiverOffer = useCallback(
-        async (pc: RTCPeerConnection, senderSocketID: string) => {
-        try {
-            const sdp = await pc.createOffer({
-            offerToReceiveAudio: true,
-            offerToReceiveVideo: true,
-            });
-            console.log("create receiver offer success");
-            await pc.setLocalDescription(new RTCSessionDescription(sdp));
-
-            if (!socketRef.current) return;
-            socketRef.current.emit("receiverOffer", {
-                sdp,
-                receiverSocketID: socketRef.current.id,
-                senderSocketID,
-                roomID: roomName,
-            });
-        } catch (error) {
-            console.log(error);
-        }
-        },
-        []
-    );
-
-    const createReceiverPeerConnection = useCallback((socketID: string) => {
-        try {
-        const pc = new RTCPeerConnection(pc_config);
-
-        // add pc to peerConnections object
-        receivePCsRef.current = { ...receivePCsRef.current, [socketID]: pc };
-
-        pc.onicecandidate = (e) => {
-            if (!(e.candidate && socketRef.current)) return;
-            console.log("receiver PC onicecandidate");
-            socketRef.current.emit("receiverCandidate", {
-            candidate: e.candidate,
-            receiverSocketID: socketRef.current.id,
-            senderSocketID: socketID,
-            });
-        };
-
-        pc.oniceconnectionstatechange = (e) => {
-            console.log(e);
-        };
-
-        pc.ontrack = (e) => {
-            console.log("ontrack success");
-            setUsers((oldUsers) =>
-            oldUsers
-                .filter((user) => user.id !== socketID)
-                .concat({
-                id: socketID,
-                stream: e.streams[0],
-                })
-            );
-        };
-
-        // return pc
-        return pc;
-        } catch (e) {
-        console.error(e);
-        return undefined;
-        }
-    }, []);
-
-    const createReceivePC = useCallback(
-        (id: string) => {
-        try {
-            console.log(`socketID(${id}) user entered`);
-            const pc = createReceiverPeerConnection(id);
-            if (!(socketRef.current && pc)) return;
-            createReceiverOffer(pc, id);
-        } catch (error) {
-            console.log(error);
-        }
-        },
-        [createReceiverOffer, createReceiverPeerConnection]
-    );
-
-    const createSenderOffer = useCallback(async () => {
-        try {
-        if (!sendPCRef.current) return;
-        const sdp = await sendPCRef.current.createOffer({
-            offerToReceiveAudio: false,
-            offerToReceiveVideo: false,
-        });
-        console.log("create sender offer success");
-        await sendPCRef.current.setLocalDescription(
-            new RTCSessionDescription(sdp)
-        );
-
-        if (!socketRef.current) return;
-        socketRef.current.emit("senderOffer", {
-            sdp,
-            senderSocketID: socketRef.current.id,
-            roomID: "1234",
-        });
-        } catch (error) {
-        console.log(error);
-        }
-    }, []);
-
-    const createSenderPeerConnection = useCallback(() => {
-        const pc = new RTCPeerConnection(pc_config);
-
-        pc.onicecandidate = (e) => {
-        if (!(e.candidate && socketRef.current)) return;
-        console.log("sender PC onicecandidate");
-        socketRef.current.emit("senderCandidate", {
-            candidate: e.candidate,
-            senderSocketID: socketRef.current.id,
-        });
-        };
-
-        pc.oniceconnectionstatechange = (e) => {
-        console.log(e);
-        };
-
-        if (localStreamRef.current) {
-        console.log("add local stream");
-        localStreamRef.current.getTracks().forEach((track) => {
-            if (!localStreamRef.current) return;
-            pc.addTrack(track, localStreamRef.current);
-        });
-        } else {
-        console.log("no local stream");
-        }
-
-        sendPCRef.current = pc;
-    }, []);
-
-    const getLocalStream = useCallback(async () => {
-        try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: {
-            width: 240,
-            height: 240,
-            },
-        });
-        localStreamRef.current = stream;
-        if (localVideoRef.current){
-            localVideoRef.current.srcObject = stream;
-            localVideoRef.current.play();
-        }
-        if (!socketRef.current) return;
-
-        createSenderPeerConnection();
-        await createSenderOffer();
-
-        socketRef.current.emit("joinRoom", {
-            id: socketRef.current.id,
-            roomID: "1234",
-        });
-        } catch (e) {
-        console.log(`getUserMedia error: ${e}`);
-        }
-    }, [createSenderOffer, createSenderPeerConnection]);
-
-    useEffect(() => {
-        socketRef.current = io.connect(SOCKET_SERVER_URL);
-        getLocalStream();
-
-        socketRef.current.on("userEnter", (data: { id: string }) => {
-        createReceivePC(data.id);
-        });
-
-        socketRef.current.on(
-        "allUsers",
-        (data: { users: Array<{ id: string }> }) => {
-            data.users.forEach((user) => createReceivePC(user.id));
-        }
-        );
-
-        socketRef.current.on("userExit", (data: { id: string }) => {
-        closeReceivePC(data.id);
-        setUsers((users) => users.filter((user) => user.id !== data.id));
-        });
-
-        socketRef.current.on(
-        "getSenderAnswer",
-        async (data: { sdp: RTCSessionDescription }) => {
-            try {
-            if (!sendPCRef.current) return;
-            console.log("get sender answer");
-            console.log(data.sdp);
-            await sendPCRef.current.setRemoteDescription(
-                new RTCSessionDescription(data.sdp)
-            );
-            } catch (error) {
-            console.log(error);
+	const getLocalStream = useCallback(async () => {
+		try {
+			const localStream = await navigator.mediaDevices.getUserMedia({
+				audio: true,
+				video: {
+					width: 240,
+					height: 240,
+				},
+			});
+			localStreamRef.current = localStream;
+			if (localVideoRef.current){
+                localVideoRef.current.srcObject = localStream;
+                localVideoRef.current.play();
             }
-        }
-        );
+			if (!socketRef.current) return;
+			socketRef.current.emit('join_room', {
+				room: '1234',
+				email: 'sample@naver.com',
+			});
+		} catch (e) {
+			console.log(`getUserMedia error: ${e}`);
+		}
+	}, []);
 
-        socketRef.current.on(
-        "getSenderCandidate",
-        async (data: { candidate: RTCIceCandidateInit }) => {
-            try {
-            if (!(data.candidate && sendPCRef.current)) return;
-            console.log("get sender candidate");
-            await sendPCRef.current.addIceCandidate(
-                new RTCIceCandidate(data.candidate)
-            );
-            console.log("candidate add success");
-            } catch (error) {
-            console.log(error);
-            }
-        }
-        );
+	const createPeerConnection = useCallback((socketID: string, email: string) => {
+		try {
+			const pc = new RTCPeerConnection(pc_config);
 
-        socketRef.current.on(
-        "getReceiverAnswer",
-        async (data: { id: string; sdp: RTCSessionDescription }) => {
-            try {
-            console.log(`get socketID(${data.id})'s answer`);
-            const pc: RTCPeerConnection = receivePCsRef.current[data.id];
-            if (!pc) return;
-            await pc.setRemoteDescription(data.sdp);
-            console.log(`socketID(${data.id})'s set remote sdp success`);
-            } catch (error) {
-            console.log(error);
-            }
-        }
-        );
+			pc.onicecandidate = (e) => {
+				if (!(socketRef.current && e.candidate)) return;
+				console.log('onicecandidate');
+				socketRef.current.emit('candidate', {
+					candidate: e.candidate,
+					candidateSendID: socketRef.current.id,
+					candidateReceiveID: socketID,
+				});
+			};
 
-        socketRef.current.on(
-        "getReceiverCandidate",
-        async (data: { id: string; candidate: RTCIceCandidateInit }) => {
-            try {
-            console.log(data);
-            console.log(`get socketID(${data.id})'s candidate`);
-            const pc: RTCPeerConnection = receivePCsRef.current[data.id];
-            if (!(pc && data.candidate)) return;
-            await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-            console.log(`socketID(${data.id})'s candidate add success`);
-            } catch (error) {
-            console.log(error);
-            }
-        }
-        );
+			pc.oniceconnectionstatechange = (e) => {
+				console.log(e);
+			};
 
-        return () => {
-        if (socketRef.current) {
-            socketRef.current.disconnect();
-        }
-        if (sendPCRef.current) {
-            sendPCRef.current.close();
-        }
-        users.forEach((user) => closeReceivePC(user.id));
-        };
-        // eslint-disable-next-line
-    }, [
-        closeReceivePC,
-        createReceivePC,
-        createSenderOffer,
-        createSenderPeerConnection,
-        getLocalStream,
-    ]);
+			pc.ontrack = (e) => {
+				console.log('ontrack success');
+				setUsers((oldUsers) =>
+					oldUsers
+						.filter((user) => user.id !== socketID)
+						.concat({
+							id: socketID,
+							email,
+							stream: e.streams[0],
+						}),
+				);
+			};
 
+			if (localStreamRef.current) {
+				console.log('localstream add');
+				localStreamRef.current.getTracks().forEach((track) => {
+					if (!localStreamRef.current) return;
+					pc.addTrack(track, localStreamRef.current);
+				});
+			} else {
+				console.log('no local stream');
+			}
+
+			return pc;
+		} catch (e) {
+			console.error(e);
+			return undefined;
+		}
+	}, []);
+
+	useEffect(() => {
+		socketRef.current = io.connect(SOCKET_SERVER_URL);
+		getLocalStream();
+
+		socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string }>) => {
+			allUsers.forEach(async (user) => {
+				if (!localStreamRef.current) return;
+				const pc = createPeerConnection(user.id, user.email);
+				if (!(pc && socketRef.current)) return;
+				pcsRef.current = { ...pcsRef.current, [user.id]: pc };
+				try {
+					const localSdp = await pc.createOffer({
+						offerToReceiveAudio: true,
+						offerToReceiveVideo: true,
+					});
+					console.log('create offer success');
+					await pc.setLocalDescription(new RTCSessionDescription(localSdp));
+					socketRef.current.emit('offer', {
+						sdp: localSdp,
+						offerSendID: socketRef.current.id,
+						offerSendEmail: 'offerSendSample@sample.com',
+						offerReceiveID: user.id,
+					});
+				} catch (e) {
+					console.error(e);
+				}
+			});
+		});
+
+		socketRef.current.on(
+			'getOffer',
+			async (data: {
+				sdp: RTCSessionDescription;
+				offerSendID: string;
+				offerSendEmail: string;
+			}) => {
+				const { sdp, offerSendID, offerSendEmail } = data;
+				console.log('get offer');
+				if (!localStreamRef.current) return;
+				const pc = createPeerConnection(offerSendID, offerSendEmail);
+				if (!(pc && socketRef.current)) return;
+				pcsRef.current = { ...pcsRef.current, [offerSendID]: pc };
+				try {
+					await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+					console.log('answer set remote description success');
+					const localSdp = await pc.createAnswer({
+						offerToReceiveVideo: true,
+						offerToReceiveAudio: true,
+					});
+					await pc.setLocalDescription(new RTCSessionDescription(localSdp));
+					socketRef.current.emit('answer', {
+						sdp: localSdp,
+						answerSendID: socketRef.current.id,
+						answerReceiveID: offerSendID,
+					});
+				} catch (e) {
+					console.error(e);
+				}
+			},
+		);
+
+		socketRef.current.on(
+			'getAnswer',
+			(data: { sdp: RTCSessionDescription; answerSendID: string }) => {
+				const { sdp, answerSendID } = data;
+				console.log('get answer');
+				const pc: RTCPeerConnection = pcsRef.current[answerSendID];
+				if (!pc) return;
+				pc.setRemoteDescription(new RTCSessionDescription(sdp));
+			},
+		);
+
+		socketRef.current.on(
+			'getCandidate',
+			async (data: { candidate: RTCIceCandidateInit; candidateSendID: string }) => {
+				console.log('get candidate');
+				const pc: RTCPeerConnection = pcsRef.current[data.candidateSendID];
+				if (!pc) return;
+				await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+				console.log('candidate add success');
+			},
+		);
+
+		socketRef.current.on('user_exit', (data: { id: string }) => {
+			if (!pcsRef.current[data.id]) return;
+			pcsRef.current[data.id].close();
+			delete pcsRef.current[data.id];
+			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
+		});
+
+		return () => {
+			if (socketRef.current) {
+				socketRef.current.disconnect();
+			}
+			users.forEach((user) => {
+				if (!pcsRef.current[user.id]) return;
+				pcsRef.current[user.id].close();
+				delete pcsRef.current[user.id];
+			});
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [createPeerConnection, getLocalStream]);
 
     return(
         <>
@@ -437,10 +344,19 @@ const DanceRoom = () => {
                         <div className="participant-list-content">
                             <ul>
                                 <li className="on">
-                                        <Image src={ChatDefaultImg} alt=""/>
-                                        <span>임시 이름</span>
+                                    <Image src={ChatDefaultImg} alt=""/>
+                                    <span>임시 이름</span>
                                 </li>
-                                
+                                {
+                                    users.map((data) => {
+                                        return(
+                                            <li>
+                                                <Image src={ChatDefaultImg} alt=""/>
+                                                <span>{data.id}</span>
+                                            </li>
+                                        )
+                                    })
+                                }
                             </ul>
                         </div>
                     </div>
