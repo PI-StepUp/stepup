@@ -17,8 +17,11 @@ import MicHoverIcon from "/public/images/icon-hover-mic.svg"
 import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
 import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
-const DanceRoom = () => {
+import { useRecoilState } from "recoil";
+import { LanguageState } from "states/states";
 
+const DanceRoom = () => {
+    const [lang, setLang] = useRecoilState(LanguageState);
     const myName = "임시 이름";
     const [peerNames, setPeerNames] = useState([]);
     const [participantNum, setParticipantNum] = useState(1);
@@ -289,7 +292,7 @@ const DanceRoom = () => {
                                         {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li><button className="exit-button">연습 종료하기</button></li>
+                                <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
                                 <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave} id="camera">
                                     <button>
                                         {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
@@ -308,8 +311,8 @@ const DanceRoom = () => {
                 <div className="participant-wrap">
                     <div className="participant-list">
                         <div className="participant-list-title">
-                            <h3>참여자 목록</h3>
-                            <span><Image src={GroupIcon} alt=""/>{participantNum}명</span>
+                            <h3>{lang==="en" ? "List of participants" : lang==="cn" ? "参与者列表" : "참여자 목록" }</h3>
+                            <span><Image src={GroupIcon} alt=""/>{participantNum}{lang==="en" ? "people" : lang==="cn" ? "个人" : "명" }</span>
                         </div>
                         <div className="participant-list-content">
                             <ul>
@@ -349,7 +352,7 @@ const DanceRoom = () => {
                     </div>
                     <div className="chat-wrap">
                         <div className="chat-title">
-                            <h3>채팅하기</h3>
+                            <h3>{lang==="en" ? "Chatting" : lang==="cn" ? "聊天" : "채팅하기" }</h3>
                         </div>
                         <div className="chat-content-wrap">
                             <div className="chat-read" ref={chatContent}>
@@ -374,7 +377,7 @@ const DanceRoom = () => {
                                 </ul>
                             </div>
                             <div className="chat-write">
-                                <input type="text" placeholder="모두에게 전송" ref={inputChat} onChange={(e) => setMsg(e.target.value)} value={msg} onKeyPress={handleKeyPress}/>
+                                <input type="text" placeholder={lang==="en" ? "Send to everyone" : lang==="cn" ? "传送给所有人" : "모두에게 전송" } ref={inputChat} onChange={(e) => setMsg(e.target.value)} value={msg} onKeyPress={handleKeyPress}/>
                                 <button onClick={sendMessage}><Image src={sendImg} alt=""/></button>
                             </div>
                         </div>
