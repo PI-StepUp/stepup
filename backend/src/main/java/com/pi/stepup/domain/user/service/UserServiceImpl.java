@@ -123,11 +123,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoResponseDto readOne(String id) {
+    public UserInfoResponseDto readOne() {
         // TODO: user not found exception 설정
         return UserInfoResponseDto.builder()
-            .user(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(
-                USER_NOT_FOUND.getMessage())))
+            .user(userRepository.findById(SecurityUtils.getLoggedInUserId())
+                .orElseThrow(() -> new UserNotFoundException(
+                    USER_NOT_FOUND.getMessage())))
             .build();
     }
 

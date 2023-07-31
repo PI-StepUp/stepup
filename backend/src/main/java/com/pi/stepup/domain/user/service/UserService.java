@@ -28,7 +28,7 @@ public interface UserService {
 
     TokenInfo signUp(SignUpRequestDto signUpRequestDto);
 
-    UserInfoResponseDto readOne(String id);
+    UserInfoResponseDto readOne();
 
     void delete();
 

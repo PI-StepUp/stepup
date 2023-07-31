@@ -23,13 +23,9 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
-import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -146,11 +142,11 @@ public class UserApiController {
         @ApiResponse(responseCode = "200", description = "회원정보 조회 성공")
     })
     @GetMapping("")
-    public ResponseEntity<ResponseDto<?>> readOne(String id) {
+    public ResponseEntity<ResponseDto<?>> readOne() {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 READ_ONE_SUCCESS.getMessage(),
-                userService.readOne(id)
+                userService.readOne()
             )
         );
     }
