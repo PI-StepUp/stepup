@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.user.dto;
 
+import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class UserResponseDto {
 
     @Getter
     public static class UserInfoResponseDto {
+
         private final String email;
         private final Integer emailAlert;
         private final Long countryId;
@@ -31,7 +33,8 @@ public class UserResponseDto {
         private final LocalDate birth;
         private final String profileImg;
         private final Integer point;
-        // TODO : Rank 정보 추가
+        private final RankName rankName;
+        private final String rankImg;
 
         @Builder
         public UserInfoResponseDto(User user) {
@@ -43,6 +46,8 @@ public class UserResponseDto {
             this.birth = user.getBirth();
             this.profileImg = user.getProfileImg();
             this.point = user.getPoint();
+            this.rankName = user.getRank().getName();
+            this.rankImg = user.getRank().getRankImg();
         }
     }
 }

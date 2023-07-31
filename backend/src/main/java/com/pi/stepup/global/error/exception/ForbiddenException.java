@@ -1,8 +1,6 @@
 package com.pi.stepup.global.error.exception;
 
-import javax.naming.AuthenticationException;
-
-public class ForbiddenException extends AuthenticationException {
+public class ForbiddenException extends SecurityException {
     public ForbiddenException() {
         super();
     }
