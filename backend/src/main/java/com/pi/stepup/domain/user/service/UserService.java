@@ -1,12 +1,13 @@
 package com.pi.stepup.domain.user.service;
 
 import com.pi.stepup.domain.user.dto.TokenInfo;
-import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
@@ -24,7 +25,7 @@ public interface UserService {
 
     void checkIdDuplicated(CheckIdRequestDto checkIdRequestDto);
 
-    TokenInfo login(AuthenticationRequestDto authenticationRequestDto);
+    TokenInfo login(LoginRequestDto loginRequestDto);
 
     TokenInfo signUp(SignUpRequestDto signUpRequestDto);
 
@@ -32,7 +33,7 @@ public interface UserService {
 
     void delete();
 
-    void checkPassword(AuthenticationRequestDto authenticationRequestDto);
+    void checkPassword(CheckPasswordRequestDto checkPasswordRequestDto);
 
     void update(UpdateUserRequestDto updateUserRequestDto);
 

@@ -14,12 +14,13 @@ import com.pi.stepup.domain.user.domain.EmailContent;
 import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
-import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
@@ -89,12 +90,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TokenInfo login(AuthenticationRequestDto authenticationRequestDto) {
-        TokenInfo tokenInfo = setFirstAuthentication(authenticationRequestDto.getId(),
-            authenticationRequestDto.getPassword());
+    public TokenInfo login(LoginRequestDto loginRequestDto) {
+        TokenInfo tokenInfo = setFirstAuthentication(loginRequestDto.getId(),
+            loginRequestDto.getPassword());
         log.debug("login token : {}", tokenInfo);
 
-        User user = userRepository.findById(authenticationRequestDto.getId()).get();
+        User user = userRepository.findById(loginRequestDto.getId()).get();
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
         return tokenInfo;
@@ -144,11 +145,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void checkPassword(AuthenticationRequestDto authenticationRequestDto) {
-        User user = userRepository.findById(authenticationRequestDto.getId())
+    public void checkPassword(CheckPasswordRequestDto checkPasswordRequestDto) {
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        if (!isSamePassword(user.getPassword(), authenticationRequestDto.getPassword())) {
+        if (!isSamePassword(user.getPassword(), checkPasswordRequestDto.getPassword())) {
             throw new UserNotFoundException(WRONG_PASSWORD.getMessage());
         }
     }

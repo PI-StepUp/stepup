@@ -43,9 +43,18 @@ public class UserRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class AuthenticationRequestDto {
+    public static class LoginRequestDto {
 
         private String id;
+        private String password;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CheckPasswordRequestDto {
+
         private String password;
     }
 
