@@ -17,19 +17,19 @@ public interface DanceService {
 
     List<MusicFindResponseDto> readAllDanceMusic(Long randomDanceId);
 
-    List<DanceFindResponseDto> readAllMyOpenDance(String id);
+    List<DanceFindResponseDto> readAllMyOpenDance();
 
     List<DanceSearchResponseDto> readAllRandomDance(DanceSearchRequestDto danceSearchRequestDto);
 
-    void createReservation(DanceReserveRequestDto danceReservationRequestDto);
+    void createReservation(Long randomDanceId);
 
-    void deleteReservation(Long reservationId, String id);
+    void deleteReservation(Long reservationId);
 
-    List<DanceFindResponseDto> readAllMyReserveDance(String id);
+    List<DanceFindResponseDto> readAllMyReserveDance();
 
-    void createAttend(DanceAttendRequestDto danceAttendRequestDto);
+    void createAttend(Long randomDanceId);
 
-    List<DanceFindResponseDto> readAllMyAttendDance(String id);
+    List<DanceFindResponseDto> readAllMyAttendDance();
 
 
 }
