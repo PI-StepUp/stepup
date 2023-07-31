@@ -30,7 +30,6 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public List<MusicApply> findAll(String keyword, String id) {
-        // TODO : id - 현재 로그인 중인 아이디
         String sql = "SELECT ma FROM MusicApply ma "
             + "JOIN FETCH ma.hearts h ON h.user.id = :id ";
 

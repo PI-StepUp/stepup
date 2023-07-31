@@ -2,6 +2,7 @@ package com.pi.stepup.domain.music.service;
 
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
+import static com.pi.stepup.global.config.security.SecurityUtils.getLoggedInUserId;
 
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.music.domain.Heart;
@@ -41,11 +42,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     }
 
     public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
-        //TODO: id - 현재 로그인 중인 아이디
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = (User) principal;
-        String id = user.getId();
-
+        String id = getLoggedInUserId();
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, id);
         return setCanHeart(musicApplies);
     }
