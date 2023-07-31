@@ -1,6 +1,7 @@
 import Header from "components/Header"
 import MainBanner from "components/MainBanner"
 import Footer from "components/Footer"
+import LanguageButton from "components/LanguageButton"
 
 import Image from "next/image"
 import ArticleIcon from "/public/images/article-icon.svg"
@@ -9,7 +10,11 @@ import TopIcon from "/public/images/icon-top.svg"
 import NowIcon from "/public/images/icon-now.svg"
 import SoonIcon from "/public/images/icon-soon.svg"
 
+import { useRecoilState } from "recoil";
+import { LanguageState } from "states/states";
+
 const RandomPlayList = () => {
+    const [lang, setLang] = useRecoilState(LanguageState);
     return(
         <>
             <Header/>
@@ -19,7 +24,7 @@ const RandomPlayList = () => {
                     <div className="section-title">
                         <div className="flex-wrap">
                             <Image src={ArticleIcon} alt=""/>
-                            <h3>현재 인기 있는 랜덤 플레이 댄스</h3>
+                            <h3>{lang==="en" ? "Popular right now" : lang==="cn" ? "现在很有人气的随机舞蹈" : "현재 인기 있는 랜덤 플레이 댄스" }</h3>
                         </div>
                          <button>개최하기</button>
                     </div>
@@ -77,7 +82,7 @@ const RandomPlayList = () => {
                     <div className="section-title">
                         <div className="flex-wrap">
                             <Image src={ArticleIcon} alt=""/>
-                            <h3>현재 진행 중인 랜덤 플레이 댄스</h3>
+                            <h3>{lang==="en" ? "Going on right now" : lang==="cn" ? "正在进行的随机舞蹈" : "현재 진행 중인 랜덤 플레이 댄스" }</h3>
                         </div>
                     </div>
                     <div className="section-content">
@@ -134,7 +139,7 @@ const RandomPlayList = () => {
                     <div className="section-title">
                         <div className="flex-wrap">
                             <Image src={ArticleIcon} alt=""/>
-                            <h3>진행 예정된 랜덤 플레이 댄스</h3>
+                            <h3>{lang==="en" ? "Dance scheduled for today" : lang==="cn" ? "预定的随机舞蹈" : "진행 예정된 랜덤 플레이 댄스" }</h3>
                         </div>
                     </div>
                     <div className="section-content">
@@ -192,24 +197,25 @@ const RandomPlayList = () => {
                         <li>
                             <a href="#popular">
                                 <Image src={TopIcon} alt=""/>
-                                <span>인기 랜덤플</span>
+                                <span>{lang==="en" ? "Popular" : lang==="cn" ? "受欢迎的" : "인기 랜덤플" }</span>
                             </a>
                         </li>
                         <li>
                             <a href="#now">
                                 <Image src={NowIcon} alt=""/>
-                                <span>진행중인 랜덤플</span>
+                                <span>{lang==="en" ? "In progress" : lang==="cn" ? "进行中" : "진행중인 랜덤플" }</span>
                             </a>
                         </li>
                         <li>
                             <a href="#soon">
                                 <Image src={SoonIcon} alt=""/>
-                                <span>진행예정 랜덤플</span>
+                                <span>{lang==="en" ? "Scheduled to proceed" : lang==="cn" ? "预定进行" : "진행예정 랜덤플" }</span>
                             </a>
                         </li>
                     </ul>
                 </div>
             </div>
+            <LanguageButton/>
             <Footer/>
         </>
     )

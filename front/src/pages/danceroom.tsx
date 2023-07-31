@@ -20,11 +20,10 @@ import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 const DanceRoom = () => {
 
     const myName = "임시 이름";
-    let peerNames : any = [];
+    const [peerNames, setPeerNames] = useState([]);
     const [participantNum, setParticipantNum] = useState(1);
     const socketRef = useRef<Socket>();
 
-    const [peer, setPeer] = useState('');
     const myVideoRef = useRef<HTMLVideoElement>(null);
     const otherVideoRef = useRef<HTMLVideoElement>(null);
     const peerRef = useRef<RTCPeerConnection>();
@@ -38,8 +37,7 @@ const DanceRoom = () => {
     const inputChat = useRef(null);
     const chatContent = useRef(null);
     const sendMessage = () => {
-        console.log(msg);
-        socket.emit("send_message", msg);
+        socket.emit("send_message", msg, roomName);
         if(inputChat.current != null){
             setMsg("");
         }
@@ -52,18 +50,13 @@ const DanceRoom = () => {
     }
     const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            socket.emit("send_message", msg);
+            socket.emit("send_message", msg, roomName);
             if(inputChat.current != null){
                 setMsg("");
             }
             scrollToBottom();
         }
     };
-
-    socket.on("message", (message) => {
-        setMsgList([...msgList, message]);
-    });
-
 
     // 컨트롤러 hover 시 변경
     const [reflect, setReflect] = useState(false);
@@ -185,8 +178,9 @@ const DanceRoom = () => {
         }
       };
 
+      
+
     useEffect(() => {
-        scrollToBottom();
         socketRef.current = socketIOClient("localhost:4002");
 
         peerRef.current = new RTCPeerConnection({
@@ -229,15 +223,19 @@ const DanceRoom = () => {
             }
       
             await peerRef.current.addIceCandidate(candidate);
-            peerNames.push(peerName);
-            setPeer(peerName);
-            setParticipantNum(participantNum + 1);
+            setPeerNames([...peerNames, peerName]);
+            scrollToBottom();
+            setParticipantNum(peerNames.length+1);
           });
           
           // 마운트시 해당 방의 roomName을 서버에 전달
           socketRef.current.emit("join_room", {
             room: roomName,
           });
+
+        socketRef.current.on("message", (message) => {
+            setMsgList(msgList => [...msgList, message]);
+        });
       
           getMedia();
       
@@ -250,7 +248,7 @@ const DanceRoom = () => {
               peerRef.current.close();
             }
           };
-
+          
     }, []);
 
     return(
@@ -320,10 +318,14 @@ const DanceRoom = () => {
                                         <span>{myName}</span>
                                 </li>
                                 {
-                                    peer.length > 0 ? <li>
-                                    <Image src={ChatDefaultImg} alt=""/>
-                                    <span>{peer}</span></li> : ""
-                            
+                                    peerNames.map((peer) => {
+                                        return(
+                                            <li>
+                                                <Image src={ChatDefaultImg} alt=""/>
+                                                <span>{peer}</span>
+                                            </li>
+                                        );
+                                    })
                                 }
                                 
                                 {/* <li>
