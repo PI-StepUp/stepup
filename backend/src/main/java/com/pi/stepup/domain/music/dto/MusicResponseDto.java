@@ -51,24 +51,24 @@ public class MusicResponseDto {
         }
     }
 
-    @Getter
-    public static class AllMusicApplyFindResponseDto {
-
-        private final Long musicApplyId;
-        private final String title;
-        private final String artist;
-        private final String writerName;
-        private final String writerProfileImg;
-        private final Integer heartCnt;
-
-        @Builder
-        public AllMusicApplyFindResponseDto(MusicApply musicApply) {
-            this.musicApplyId = musicApply.getMusicApplyId();
-            this.title = musicApply.getTitle();
-            this.artist = musicApply.getArtist();
-            this.writerName = musicApply.getWriter().getNickname();
-            this.writerProfileImg = musicApply.getWriter().getProfileImg();
-            this.heartCnt = musicApply.getHeartCnt();
-        }
-    }
+//    @Getter
+//    public static class AllMusicApplyFindResponseDto {
+//
+//        private final Long musicApplyId;
+//        private final String title;
+//        private final String artist;
+//        private final String writerName;
+//        private final String writerProfileImg;
+//        private final Integer heartCnt;
+//
+//        @Builder
+//        public AllMusicApplyFindResponseDto(MusicApply musicApply) {
+//            this.musicApplyId = musicApply.getMusicApplyId();
+//            this.title = musicApply.getTitle();
+//            this.artist = musicApply.getArtist();
+//            this.writerName = musicApply.getWriter().getNickname();
+//            this.writerProfileImg = musicApply.getWriter().getProfileImg();
+//            this.heartCnt = musicApply.getHeartCnt();
+//        }
+//    }
 }

@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.google.gson.Gson;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
-import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.music.service.MusicApplyService;
@@ -207,15 +206,15 @@ class MusicApplyApiControllerTest {
     //  등록자가 아닌 사용자가 삭제 요청
 
 
-    private List<AllMusicApplyFindResponseDto> makeMusicApplies() {
-        List<AllMusicApplyFindResponseDto> musicApplies = new ArrayList<>();
+    private List<MusicApplyFindResponseDto> makeMusicApplies() {
+        List<MusicApplyFindResponseDto> musicApplies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             MusicApply tmp = MusicApply.builder()
                 .title("title" + i)
                 .artist("artist" + (i + 1))
                 .writer(user)
                 .build();
-            musicApplies.add(new AllMusicApplyFindResponseDto(tmp));
+            musicApplies.add(new MusicApplyFindResponseDto(tmp, 1));
         }
         return musicApplies;
     }

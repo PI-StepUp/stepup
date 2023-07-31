@@ -29,8 +29,10 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public List<MusicApply> findAll(String keyword) {
-        String sql = "SELECT ma FROM MusicApply ma ";
+    public List<MusicApply> findAll(String keyword, String id) {
+        // TODO : id - 현재 로그인 중인 아이디
+        String sql = "SELECT ma FROM MusicApply ma "
+            + "JOIN FETCH ma.hearts h ON h.user.id = :id ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
@@ -43,7 +45,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     @Override
     public List<MusicApply> findById(String id) {
         return em.createQuery(
-                "SELECT ma FROM MusicApply ma " +
+                "SELECT ma FROM MusicApply ma "
+                    + "JOIN FETCH ma.hearts h ON h.user.id = :id " +
                     "WHERE ma.writer.id = :id", MusicApply.class
             )
             .setParameter("id", id)

@@ -1,6 +1,8 @@
 package com.pi.stepup.domain.music.domain;
 
 import com.pi.stepup.domain.user.domain.User;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,14 +35,19 @@ public class MusicApply {
     @ColumnDefault("0")
     private Integer heartCnt;
 
+    @OneToMany(mappedBy = "musicApply")
+    private List<Heart> hearts = new ArrayList<>();
+
     @Builder
-    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer heartCnt) {
+    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer heartCnt,
+        List<Heart> hearts) {
         this.musicApplyId = musicApplyId;
         this.title = title;
         this.artist = artist;
         this.content = content;
         this.writer = writer;
         this.heartCnt = heartCnt;
+        this.hearts = hearts;
     }
 
     public void addHeart() {
@@ -49,5 +56,10 @@ public class MusicApply {
 
     public void removeHeart() {
         this.heartCnt -= 1;
+    }
+
+    public void addHeartAndSetMusicApply(Heart heart){
+        this.hearts.add(heart);
+        heart.setMusicApply(this);
     }
 }

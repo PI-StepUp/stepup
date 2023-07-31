@@ -16,7 +16,6 @@ import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
-import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
@@ -69,7 +68,7 @@ class MusicApplyServiceTest {
         when(userRepository.findById(any(String.class))).thenReturn(Optional.of(user));
 
         musicApplyService.create(musicApplySaveRequestDto);
-        verify(musicApplyRepository,only()).insert(any(MusicApply.class));
+        verify(musicApplyRepository, only()).insert(any(MusicApply.class));
     }
 
     @Test
@@ -90,9 +89,9 @@ class MusicApplyServiceTest {
         String keyword = "";
         List<MusicApply> makedMusicApply = makeMusicApplies();
         doReturn(makedMusicApply)
-            .when(musicApplyRepository).findAll(keyword);
+            .when(musicApplyRepository).findAll(keyword, user.getId());
 
-        List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
             keyword);
         assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
     }
@@ -105,9 +104,9 @@ class MusicApplyServiceTest {
         List<MusicApply> keywordMusicApply = makeMusicApplyByKeyword(madeMusicApply, keyword);
 
         doReturn(keywordMusicApply)
-            .when(musicApplyRepository).findAll(keyword);
+            .when(musicApplyRepository).findAll(keyword, user.getId());
 
-        List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
             keyword);
         assertThat(musicApplies.size()).isEqualTo(keywordMusicApply.size());
     }
@@ -121,7 +120,7 @@ class MusicApplyServiceTest {
         doReturn(writerMusicApply)
             .when(musicApplyRepository).findById(user.getId());
 
-        List<AllMusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById(
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById(
             user.getId());
         assertThat(musicApplies.size()).isEqualTo(writerMusicApply.size());
     }
