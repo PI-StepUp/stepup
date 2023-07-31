@@ -22,8 +22,6 @@ import type {AppProps} from 'next/app';
 import Head from "next/head";
 import {RecoilRoot} from "recoil";
 
-import LanguageButton from "components/LanguageButton"
-
 const StepUp = ({Component} : AppProps) => {
     return (
         <>
@@ -32,7 +30,6 @@ const StepUp = ({Component} : AppProps) => {
             </Head>
             <RecoilRoot>
                 <Component/>
-                <LanguageButton/>
             </RecoilRoot>
         </>
     )
