@@ -15,9 +15,7 @@ import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.SELECT_SC
 import static com.pi.stepup.domain.dance.constant.DanceResponseMessage.UPDATE_OPEN_RANDOM_DANCE;
 
 import com.pi.stepup.domain.dance.constant.ProgressType;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceAttendRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceCreateRequestDto;
-import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceReserveRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
@@ -40,7 +38,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "dance", description = "dance domain apis")
@@ -50,8 +47,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class DanceApiController {
 
     private final DanceService danceService;
-
-    //TODO: id 쿼리스트링 빼기
 
     @Operation(summary = "랜덤 플레이 댄스 개최", description = "회원들이 참여할 랜덤 플레이 댄스를 개최한다. 유형은 서바이벌, 랭킹, 자율 중에서 고른다.")
     @ApiResponse(responseCode = "201", description = "랜덤 플레이 댄스 생성 완료")
@@ -83,8 +78,7 @@ public class DanceApiController {
     @ApiResponse(responseCode = "200", description = "랜덤 플레이 댄스 삭제 완료")
     @DeleteMapping("/my/{randomDanceId}")
     public ResponseEntity<ResponseDto<?>> deleteDance
-//        (@PathVariable("randomDanceId") Long randomDanceId, @RequestBody DanceDeleteRequestDto danceDeleteRequestDto) {
-    (@PathVariable("randomDanceId") Long randomDanceId) {
+        (@PathVariable("randomDanceId") Long randomDanceId) {
         danceService.delete(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -110,9 +104,8 @@ public class DanceApiController {
         description = "내가 개최한 랜덤 플레이 댄스 목록을 조회한다.")
     @ApiResponse(responseCode = "200", description = "내가 개최한 랜덤 플레이 댄스 목록 조회 완료")
     @GetMapping("/my/open")
-    public ResponseEntity<ResponseDto<?>> readAllMyOpenDance
-        (@RequestParam("id") String id) {
-        List<DanceFindResponseDto> allMyOpenDance = danceService.readAllMyOpenDance(id);
+    public ResponseEntity<ResponseDto<?>> readAllMyOpenDance() {
+        List<DanceFindResponseDto> allMyOpenDance = danceService.readAllMyOpenDance();
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             SELECT_ALL_OPEN_RANDOM_DANCE.getMessage(),
@@ -154,8 +147,8 @@ public class DanceApiController {
     @ApiResponse(responseCode = "201", description = "랜덤 플레이 댄스 예약 완료")
     @PostMapping("/reserve")
     public ResponseEntity<ResponseDto<?>> createReservation
-        (@RequestBody DanceReserveRequestDto danceReserveRequestDto) {
-        danceService.createReservation(danceReserveRequestDto);
+        (@PathVariable Long randomDanceId) {
+        danceService.createReservation(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             RESERVE_RANDOM_DANCE.getMessage()
@@ -167,8 +160,8 @@ public class DanceApiController {
     @ApiResponse(responseCode = "200", description = "랜덤 플레이 댄스 예약 취소 완료")
     @DeleteMapping("/my/reserve")
     public ResponseEntity<ResponseDto<?>> deleteReservation
-        (@RequestParam("randomDanceId") Long randomDanceId, @RequestParam("id") String id) {
-        danceService.deleteReservation(randomDanceId, id);
+        (@PathVariable Long randomDanceId) {
+        danceService.deleteReservation(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_RESERVE_RANDOM_DANCE.getMessage()
@@ -179,11 +172,9 @@ public class DanceApiController {
         description = "내가 예약한 랜덤 플레이 댄스 목록을 조회한다.")
     @ApiResponse(responseCode = "200", description = "내가 예약한 랜덤 플레이 댄스 목록 조회 완료")
     @GetMapping("/my/reserve")
-    public ResponseEntity<ResponseDto<?>> readAllMyReserveDance
-        (@RequestParam("id") String id) {
-
+    public ResponseEntity<ResponseDto<?>> readAllMyReserveDance() {
         List<DanceFindResponseDto> allMyRandomDance
-            = danceService.readAllMyReserveDance(id);
+            = danceService.readAllMyReserveDance();
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             SELECT_ALL_RESERVE_RANDOM_DANCE.getMessage(),
@@ -196,8 +187,8 @@ public class DanceApiController {
     @ApiResponse(responseCode = "201", description = "랜덤 플레이 댄스 참여 완료")
     @PostMapping("/attend")
     public ResponseEntity<ResponseDto<?>> createAttend
-        (@RequestBody DanceAttendRequestDto danceAttendRequestDto) {
-        danceService.createAttend(danceAttendRequestDto);
+        (@PathVariable Long randomDanceId) {
+        danceService.createAttend(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             ATTEND_RANDOM_DANCE.getMessage()
@@ -208,11 +199,9 @@ public class DanceApiController {
         description = "내가 참여한 랜덤 플레이 댄스 목록을 조회한다.")
     @ApiResponse(responseCode = "200", description = "내가 참여한 랜덤 플레이 댄스 목록 조회 완료")
     @GetMapping("/my/attend")
-    public ResponseEntity<ResponseDto<?>> readAllMyAttendDance
-        (@RequestParam("id") String id) {
-
+    public ResponseEntity<ResponseDto<?>> readAllMyAttendDance() {
         List<DanceFindResponseDto> allMyRandomDance
-            = danceService.readAllMyAttendDance(id);
+            = danceService.readAllMyAttendDance();
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             SELECT_ALL_ATTEND_RANDOM_DANCE.getMessage(),
