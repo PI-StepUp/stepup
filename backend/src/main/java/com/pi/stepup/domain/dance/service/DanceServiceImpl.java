@@ -27,6 +27,7 @@ import com.pi.stepup.domain.dance.exception.AttendDuplicatedException;
 import com.pi.stepup.domain.dance.exception.DanceBadRequestException;
 import com.pi.stepup.domain.dance.exception.DanceForbiddenException;
 import com.pi.stepup.domain.dance.exception.ReservationDuplicatedException;
+import com.pi.stepup.domain.dance.exception.ReservationForbiddenException;
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
@@ -240,9 +241,15 @@ public class DanceServiceImpl implements DanceService {
         RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow(()
             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
-        String HostId = randomDance.getHost().getId();
-        if (!loginUserId.equals(HostId)) {
-            throw new DanceForbiddenException(RESERVATION_DELETE_FORBIDDEN.getMessage());
+        Reservation findRes1
+            = danceRepository.findReservationByRandomDanceIdAndUserId(
+            randomDanceId, userId).orElseThrow();
+        Reservation findRes2
+            = danceRepository.findReservationByReservationIdAndRandomDanceId(
+            findRes1.getReservationId(), randomDanceId).orElseThrow();
+
+        if (!loginUserId.equals(findRes2.getUser().getId())) {
+            throw new ReservationForbiddenException(RESERVATION_DELETE_FORBIDDEN.getMessage());
         }
 
         danceRepository.deleteReservation(randomDanceId, userId);
