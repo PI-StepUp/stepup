@@ -62,7 +62,8 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     @Override
     public List<PointHistoryFindResponseDto> readAll() {
-        return pointHistoryRepository.findAll().stream()
+        String id = getLoggedInUserId();
+        return pointHistoryRepository.findAll(id).stream()
             .map(
                 pointHistory -> PointHistoryFindResponseDto.builder()
                     .pointHistory(pointHistory)
