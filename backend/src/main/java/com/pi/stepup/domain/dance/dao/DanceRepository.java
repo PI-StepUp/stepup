@@ -4,7 +4,6 @@ import com.pi.stepup.domain.dance.domain.AttendHistory;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.domain.Reservation;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,9 @@ public interface DanceRepository {
 
     //랜덤 플레이 댄스 전체 목록 조회
     List<RandomDance> findAllDance(String keyword);
+
     List<RandomDance> findScheduledDance(String keyword);
+
     List<RandomDance> findInProgressDance(String keyword);
 
     //랜덤 플레이 댄스 예약
@@ -35,6 +36,9 @@ public interface DanceRepository {
 
     //예약 랜덤 플레이 댄스 하나 조회
     Optional<Reservation> findReservationByRandomDanceIdAndUserId(Long randomDanceId, Long userId);
+
+    Optional<Reservation> findReservationByReservationIdAndRandomDanceId
+        (Long reservationId, Long randomDanceId);
 
     //랜덤 플레이 댄스 예약 취소
     void deleteReservation(Long randomDanceId, Long userId);
