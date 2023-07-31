@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(UpdateUserRequestDto updateUserRequestDto) {
-        User user = userRepository.findById(updateUserRequestDto.getId())
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         validateUpdateUserInfo(user, updateUserRequestDto);

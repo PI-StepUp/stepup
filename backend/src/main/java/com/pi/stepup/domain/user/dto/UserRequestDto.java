@@ -88,7 +88,6 @@ public class UserRequestDto {
     @AllArgsConstructor
     public static class UpdateUserRequestDto {
 
-        private String id;
         private String password;
         private String email;
         private Integer emailAlert;
