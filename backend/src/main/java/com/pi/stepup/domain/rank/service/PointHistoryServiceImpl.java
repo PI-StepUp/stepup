@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.rank.service;
 
 import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.POINT_POLICY_NOT_FOUND;
+import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.RANK_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.global.config.security.SecurityUtils.getLoggedInUserId;
 
@@ -14,6 +15,7 @@ import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
 import com.pi.stepup.domain.rank.dto.RankResponseDto.PointHistoryFindResponseDto;
 import com.pi.stepup.domain.rank.exception.PointPolicyNotFoundException;
+import com.pi.stepup.domain.rank.exception.RankNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
@@ -56,7 +58,8 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     public void updateUserRank(User user) {
         Integer userPoint = user.getPoint();
-        Rank rank = rankRepository.findOneByPoint(userPoint).orElseThrow();
+        Rank rank = rankRepository.findOneByPoint(userPoint)
+            .orElseThrow(() -> new RankNotFoundException(RANK_NOT_FOUND.getMessage()));
         user.setRank(rank);
     }
 
