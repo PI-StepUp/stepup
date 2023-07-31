@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -22,6 +23,7 @@ import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.config.security.SecurityUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -171,28 +174,32 @@ class UserServiceImplTest {
     @DisplayName("사용자를 삭제할 때 해당 유저를 찾을 수 없을 경우 예외가 발생한다.")
     @Test
     void deleteTest_NotFound() {
-        // given
-        when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
+        String testId = "testId";
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
 
-        String testId = "testID";
+            when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
 
-        // when, then
-        assertThatThrownBy(() -> userService.delete(testId))
-            .isInstanceOf(UserNotFoundException.class)
-            .hasMessageContaining(USER_NOT_FOUND.getMessage());
+            assertThatThrownBy(() -> userService.delete())
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessageContaining(USER_NOT_FOUND.getMessage());
+        }
     }
 
     @DisplayName("사용자를 삭제할 때 성공할 경우 예외가 발생하지 않는다.")
     @Test
     void deleteTest_Success() {
-        // given
-        when(userRepository.findById(any(String.class))).thenReturn(
-            Optional.of(User.builder().build()));
+        String testId = "testId";
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
 
-        String testId = "testID";
+            when(this.userRepository.findById(any(String.class)))
+                .thenReturn(Optional.of(User.builder().id(testId).build()));
 
-        // when, then
-        assertThatNoException().isThrownBy(() -> userService.delete(testId));
+            assertThatNoException().isThrownBy(() -> userService.delete());
+        }
     }
 
     private List<Country> makeCountries() {
