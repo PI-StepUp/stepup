@@ -31,22 +31,31 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     @Override
     public List<MusicApply> findAll(String keyword, String id) {
         String sql = "SELECT ma FROM MusicApply ma "
-            + "JOIN FETCH ma.hearts h ON h.user.id = :id ";
+            + "JOIN FETCH ma.hearts h WHERE h.user.id = :id ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
                 "ma.artist LIKE '%" + keyword + "%'";
         }
 
-        return em.createQuery(sql, MusicApply.class).getResultList();
+        return em.createQuery(sql, MusicApply.class).setParameter("id", id).getResultList();
     }
 
     @Override
     public List<MusicApply> findById(String id) {
-        return em.createQuery(
-                "SELECT ma FROM MusicApply ma "
-                    + "JOIN FETCH ma.hearts h ON h.user.id = :id " +
-                    "WHERE ma.writer.id = :id", MusicApply.class
+        /**
+         * [자기가 좋아요 누른 자기꺼 노래 신청 목록 반환, 좋아요 안누른 노래 신청은 누락]
+         * "SELECT ma FROM MusicApply ma "
+         *                     + "JOIN FETCH ma.hearts h " +
+         *                     "WHERE ma.writer.id = :id "
+         *                    
+         *                    아래도 동일
+         */
+        return em.createQuery( "SELECT ma FROM MusicApply ma "
+                    + "JOIN ma.hearts h "
+                    + "WHERE (h is NULL OR h.user.id = :id) "
+                    + "AND ma.writer.id = :id"
+                , MusicApply.class
             )
             .setParameter("id", id)
             .getResultList();
