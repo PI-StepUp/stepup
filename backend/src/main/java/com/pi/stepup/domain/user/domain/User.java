@@ -99,7 +99,12 @@ public class User extends BaseEntity {
 
     // TODO : 포인트, 랭크 수정 메서드 추가
     public void updatePoint(Integer point) {
-        this.point += point;
+        int updatedPoint = this.point + point;
+        if(updatedPoint >= 5000) {
+            this.point = 5000;
+        } else {
+            this.point = updatedPoint;
+        }
     }
 
     public void setRank(Rank rank) {
