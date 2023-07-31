@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.global.config.security.SecurityUtils.getLoggedInUserId;
 
@@ -11,6 +12,7 @@ import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
+import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
@@ -18,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,8 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     @Transactional
     public void create(MusicApplySaveRequestDto musicApplySaveRequestDto) {
-        User writer = userRepository.findById(musicApplySaveRequestDto.getWriterId()).orElseThrow(
+        String id = getLoggedInUserId();
+        User writer = userRepository.findById(id).orElseThrow(
             () -> new UserNotFoundException(USER_NOT_FOUND.getMessage())
         );
 
@@ -85,11 +87,18 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     @Transactional
     public void delete(Long musicApplyId) {
-        musicApplyRepository.findOne(musicApplyId)
+        String id = getLoggedInUserId();
+
+        MusicApply musicApply = musicApplyRepository.findOne(musicApplyId)
             .orElseThrow(
                 () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage())
             );
-        musicApplyRepository.delete(musicApplyId);
+
+        if (id.equals(musicApply.getWriter().getId())) {
+            musicApplyRepository.delete(musicApplyId);
+        } else {
+            throw new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage());
+        }
     }
 
     @Override

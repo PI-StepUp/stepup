@@ -40,7 +40,6 @@ public class MusicRequestDto {
     @AllArgsConstructor
     public static class MusicApplySaveRequestDto {
 
-        private String writerId;
         private String title;
         private String artist;
         private String content;
