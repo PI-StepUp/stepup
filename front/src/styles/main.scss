@@ -1,4 +1,5 @@
 @import "function.scss";
+@import "./responsively.scss";
 
 .main-header{
     @include setSize(100%, 100px);
@@ -6,14 +7,23 @@
         height:100px;
         @include block-center(1200px);
         @include flex(null, center);
+        @include mobile{
+            width:100%;
+        }
     }
     .logo{
+        @include mobile{
+            margin-left:6vw;
+        }
         h1{
             @include font(22px, 700, #E2EFFF);
         }
     }
     nav{
         margin-right:auto;
+        @include mobile{
+            display: none;
+        }
         ul{
             height:100px;
             @include flex(null, center);
@@ -27,6 +37,9 @@
         }
     }
     .login-wrap{
+        @include mobile{
+            display: none;
+        }
         ul{
             @include flex();
             li{
@@ -45,17 +58,33 @@
     position:relative;
     top:-100px;
     z-index:-1;
+    @include mobile{
+        @include setSize(100%, 575px);
+    }
 }
 .main-info{
     @include block-center(1200px);
     padding-bottom:132px;
+    @include mobile{
+        width:100%;
+        @include box-padding(40px);
+        margin-top:-100px;
+        padding-bottom: auto;
+    }
     .flex-wrap{
         @include flex(space-between);
         h3{
             @include font(48px, 900, #414149);
             line-height:64px;
+            @include mobile{
+                @include font(22px, 900, #414149);
+                line-height:32px;
+            }
         }
         .main-info-text{
+            @include mobile{
+                display: none;
+            }
             p{
                 @include font(20px, 400, #BEBEBE);
                 line-height:30px;
@@ -71,21 +100,38 @@
     }
     .main-info-icon-wrap{
         margin-top:94px;
+        @include mobile{
+            margin-top:40px;
+        }
         ul{
             @include flex();
+            @include mobile{
+                @include setSize(100%, null);
+                @include flex(center, center);
+            }
             li{
                 @include flex(center, center);
                 flex-direction: column;
                 margin-left:70px;
+                @include mobile{
+                    @include flex(space-around, center);
+                    margin-left:auto;
+                }
                 &:nth-child(1){
                     margin-left:0px;
                 }
                 img{
                     @include setSize(50px, 50px);
+                    @include mobile{
+                        @include setSize(30px, 30px);
+                    }
                 }
                 span{
                     margin-top:22px;
                     @include font(20px, 400, #858391);
+                    @include mobile{
+                        @include font(8px, 400, #858391);
+                    }
                 }
             }
         }
@@ -96,21 +142,38 @@
     @include setSize(100%, 500px);
     background-color: #EFF3FF;
     @include flex();
+    @include mobile{
+        height:auto;
+    }
     .ad-randomplay-info{
         @include setSize(100%, 500px);
         @include flex(flex-end, center);
         padding-right:140px;
+        @include mobile{
+            height:auto;
+            @include flex(center, center);
+            padding:70px 30px;
+            box-sizing: border-box;
+        }
         .ad-randomplay-info-wrap{
             h3{
                 width:403px;
                 @include font(40px, 700, #3F4253);
                 line-height:54px;
+                @include mobile{
+                    font-size:22px;
+                    line-height:30px;
+                }
             }
             p{
                 width:456px;
                 @include font(18px, 400, #92969F);
                 line-height:28px;
                 margin-top:13px;
+                @include mobile{
+                    font-size:11px;
+                    line-height:16px;
+                }
             }
             span{
                 @include font(20px, 300, #506DF9);
@@ -118,6 +181,9 @@
                 margin-top:22px;
                 padding-bottom:8px;
                 border-bottom: 1px solid #506DF9;
+                @include mobile{
+                    font-size: 12px;
+                }
             }
         }
     }
@@ -126,6 +192,9 @@
         background-image: url("/images/randomplay-ad-img.png");
         background-position: center;
         background-size: cover;
+        @include mobile{
+            display:none;
+        }
     }
 }
 
