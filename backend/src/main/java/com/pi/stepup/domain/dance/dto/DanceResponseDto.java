@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.dance.dto;
 
-import com.pi.stepup.domain.dance.constant.ProgressType;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -50,7 +49,7 @@ public class DanceResponseDto {
         private String progressType;
 
         @Builder
-        private DanceSearchResponseDto(RandomDance randomDance) {
+        private DanceSearchResponseDto(RandomDance randomDance, String progressType) {
             this.randomDanceId = randomDance.getRandomDanceId();
             this.title = randomDance.getTitle();
             this.content = randomDance.getContent();
@@ -60,12 +59,12 @@ public class DanceResponseDto {
             this.maxUser = randomDance.getMaxUser();
             this.thumbnail = randomDance.getThumbnail();
             this.hostNickname = randomDance.getHost().getNickname();
-            this.progressType = "";
-        }
-
-        public void setProgressType(String progressType) {
             this.progressType = progressType;
         }
+
+//        public void setProgressType(String progressType) {
+//            this.progressType = progressType;
+//        }
     }
 
 }
