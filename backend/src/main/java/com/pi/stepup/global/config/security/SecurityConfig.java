@@ -38,10 +38,10 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/api/user").authenticated()
-            .antMatchers(HttpMethod.DELETE, "/api/user").authenticated()
-            .antMatchers(HttpMethod.PUT, "/api/user").authenticated()
-            .antMatchers(HttpMethod.POST, "/api/user/checkpw").authenticated()
+//            .antMatchers(HttpMethod.GET, "/api/user").authenticated()
+//            .antMatchers(HttpMethod.DELETE, "/api/user").authenticated()
+//            .antMatchers(HttpMethod.PUT, "/api/user").authenticated()
+//            .antMatchers(HttpMethod.POST, "/api/user/checkpw").authenticated()
             .anyRequest().permitAll()
             .and()
             .exceptionHandling()
@@ -50,6 +50,9 @@ public class SecurityConfig {
             .and()
             .addFilterBefore(jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .cors();
 
         return http.build();
     }

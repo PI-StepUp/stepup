@@ -54,6 +54,7 @@
                                 border-radius:10px;
                                 @include box-padding(20px);
                                 @include font(14px, 500, #454545);
+                                margin-left:0px;
                             }
                             input[type="file"]{
                                 &::file-selector-button {
