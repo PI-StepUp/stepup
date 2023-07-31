@@ -74,7 +74,7 @@ public class MusicApplyApiController {
         @RequestParam(name = "id") String id) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             READ_MY_MUSIC_APPLY_SUCCESS.getMessage(),
-            musicApplyService.readAllById(id)
+            musicApplyService.readAllById()
         ));
     }
 

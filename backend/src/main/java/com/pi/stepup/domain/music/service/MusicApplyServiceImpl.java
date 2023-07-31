@@ -48,7 +48,8 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     }
 
     @Override
-    public List<MusicApplyFindResponseDto> readAllById(String id) {
+    public List<MusicApplyFindResponseDto> readAllById() {
+        String id = getLoggedInUserId();
         List<MusicApply> musicApplies = musicApplyRepository.findById(id);
         return setCanHeart(musicApplies);
     }

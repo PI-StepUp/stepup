@@ -120,8 +120,7 @@ class MusicApplyServiceTest {
         doReturn(writerMusicApply)
             .when(musicApplyRepository).findById(user.getId());
 
-        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById(
-            user.getId());
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllById();
         assertThat(musicApplies.size()).isEqualTo(writerMusicApply.size());
     }
 
