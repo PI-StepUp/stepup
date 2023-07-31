@@ -79,11 +79,10 @@ public class TalkApiController {
     @ApiResponse(responseCode = "200",
             description = "내가 작성한 자유게시판 목록 조회")
     @GetMapping("talk/my")
-    public ResponseEntity<ResponseDto<?>> readAllByIdTalk(
-            @RequestParam(name = "id") String id) {
+    public ResponseEntity<ResponseDto<?>> readAllByIdTalk() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 BoardResponseMessage.READ_ALL_MY_TALK.getMessage(),
-                talkService.readAllById(id)
+                talkService.readAllById()
         ));
     }
 

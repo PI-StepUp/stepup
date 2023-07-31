@@ -15,7 +15,7 @@ public interface TalkService {
 
     List<TalkInfoResponseDto> readAll(String keyword);
 
-    List<TalkInfoResponseDto> readAllById(String id);
+    List<TalkInfoResponseDto> readAllById();
 
     Optional<TalkInfoResponseDto> readOne(Long boardId);
 

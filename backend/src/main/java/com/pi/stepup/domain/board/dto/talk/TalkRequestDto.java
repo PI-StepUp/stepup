@@ -15,8 +15,6 @@ public class TalkRequestDto {
     @AllArgsConstructor
     public static class TalkSaveRequestDto {
         @NotBlank
-        private String id;
-        @NotBlank
         private String title;
         @NotBlank
         private String content;
