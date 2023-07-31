@@ -1,9 +1,9 @@
 package com.pi.stepup.global.config.security;
 
+import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.filter.JwtAccessDeniedHandler;
 import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationEntryPoint;
 import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationFilter;
-import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
@@ -38,8 +38,8 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/api/user/{id}").authenticated()
-            .antMatchers(HttpMethod.DELETE, "/api/user/{id}").authenticated()
+            .antMatchers(HttpMethod.GET, "/api/user").authenticated()
+            .antMatchers(HttpMethod.DELETE, "/api/user").authenticated()
             .antMatchers(HttpMethod.PUT, "/api/user").authenticated()
             .antMatchers(HttpMethod.POST, "/api/user/checkpw").authenticated()
             .anyRequest().permitAll()
@@ -48,7 +48,7 @@ public class SecurityConfig {
             .accessDeniedHandler(jwtAccessDeniedHandler)
             .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             .and()
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+            .addFilterBefore(jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

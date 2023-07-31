@@ -1,6 +1,8 @@
 package com.pi.stepup.domain.user.domain;
 
+import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.constant.UserRole;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.global.entity.BaseEntity;
 import java.time.LocalDate;
 import javax.persistence.Entity;
@@ -56,11 +58,14 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     // TODO: Rank 엔티티 연관관계 설정
+    @ManyToOne
+    @JoinColumn(name = "RANK_ID")
+    private Rank rank;
 
     @Builder
     public User(Long userId, String id, String password, String email, Integer emailAlert,
         Country country, String nickname, LocalDate birth, String profileImg,
-        UserRole role, Integer point, String refreshToken) {
+        UserRole role, Integer point, String refreshToken, Rank rank) {
         this.userId = userId;
         this.id = id;
         this.password = password;
@@ -73,9 +78,31 @@ public class User extends BaseEntity {
         this.role = role;
         this.point = point;
         this.refreshToken = refreshToken;
+        this.rank = rank;
     }
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void updateUserBasicInfo(UpdateUserRequestDto updateUserRequestDto, Country country) {
+        this.email = updateUserRequestDto.getEmail();
+        this.emailAlert = updateUserRequestDto.getEmailAlert();
+        this.country = country;
+        this.nickname = updateUserRequestDto.getNickname();
+        this.profileImg = updateUserRequestDto.getProfileImg();
+    }
+
+    public void updatePassword(String encodedUpdatePassword) {
+        this.password = encodedUpdatePassword;
+    }
+
+    // TODO : 포인트, 랭크 수정 메서드 추가
+    public void updatePoint(Integer point) {
+        this.point += point;
+    }
+
+    public void setRank(Rank rank) {
+        this.rank = rank;
     }
 }

@@ -12,6 +12,21 @@ spring:
         #      show_sql: true
         format_sql: true
         default_batch_fetch_size: 100
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: pi3.14stepup
+    password: nbrnfqketihdxhhc
+    properties:
+      mail:
+        debug: true
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
 
 jwt:
   secret: XUrYUhZfrEWLtykR7h80CrcITM59YLt5CRi3AdqZu33
@@ -21,3 +36,19 @@ logging.level:
   org.hibernate.SQL: debug
   org.hibernate.type: trace #스프링 부트 2.x, hibernate5
 # org.hibernate.orm.jdbc.bind: trace #스프링 부트 3.x, hibernate6
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  api-docs:
+    groups:
+      enabled: true
+  swagger-ui:
+    operations-sorter: alpha # alpha(알파벳 오름차순), method(HTTP메소드순)
+    tags-sorter: alpha # 태그 정렬 기준
+    path: /swagger-ui.html # html 문서 접속 경로
+    disable-swagger-default-url: true
+    display-query-params-without-oauth2: true
+    doc-expansion: none # tag, operation 펼치는 방식
+  paths-to-match:
+#    - /**

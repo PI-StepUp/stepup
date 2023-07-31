@@ -1,7 +1,10 @@
 package com.pi.stepup.domain.dance.domain;
 
 import com.pi.stepup.domain.dance.constant.DanceType;
+import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
+import com.pi.stepup.domain.user.domain.User;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -14,8 +17,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -48,27 +51,40 @@ public class RandomDance {
 
     private String thumbnail;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "USER_ID")
-//    private User host;
+    //호스트
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User host;
 
+    //사용하는 노래 목록
     @OneToMany(mappedBy = "randomDance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DanceMusic> danceMusicList = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "RESERVATION_ID")
-    private Reservation reservation;
+    //예약자 목록
+    @OneToMany(mappedBy = "randomDance", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservationList = new ArrayList<>();
 
-    //1:1 양방향
-    public void setReservationAndSetThis(Reservation reservation) {
-        this.reservation = reservation;
-        reservation.setRandomDanceAndSetThis(this);
+    public void addDanceMusicAndSetThis(DanceMusic danceMusic) {
+        this.danceMusicList.add(danceMusic);
+        danceMusic.setRandomDance(this);
+    }
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd HH:mm");
+    public void update(DanceUpdateRequestDto danceUpdateRequestDto) {
+        this.title = danceUpdateRequestDto.getTitle();
+        this.content = danceUpdateRequestDto.getContent();
+        this.startAt = LocalDateTime.parse(danceUpdateRequestDto.getStartAt(), formatter);
+        this.endAt = LocalDateTime.parse(danceUpdateRequestDto.getEndAt(), formatter);
+        this.danceType = danceUpdateRequestDto.getDanceType();
+        this.maxUser = danceUpdateRequestDto.getMaxUser();
+        this.thumbnail = danceUpdateRequestDto.getThumbnail();
     }
 
     @Builder
-    public RandomDance(Long id, String title, String content, LocalDateTime startAt,
-        LocalDateTime endAt, DanceType danceType, int maxUser, String thumbnail) {
-        this.randomDanceId = id;
+    public RandomDance(Long randomDanceId, String title, String content, LocalDateTime startAt,
+        LocalDateTime endAt, DanceType danceType, int maxUser, String thumbnail, User host) {
+        this.randomDanceId = randomDanceId;
         this.title = title;
         this.content = content;
         this.startAt = startAt;
@@ -76,5 +92,6 @@ public class RandomDance {
         this.danceType = danceType;
         this.maxUser = maxUser;
         this.thumbnail = thumbnail;
+        this.host = host;
     }
 }
