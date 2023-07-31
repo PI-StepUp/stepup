@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Link from "next/link"
 import Image from "next/image"
 import motionIcons from "/public/images/motion-icon.svg"
@@ -9,6 +8,7 @@ import musicNoteIcon from "/public/images/musicnote-icon.svg"
 import realtimeRandomPlay1 from "/public/images/realtimeRandomplayImg1.png"
 
 import Footer from "components/Footer"
+import LanguageButton from "components/LanguageButton";
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
@@ -98,70 +98,71 @@ const Index = () => {
 				</div>
 				<div className="ad-randomplay-img">
 
-				</div>
-			</div>
-			<div className="realtime-randomplay">
-				<div className="realtime-randomplay-title">
-					<h3>{lang === "en" ? "Real-time popular LANPLE DAN" : lang === "cn" ? "实时人气随机舞蹈" : "실시간 인기 랜플댄"}</h3>
-					<p>{lang === "en" ? "join the most popular random play dance room right now." : lang === "cn" ? "请参加目前最有人气的随机跳舞房吧" : "현재 가장 인기가 많은 랜덤플레이댄스방에 참여해보세요."}</p>
-				</div>
-				<div className="realtime-randomplay-content">
-					<ul>
-						<li>
-							<div className="realtime-randomplay-content-img">
-								<Image src={realtimeRandomPlay1} alt="" />
-							</div>
-							<div className="realtime-randomplay-content-info">
-								<h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-								<p>관심 26 | 참여 AM10시 ~ PM3시</p>
-							</div>
-						</li>
-						<li>
-							<div className="realtime-randomplay-content-img">
-								<Image src={realtimeRandomPlay1} alt="" />
-							</div>
-							<div className="realtime-randomplay-content-info">
-								<h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-								<p>관심 26 | 참여 AM10시 ~ PM3시</p>
-							</div>
-						</li>
-						<li>
-							<div className="realtime-randomplay-content-img">
-								<Image src={realtimeRandomPlay1} alt="" />
-							</div>
-							<div className="realtime-randomplay-content-info">
-								<h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-								<p>관심 26 | 참여 AM10시 ~ PM3시</p>
-							</div>
-						</li>
-						<li>
-							<div className="realtime-randomplay-content-img">
-								<Image src={realtimeRandomPlay1} alt="" />
-							</div>
-							<div className="realtime-randomplay-content-info">
-								<h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-								<p>관심 26 | 참여 AM10시 ~ PM3시</p>
-							</div>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div className="ad-banner-wrap">
-				<div className="ad-banner-title-wrap">
-					<h3>{lang === "en" ? "I want to be a member of STEP UP" : lang === "cn" ? "成为STEP UP的成员" : "STEP UP의 멤버가 되어"}
-						<b className="bold">
-							{lang === "en" ? " Enjoy more Lanfle Dancing" : lang === "cn" ? " 享受更多的随机舞蹈吧" : " 더 많은 랜플댄을 즐겨보세요"}
-						</b>
-					</h3>
-				</div>
-				<div className="ad-banner-button-wrap">
-					<button><Link href="/">{lang === "en" ? "Use after registering as a member" : lang === "cn" ? "注册会员后使用" : "회원가입 후 이용하기"}</Link></button>
-					<button><Link href="/">{lang === "en" ? "Participating in LANPLE DANCING room" : lang === "cn" ? "参与随机舞蹈的房间" : "랜플댄 방 참여하기"}</Link></button>
-				</div>
-			</div>
-			<Footer />
-		</>
-	)
+                </div>
+            </div>
+            <div className="realtime-randomplay">
+                <div className="realtime-randomplay-title">
+                    <h3>{lang==="en" ? "Real-time popular LANPLE DAN" : lang==="cn" ? "实时人气随机舞蹈" : "실시간 인기 랜플댄" }</h3>
+                    <p>{lang==="en" ? "join the most popular random play dance room right now." : lang==="cn" ? "请参加目前最有人气的随机跳舞房吧" : "현재 가장 인기가 많은 랜덤플레이댄스방에 참여해보세요." }</p>
+                </div>
+                <div className="realtime-randomplay-content">
+                    <ul>
+                        <li>
+                            <div className="realtime-randomplay-content-img">
+                                <Image src={realtimeRandomPlay1} alt=""/>
+                            </div>
+                            <div className="realtime-randomplay-content-info">
+                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
+                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="realtime-randomplay-content-img">
+                                <Image src={realtimeRandomPlay1} alt=""/>
+                            </div>
+                            <div className="realtime-randomplay-content-info">
+                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
+                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="realtime-randomplay-content-img">
+                                <Image src={realtimeRandomPlay1} alt=""/>
+                            </div>
+                            <div className="realtime-randomplay-content-info">
+                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
+                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="realtime-randomplay-content-img">
+                                <Image src={realtimeRandomPlay1} alt=""/>
+                            </div>
+                            <div className="realtime-randomplay-content-info">
+                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
+                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div className="ad-banner-wrap">
+                <div className="ad-banner-title-wrap">
+                    <h3>{lang==="en" ? "I want to be a member of STEP UP" : lang==="cn" ? "成为STEP UP的成员" : "STEP UP의 멤버가 되어" }
+                        <b className="bold">
+                            {lang==="en" ? " Enjoy more Lanfle Dancing" : lang==="cn" ? " 享受更多的随机舞蹈吧" : " 더 많은 랜플댄을 즐겨보세요" }
+                        </b>
+                    </h3>
+                </div>
+                <div className="ad-banner-button-wrap">
+                    <button><Link href="/">{lang==="en" ? "Use after registering as a member" : lang==="cn" ? "注册会员后使用" : "회원가입 후 이용하기" }</Link></button>
+                    <button><Link href="/">{lang==="en" ? "Participating in LANPLE DANCING room" : lang==="cn" ? "参与随机舞蹈的房间" : "랜플댄 방 참여하기" }</Link></button>
+                </div>
+            </div>
+            <Footer/>
+            <LanguageButton/>
+        </>
+    )
 }
 
 export default Index;
