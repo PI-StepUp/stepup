@@ -125,7 +125,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoResponseDto readOne() {
-        // TODO: user not found exception 설정
         return UserInfoResponseDto.builder()
             .user(userRepository.findById(SecurityUtils.getLoggedInUserId())
                 .orElseThrow(() -> new UserNotFoundException(
