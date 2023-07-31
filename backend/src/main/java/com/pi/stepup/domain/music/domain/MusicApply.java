@@ -3,6 +3,15 @@ package com.pi.stepup.domain.music.domain;
 import com.pi.stepup.domain.user.domain.User;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,13 +19,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.*;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 public class MusicApply {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MUSIC_APPLY_ID")
@@ -39,7 +47,8 @@ public class MusicApply {
     private List<Heart> hearts = new ArrayList<>();
 
     @Builder
-    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer, Integer heartCnt,
+    public MusicApply(Long musicApplyId, String title, String artist, String content, User writer,
+        Integer heartCnt,
         List<Heart> hearts) {
         this.musicApplyId = musicApplyId;
         this.title = title;
@@ -58,7 +67,7 @@ public class MusicApply {
         this.heartCnt -= 1;
     }
 
-    public void addHeartAndSetMusicApply(Heart heart){
+    public void addHeartAndSetMusicApply(Heart heart) {
         this.hearts.add(heart);
         heart.setMusicApply(this);
     }

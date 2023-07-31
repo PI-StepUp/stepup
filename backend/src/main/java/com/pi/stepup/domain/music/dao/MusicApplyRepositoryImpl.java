@@ -31,14 +31,14 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     @Override
     public List<MusicApply> findAll(String keyword, String id) {
         String sql = "SELECT ma FROM MusicApply ma "
-            + "JOIN FETCH ma.hearts h WHERE h.user.id = :id ";
+            + "LEFT JOIN FETCH ma.hearts h "; // 이게 왜 되는..?
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
                 "ma.artist LIKE '%" + keyword + "%'";
         }
 
-        return em.createQuery(sql, MusicApply.class).setParameter("id", id).getResultList();
+        return em.createQuery(sql, MusicApply.class).getResultList();
     }
 
     @Override
@@ -48,13 +48,14 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
          * "SELECT ma FROM MusicApply ma "
          *                     + "JOIN FETCH ma.hearts h " +
          *                     "WHERE ma.writer.id = :id "
-         *                    
-         *                    아래도 동일
+         *
+         * LEFT JOIN 으로 해결
          */
-        return em.createQuery( "SELECT ma FROM MusicApply ma "
-                    + "JOIN ma.hearts h "
-                    + "WHERE (h is NULL OR h.user.id = :id) "
-                    + "AND ma.writer.id = :id"
+
+        return em.createQuery(
+                "SELECT ma FROM MusicApply ma "
+                    + "LEFT JOIN FETCH ma.hearts h " +
+                    "WHERE ma.writer.id = :id "
                 , MusicApply.class
             )
             .setParameter("id", id)
