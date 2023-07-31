@@ -13,11 +13,9 @@ public class CommentRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CommentSaveRequestDto{
+    public static class CommentSaveRequestDto {
         @NotNull
         private Long boardId;
-        @NotBlank
-        private String id;
         @NotBlank
         private String content;
     }

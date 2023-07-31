@@ -16,9 +16,9 @@ import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -87,12 +87,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findOne(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND.getMessage()));
 
-        // 로그인한 사용자의 정보 가져오기
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String loggedInUserId = authentication.getName();
-
-        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
         // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
         if (!loggedInUserId.equals(comment.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(comment.getWriter().getRole())) {
             throw new ForbiddenException();
