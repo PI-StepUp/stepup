@@ -50,7 +50,7 @@
                     @include flex;
                     flex-wrap:wrap;
                     li{
-                        @include setSize(50%, 50%);
+                        @include setSize(100%, 100%);
                         video{
                             @include setSize(100%);
                         }
