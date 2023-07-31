@@ -9,8 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
-import com.pi.stepup.domain.dance.constant.DanceType;
-import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.rank.domain.PointHistory;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
@@ -28,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -52,10 +51,6 @@ class RankApiControllerTest {
     private User user;
     private PointPolicy pointPolicy;
     private PointUpdateRequestDto pointUpdateRequestDto;
-    private RandomDance randomDance;
-
-    RankApiControllerTest() {
-    }
 
     @Test
     @BeforeEach
@@ -69,7 +64,7 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("포인트 적립 api 테스트")
-    @WithMockUser
+    @WithUserDetails
     public void pointUpdateApiTest() throws Exception {
         String url = "/api/rank/point";
 
@@ -97,13 +92,11 @@ class RankApiControllerTest {
         postAction.andExpect(status().isUnauthorized());
     }
 
-    // TODO : 포인트 적립 - 비인가된 사용자 접근 (403) 예외 처리
     @Test
     @DisplayName("비인가 사용자 포인트 적립 예외 테스트")
     @WithMockUser
     public void notAuthorizedUserPointUpdateApiTest() throws Exception {
         String url = "/api/rank/point";
-        // TODO : service에서 throw 해줄 것
         doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
             .when(pointHistoryService)
             .update(any());
@@ -119,9 +112,9 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("포인트 적립 내역 조회 api 테스트")
-    @WithMockUser
+    @WithUserDetails
     public void readAllPointHistoryApiTest() throws Exception {
-        String url = "/api/rank/my/history/" + user.getId();
+        String url = "/api/rank/my/history";
 
         final ResultActions getAction = mockMvc.perform(
             MockMvcRequestBuilders.get(url)
@@ -143,13 +136,11 @@ class RankApiControllerTest {
         getAction.andExpect(status().isUnauthorized()).andDo(print());
     }
 
-    // TODO : 포인트 적립 내역 - 비인가된 사용자 접근 (403) 예외 처리
     @Test
     @DisplayName("비인가 사용자 포인트 적립 내역 조회 예외 테스트")
     @WithMockUser
     public void notAuthorizedUserReadAllPointHistoryApiTest() throws Exception {
-        String url = "/api/rank/my/history/" + user.getId();
-        // TODO : service에서 throw 해줄 것
+        String url = "/api/rank/my/history";
         doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
             .when(pointHistoryService)
             .readAll();
@@ -163,9 +154,9 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("포인트 조회 api 테스트")
-    @WithMockUser
+    @WithUserDetails
     public void readPointApiTest() throws Exception {
-        String url = "/api/rank/my/point/" + user.getId();
+        String url = "/api/rank/my/point";
 
         final ResultActions getAction = mockMvc.perform(
             MockMvcRequestBuilders.get(url)
@@ -178,7 +169,7 @@ class RankApiControllerTest {
     @DisplayName("비인증된 사용자 포인트 조회 예외 테스트")
     @WithAnonymousUser
     public void notLoginUserReadPointApiTest() throws Exception {
-        String url = "/api/rank/my/point/" + user.getId();
+        String url = "/api/rank/my/point";
 
         final ResultActions getAction = mockMvc.perform(
             MockMvcRequestBuilders.get(url)
@@ -187,16 +178,14 @@ class RankApiControllerTest {
         getAction.andExpect(status().isUnauthorized()).andDo(print());
     }
 
-    // TODO : 포인트 조회 - 비인가된 사용자 접근 (403) 예외 처리
     @Test
     @DisplayName("비인가 사용자 포인트 조회 예외 테스트")
     @WithMockUser
     public void notAuthorizedUserReadPointApiTest() throws Exception {
-        String url = "/api/rank/my/point/" + user.getId();
-        // TODO : service에서 throw 해줄 것
+        String url = "/api/rank/my/point";
         doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
             .when(pointHistoryService)
-            .readPoint(any(String.class));
+            .readPoint();
 
         final ResultActions getAction = mockMvc.perform(
             MockMvcRequestBuilders.get(url)
@@ -207,9 +196,9 @@ class RankApiControllerTest {
 
     @Test
     @DisplayName("랭크 조회 api 테스트")
-    @WithMockUser
+    @WithUserDetails
     public void readUserRankApiTest() throws Exception {
-        String url = "/api/rank/my/grade/" + user.getId();
+        String url = "/api/rank/my/grade";
 
         final ResultActions getAction = mockMvc.perform(
             MockMvcRequestBuilders.get(url)
@@ -222,7 +211,7 @@ class RankApiControllerTest {
     @DisplayName("비인증 사용자 랭크 조회 예외 테스트")
     @WithAnonymousUser
     public void notLoginUserReadUserRankApiTest() throws Exception {
-        String url = "/api/rank/my/grade/" + user.getId();
+        String url = "/api/rank/my/grade";
 
         final ResultActions getAction = mockMvc.perform(
             MockMvcRequestBuilders.get(url)
@@ -231,16 +220,14 @@ class RankApiControllerTest {
         getAction.andExpect(status().isUnauthorized());
     }
 
-    // TODO : 403 랭크 조회 예외 테스트
     @Test
-    @DisplayName("비인증 사용자 랭크 조회 예외 테스트")
+    @DisplayName("비인가 사용자 랭크 조회 예외 테스트")
     @WithMockUser
     public void notAuthorizedUserReadUserRankApiTest() throws Exception {
-        String url = "/api/rank/my/grade/" + user.getId();
-        // TODO : service에서 throw 해줄 것
+        String url = "/api/rank/my/grade";
         doThrow(new UnauthorizedUserAccessException(UNAUTHORIZED_USER_ACCESS.getMessage()))
             .when(rankService)
-            .readOne(user.getId());
+            .readOne();
 
         final ResultActions getAction = mockMvc.perform(
             MockMvcRequestBuilders.get(url)
@@ -273,15 +260,6 @@ class RankApiControllerTest {
             .pointPolicyId(1L)
             .count(2)
             .randomDanceId(1L)
-            .id("user")
-            .build();
-    }
-
-    private void makeRandomDance() {
-        randomDance = RandomDance.builder()
-            .title("title")
-            .content("content")
-            .danceType(DanceType.RANKING)
             .build();
     }
 }
