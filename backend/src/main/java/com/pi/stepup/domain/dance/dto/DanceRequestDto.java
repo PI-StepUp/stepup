@@ -85,26 +85,6 @@ public class DanceRequestDto {
         private List<Long> danceMusicIdList = new ArrayList<>();
     }
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DanceReserveRequestDto {
-
-        private String id;
-        private Long randomDanceId;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DanceAttendRequestDto {
-
-        private String id;
-        private Long randomDanceId;
-    }
-
     //postman테스트 해보기
     @Data
     @Builder
