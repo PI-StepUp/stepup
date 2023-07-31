@@ -2,7 +2,6 @@ package com.pi.stepup.domain.rank.service;
 
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.RandomDance;
-import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.dao.PointHistoryRepository;
 import com.pi.stepup.domain.rank.dao.PointPolicyRepository;
 import com.pi.stepup.domain.rank.dao.RankRepository;
@@ -43,16 +42,12 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         pointHistoryRepository.insert(
             pointUpdateRequestDto.toEntity(user, pointPolicy, randomDance));
 
-        // TODO : 유저 포인트 가져오기
+        updateUserRank(user);
+    }
+
+    public void updateUserRank(User user) {
         Integer userPoint = user.getPoint();
-
-        // TODO : 포인트 등급 산정 -> JPQL로 getRankName 함수 대체 할 것
-//        Rank rank = rankRepository.findOneByPoint(userPoint).orElseThrow();
-        RankName rankName = getRankName(userPoint);
-
-        // TODO : 유저 등급 업데이트
-        // TODO : 등급 이름으로 등급 가져오기
-        Rank rank = rankRepository.getRankByName(rankName).orElseThrow();
+        Rank rank = rankRepository.findOneByPoint(userPoint).orElseThrow();
         user.setRank(rank);
     }
 
@@ -71,19 +66,5 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     public Integer readPoint(String id) {
         User user = userRepository.findById(id).orElseThrow();
         return user.getPoint();
-    }
-
-    private RankName getRankName(Integer point) {
-        // 이 부분을 하드코딩하는게 좋을지?
-        // 아니면 db에서 rank "start point", "end point" 꺼내와서 계산하는게 좋을지
-        if (point >= 0 && point <= 99) {
-            return RankName.BRONZE;
-        } else if (point >= 100 && point <= 299) {
-            return RankName.SILVER;
-        } else if (point >= 300 && point <= 499) {
-            return RankName.GOLD;
-        } else {
-            return RankName.PLATINUM;
-        }
     }
 }
