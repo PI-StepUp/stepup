@@ -11,7 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Tag(name = "meeting", description = "meeting domain apis")
 @RequiredArgsConstructor
@@ -24,7 +27,7 @@ public class MeetingApiController {
     @Operation(summary = "정모 게시글 작성", description = "회원들이 정모 게시글을 작성한다.")
     @ApiResponse(responseCode = "201", description = "정모 등록 완료")
     @PostMapping("/meeting")
-    public ResponseEntity<ResponseDto<?>> createMeeting(@RequestBody MeetingSaveRequestDto meetingSaveRequestDto) {
+    public ResponseEntity<ResponseDto<?>> createMeeting(@RequestBody @Valid MeetingSaveRequestDto meetingSaveRequestDto) {
 
         meetingService.create(meetingSaveRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
@@ -36,7 +39,7 @@ public class MeetingApiController {
             description = "내가 작성한 정모 게시글 제목, 내용, 이미지 파일, 시작 시간, 종료 시간, 지역을 수정한다.")
     @ApiResponse(responseCode = "200", description = "정모 수정 완료")
     @PutMapping("/meeting")
-    public ResponseEntity<ResponseDto<?>> updateMeeting(@RequestBody MeetingUpdateRequestDto meetingUpdateRequestDto) {
+    public ResponseEntity<ResponseDto<?>> updateMeeting(@RequestBody @Valid MeetingUpdateRequestDto meetingUpdateRequestDto) {
 
         meetingService.update(meetingUpdateRequestDto).getBoardId();
 
@@ -75,8 +78,9 @@ public class MeetingApiController {
     @ApiResponse(responseCode = "200",
             description = "내가 작성한 정모 목록 조회")
     @GetMapping("meeting/my")
-    public ResponseEntity<ResponseDto<?>> readAllByIdMeeting(
-            @RequestParam(name = "id") String id) {
+    public ResponseEntity<ResponseDto<?>> readAllByIdMeeting(Authentication authentication) {
+
+        String id = authentication.getName();
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 BoardResponseMessage.READ_ALL_MY_MEETING.getMessage(),
                 meetingService.readAllById(id)
