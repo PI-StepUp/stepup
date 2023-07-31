@@ -2,13 +2,13 @@ package com.pi.stepup.domain.dance.exception;
 
 import com.pi.stepup.global.error.exception.NotFoundException;
 
-public class DanceNotFoundException extends NotFoundException {
+public class DanceBadRequestException extends NotFoundException {
 
-    public DanceNotFoundException() {
+    public DanceBadRequestException() {
         super();
     }
 
-    public DanceNotFoundException(String message) {
+    public DanceBadRequestException(String message) {
         super(message);
     }
 }
