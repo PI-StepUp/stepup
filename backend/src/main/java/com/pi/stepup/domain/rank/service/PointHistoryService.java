@@ -10,5 +10,5 @@ public interface PointHistoryService {
 
     List<PointHistoryFindResponseDto> readAll();
 
-    Integer readPoint(String id);
+    Integer readPoint();
 }
