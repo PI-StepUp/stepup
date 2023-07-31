@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.service;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 
@@ -40,7 +41,7 @@ public class MusicServiceImpl implements MusicService {
     public MusicFindResponseDto readOne(Long musicId) {
         return MusicFindResponseDto.builder()
             .music(musicRepository.findOne(musicId)
-                .orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage())))
+                .orElseThrow(() -> new MusicNotFoundException(MUSIC_DELETE_FAIL.getMessage())))
             .build();
     }
 

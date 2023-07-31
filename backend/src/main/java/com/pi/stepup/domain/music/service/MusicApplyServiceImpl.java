@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.music.service;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
@@ -92,7 +93,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
         MusicApply musicApply = musicApplyRepository.findOne(musicApplyId)
             .orElseThrow(
-                () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage())
+                () -> new MusicApplyNotFoundException(MUSIC_APPLY_DELETE_FAIL.getMessage())
             );
 
         if (id.equals(musicApply.getWriter().getId())) {
