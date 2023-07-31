@@ -2,6 +2,7 @@ package com.pi.stepup.domain.music.service;
 
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,6 +22,7 @@ import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +69,19 @@ class MusicApplyServiceTest {
         when(userRepository.findById(any(String.class))).thenReturn(Optional.of(user));
 
         musicApplyService.create(musicApplySaveRequestDto);
-//        verify
+        verify(musicApplyRepository,only()).insert(any(MusicApply.class));
+    }
+
+    @Test
+    @DisplayName("노래 신청 등록 유저 정보 없는 예외 테스트")
+    public void noUserCreateMusicApplyServiceTest() {
+        when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
+
+        assertThatThrownBy(
+            () -> musicApplyService.create(musicApplySaveRequestDto)
+        )
+            .isInstanceOf(UserNotFoundException.class)
+            .hasMessageContaining(USER_NOT_FOUND.getMessage());
     }
 
     @Test
