@@ -30,4 +30,6 @@ public interface DanceService {
     void createAttend(DanceAttendRequestDto danceAttendRequestDto);
 
     List<DanceFindResponseDto> readAllMyAttendDance(String id);
+
+
 }
