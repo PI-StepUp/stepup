@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.music.domain.Heart;
@@ -12,6 +13,7 @@ import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto
 import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,8 +32,10 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     @Transactional
     public void create(MusicApplySaveRequestDto musicApplySaveRequestDto) {
-        // TODO : user not found exception 예외 처리
-        User writer = userRepository.findById(musicApplySaveRequestDto.getWriterId()).orElseThrow();
+        User writer = userRepository.findById(musicApplySaveRequestDto.getWriterId()).orElseThrow(
+            () -> new UserNotFoundException(USER_NOT_FOUND.getMessage())
+        );
+
         MusicApply musicApply = musicApplySaveRequestDto.toEntity(writer);
         musicApplyRepository.insert(musicApply);
     }
@@ -67,8 +71,6 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     @Transactional
     public void delete(Long musicApplyId) {
-        // TODO : 현재 로그인 된 사용자가 노래 신청 등록한 사용자와 동일한 사용자인지 체크
-
         musicApplyRepository.findOne(musicApplyId)
             .orElseThrow(
                 () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage())
