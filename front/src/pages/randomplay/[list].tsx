@@ -3,6 +3,8 @@ import MainBanner from "components/MainBanner"
 import Footer from "components/Footer"
 import LanguageButton from "components/LanguageButton"
 
+import Link from "next/link"
+
 import Image from "next/image"
 import ArticleIcon from "/public/images/article-icon.svg"
 import RandomplayThumbnail from "/public/images/randomplay-thumbnail.png"
@@ -26,11 +28,11 @@ const RandomPlayList = () => {
                             <Image src={ArticleIcon} alt=""/>
                             <h3>{lang==="en" ? "Popular right now" : lang==="cn" ? "现在很有人气的随机舞蹈" : "현재 인기 있는 랜덤 플레이 댄스" }</h3>
                         </div>
-                         <button>개최하기</button>
+                         <button>{lang==="en" ? "Holding" : lang==="cn" ? "打开" : "개최하기" }</button>
                     </div>
                     <div className="section-content">
                         <ul>
-                            <li>
+                            <li><Link href="/danceroom">
                                 <div className="section-content-img">
                                     <span>서바이벌</span>
                                     <Image src={RandomplayThumbnail} alt=""/>
@@ -42,7 +44,7 @@ const RandomPlayList = () => {
                                         <button>예약하기</button>
                                         <span>참여 PM6시 ~ PM7시</span>
                                     </div>
-                                </div>
+                                </div></Link>
                             </li>
                             <li>
                                 <div className="section-content-img">
@@ -75,7 +77,7 @@ const RandomPlayList = () => {
                         </ul>
                     </div>
                     <div className="more-button-wrap">
-                        <button>더보기</button>
+                        <button>{lang==="en" ? "More Details" : lang==="cn" ? "查看更多" : "더보기" }</button>
                     </div>
                 </section>
                 <section id="now">
@@ -132,7 +134,7 @@ const RandomPlayList = () => {
                         </ul>
                     </div>
                     <div className="more-button-wrap">
-                        <button>더보기</button>
+                        <button>{lang==="en" ? "More Details" : lang==="cn" ? "查看更多" : "더보기" }</button>
                     </div>
                 </section>
                 <section id="soon">
@@ -189,7 +191,7 @@ const RandomPlayList = () => {
                         </ul>
                     </div>
                     <div className="more-button-wrap">
-                        <button>더보기</button>
+                        <button>{lang==="en" ? "More Details" : lang==="cn" ? "查看更多" : "더보기" }</button>
                     </div>
                 </section>
                 <div className="floating-box">
