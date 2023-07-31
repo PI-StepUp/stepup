@@ -8,10 +8,13 @@ import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingUpdateReq
 import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto.MeetingInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
+import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -56,6 +59,14 @@ public class MeetingServiceImpl implements MeetingService {
         Meeting meeting = meetingRepository.findOne(meetingUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
+        // 로그인한 사용자의 정보 가져오기
+        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
+        if (!loggedInUserId.equals(meeting.getWriter().getId())) {
+            throw new ForbiddenException();
+        }
+
         meeting.update(meetingUpdateRequestDto.getTitle(), meetingUpdateRequestDto.getContent(),
                 meetingUpdateRequestDto.getFileURL(), meetingUpdateRequestDto.getRegion(),
                 meetingUpdateRequestDto.getStartAt(), meetingUpdateRequestDto.getEndAt());
@@ -84,6 +95,8 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     @Override
     public MeetingInfoResponseDto readOne(Long boardId) {
+        meetingRepository.findOne(boardId).orElseThrow(()
+                -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return MeetingInfoResponseDto.builder()
                 .meeting(meetingRepository.findOne(boardId).orElseThrow())
@@ -94,6 +107,15 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     @Override
     public void delete(Long boardId) {
+        Meeting meeting = meetingRepository.findOne(boardId).orElseThrow(()
+                -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+
+        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
+        if (!loggedInUserId.equals(meeting.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(meeting.getWriter().getRole())) {
+            throw new ForbiddenException();
+        }
         meetingRepository.delete(boardId);
     }
 }

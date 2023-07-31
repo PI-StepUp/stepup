@@ -8,10 +8,13 @@ import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkResponseDto.TalkInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
+import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +57,16 @@ public class TalkServiceImpl implements TalkService {
         Talk talk = talkRepository.findOne(talkUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
-        talk.update(talkUpdateRequestDto.getTitle(), talkUpdateRequestDto.getContent(),
-                talkUpdateRequestDto.getFileURL());
+        // 로그인한 사용자의 정보 가져오기
+        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
+        if (!loggedInUserId.equals(talk.getWriter().getId())) {
+            throw new ForbiddenException();
+        }
+
+        // 미팅 업데이트 수행
+        talk.update(talkUpdateRequestDto.getTitle(), talkUpdateRequestDto.getContent(), talkUpdateRequestDto.getFileURL());
 
         return talk;
     }
@@ -91,6 +102,16 @@ public class TalkServiceImpl implements TalkService {
     @Transactional
     @Override
     public void delete(Long boardId) {
+        Talk talk = talkRepository.findOne(boardId).orElseThrow(()
+                -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+
+        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
+        if (!loggedInUserId.equals(talk.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(talk.getWriter().getRole())) {
+            throw new ForbiddenException();
+        }
+
         talkRepository.delete(boardId);
     }
 

@@ -8,10 +8,14 @@ import com.pi.stepup.domain.board.dto.notice.NoticeResponseDto.NoticeInfoRespons
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.RandomDance;
+import com.pi.stepup.domain.dance.exception.DanceNotFoundException;
+import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
+import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
@@ -36,7 +41,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         RandomDance randomDance = danceRepository.findOne(noticeSaveRequestDto.getRandomDanceId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 랜덤댄 ID: " + noticeSaveRequestDto.getRandomDanceId()));
+                .orElseThrow(() -> new DanceNotFoundException(DANCE_NOT_FOUND.getMessage()));
 
         Notice notice = Notice.builder()
                 .writer(writer)
@@ -60,7 +65,15 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
         RandomDance randomDance = danceRepository.findOne(noticeUpdateRequestDto.getRandomDanceId())
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 랜덤댄 ID: " + noticeUpdateRequestDto.getRandomDanceId()));
+                .orElseThrow(() -> new DanceNotFoundException(DANCE_NOT_FOUND.getMessage()));
+
+        // 로그인한 사용자의 정보 가져오기
+        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
+        if (!loggedInUserId.equals(notice.getWriter().getId())) {
+            throw new ForbiddenException();
+        }
 
         notice.update(noticeUpdateRequestDto.getTitle(), noticeUpdateRequestDto.getContent(),
                 noticeUpdateRequestDto.getFileURL(), randomDance);
@@ -93,6 +106,16 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional
     @Override
     public void delete(Long boardId) {
+        Notice notice = noticeRepository.findOne(boardId).orElseThrow(()
+                -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+
+        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
+        if (!loggedInUserId.equals(notice.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(notice.getWriter().getRole())) {
+            throw new ForbiddenException();
+        }
+
         noticeRepository.delete(boardId);
     }
 
