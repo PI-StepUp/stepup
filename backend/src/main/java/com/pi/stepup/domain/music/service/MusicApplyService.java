@@ -19,7 +19,7 @@ public interface MusicApplyService {
 
     void createHeart(HeartSaveRequestDto heartSaveRequestDto);
 
-    void deleteHeart(String id, Long musicRequestId);
+    void deleteHeart(Long musicRequestId);
 
-    Integer findHeartStatus(String id, Long musicApplyId);
+    Integer findHeartStatus(Long musicApplyId);
 }

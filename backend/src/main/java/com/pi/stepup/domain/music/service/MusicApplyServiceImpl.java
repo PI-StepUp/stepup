@@ -78,7 +78,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
                 .orElseThrow(
                     () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()))
             )
-            .canHeart(findHeartStatus(id, musicApplyId))
+            .canHeart(findHeartStatus(musicApplyId))
             .build();
     }
 
@@ -95,7 +95,8 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     @Transactional
     public void createHeart(HeartSaveRequestDto heartSaveRequestDto) {
-        User user = userRepository.findById(heartSaveRequestDto.getId())
+        String id = getLoggedInUserId();
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
         MusicApply musicApply = musicApplyRepository.findOne(heartSaveRequestDto.getMusicApplyId())
             .orElseThrow(() -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
@@ -109,18 +110,20 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     @Transactional
-    public void deleteHeart(String id, Long musicRequestId) {
-        Heart heart = musicApplyRepository.findHeart(id, musicRequestId).orElseThrow();
+    public void deleteHeart(Long musicRequestId) {
+        String id = getLoggedInUserId();
+        Optional<Heart> heart = musicApplyRepository.findHeart(id, musicRequestId);
 
-        musicApplyRepository.deleteHeart(heart.getHeartId());
-
-        // 이 부분 때문에 findHeart 안날림
-        MusicApply musicApply = heart.getMusicApply();
-        musicApply.removeHeart();
+        if (heart.isPresent()) {
+            musicApplyRepository.deleteHeart(heart.get().getHeartId());
+            MusicApply musicApply = heart.get().getMusicApply();
+            musicApply.removeHeart();
+        }
     }
 
     @Override
-    public Integer findHeartStatus(String id, Long musicApplyId) {
+    public Integer findHeartStatus(Long musicApplyId) {
+        String id = getLoggedInUserId();
         Optional<Heart> heart = musicApplyRepository.findHeart(id, musicApplyId);
 
         if (heart.isPresent()) {

@@ -217,7 +217,7 @@ class MusicApplyServiceTest {
         // TODO : user, musicApply 더미 데이터 넣기
         when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
 
-        musicApplyService.deleteHeart(user.getId(), musicApply.getMusicApplyId());
+        musicApplyService.deleteHeart(musicApply.getMusicApplyId());
 
         verify(musicApplyRepository, only()).deleteHeart(heartId);
     }
@@ -228,8 +228,7 @@ class MusicApplyServiceTest {
         // TODO : Heart 테이블에 해당하는 user && musicApply 있는지 확인
         when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
 
-        Integer canHeart = musicApplyService.findHeartStatus(user.getId(),
-            musicApply.getMusicApplyId());
+        Integer canHeart = musicApplyService.findHeartStatus(musicApply.getMusicApplyId());
 
         // TODO : 좋아요 안눌렸으면 1, 눌려있으면 0
         final Integer CAN_HEART = 1, CANNOT_HEART = 0;
@@ -251,7 +250,6 @@ class MusicApplyServiceTest {
     private void makeHeartSaveRequestDto() {
         heartSaveRequestDto = HeartSaveRequestDto.builder()
             .musicApplyId(musicApply.getMusicApplyId())
-            .id(user.getId())
             .build();
     }
 

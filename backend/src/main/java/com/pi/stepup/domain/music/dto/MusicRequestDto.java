@@ -61,7 +61,6 @@ public class MusicRequestDto {
     @AllArgsConstructor
     public static class HeartSaveRequestDto {
 
-        private String id;
         private Long musicApplyId;
 
         public Heart toEntity(User user, MusicApply musicApply) {
