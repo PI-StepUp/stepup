@@ -30,7 +30,7 @@ public interface UserService {
 
     UserInfoResponseDto readOne(String id);
 
-    void delete(String id);
+    void delete();
 
     void checkPassword(AuthenticationRequestDto authenticationRequestDto);
 

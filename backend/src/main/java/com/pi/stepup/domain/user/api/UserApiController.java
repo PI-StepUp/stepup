@@ -160,8 +160,8 @@ public class UserApiController {
         @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
     })
     @DeleteMapping("")
-    public ResponseEntity<ResponseDto<?>> delete(String id) {
-        userService.delete(id);
+    public ResponseEntity<ResponseDto<?>> delete() {
+        userService.delete();
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(

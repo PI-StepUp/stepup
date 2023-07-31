@@ -32,6 +32,7 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
 import com.pi.stepup.global.config.security.CustomUserDetails;
+import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
 import java.util.List;
@@ -132,8 +133,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(String id) {
-        User user = userRepository.findById(id)
+    public void delete() {
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         log.debug("[delete()] user : {}", user);
