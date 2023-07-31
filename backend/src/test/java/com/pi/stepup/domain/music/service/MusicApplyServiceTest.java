@@ -273,7 +273,6 @@ class MusicApplyServiceTest {
             .artist("artist")
             .title("title")
             .content("content")
-            .writerId("writer")
             .build();
     }
 
