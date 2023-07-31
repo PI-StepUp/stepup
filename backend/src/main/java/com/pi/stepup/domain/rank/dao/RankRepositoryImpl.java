@@ -18,11 +18,10 @@ public class RankRepositoryImpl implements RankRepository {
     @Override
     public Optional<Rank> findOneByPoint(Integer point) {
         Optional<Rank> rank;
-        // TODO : 포인트 범위 안에 있는거 꺼내오기
         try {
             rank = Optional.ofNullable(em.createQuery(
                     "SELECT r FROM Rank r "
-                        + "WHERE r.endPoint >= :point AND r.startPoint <= :point", Rank.class
+                        + "WHERE :point BETWEEN r.startPoint AND r.endPoint", Rank.class
                 ).setParameter("point", point)
                 .getSingleResult());
         } catch (NoResultException e) {

@@ -1,33 +1,38 @@
 import Header from "components/Header";
 import Footer from "components/Footer";
+import LanguageButton from "components/LanguageButton";
+
+import { useRecoilState } from "recoil";
+import { LanguageState } from "states/states";
 
 const SignUp = () => {
+    const [lang, setLang] = useRecoilState(LanguageState);
     return(
         <>
             <Header/>
             <div className="signup-wrap">
                 <div className="signup-block-center">
                     <div className="signup-title">
-                        <h3>회원가입</h3>
+                        <h3>{lang==="en" ? "JOIN MEMBERSHIP" : lang==="cn" ? "注册会员" : "회원가입" }</h3>
                     </div>
                     <div className="signup-content">
                         <form action="/">
                             <div className="flex-wrap">
-                                <input type="text" placeholder="아이디" className="input-id"/>
-                                <button className="button-id">중복확인</button>
+                                <input type="text" placeholder={lang==="en" ? "ID" : lang==="cn" ? "用户名" : "아이디" } className="input-id"/>
+                                <button className="button-id">{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
                             </div>
                             <div className="flex-wrap">
-                                <input type="text" placeholder="닉네임" className="input-nickname"/>
-                                <button className="button-password">중복확인</button>
+                                <input type="text" placeholder={lang==="en" ? "Nickname" : lang==="cn" ? "用户名" : "닉네임" } className="input-nickname"/>
+                                <button className="button-password">{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
                             </div>
                             <div className="flex-wrap">
-                                <input type="email" placeholder="이메일" className="input-email"/>
-                                <button className="button-email">중복확인</button>
+                                <input type="email" placeholder={lang==="en" ? "email" : lang==="cn" ? "电子邮件" : "이메일" } className="input-email"/>
+                                <button className="button-email">{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
                             </div>
-                            <input type="password" placeholder="비밀번호" className="input-password"/>
-                            <input type="password" placeholder="비밀번호확인" className="input-password-check"/>
-                            <input type="text" placeholder="생년월일" className="input-birthday"/>
-                            <input type="text" placeholder="국가" className="input-region"/>
+                            <input type="password" placeholder={lang==="en" ? "Password" : lang==="cn" ? "密码" : "비밀번호" } className="input-password"/>
+                            <input type="password" placeholder={lang==="en" ? "Password verification" : lang==="cn" ? "密码确认" : "비밀번호확인" } className="input-password-check"/>
+                            <input type="text" placeholder={lang==="en" ? "Date of birth" : lang==="cn" ? "出生年月日" : "생년월일" } className="input-birthday"/>
+                            <input type="text" placeholder={lang==="en" ? "Nation" : lang==="cn" ? "国家" : "국가" } className="input-region"/>
                             <textarea name="" id="" readOnly>
                                 'STEP UP (이하 '회사'는) 고객님의 개인정보를 중요시하며, "정보통신망 이용촉진 및 정보보호"에 관한 법률을 준수하고 있습니다. 회사는 개인정보취급방침을 통하여 고객님께서 제공하시는 개인정보가 어떠한 용도와 방식으로 이용되고 있으며, 개인정보보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다. 회사는 개인정보취급방침을 개정하는 경우 웹사이트 공지사항(또는 개별공지)을 통하여 공지할 것입니다.
 본 방침은 : 2023 년 07 월 19 일 부터 시행됩니다.
@@ -85,7 +90,7 @@ const SignUp = () => {
 - 보존기간 : 폐기 요청 시 까지
                             </textarea>
                             <div className="agree-check-wrap">
-                                <p>개인정보 수집 및 이용에 동의하십니까?</p>
+                                <p>{lang==="en" ? "Do you agree to collect and use personal information?" : lang==="cn" ? "您同意收集和使用个人信息吗？" : "개인정보 수집 및 이용에 동의하십니까?" }</p>
                                 <input type="checkbox" />
                             </div>
                             <textarea name="" id="" readOnly>
@@ -106,14 +111,15 @@ const SignUp = () => {
 있습니다.
                             </textarea>
                             <div className="agree-check-wrap">
-                                <p>이메일 수신 여부에 동의하십니까?</p>
+                                <p>{lang==="en" ? "Do you agree to receive an email?" : lang==="cn" ? "你是否同意接收电子邮件?" : "이메일 수신 여부에 동의하십니까?" }</p>
                                 <input type="checkbox" />
                             </div>
-                            <input type="submit" value="회원가입"/>
+                            <input type="submit" value={lang==="en" ? "JOIN MEMBERSHIP" : lang==="cn" ? "注册会员" : "회원가입" }/>
                         </form>
                     </div>
                 </div>
             </div>
+            <LanguageButton/>
             <Footer/>
         </>
     )

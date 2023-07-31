@@ -13,10 +13,14 @@ import MicHoverIcon from "/public/images/icon-hover-mic.svg"
 import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
 import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
+import { useRecoilState } from "recoil";
+import { LanguageState } from "states/states";
+
 import Image from "next/image"
 import Link from "next/link"
 
 const PracticeRoom = () => {
+    const [lang, setLang] = useRecoilState(LanguageState);
     const [reflect, setReflect] = useState(false);
     const [mic, setMic] = useState(false);
     const [camera, setCamera] = useState(false);
@@ -92,7 +96,7 @@ const PracticeRoom = () => {
                                         {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li><button className="exit-button">연습 종료하기</button></li>
+                                <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
                                 <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
                                     <button>
                                         {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
@@ -110,7 +114,7 @@ const PracticeRoom = () => {
                 </div>
                 <div className="musiclist">
                     <div className="musiclist-title">
-                        <h3>연습실 목록</h3>
+                        <h3>{lang==="en" ? "List of practice rooms" : lang==="cn" ? "练习室列表" : "연습실 목록" }</h3>
                         <span>5</span>
                     </div>
                     <div className="musiclist-content">
