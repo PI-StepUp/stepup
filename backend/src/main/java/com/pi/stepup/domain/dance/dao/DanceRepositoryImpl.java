@@ -55,19 +55,45 @@ public class DanceRepositoryImpl implements DanceRepository {
     public List<RandomDance> findAllMyOpenDance(String id) {
         return em.createQuery("SELECT r FROM RandomDance r "
                         + "WHERE r.host.id = :id", RandomDance.class)
-//                        + "JOIN r.host u "
-//                        + "WHERE u.id = :id", RandomDance.class)
                 .setParameter("id", id)
                 .getResultList();
     }
 
     @Override
     public List<RandomDance> findAllDance(String keyword) {
-        String sql = "SELECT r FROM RandomDance r ";
+        String sql = "SELECT r FROM RandomDance r "
+            + "WHERE r.endAt > current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "WHERE r.title LIKE concat('%', " + keyword + ", '%') OR " +
-                    "r.content LIKE concat('%', " + keyword + ", '%')";
+            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
+                    "r.content LIKE concat('%', '" + keyword + "', '%')";
+        }
+
+        return em.createQuery(sql, RandomDance.class).getResultList();
+    }
+
+    @Override
+    public List<RandomDance> findScheduledDance(String keyword) {
+        String sql = "SELECT r FROM RandomDance r "
+            + "WHERE r.startAt < current_timestamp ";
+
+        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
+            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
+                "r.content LIKE concat('%', '" + keyword + "', '%')";
+        }
+
+        return em.createQuery(sql, RandomDance.class).getResultList();
+    }
+
+    @Override
+    public List<RandomDance> findInProgressDance(String keyword) {
+        String sql = "SELECT r FROM RandomDance r "
+            + "WHERE r.startAt <= current_timestamp "
+            + "AND r.endAt >= current_timestamp";
+
+        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
+            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
+                "r.content LIKE concat('%', '" + keyword + "', '%')";
         }
 
         return em.createQuery(sql, RandomDance.class).getResultList();
@@ -97,9 +123,13 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public void deleteReservation(Long reservationId) {
-        Reservation reservation = em.find(Reservation.class, reservationId);
-        em.remove(reservation);
+    public void deleteReservation(Long randomDanceId, Long userId) {
+        em.createQuery("DELETE FROM Reservation r "
+                + "WHERE r.randomDance.randomDanceId = :randomDanceId "
+                + "AND r.user.userId = :userId")
+            .setParameter("randomDanceId", randomDanceId)
+            .setParameter("userId", userId)
+            .executeUpdate();
     }
 
     @Override

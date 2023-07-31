@@ -27,6 +27,8 @@ public interface DanceRepository {
 
     //랜덤 플레이 댄스 전체 목록 조회
     List<RandomDance> findAllDance(String keyword);
+    List<RandomDance> findScheduledDance(String keyword);
+    List<RandomDance> findInProgressDance(String keyword);
 
     //랜덤 플레이 댄스 예약
     Reservation insertReservation(Reservation reservation);
@@ -35,7 +37,7 @@ public interface DanceRepository {
     Optional<Reservation> findReservationByRandomDanceIdAndUserId(Long randomDanceId, Long userId);
 
     //랜덤 플레이 댄스 예약 취소
-    void deleteReservation(Long reservationId);
+    void deleteReservation(Long randomDanceId, Long userId);
 
     //예약 전체 목록 조회
     List<Reservation> findAllMyReservation(Long userId);
