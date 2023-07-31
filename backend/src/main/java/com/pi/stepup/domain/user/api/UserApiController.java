@@ -14,22 +14,19 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOK
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 
-import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
-import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.global.dto.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -132,11 +129,11 @@ public class UserApiController {
     })
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<?>> login(
-        @RequestBody AuthenticationRequestDto authenticationRequestDto) {
+        @RequestBody LoginRequestDto loginRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 LOGIN_SUCCESS.getMessage(),
-                userService.login(authenticationRequestDto)
+                userService.login(loginRequestDto)
             )
         );
     }
@@ -146,11 +143,11 @@ public class UserApiController {
         @ApiResponse(responseCode = "200", description = "회원정보 조회 성공")
     })
     @GetMapping("")
-    public ResponseEntity<ResponseDto<?>> readOne(String id) {
+    public ResponseEntity<ResponseDto<?>> readOne() {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 READ_ONE_SUCCESS.getMessage(),
-                userService.readOne(id)
+                userService.readOne()
             )
         );
     }
@@ -160,8 +157,8 @@ public class UserApiController {
         @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공")
     })
     @DeleteMapping("")
-    public ResponseEntity<ResponseDto<?>> delete(String id) {
-        userService.delete(id);
+    public ResponseEntity<ResponseDto<?>> delete() {
+        userService.delete();
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
@@ -176,8 +173,8 @@ public class UserApiController {
     })
     @PostMapping("/checkpw")
     public ResponseEntity<ResponseDto<?>> checkPw(
-        @RequestBody AuthenticationRequestDto authenticationRequestDto) {
-        userService.checkPassword(authenticationRequestDto);
+        @RequestBody CheckPasswordRequestDto checkPasswordRequestDto) {
+        userService.checkPassword(checkPasswordRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
