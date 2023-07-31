@@ -18,8 +18,6 @@ public class MeetingRequestDto {
     @AllArgsConstructor
     public static class MeetingSaveRequestDto {
         @NotBlank
-        private String id;
-        @NotBlank
         private String title;
         @NotBlank
         private String content;

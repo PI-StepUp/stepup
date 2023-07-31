@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -78,12 +77,10 @@ public class MeetingApiController {
     @ApiResponse(responseCode = "200",
             description = "내가 작성한 정모 목록 조회")
     @GetMapping("meeting/my")
-    public ResponseEntity<ResponseDto<?>> readAllByIdMeeting(Authentication authentication) {
-
-        String id = authentication.getName();
+    public ResponseEntity<ResponseDto<?>> readAllByIdMeeting() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 BoardResponseMessage.READ_ALL_MY_MEETING.getMessage(),
-                meetingService.readAllById(id)
+                meetingService.readAllById()
         ));
     }
 

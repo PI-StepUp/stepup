@@ -12,9 +12,9 @@ import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -35,7 +35,8 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     @Override
     public Meeting create(MeetingSaveRequestDto meetingSaveRequestDto) {
-        User writer = userRepository.findById(meetingSaveRequestDto.getId())
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         Meeting meeting = Meeting.builder()
@@ -59,9 +60,7 @@ public class MeetingServiceImpl implements MeetingService {
         Meeting meeting = meetingRepository.findOne(meetingUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
-        // 로그인한 사용자의 정보 가져오기
-        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getName();
-
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
         // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
         if (!loggedInUserId.equals(meeting.getWriter().getId())) {
             throw new ForbiddenException();
@@ -84,8 +83,9 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<MeetingInfoResponseDto> readAllById(String id) {
-        List<Meeting> allMyMeetings = meetingRepository.findById(id);
+    public List<MeetingInfoResponseDto> readAllById() {
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        List<Meeting> allMyMeetings = meetingRepository.findById(loggedInUserId);
         return allMyMeetings.stream()
                 .map(m -> MeetingInfoResponseDto.builder().meeting(m).build())
                 .collect(Collectors.toList());
@@ -109,9 +109,7 @@ public class MeetingServiceImpl implements MeetingService {
     public void delete(Long boardId) {
         Meeting meeting = meetingRepository.findOne(boardId).orElseThrow(()
                 -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-
-        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
         // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
         if (!loggedInUserId.equals(meeting.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(meeting.getWriter().getRole())) {
             throw new ForbiddenException();
