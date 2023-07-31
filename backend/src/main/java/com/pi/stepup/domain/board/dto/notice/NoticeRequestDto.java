@@ -16,8 +16,6 @@ public class NoticeRequestDto {
     @AllArgsConstructor
     public static class NoticeSaveRequestDto {
         @NotBlank
-        private String id;
-        @NotBlank
         private String title;
         @NotBlank
         private String content;

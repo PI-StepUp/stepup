@@ -13,9 +13,9 @@ import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -37,8 +37,14 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional
     @Override
     public Notice create(NoticeSaveRequestDto noticeSaveRequestDto) {
-        User writer = userRepository.findById(noticeSaveRequestDto.getId())
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        // 로그인한 사용자가 관리자가 아니면 글쓰기 불가
+        if (!writer.getRole().equals(UserRole.ROLE_ADMIN)) {
+            throw new ForbiddenException();
+        }
 
         RandomDance randomDance = danceRepository.findOne(noticeSaveRequestDto.getRandomDanceId())
                 .orElseThrow(() -> new DanceNotFoundException(DANCE_NOT_FOUND.getMessage()));
@@ -67,9 +73,7 @@ public class NoticeServiceImpl implements NoticeService {
         RandomDance randomDance = danceRepository.findOne(noticeUpdateRequestDto.getRandomDanceId())
                 .orElseThrow(() -> new DanceNotFoundException(DANCE_NOT_FOUND.getMessage()));
 
-        // 로그인한 사용자의 정보 가져오기
-        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getName();
-
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
         // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
         if (!loggedInUserId.equals(notice.getWriter().getId())) {
             throw new ForbiddenException();
@@ -79,7 +83,6 @@ public class NoticeServiceImpl implements NoticeService {
                 noticeUpdateRequestDto.getFileURL(), randomDance);
         return notice;
     }
-
 
     //게시글 전체 조회
     @Transactional
@@ -91,12 +94,10 @@ public class NoticeServiceImpl implements NoticeService {
                 .collect(Collectors.toList());
     }
 
-
     //게시글 상세
     @Transactional
     @Override
     public NoticeInfoResponseDto readOne(Long boardId) {
-
         return NoticeInfoResponseDto.builder()
                 .notice(noticeRepository.findOne(boardId).orElseThrow())
                 .build();
@@ -109,9 +110,8 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findOne(boardId).orElseThrow(()
                 -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
-        String loggedInUserId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
-        // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        // 로그인한 사용자가 작성자이거나 관리자일 경우에만 삭제 허용
         if (!loggedInUserId.equals(notice.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(notice.getWriter().getRole())) {
             throw new ForbiddenException();
         }
