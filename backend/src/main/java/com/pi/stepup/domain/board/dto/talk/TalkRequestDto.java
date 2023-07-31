@@ -1,11 +1,12 @@
 package com.pi.stepup.domain.board.dto.talk;
 
-import com.pi.stepup.domain.board.domain.Talk;
-import com.pi.stepup.domain.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class TalkRequestDto {
     @Data
@@ -13,8 +14,11 @@ public class TalkRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TalkSaveRequestDto {
+        @NotBlank
         private String id;
+        @NotBlank
         private String title;
+        @NotBlank
         private String content;
         private String fileURL;
     }
@@ -24,12 +28,17 @@ public class TalkRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TalkUpdateRequestDto {
+        @NotNull
         private Long boardId;
+        @NotBlank
         private String title;
+        @NotBlank
         private String content;
+        @NotBlank
         private String writerName;
         private String writerProfileImg;
         private String fileURL;
+        @NotBlank
         private String boardType;
     }
 }

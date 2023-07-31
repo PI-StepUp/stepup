@@ -5,6 +5,7 @@ import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkSaveRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.service.talk.TalkService;
 import com.pi.stepup.global.dto.ResponseDto;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @Tag(name = "talk", description = "talk domain apis")
@@ -25,7 +28,7 @@ public class TalkApiController {
     @Operation(summary = "자유게시판 게시글 작성", description = "회원들이 자유게시판 게시글을 작성한다.")
     @ApiResponse(responseCode = "201", description = "자유게시판 등록 완료")
     @PostMapping("/talk")
-    public ResponseEntity<ResponseDto<?>> createTalk(@RequestBody TalkSaveRequestDto talkSaveRequestDto) {
+    public ResponseEntity<ResponseDto<?>> createTalk(@RequestBody @Valid TalkSaveRequestDto talkSaveRequestDto) {
 
         talkService.create(talkSaveRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
@@ -37,7 +40,7 @@ public class TalkApiController {
             description = "내가 작성한 정모 게시글 제목, 내용, 이미지 파일을 수정한다.")
     @ApiResponse(responseCode = "200", description = "자유게시판 수정 완료")
     @PutMapping("/talk")
-    public ResponseEntity<ResponseDto<?>> updateTalk(@RequestBody TalkUpdateRequestDto talkUpdateRequestDto) {
+    public ResponseEntity<ResponseDto<?>> updateTalk(@RequestBody @Valid TalkUpdateRequestDto talkUpdateRequestDto) throws ForbiddenException {
 
         talkService.update(talkUpdateRequestDto).getBoardId();
 
@@ -88,7 +91,7 @@ public class TalkApiController {
     @ApiResponse(responseCode = "200",
             description = "자유게시판 삭제 완료")
     @DeleteMapping("talk/{boardId}")
-    public ResponseEntity<ResponseDto<?>> deleteTalk(@PathVariable("boardId") Long boardId) {
+    public ResponseEntity<ResponseDto<?>> deleteTalk(@PathVariable("boardId") Long boardId) throws ForbiddenException {
         talkService.delete(boardId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 BoardResponseMessage.DELETE_TALK.getMessage()
