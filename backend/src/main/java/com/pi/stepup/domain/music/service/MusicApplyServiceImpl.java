@@ -43,6 +43,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
         musicApplyRepository.insert(musicApply);
     }
 
+    @Override
     public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
         String id = getLoggedInUserId();
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, id);
