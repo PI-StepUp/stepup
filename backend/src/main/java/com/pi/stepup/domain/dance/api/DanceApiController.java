@@ -145,9 +145,9 @@ public class DanceApiController {
     @Operation(summary = "랜덤 플레이 댄스 예약",
         description = "참여하고 싶은 랜덤 플레이 댄스를 예약한다.")
     @ApiResponse(responseCode = "201", description = "랜덤 플레이 댄스 예약 완료")
-    @PostMapping("/reserve")
+    @PostMapping("/reserve/{randomDanceId}")
     public ResponseEntity<ResponseDto<?>> createReservation
-        (@PathVariable Long randomDanceId) {
+        (@PathVariable("randomDanceId") Long randomDanceId) {
         danceService.createReservation(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
@@ -158,9 +158,9 @@ public class DanceApiController {
     @Operation(summary = "랜덤 플레이 댄스 예약 취소",
         description = "내가 예약한 랜덤 플레이 댄스의 예약을 취소한다.")
     @ApiResponse(responseCode = "200", description = "랜덤 플레이 댄스 예약 취소 완료")
-    @DeleteMapping("/my/reserve")
+    @DeleteMapping("/my/reserve/{randomDanceId}")
     public ResponseEntity<ResponseDto<?>> deleteReservation
-        (@PathVariable Long randomDanceId) {
+        (@PathVariable("randomDanceId") Long randomDanceId) {
         danceService.deleteReservation(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -185,9 +185,9 @@ public class DanceApiController {
     @Operation(summary = "랜덤 플레이 댄스 참여",
         description = "참여하고 싶은 랜덤 플레이 댄스에 참여한다.")
     @ApiResponse(responseCode = "201", description = "랜덤 플레이 댄스 참여 완료")
-    @PostMapping("/attend")
+    @PostMapping("/attend/{randomDanceId}")
     public ResponseEntity<ResponseDto<?>> createAttend
-        (@PathVariable Long randomDanceId) {
+        (@PathVariable("randomDanceId") Long randomDanceId) {
         danceService.createAttend(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
