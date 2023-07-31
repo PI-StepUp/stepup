@@ -1,7 +1,9 @@
 package com.pi.stepup.domain.music.service;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.ADD_HEART_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.REMOVE_HEART_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.global.config.security.SecurityUtils.getLoggedInUserId;
@@ -12,6 +14,7 @@ import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
+import com.pi.stepup.domain.music.exception.HeartStatusException;
 import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -21,12 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MusicApplyServiceImpl implements MusicApplyService {
 
     private final MusicApplyRepository musicApplyRepository;
@@ -113,6 +118,10 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             .orElseThrow(() -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
         Heart heart = heartSaveRequestDto.toEntity(user, musicApply);
 
+        if(findHeartStatus(musicApply.getMusicApplyId()) == 0) {
+            throw new HeartStatusException(ADD_HEART_FAIL.getMessage());
+        }
+
         musicApplyRepository.insert(heart);
 
         // TODO : Entity 안에 PostPersist, PostRemove
@@ -129,6 +138,8 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             musicApplyRepository.deleteHeart(heart.get().getHeartId());
             MusicApply musicApply = heart.get().getMusicApply();
             musicApply.removeHeart();
+        } else {
+            throw new HeartStatusException(REMOVE_HEART_FAIL.getMessage());
         }
     }
 
