@@ -1,7 +1,8 @@
-import React, {useState, useRef, useEffect, KeyboardEvent} from "react";
-import socketIOClient, {Socket} from "socket.io-client";
+import React, {useState, useRef, useEffect, useCallback} from "react";
+import io from 'socket.io-client';
 
 import SideMenu from "components/SideMenu";
+import Video from "components/Video";
 
 import Image from "next/image";
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
@@ -20,46 +21,33 @@ import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
+const pc_config = {
+	iceServers: [
+		// {
+		//   urls: 'stun:[STUN_IP]:[PORT]',
+		//   'credentials': '[YOR CREDENTIALS]',
+		//   'username': '[USERNAME]'
+		// },
+		{
+			urls: 'stun:stun.l.google.com:19302',
+		},
+	],
+};
+const SOCKET_SERVER_URL = 'localhost:4002';
+
 const DanceRoom = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
-    const myName = "임시 이름";
-    const [peerNames, setPeerNames] = useState([]);
-    const [participantNum, setParticipantNum] = useState(1);
-    const socketRef = useRef<Socket>();
+    const socketRef = useRef<SocketIOClient.Socket>();
+    const localStreamRef = useRef<MediaStream>();
+    const sendPCRef = useRef<RTCPeerConnection>();
+    const receivePCsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
+    const [users, setUsers] = useState<Array<WebRTCUser>>([]);
 
-    const myVideoRef = useRef<HTMLVideoElement>(null);
-    const otherVideoRef = useRef<HTMLVideoElement>(null);
-    const peerRef = useRef<RTCPeerConnection>();
-
-    //socket.io 통신 및 채팅방 구현
-    const socket = socketIOClient("localhost:4002");
-    const roomName = 1;
-    socket.emit("enter_room", roomName);
-    const [msg, setMsg] = useState('');
+    const localVideoRef = useRef<HTMLVideoElement>(null);
     const [msgList, setMsgList] = useState<any[]>([]);
     const inputChat = useRef(null);
     const chatContent = useRef(null);
-    const sendMessage = () => {
-        socket.emit("send_message", msg, roomName);
-        if(inputChat.current != null){
-            setMsg("");
-        }
-        scrollToBottom();
-    }
-    const scrollToBottom = () => {
-        if(chatContent.current != null){
-            chatContent.current.scrollTop = chatContent.current.scrollHeight;
-        }
-    }
-    const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            socket.emit("send_message", msg, roomName);
-            if(inputChat.current != null){
-                setMsg("");
-            }
-            scrollToBottom();
-        }
-    };
+    const roomName = 1;
 
     // 컨트롤러 hover 시 변경
     const [reflect, setReflect] = useState(false);
@@ -91,168 +79,302 @@ const DanceRoom = () => {
         setMoredot(false);
     }
 
-    const getMedia = async () => {
-        try{
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
-            });
+    const sendMessage = () => {
+        socketRef.current.emit("send_message", inputChat.current?.value, roomName);
+        socketRef.current.on("message", (message: any) => {
+            console.log("실행되나요?");
+            setMsgList(msgList => [...msgList, message]);
+        });
+        if(inputChat.current != null){
+            inputChat.current.value = "";
+        }
+        scrollToBottom();
+    }
 
-            if(myVideoRef.current){
-                myVideoRef.current.srcObject = stream;
-                myVideoRef.current.play();
-            }
-
-            stream.getTracks().forEach((track) => {
-                if(!peerRef.current){
-                    return;
-                }
-                peerRef.current.addTrack(track, stream);
-            });
-
-            if(peerRef.current){
-                peerRef.current.onicecandidate = (e) => {
-                    if(e.candidate){
-                        if(!socketRef.current){
-                            return;
-                        }
-
-                        console.log("recv candidate");
-                        socketRef.current.emit("candidate", e.candidate, [roomName, myName]);
-                    }
-                }
-            }
-
-            if(peerRef.current){
-                peerRef.current.ontrack = (e) => {
-                    if(otherVideoRef.current){
-                        console.log("e", e);
-                        otherVideoRef.current.srcObject = e.streams[0];
-                        otherVideoRef.current.play();
-                    }
-                }
-            }
-
-            createOffer();
-        }catch(e){
-            console.error(e);
+    const scrollToBottom = () => {
+        if(chatContent.current != null){
+            chatContent.current.scrollTop = chatContent.current.scrollHeight;
         }
     }
 
-    const createOffer = async () => {
-        console.log("create Offer");
-        if (!(peerRef.current && socketRef.current)) {
-          return;
+    const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            socketRef.current.emit("send_message", inputChat.current?.value, roomName);
+            if(inputChat.current != null){
+                inputChat.current.value = "";
+            }
+            scrollToBottom();
         }
-        try {
-          // offer 생성
-          const sdp = await peerRef.current.createOffer();
-          // 자신의 sdp로 LocalDescription 설정
-          peerRef.current.setLocalDescription(sdp);
-          console.log("sent the offer");
-          // offer 전달
-          socketRef.current.emit("offer", sdp, roomName);
-        } catch (e) {
-          console.error(e);
-        }
-      };
-      
-      const createAnswer = async (sdp: RTCSessionDescription) => {
-        // sdp : PeerA에게서 전달받은 offer
-      
-        console.log("createAnswer");
-        if (!(peerRef.current && socketRef.current)) {
-          return;
-        }
-    
-        try {
-          // PeerA가 전달해준 offer를 RemoteDescription에 등록해 줍시다.
-          peerRef.current.setRemoteDescription(sdp);
-          
-          // answer생성해주고
-          const answerSdp = await peerRef.current.createAnswer();
-          
-          // answer를 LocalDescription에 등록해 줍니다. (PeerB 기준)
-          peerRef.current.setLocalDescription(answerSdp);
-          console.log("sent the answer");
-          socketRef.current.emit("answer", answerSdp, roomName);
-        } catch (e) {
-          console.error(e);
-        }
-      };
+    };
 
-      
+
+
+    const closeReceivePC = useCallback((id: string) => {
+        if (!receivePCsRef.current[id]) return;
+        receivePCsRef.current[id].close();
+        delete receivePCsRef.current[id];
+    }, []);
+
+    const createReceiverOffer = useCallback(
+        async (pc: RTCPeerConnection, senderSocketID: string) => {
+        try {
+            const sdp = await pc.createOffer({
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: true,
+            });
+            console.log("create receiver offer success");
+            await pc.setLocalDescription(new RTCSessionDescription(sdp));
+
+            if (!socketRef.current) return;
+            socketRef.current.emit("receiverOffer", {
+                sdp,
+                receiverSocketID: socketRef.current.id,
+                senderSocketID,
+                roomID: roomName,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+        },
+        []
+    );
+
+    const createReceiverPeerConnection = useCallback((socketID: string) => {
+        try {
+        const pc = new RTCPeerConnection(pc_config);
+
+        // add pc to peerConnections object
+        receivePCsRef.current = { ...receivePCsRef.current, [socketID]: pc };
+
+        pc.onicecandidate = (e) => {
+            if (!(e.candidate && socketRef.current)) return;
+            console.log("receiver PC onicecandidate");
+            socketRef.current.emit("receiverCandidate", {
+            candidate: e.candidate,
+            receiverSocketID: socketRef.current.id,
+            senderSocketID: socketID,
+            });
+        };
+
+        pc.oniceconnectionstatechange = (e) => {
+            console.log(e);
+        };
+
+        pc.ontrack = (e) => {
+            console.log("ontrack success");
+            setUsers((oldUsers) =>
+            oldUsers
+                .filter((user) => user.id !== socketID)
+                .concat({
+                id: socketID,
+                stream: e.streams[0],
+                })
+            );
+        };
+
+        // return pc
+        return pc;
+        } catch (e) {
+        console.error(e);
+        return undefined;
+        }
+    }, []);
+
+    const createReceivePC = useCallback(
+        (id: string) => {
+        try {
+            console.log(`socketID(${id}) user entered`);
+            const pc = createReceiverPeerConnection(id);
+            if (!(socketRef.current && pc)) return;
+            createReceiverOffer(pc, id);
+        } catch (error) {
+            console.log(error);
+        }
+        },
+        [createReceiverOffer, createReceiverPeerConnection]
+    );
+
+    const createSenderOffer = useCallback(async () => {
+        try {
+        if (!sendPCRef.current) return;
+        const sdp = await sendPCRef.current.createOffer({
+            offerToReceiveAudio: false,
+            offerToReceiveVideo: false,
+        });
+        console.log("create sender offer success");
+        await sendPCRef.current.setLocalDescription(
+            new RTCSessionDescription(sdp)
+        );
+
+        if (!socketRef.current) return;
+        socketRef.current.emit("senderOffer", {
+            sdp,
+            senderSocketID: socketRef.current.id,
+            roomID: "1234",
+        });
+        } catch (error) {
+        console.log(error);
+        }
+    }, []);
+
+    const createSenderPeerConnection = useCallback(() => {
+        const pc = new RTCPeerConnection(pc_config);
+
+        pc.onicecandidate = (e) => {
+        if (!(e.candidate && socketRef.current)) return;
+        console.log("sender PC onicecandidate");
+        socketRef.current.emit("senderCandidate", {
+            candidate: e.candidate,
+            senderSocketID: socketRef.current.id,
+        });
+        };
+
+        pc.oniceconnectionstatechange = (e) => {
+        console.log(e);
+        };
+
+        if (localStreamRef.current) {
+        console.log("add local stream");
+        localStreamRef.current.getTracks().forEach((track) => {
+            if (!localStreamRef.current) return;
+            pc.addTrack(track, localStreamRef.current);
+        });
+        } else {
+        console.log("no local stream");
+        }
+
+        sendPCRef.current = pc;
+    }, []);
+
+    const getLocalStream = useCallback(async () => {
+        try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: {
+            width: 240,
+            height: 240,
+            },
+        });
+        localStreamRef.current = stream;
+        if (localVideoRef.current){
+            localVideoRef.current.srcObject = stream;
+            localVideoRef.current.play();
+        }
+        if (!socketRef.current) return;
+
+        createSenderPeerConnection();
+        await createSenderOffer();
+
+        socketRef.current.emit("joinRoom", {
+            id: socketRef.current.id,
+            roomID: "1234",
+        });
+        } catch (e) {
+        console.log(`getUserMedia error: ${e}`);
+        }
+    }, [createSenderOffer, createSenderPeerConnection]);
 
     useEffect(() => {
-        socketRef.current = socketIOClient("localhost:4002");
+        socketRef.current = io.connect(SOCKET_SERVER_URL);
+        getLocalStream();
 
-        peerRef.current = new RTCPeerConnection({
-            iceServers: [
-                {
-                    urls: "stun:stun.l.google.com:19302",
-                },
-            ],
+        socketRef.current.on("userEnter", (data: { id: string }) => {
+        createReceivePC(data.id);
         });
 
-        socketRef.current.on("all_users", (allUsers: Array<{ id: string }>) => {
-            if (allUsers.length > 0) {
-              createOffer();
-            }
-          });
-          
-          // offer를 전달받은 PeerB만 해당됩니다
-          // offer를 들고 만들어둔 answer 함수 실행
-          socketRef.current.on("getOffer", (sdp: RTCSessionDescription) => {
-            console.log("recv Offer");
-            createAnswer(sdp);
-          });
-          
-          // answer를 전달받을 PeerA만 해당됩니다.
-          // answer를 전달받아 PeerA의 RemoteDescription에 등록
-          socketRef.current.on("getAnswer", (sdp: RTCSessionDescription) => {
-            console.log("recv Answer");
-            if (!peerRef.current) {
-              return;
-            }
-            if(peerRef.current){
-                peerRef.current.setRemoteDescription(sdp);
-            }
-          });
-          
-          // 서로의 candidate를 전달받아 등록
-          socketRef.current.on("getCandidate", async (candidate: RTCIceCandidate, peerName) => {
-            if (!peerRef.current) {
-              return;
-            }
-      
-            await peerRef.current.addIceCandidate(candidate);
-            setPeerNames([...peerNames, peerName]);
-            scrollToBottom();
-            setParticipantNum(peerNames.length+1);
-          });
-          
-          // 마운트시 해당 방의 roomName을 서버에 전달
-          socketRef.current.emit("join_room", {
-            room: roomName,
-          });
+        socketRef.current.on(
+        "allUsers",
+        (data: { users: Array<{ id: string }> }) => {
+            data.users.forEach((user) => createReceivePC(user.id));
+        }
+        );
 
-        socketRef.current.on("message", (message) => {
-            setMsgList(msgList => [...msgList, message]);
+        socketRef.current.on("userExit", (data: { id: string }) => {
+        closeReceivePC(data.id);
+        setUsers((users) => users.filter((user) => user.id !== data.id));
         });
-      
-          getMedia();
-      
-          return () => {
-            // 언마운트시 socket disconnect
-            if (socketRef.current) {
-              socketRef.current.disconnect();
+
+        socketRef.current.on(
+        "getSenderAnswer",
+        async (data: { sdp: RTCSessionDescription }) => {
+            try {
+            if (!sendPCRef.current) return;
+            console.log("get sender answer");
+            console.log(data.sdp);
+            await sendPCRef.current.setRemoteDescription(
+                new RTCSessionDescription(data.sdp)
+            );
+            } catch (error) {
+            console.log(error);
             }
-            if (peerRef.current) {
-              peerRef.current.close();
+        }
+        );
+
+        socketRef.current.on(
+        "getSenderCandidate",
+        async (data: { candidate: RTCIceCandidateInit }) => {
+            try {
+            if (!(data.candidate && sendPCRef.current)) return;
+            console.log("get sender candidate");
+            await sendPCRef.current.addIceCandidate(
+                new RTCIceCandidate(data.candidate)
+            );
+            console.log("candidate add success");
+            } catch (error) {
+            console.log(error);
             }
-          };
-          
-    }, []);
+        }
+        );
+
+        socketRef.current.on(
+        "getReceiverAnswer",
+        async (data: { id: string; sdp: RTCSessionDescription }) => {
+            try {
+            console.log(`get socketID(${data.id})'s answer`);
+            const pc: RTCPeerConnection = receivePCsRef.current[data.id];
+            if (!pc) return;
+            await pc.setRemoteDescription(data.sdp);
+            console.log(`socketID(${data.id})'s set remote sdp success`);
+            } catch (error) {
+            console.log(error);
+            }
+        }
+        );
+
+        socketRef.current.on(
+        "getReceiverCandidate",
+        async (data: { id: string; candidate: RTCIceCandidateInit }) => {
+            try {
+            console.log(data);
+            console.log(`get socketID(${data.id})'s candidate`);
+            const pc: RTCPeerConnection = receivePCsRef.current[data.id];
+            if (!(pc && data.candidate)) return;
+            await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+            console.log(`socketID(${data.id})'s candidate add success`);
+            } catch (error) {
+            console.log(error);
+            }
+        }
+        );
+
+        return () => {
+        if (socketRef.current) {
+            socketRef.current.disconnect();
+        }
+        if (sendPCRef.current) {
+            sendPCRef.current.close();
+        }
+        users.forEach((user) => closeReceivePC(user.id));
+        };
+        // eslint-disable-next-line
+    }, [
+        closeReceivePC,
+        createReceivePC,
+        createSenderOffer,
+        createSenderPeerConnection,
+        getLocalStream,
+    ]);
+
 
     return(
         <>
@@ -271,36 +393,34 @@ const DanceRoom = () => {
 
                     <div className="video-content">
                         <div className="my-video">
-                            <video src="" playsInline ref={myVideoRef}></video>
+                            <video src="" playsInline ref={localVideoRef}></video>
                         </div>
                         <div className="yours-video">
-                            <ul>
-                                <li>
-                                    <video src="" playsInline ref={otherVideoRef}></video>
-                                </li>
-                            </ul>
+                            {users.map((user, index) => (
+                                <Video key={index} email={user.email} stream={user.stream} />
+                            ))}
                         </div>
                         <div className="control-wrap">
                             <ul>
                                 <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave}>
                                     <button>
-                                        {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
+                                    {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave} id="mute">
+                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
                                     <button>
-                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
+                                    {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
                                 <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
-                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave} id="camera">
+                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
                                     <button>
-                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
+                                    {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
-                                    <button>
-                                        {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
+                                <li >
+                                    <button onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
+                                    {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
                                     </button>
                                 </li>
                             </ul>
@@ -312,41 +432,15 @@ const DanceRoom = () => {
                     <div className="participant-list">
                         <div className="participant-list-title">
                             <h3>{lang==="en" ? "List of participants" : lang==="cn" ? "参与者列表" : "참여자 목록" }</h3>
-                            <span><Image src={GroupIcon} alt=""/>{participantNum}{lang==="en" ? "people" : lang==="cn" ? "个人" : "명" }</span>
+                            <span><Image src={GroupIcon} alt=""/>{users.length+1}{lang==="en" ? "people" : lang==="cn" ? "个人" : "명" }</span>
                         </div>
                         <div className="participant-list-content">
                             <ul>
                                 <li className="on">
                                         <Image src={ChatDefaultImg} alt=""/>
-                                        <span>{myName}</span>
+                                        <span>임시 이름</span>
                                 </li>
-                                {
-                                    peerNames.map((peer) => {
-                                        return(
-                                            <li>
-                                                <Image src={ChatDefaultImg} alt=""/>
-                                                <span>{peer}</span>
-                                            </li>
-                                        );
-                                    })
-                                }
                                 
-                                {/* <li>
-                                        <Image src={ChatDefaultImg} alt=""/>
-                                        <span>이싸피</span>
-                                </li>
-                                <li>
-                                        <Image src={ChatDefaultImg} alt=""/>
-                                        <span>정싸피</span>
-                                </li>
-                                <li>
-                                        <Image src={ChatDefaultImg} alt=""/>
-                                        <span>윤싸피</span>
-                                </li>
-                                <li>
-                                        <Image src={ChatDefaultImg} alt=""/>
-                                        <span>최싸피</span>
-                                </li> */}
                             </ul>
                         </div>
                     </div>
@@ -357,27 +451,27 @@ const DanceRoom = () => {
                         <div className="chat-content-wrap">
                             <div className="chat-read" ref={chatContent}>
                                 <ul className="chat-content">
-                                    {
-                                        msgList.map((data) => {
-                                            return (
-                                                <>
-                                                    <li>
-                                                        <div className="chat-user-img">
-                                                            <Image src={ChatDefaultImg} alt=""/>
-                                                        </div>
-                                                        <div className="chat-user-msg">
-                                                            <span>김싸피</span>
-                                                            <p>{data}</p>
-                                                        </div>
-                                                    </li>
-                                                </>
-                                            )
-                                        })
-                                    }
+                                {
+                                    msgList.map((data) => {
+                                        return (
+                                            <>
+                                                <li>
+                                                    <div className="chat-user-img">
+                                                        <Image src={ChatDefaultImg} alt=""/>
+                                                    </div>
+                                                    <div className="chat-user-msg">
+                                                        <span>김싸피</span>
+                                                        <p>{data}</p>
+                                                    </div>
+                                                </li>
+                                            </>
+                                        )
+                                    })
+                                }
                                 </ul>
                             </div>
                             <div className="chat-write">
-                                <input type="text" placeholder={lang==="en" ? "Send to everyone" : lang==="cn" ? "传送给所有人" : "모두에게 전송" } ref={inputChat} onChange={(e) => setMsg(e.target.value)} value={msg} onKeyPress={handleKeyPress}/>
+                                <input type="text" ref={inputChat} onKeyPress={handleKeyPress} placeholder={lang==="en" ? "Send to everyone" : lang==="cn" ? "传送给所有人" : "모두에게 전송" }/>
                                 <button onClick={sendMessage}><Image src={sendImg} alt=""/></button>
                             </div>
                         </div>
