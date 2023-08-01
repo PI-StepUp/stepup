@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.rank.service;
 
+import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_NOT_FOUND;
 import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.POINT_POLICY_NOT_FOUND;
 import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.RANK_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
@@ -7,6 +8,7 @@ import static com.pi.stepup.global.config.security.SecurityUtils.getLoggedInUser
 
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.RandomDance;
+import com.pi.stepup.domain.dance.exception.DanceBadRequestException;
 import com.pi.stepup.domain.rank.dao.PointHistoryRepository;
 import com.pi.stepup.domain.rank.dao.PointPolicyRepository;
 import com.pi.stepup.domain.rank.dao.RankRepository;
@@ -46,7 +48,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
             pointUpdateRequestDto.getPointPolicyId()).orElseThrow(
             () -> new PointPolicyNotFoundException(POINT_POLICY_NOT_FOUND.getMessage()));
         RandomDance randomDance = danceRepository.findOne(pointUpdateRequestDto.getRandomDanceId())
-            .orElseThrow(() -> new DanceNotFoundException(DANCE_NOT_FOUND.getMessage()));
+            .orElseThrow(() -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
         Integer point = pointUpdateRequestDto.getCount() * pointPolicy.getPoint();
 
         user.updatePoint(point);
