@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -243,8 +244,6 @@ class MusicApplyServiceTest {
             when(musicApplyRepository.findOne(any())).thenReturn(Optional.ofNullable(musicApply));
             when(musicApplyRepository.insert(any(Heart.class))).thenReturn(heart);
 
-            // TODO : heartCnt default value null pointer 예외 해결 할 것 (DB에는 잘 들어감)
-
             musicApplyService.createHeart(heartSaveRequestDto);
 
             assertThat(musicApply.getHeartCnt()).isEqualTo(1);
@@ -256,17 +255,15 @@ class MusicApplyServiceTest {
     public void musicApplyHeartCancelServiceTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
             SecurityUtils.class)) {
-            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(user.getId());
             Long heartId = heart.getHeartId();
 
-            when(userRepository.findById(any(String.class))).thenReturn(Optional.ofNullable(user));
-            when(musicApplyRepository.findOne(any())).thenReturn(Optional.ofNullable(musicApply));
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(user.getId());
             when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
 
             musicApplyService.deleteHeart(musicApply.getMusicApplyId());
 
-            verify(musicApplyRepository, only()).deleteHeart(heartId);
+            verify(musicApplyRepository, times(1)).deleteHeart(heartId);
         }
     }
 
