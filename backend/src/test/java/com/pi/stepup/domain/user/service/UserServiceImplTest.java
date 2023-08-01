@@ -23,6 +23,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
@@ -297,6 +298,170 @@ class UserServiceImplTest {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessageContaining(WRONG_PASSWORD.getMessage());
         }
+    }
+
+    @DisplayName("수정 이메일이 중복될 경우 예외가 발생한다.")
+    @Test
+    void updateTest_EmailDuplicated() {
+        // given
+        String testId = "testId";
+        String testEmail = "testEmail";
+        String userEmail = "userEmail";
+
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
+
+            when(userRepository.findById(testId))
+                .thenReturn(Optional.of(User.builder().email(userEmail).build()));
+
+            when(userRepository.findByEmail(testEmail))
+                .thenReturn(Optional.of(User.builder().build()));
+
+            // when, then
+            assertThatThrownBy(() -> userService.update(
+                UpdateUserRequestDto.builder()
+                    .email(testEmail)
+                    .build()
+            ))
+                .isInstanceOf(EmailDuplicatedException.class)
+                .hasMessageContaining(EMAIL_DUPLICATED.getMessage());
+        }
+    }
+
+    @DisplayName("수정 닉네임이 중복될 경우 예외가 발생한다.")
+    @Test
+    void updateTest_NicknameDuplicated() {
+        // given
+        String testId = "testId";
+        String testEmail = "testEmail";
+        String testNickname = "testNickname";
+        String userNickname = "userNickname";
+
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
+
+            when(userRepository.findById(testId))
+                .thenReturn(Optional.of(User.builder()
+                    .email(testEmail)
+                    .nickname(userNickname)
+                    .build()));
+
+            when(userRepository.findByNickname(testNickname))
+                .thenReturn(Optional.of(User.builder().build()));
+
+            assertThatThrownBy(() -> userService.update(
+                UpdateUserRequestDto.builder()
+                    .email(testEmail)
+                    .nickname(testNickname)
+                    .build()
+            ))
+                .isInstanceOf(NicknameDuplicatedException.class)
+                .hasMessageContaining(NICKNAME_DUPLICATED.getMessage());
+        }
+    }
+
+    @DisplayName("비밀번호 수정에 성공한다.")
+    @Test
+    void updateTest_UpdatePassword() {
+        // given
+        User user = makeUserSample();
+        String testId = "testId";
+        String testPassword = "testPassword";
+        String encodedTestPassword = "encodedTestPassword";
+
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
+
+            when(userRepository.findById(testId))
+                .thenReturn(Optional.of(user));
+
+            when(passwordEncoder.encode(testPassword))
+                .thenReturn(encodedTestPassword);
+
+            userService.update(
+                UpdateUserRequestDto.builder()
+                    .email(user.getEmail())
+                    .nickname(user.getNickname())
+                    .password(testPassword)
+                    .build()
+            );
+
+            assertThat(user.getPassword()).isEqualTo(encodedTestPassword);
+        }
+    }
+
+    @DisplayName("기본 회원정보 수정에 성공한다")
+    @Test
+    void updateTest_UpdateBasicInfo() {
+        // given
+        String testId = "testId";
+        UpdateUserRequestDto updateUserRequestDto = makeUpdateUserRequestDto();
+        User user = makeUserSample();
+
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
+
+            when(userRepository.findById(testId))
+                .thenReturn(Optional.of(user));
+
+            when(userRepository.findByEmail(updateUserRequestDto.getEmail()))
+                .thenReturn(Optional.empty());
+
+            when(userRepository.findByNickname(updateUserRequestDto.getNickname()))
+                .thenReturn(Optional.empty());
+
+            when(userRepository.findOneCountry(updateUserRequestDto.getCountryId()))
+                .thenReturn(Country.builder()
+                    .countryId(updateUserRequestDto.getCountryId())
+                    .code("ko")
+                    .build());
+
+            // when
+            userService.update(updateUserRequestDto);
+
+            // then
+            assertUpdatedInfo(user, updateUserRequestDto);
+        }
+    }
+
+    private void assertUpdatedInfo(User user, UpdateUserRequestDto updateUserRequestDto) {
+        assertThat(user.getEmail()).isEqualTo(updateUserRequestDto.getEmail());
+        assertThat(user.getEmailAlert()).isEqualTo(updateUserRequestDto.getEmailAlert());
+        assertThat(user.getCountry().getCountryId()).isEqualTo(updateUserRequestDto.getCountryId());
+        assertThat(user.getNickname()).isEqualTo(updateUserRequestDto.getNickname());
+        assertThat(user.getProfileImg()).isEqualTo(updateUserRequestDto.getProfileImg());
+    }
+
+    private User makeUserSample() {
+        String email = "userEmail";
+        String nickname = "userNickname";
+        String password = "userPassword";
+
+        return User.builder()
+            .email(email)
+            .nickname(nickname)
+            .password(password)
+            .build();
+    }
+
+    private UpdateUserRequestDto makeUpdateUserRequestDto() {
+        String testEmail = "testEmail";
+        int testEmailAlert = 1;
+        Long countryId = 1L;
+        String testNickname = "testNickname";
+        String testProfileImg = "testProfileImg";
+
+        return UpdateUserRequestDto.builder()
+            .email(testEmail)
+            .emailAlert(testEmailAlert)
+            .countryId(countryId)
+            .nickname(testNickname)
+            .profileImg(testProfileImg)
+            .build();
     }
 
     private List<Country> makeCountries() {
