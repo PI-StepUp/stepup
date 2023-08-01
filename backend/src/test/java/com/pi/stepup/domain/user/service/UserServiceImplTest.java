@@ -4,12 +4,15 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.EMAIL_DUPL
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pi.stepup.domain.rank.domain.Rank;
@@ -19,6 +22,7 @@ import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
@@ -38,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -48,6 +53,9 @@ class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Spy
+    private PasswordEncoder passwordEncoder;
 
     private final String TEST_EMAIL = "test@test.com";
     private final String TEST_ID = "testId";
@@ -192,18 +200,21 @@ class UserServiceImplTest {
         }
     }
 
-    @DisplayName("사용자를 삭제할 때 성공할 경우 예외가 발생하지 않는다.")
+    @DisplayName("사용자를 삭제할 때 repository의 delete 메서드가 호출된다.")
     @Test
     void deleteTest_Success() {
         String testId = "testId";
+        User user = User.builder().build();
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
             securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
                 .thenReturn(testId);
 
             when(this.userRepository.findById(testId))
-                .thenReturn(Optional.of(User.builder().build()));
+                .thenReturn(Optional.of(user));
 
-            assertThatNoException().isThrownBy(() -> userService.delete());
+            userService.delete();
+
+            verify(userRepository, times(1)).delete(user);
         }
     }
 
@@ -226,6 +237,66 @@ class UserServiceImplTest {
             assertThat(userService.readOne()).isInstanceOf(UserInfoResponseDto.class);
         }
 
+    }
+
+    @DisplayName("비밀번호가 일치할 경우 예외가 발생하지 않는다.")
+    @Test
+    void checkPasswordTest_Same() {
+        // given
+        String testId = "testId";
+        String testPassword = "testPassword";
+        User user = User.builder()
+            .password(passwordEncoder.encode(testPassword))
+            .build();
+
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
+
+            when(userRepository.findById(testId))
+                .thenReturn(Optional.of(user));
+
+            when(passwordEncoder.matches(testPassword, user.getPassword()))
+                .thenReturn(true);
+
+            assertThatNoException().isThrownBy(() -> userService.checkPassword(
+                CheckPasswordRequestDto.builder()
+                    .password(testPassword)
+                    .build()
+            ));
+        }
+    }
+
+    @DisplayName("비밀번호가 일치하지 않을 경우 예외가 발생한다.")
+    @Test
+    void checkPasswordTest_NotSame() {
+        // given
+        String testId = "testId";
+        String testPassword = "testPassword";
+        String encodedPassword = "encodePassword";
+
+        User user = User.builder()
+            .password(encodedPassword)
+            .build();
+
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
+
+            when(userRepository.findById(testId))
+                .thenReturn(Optional.of(user));
+
+            when(passwordEncoder.matches(testPassword, user.getPassword()))
+                .thenReturn(false);
+
+            assertThatThrownBy(() -> userService.checkPassword(
+                CheckPasswordRequestDto.builder()
+                    .password(testPassword)
+                    .build()
+            ))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessageContaining(WRONG_PASSWORD.getMessage());
+        }
     }
 
     private List<Country> makeCountries() {
