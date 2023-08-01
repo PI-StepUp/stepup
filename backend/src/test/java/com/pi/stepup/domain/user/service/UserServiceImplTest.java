@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
@@ -217,7 +218,10 @@ class UserServiceImplTest {
                 .thenReturn(testId);
 
             when(userRepository.findById(any(String.class)))
-                .thenReturn(Optional.of(User.builder().build()));
+                .thenReturn(Optional.of(User.builder()
+                    .country(Country.builder().build())
+                    .rank(Rank.builder().build())
+                    .build()));
 
             assertThat(userService.readOne()).isInstanceOf(UserInfoResponseDto.class);
         }

@@ -38,6 +38,8 @@ class UserRepositoryImplTest {
 
     @BeforeEach
     void setCountriesAndUserData() {
+        em.createQuery("DELETE FROM Country c").executeUpdate();
+        em.createQuery("DELETE FROM User u").executeUpdate();
         setCountriesData();
         setUserData();
     }
