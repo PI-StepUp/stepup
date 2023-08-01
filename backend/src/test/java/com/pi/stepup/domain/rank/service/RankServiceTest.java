@@ -95,9 +95,9 @@ class RankServiceTest {
 
     private void makeRandomDance() {
         randomDance = RandomDance.builder()
-            .title("title")
-            .content("content").
-            danceType(DanceType.RANKING)
-            .build();
+                .title("title")
+                .content("content")
+                .danceType(DanceType.RANKING)
+                .build();
     }
 }
