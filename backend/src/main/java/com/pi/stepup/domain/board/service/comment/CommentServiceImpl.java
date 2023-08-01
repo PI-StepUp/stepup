@@ -11,9 +11,13 @@ import com.pi.stepup.domain.board.domain.Talk;
 import com.pi.stepup.domain.board.dto.comment.CommentRequestDto.CommentSaveRequestDto;
 import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
+import com.pi.stepup.domain.board.exception.CommentNotFoundException;
+import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.config.security.SecurityUtils;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
+import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.COMMENT_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
@@ -37,7 +42,8 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public Comment create(CommentSaveRequestDto commentSaveRequestDto) {
-        User writer = userRepository.findById(commentSaveRequestDto.getId())
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         Board board = boardRepository.findOne(commentSaveRequestDto.getBoardId())
@@ -68,6 +74,8 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public List<CommentInfoResponseDto> readByBoardId(Long boardId) {
+        boardRepository.findOne(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
         List<Comment> allComments = commentRepository.findByBoardId(boardId);
         return allComments.stream()
                 .map(c -> CommentInfoResponseDto.builder().comment(c).build())
@@ -77,6 +85,15 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void delete(Long commentId) {
+        Comment comment = commentRepository.findOne(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND.getMessage()));
+
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
+        if (!loggedInUserId.equals(comment.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(comment.getWriter().getRole())) {
+            throw new ForbiddenException();
+        }
+
         commentRepository.delete(commentId);
     }
 }

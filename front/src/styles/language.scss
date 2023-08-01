@@ -1,116 +1,5 @@
 @import "./function.scss";
 
-@keyframes korean-animation {
-    0%{
-        top:180px;
-        opacity:0%;
-    }
-    100%{
-        top:0px;
-        opacity:100%;
-    }
-}
-
-@keyframes english-animation {
-    0%{
-        top:120px;
-        opacity:0%;
-    }
-    100%{
-        top:0px;
-        opacity:100%;
-    }
-}
-
-@keyframes chinese-animation {
-    0%{
-        top:60px;
-        opacity:0%;
-    }
-    100%{
-        top:0px;
-        opacity:100%;
-    }
-}
-
-
-
-@keyframes korean-hidden-animation {
-    0%{
-        top:0px;
-        opacity:100%;
-    }
-    100%{
-        top:180px;
-        opacity:0%;
-    }
-}
-
-@keyframes english-hidden-animation {
-    0%{
-        top:0px;
-        opacity:100%;
-    }
-    100%{
-        top:120px;
-        opacity:0%;
-    }
-}
-
-@keyframes chinese-hidden-animation {
-    0%{
-        top:0px;
-        opacity:100%;
-    }
-    100%{
-        top:60px;
-        opacity:0%;
-    }
-}
-
-.korean-animation{
-    position:relative;
-    top:0px;
-    animation-duration: 2s;
-    animation-name: korean-animation;
-}
-
-.english-animation{
-    position:relative;
-    top:0px;
-    animation-duration: 2s;
-    animation-name: english-animation;
-}
-
-.chinese-animation{
-    position:relative;
-    top:0px;
-    animation-duration: 2s;
-    animation-name: chinese-animation;
-}
-
-.korean-hidden-animation{
-    position:relative;
-    top:180px;
-    z-index: -1;
-    animation-duration: 2s;
-    animation-name: korean-hidden-animation;
-}
-.english-hidden-animation{
-    position:relative;
-    top:120px;
-    z-index: -1;
-    animation-duration: 2s;
-    animation-name: english-hidden-animation;
-}
-.chinese-hidden-animation{
-    position:relative;
-    top:60px;
-    z-index: -1;
-    animation-duration: 2s;
-    animation-name: chinese-hidden-animation;
-}
-
 .language-button-wrap{
     position:fixed;
     bottom:20px;
@@ -118,23 +7,14 @@
     .language-content{
         ul{
             li{
-                @include setSize(40px, 40px);
-                background-color:#F0F0F0;
-                border-radius:50px;
-                @include flex(center, center);
+                @include flex(flex-end, center);
                 margin-top:20px;
                 cursor:pointer;
                 &:first-child{
                     margin-top:0px;
                 }
-                &:last-child{
-                    background-color:#007CFE;
-                    span{
-                        @include font(8px, 700, #FFFFFF);
-                    }
-                }
                 span{
-                    @include font(18px, 700, #75BBF9);
+                    @include font(18px, 700, #3D4938);
                 }
                 .language-img{
                     @include setSize(70px, 70px);

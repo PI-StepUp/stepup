@@ -1,49 +1,50 @@
-import React, {useState} from "react";
+import React,{useRef} from "react";
+import Image from "next/image";
+
+import KoreanIcon from "/public/images/icon-korean.svg"
+import EnglishIcon from "/public/images/icon-english.svg"
+import ChineseIcon from "/public/images/icon-chinese.svg"
+import LanguageIcon from "/public/images/icon-language.svg"
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
-import Image from "next/image";
-
-import HoverCloseIcon from "/public/images/icon-hover-close.svg"
 
 const LanguageButton = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
-    const [koreanActive, setKoreanActive] = useState(false);
-    const [englishActive, setEnglishActive] = useState(false);
-    const [chineseActive, setChineseActive] = useState(false);
-    const goTopAnimation = () => {
-        if(!koreanActive){
-            setKoreanActive(true);
-            setEnglishActive(true);
-            setChineseActive(true);
-        }else if(koreanActive){
-            setKoreanActive(false);
-            setEnglishActive(false);
-            setChineseActive(false);
-        }
-    }
     return(
         <>
             <div className="language-button-wrap">
                 <div className="language-content">
                     <ul>
-                        <li className={koreanActive ? "korean-animation" : "korean-hidden-animation"} onClick={() => {
+                        <li onClick={() => {
                             setLang('ko')
                         }}>
-                            <span>한</span>
+                            <span>한국어</span>
+                            <div className="language-img">
+                                <Image src={KoreanIcon} alt=""/>
+                            </div>
                         </li>
-                        <li className={englishActive ? "english-animation" : "english-hidden-animation"} onClick={() => {
+                        <li onClick={() => {
                             setLang('en')
                         }}>
-                            <span>E</span>
+                            <span>English</span>
+                            <div className="language-img">
+                                <Image src={EnglishIcon} alt=""/>
+                            </div>
                         </li>
-                        <li className={chineseActive ? "chinese-animation" : "chinese-hidden-animation"} onClick={() => {
+                        <li onClick={() => {
                             setLang('cn')
                         }}>
-                            <span>语</span>
+                            <span>汉语</span>
+                            <div className="language-img">
+                                <Image src={ChineseIcon} alt=""/>
+                            </div>
                         </li>
-                        <li onClick={goTopAnimation}>
-                            <span>{koreanActive ? <Image src={HoverCloseIcon} alt=""/> : "language"}</span>
+                        <li>
+                            <span>언어선택</span>
+                            <div className="language-img">
+                                <Image src={LanguageIcon} alt=""/>
+                            </div>
                         </li>
                     </ul>
                 </div>

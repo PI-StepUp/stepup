@@ -17,11 +17,12 @@ import "../styles/practiceroom.scss"
 import "../styles/language.scss"
 import "../styles/mypage.css"
 import "../styles/mypageedit.css"
-import "../styles/responsively.scss";
 
 import type {AppProps} from 'next/app';
 import Head from "next/head";
 import {RecoilRoot} from "recoil";
+
+import LanguageButton from "components/LanguageButton"
 
 const StepUp = ({Component} : AppProps) => {
     return (
@@ -31,6 +32,7 @@ const StepUp = ({Component} : AppProps) => {
             </Head>
             <RecoilRoot>
                 <Component/>
+                <LanguageButton/>
             </RecoilRoot>
         </>
     )

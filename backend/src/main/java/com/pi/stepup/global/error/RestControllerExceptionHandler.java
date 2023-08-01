@@ -1,7 +1,5 @@
 package com.pi.stepup.global.error;
 
-import static com.pi.stepup.global.error.constant.ExceptionMessage.AUTHORIZATION_FAILED;
-
 import com.pi.stepup.global.dto.ResponseDto;
 import com.pi.stepup.global.error.exception.DuplicatedException;
 import com.pi.stepup.global.error.exception.ForbiddenException;
@@ -43,7 +41,7 @@ public class RestControllerExceptionHandler {
     public ResponseEntity<ResponseDto<String>> handleForbiddenException(
             ForbiddenException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                ResponseDto.create(AUTHORIZATION_FAILED.getMessage())
+                ResponseDto.create(exception.getMessage())
         );
     }
 

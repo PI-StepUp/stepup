@@ -1,17 +1,12 @@
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import Footer from "components/Footer";
-import LanguageButton from "components/LanguageButton";
 
 import Image from "next/image";
 import Link from "next/link";
 import DefaultProfileImage from "/public/images/playlist-default-profile-img.svg";
 
-import { useRecoilState } from "recoil";
-import { LanguageState } from "states/states";
-
 const PlayList = () => {
-    const [lang, setLang] = useRecoilState(LanguageState);
     return (
         <>
             <Header/>
@@ -20,12 +15,12 @@ const PlayList = () => {
                 <div className="playlist-title">
                     <span>THE NEW STEPUP’S PLAYLIST</span>
                     <h3>
-                        {lang==="en" ? "STEPUP's new playlist" : lang==="cn" ? "STEPUP的新歌单" : "STEPUP의 새로운 플레이리스트" }<br/>
-                        {lang==="en" ? "Enjoy it with more songs" : lang==="cn" ? "用更多的歌曲来享受吧" : "더 많은 곡으로 즐기세요" }
+                        STEPUP의 새로운 플레이리스트<br/>
+                        더 많은 곡으로 즐기세요
                     </h3>
                 </div>
                 <div className="playlist-create-button-wrap">
-                    <button><Link href="/playlist/create">{lang==="en" ? "Request" : lang==="cn" ? "申请新曲" : "신곡 신청하기" }</Link></button>
+                    <button><Link href="/playlist/create">신곡 신청하기</Link></button>
                 </div>
                 <div className="playlist-content-wrap">
                     <ul>
@@ -98,7 +93,6 @@ const PlayList = () => {
                     </ul>
                 </div>
             </div>
-            <LanguageButton/>
             <Footer/>
         </>
     )
