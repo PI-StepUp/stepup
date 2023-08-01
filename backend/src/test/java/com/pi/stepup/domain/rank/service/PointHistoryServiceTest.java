@@ -1,6 +1,8 @@
 package com.pi.stepup.domain.rank.service;
 
 import static com.pi.stepup.domain.rank.constant.PointType.FIRST_PRIZE;
+import static com.pi.stepup.domain.rank.constant.RankName.BRONZE;
+import static com.pi.stepup.domain.rank.constant.RankName.PLATINUM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -11,7 +13,6 @@ import static org.mockito.Mockito.when;
 import com.pi.stepup.domain.dance.constant.DanceType;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.RandomDance;
-import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.dao.PointHistoryRepository;
 import com.pi.stepup.domain.rank.dao.PointPolicyRepository;
 import com.pi.stepup.domain.rank.dao.RankRepository;
@@ -72,7 +73,6 @@ class PointHistoryServiceTest {
         makePointHistory();
         makePointUpdateReqeustDto();
         makeRandomDance();
-        makeRank();
     }
 
     @Test
@@ -80,6 +80,8 @@ class PointHistoryServiceTest {
     public void pointUpdateServiceTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
             SecurityUtils.class)) {
+            makeBronzeRank();
+
             securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
                 .thenReturn(user.getId());
             when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
@@ -92,6 +94,28 @@ class PointHistoryServiceTest {
             assertThat(user.getPoint()).isEqualTo(FIRST_PRIZE.getPoint() * 2);
 
             verify(pointHistoryRepository).insert(any());
+        }
+    }
+
+    @Test
+    @DisplayName("포인트 MAX 이상 적립 테스트 - MAX 값을 반환한다.")
+    public void pointUpdateMaxServiceTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
+            SecurityUtils.class)) {
+            user.updatePoint(5000);
+            makePlatinumRank();
+
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(user.getId());
+            when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
+            when(danceRepository.findOne(any())).thenReturn(Optional.ofNullable(randomDance));
+            when(rankRepository.findOneByPoint(any())).thenReturn(Optional.ofNullable(rank));
+            when(pointPolicyRepository.findOne(any())).thenReturn(Optional.ofNullable(pointPolicy));
+
+            pointHistoryService.update(pointUpdateRequestDto);
+
+            assertThat(user.getPoint()).isEqualTo(5000);
+            assertThat(user.getRank().getName()).isEqualTo(PLATINUM);
         }
     }
 
@@ -177,9 +201,15 @@ class PointHistoryServiceTest {
         return pointHistories;
     }
 
-    private void makeRank() {
+    private void makePlatinumRank() {
         rank = Rank.builder()
-            .name(RankName.BRONZE)
+            .name(PLATINUM)
+            .build();
+    }
+
+    private void makeBronzeRank() {
+        rank = Rank.builder()
+            .name(BRONZE)
             .build();
     }
 }
