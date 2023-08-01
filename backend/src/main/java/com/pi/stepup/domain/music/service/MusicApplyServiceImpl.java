@@ -69,26 +69,26 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     public List<MusicApplyFindResponseDto> readAllById() {
         String id = getLoggedInUserId();
         List<MusicApply> musicApplies = musicApplyRepository.findById(id);
-        return setCanHeart(musicApplies);
+        return setCanHeart(musicApplies, id);
     }
 
     // 원래 메소드
-    public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies) {
-        List<MusicApplyFindResponseDto> result = new ArrayList<>();
-
-        for (MusicApply ma : musicApplies) {
-            int canHeart = 1;
-            if (ma.getHearts().size() != 0) {
-                canHeart = 0;
-            }
-
-            result.add(MusicApplyFindResponseDto.builder()
-                .musicApply(ma)
-                .canHeart(canHeart)
-                .build());
-        }
-        return result;
-    }
+//    public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies) {
+//        List<MusicApplyFindResponseDto> result = new ArrayList<>();
+//
+//        for (MusicApply ma : musicApplies) {
+//            int canHeart = 1;
+//            if (ma.getHearts().size() != 0) {
+//                canHeart = 0;
+//            }
+//
+//            result.add(MusicApplyFindResponseDto.builder()
+//                .musicApply(ma)
+//                .canHeart(canHeart)
+//                .build());
+//        }
+//        return result;
+//    }
 
     public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies, String id) {
         List<MusicApplyFindResponseDto> result = new ArrayList<>();
