@@ -17,9 +17,11 @@ public enum DanceResponseMessage {
     SELECT_ALL_ATTEND_RANDOM_DANCE("내가 참여한 랜덤 플레이 댄스 목록 조회 완료");
 
     private final String message;
+
     DanceResponseMessage(String message) {
         this.message = message;
     }
+
     public String getMessage() {
         return message;
     }
