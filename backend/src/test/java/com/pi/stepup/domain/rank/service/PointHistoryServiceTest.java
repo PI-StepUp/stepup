@@ -77,6 +77,7 @@ class PointHistoryServiceTest {
 
     @Test
     @DisplayName("포인트 적립 테스트")
+    @WithUserDetails
     public void pointUpdateServiceTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
             SecurityUtils.class)) {
@@ -180,7 +181,6 @@ class PointHistoryServiceTest {
 
     private void makeRandomDance() {
         randomDance = RandomDance.builder()
-//                .id(1L)
             .title("title")
             .content("content")
             .danceType(DanceType.RANKING)

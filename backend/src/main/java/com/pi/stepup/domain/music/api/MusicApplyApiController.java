@@ -70,17 +70,16 @@ public class MusicApplyApiController {
     @ApiResponse(responseCode = "200",
         description = "나의 노래 신청 목록 조회 완료")
     @GetMapping("/my")
-    public ResponseEntity<ResponseDto<?>> readAllByIdMusicApply(
-        @RequestParam(name = "id") String id) {
+    public ResponseEntity<ResponseDto<?>> readAllByIdMusicApply() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             READ_MY_MUSIC_APPLY_SUCCESS.getMessage(),
-            musicApplyService.readAllById(id)
+            musicApplyService.readAllById()
         ));
     }
 
-    @Operation(summary = "노래 삭제", description = "관리자만 노래 삭제가 가능하다.")
+    @Operation(summary = "노래 신청 상세 조회", description = "사용자가 신청한 노래의 상세 정보를 불러온다.")
     @ApiResponse(responseCode = "200",
-        description = "노래 삭제 완료")
+        description = "노래 신청 상세 조회 완료")
     @GetMapping("/detail")
     public ResponseEntity<ResponseDto<?>> readOneMusicApply(
         @RequestParam(name = "id") String id,
@@ -99,6 +98,7 @@ public class MusicApplyApiController {
     @DeleteMapping("/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> deleteMusicApply(
         @PathVariable("musicApplyId") Long musicApplyId) {
+        musicApplyService.delete(musicApplyId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_MUSIC_APPLY_SUCCESS.getMessage()
         ));
@@ -125,9 +125,8 @@ public class MusicApplyApiController {
         description = "좋아요 취소 완료")
     @DeleteMapping("/heart")
     public ResponseEntity<ResponseDto<?>> deleteMusicApplyHeart(
-        @RequestParam(name = "id") String id,
         @RequestParam(name = "musicApplyId") Long musicApplyId) {
-        musicApplyService.deleteHeart(id, musicApplyId);
+        musicApplyService.deleteHeart(musicApplyId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_MUSIC_APPLY_LIKE_SUCCESS.getMessage()
@@ -140,11 +139,10 @@ public class MusicApplyApiController {
         description = "노래 신청 좋아요 상태 확인 완료")
     @GetMapping("/heart")
     public ResponseEntity<ResponseDto<?>> readMusicApplyHeartStatus(
-        @RequestParam(name = "id") String id,
         @RequestParam(name = "musicApplyId") Long musicApplyId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             READ_MUSIC_APPLY_HEART_STATUS_SUCCESS.getMessage(),
-            musicApplyService.findHeartStatus(id, musicApplyId)
+            musicApplyService.findHeartStatus(musicApplyId)
         ));
     }
 }
