@@ -8,9 +8,12 @@ import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkResponseDto.TalkInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
+import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.config.security.SecurityUtils;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +36,8 @@ public class TalkServiceImpl implements TalkService {
     @Transactional
     @Override
     public Talk create(TalkSaveRequestDto talkSaveRequestDto) {
-        User writer = userRepository.findById(talkSaveRequestDto.getId())
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         Talk talk = Talk.builder()
@@ -54,8 +58,13 @@ public class TalkServiceImpl implements TalkService {
         Talk talk = talkRepository.findOne(talkUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
-        talk.update(talkUpdateRequestDto.getTitle(), talkUpdateRequestDto.getContent(),
-                talkUpdateRequestDto.getFileURL());
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
+        if (!loggedInUserId.equals(talk.getWriter().getId())) {
+            throw new ForbiddenException();
+        }
+
+        talk.update(talkUpdateRequestDto.getTitle(), talkUpdateRequestDto.getContent(), talkUpdateRequestDto.getFileURL());
 
         return talk;
     }
@@ -70,8 +79,9 @@ public class TalkServiceImpl implements TalkService {
     }
 
     @Override
-    public List<TalkInfoResponseDto> readAllById(String id) {
-        List<Talk> allMyTalks = talkRepository.findById(id);
+    public List<TalkInfoResponseDto> readAllById() {
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        List<Talk> allMyTalks = talkRepository.findById(loggedInUserId);
         return allMyTalks.stream()
                 .map(m -> TalkInfoResponseDto.builder().talk(m).build())
                 .collect(Collectors.toList());
@@ -91,6 +101,15 @@ public class TalkServiceImpl implements TalkService {
     @Transactional
     @Override
     public void delete(Long boardId) {
+        Talk talk = talkRepository.findOne(boardId).orElseThrow(()
+                -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        // 로그인한 사용자가 작성자이거나, 관리자일 경우에만 삭제 허용
+        if (!loggedInUserId.equals(talk.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(talk.getWriter().getRole())) {
+            throw new ForbiddenException();
+        }
+
         talkRepository.delete(boardId);
     }
 
