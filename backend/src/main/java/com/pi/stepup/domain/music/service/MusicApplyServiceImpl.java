@@ -53,7 +53,16 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
         String id = getLoggedInUserId();
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, id);
-        return setCanHeart(musicApplies);
+        log.info("신청 목록 : {}", musicApplies);
+        log.info("노래 신청 첫번째 - 로그인 아이디 : {}", id);
+        if (!musicApplies.get(0).getHearts().isEmpty()) {
+            for (Heart h : musicApplies.get(0).getHearts()) {
+                log.info("좋아요 누른사람 아이디 : {}",
+                    h.getUser().getId());
+            }
+        }
+
+        return setCanHeart(musicApplies, id);
     }
 
     @Override
@@ -63,6 +72,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
         return setCanHeart(musicApplies);
     }
 
+    // 원래 메소드
     public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies) {
         List<MusicApplyFindResponseDto> result = new ArrayList<>();
 
@@ -70,6 +80,27 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             int canHeart = 1;
             if (ma.getHearts().size() != 0) {
                 canHeart = 0;
+            }
+
+            result.add(MusicApplyFindResponseDto.builder()
+                .musicApply(ma)
+                .canHeart(canHeart)
+                .build());
+        }
+        return result;
+    }
+
+    public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies, String id) {
+        List<MusicApplyFindResponseDto> result = new ArrayList<>();
+
+        for (MusicApply ma : musicApplies) {
+            int canHeart = 1;
+
+            for (Heart h : ma.getHearts()) {
+                if (h.getUser().getId().equals(id)) {
+                    canHeart = 0;
+                    break;
+                }
             }
 
             result.add(MusicApplyFindResponseDto.builder()
@@ -118,7 +149,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             .orElseThrow(() -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
         Heart heart = heartSaveRequestDto.toEntity(user, musicApply);
 
-        if(findHeartStatus(musicApply.getMusicApplyId()) == 0) {
+        if (findHeartStatus(musicApply.getMusicApplyId()) == 0) {
             throw new HeartStatusException(ADD_HEART_FAIL.getMessage());
         }
 

@@ -7,11 +7,13 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     private final EntityManager em;
@@ -29,9 +31,19 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    /**
+     * "SELECT new com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyJPAFindResponseDto("
+     *             + "ma.id, ma.title, ma.artist, ma.writer.nickname, ma.writer.profileImg, ma.heartCnt, h.id"
+     *             + ") "
+     *             + "FROM MusicApply ma "
+     *             + "JOIN ma.hearts h ON h.user.id = :id "
+     *             + "WHERE ma.writer.id = :id";
+     */
     public List<MusicApply> findAll(String keyword, String id) {
-        String sql = "SELECT ma FROM MusicApply ma "
-            + "LEFT JOIN FETCH ma.hearts h "; // 이게 왜 되는..?
+        log.info("현재 사용자 아이디 : {}", id);
+        String sql = "SELECT DISTINCT ma FROM MusicApply ma "
+            + "LEFT JOIN ma.hearts h ";
+//            + "LEFT JOIN h.user u ON u.id = :id";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
