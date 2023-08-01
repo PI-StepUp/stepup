@@ -14,7 +14,7 @@ public interface MeetingService {
 
     List<MeetingInfoResponseDto> readAll(String keyword);
 
-    List<MeetingInfoResponseDto> readAllById(String id);
+    List<MeetingInfoResponseDto> readAllById();
 
     MeetingInfoResponseDto readOne(Long boardId);
 
