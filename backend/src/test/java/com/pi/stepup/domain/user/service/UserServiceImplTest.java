@@ -187,13 +187,8 @@ class UserServiceImplTest {
     @DisplayName("사용자를 삭제할 때 해당 유저를 찾을 수 없을 경우 예외가 발생한다.")
     @Test
     void deleteTest_NotFound() {
-        String testId = "testId";
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
-
-            when(userRepository.findById(testId))
-                .thenReturn(Optional.empty());
+            mockGetUserIdAndFindById(securityUtilsMocked, null);
 
             assertThatThrownBy(() -> userService.delete())
                 .isInstanceOf(UserNotFoundException.class)
@@ -204,14 +199,9 @@ class UserServiceImplTest {
     @DisplayName("사용자를 삭제할 때 repository의 delete 메서드가 호출된다.")
     @Test
     void deleteTest_Success() {
-        String testId = "testId";
         User user = User.builder().build();
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
-
-            when(this.userRepository.findById(testId))
-                .thenReturn(Optional.of(user));
+            mockGetUserIdAndFindById(securityUtilsMocked, user);
 
             userService.delete();
 
@@ -222,18 +212,12 @@ class UserServiceImplTest {
     @DisplayName("회원정보 조회에 성공할 경우 UserInfoResponseDto를 반환한다.")
     @Test
     void readOneTest() {
-        String testId = "testId";
-
         // when, then
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
-
-            when(userRepository.findById(any(String.class)))
-                .thenReturn(Optional.of(User.builder()
-                    .country(Country.builder().build())
-                    .rank(Rank.builder().build())
-                    .build()));
+            mockGetUserIdAndFindById(securityUtilsMocked, User.builder()
+                .country(Country.builder().build())
+                .rank(Rank.builder().build())
+                .build());
 
             assertThat(userService.readOne()).isInstanceOf(UserInfoResponseDto.class);
         }
@@ -244,18 +228,13 @@ class UserServiceImplTest {
     @Test
     void checkPasswordTest_Same() {
         // given
-        String testId = "testId";
         String testPassword = "testPassword";
         User user = User.builder()
             .password(passwordEncoder.encode(testPassword))
             .build();
 
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
-
-            when(userRepository.findById(testId))
-                .thenReturn(Optional.of(user));
+            mockGetUserIdAndFindById(securityUtilsMocked, user);
 
             when(passwordEncoder.matches(testPassword, user.getPassword()))
                 .thenReturn(true);
@@ -272,7 +251,6 @@ class UserServiceImplTest {
     @Test
     void checkPasswordTest_NotSame() {
         // given
-        String testId = "testId";
         String testPassword = "testPassword";
         String encodedPassword = "encodePassword";
 
@@ -281,11 +259,7 @@ class UserServiceImplTest {
             .build();
 
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
-
-            when(userRepository.findById(testId))
-                .thenReturn(Optional.of(user));
+            mockGetUserIdAndFindById(securityUtilsMocked, user);
 
             when(passwordEncoder.matches(testPassword, user.getPassword()))
                 .thenReturn(false);
@@ -304,24 +278,21 @@ class UserServiceImplTest {
     @Test
     void updateTest_EmailDuplicated() {
         // given
-        String testId = "testId";
-        String testEmail = "testEmail";
         String userEmail = "userEmail";
+        User user = User.builder()
+            .email(userEmail)
+            .build();
 
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
+            mockGetUserIdAndFindById(securityUtilsMocked, user);
 
-            when(userRepository.findById(testId))
-                .thenReturn(Optional.of(User.builder().email(userEmail).build()));
-
-            when(userRepository.findByEmail(testEmail))
+            when(userRepository.findByEmail(TEST_EMAIL))
                 .thenReturn(Optional.of(User.builder().build()));
 
             // when, then
             assertThatThrownBy(() -> userService.update(
                 UpdateUserRequestDto.builder()
-                    .email(testEmail)
+                    .email(TEST_EMAIL)
                     .build()
             ))
                 .isInstanceOf(EmailDuplicatedException.class)
@@ -333,28 +304,21 @@ class UserServiceImplTest {
     @Test
     void updateTest_NicknameDuplicated() {
         // given
-        String testId = "testId";
-        String testEmail = "testEmail";
-        String testNickname = "testNickname";
         String userNickname = "userNickname";
 
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
+            mockGetUserIdAndFindById(securityUtilsMocked, User.builder()
+                .email(TEST_EMAIL)
+                .nickname(userNickname)
+                .build());
 
-            when(userRepository.findById(testId))
-                .thenReturn(Optional.of(User.builder()
-                    .email(testEmail)
-                    .nickname(userNickname)
-                    .build()));
-
-            when(userRepository.findByNickname(testNickname))
+            when(userRepository.findByNickname(TEST_NICKNAME))
                 .thenReturn(Optional.of(User.builder().build()));
 
             assertThatThrownBy(() -> userService.update(
                 UpdateUserRequestDto.builder()
-                    .email(testEmail)
-                    .nickname(testNickname)
+                    .email(TEST_EMAIL)
+                    .nickname(TEST_NICKNAME)
                     .build()
             ))
                 .isInstanceOf(NicknameDuplicatedException.class)
@@ -367,16 +331,11 @@ class UserServiceImplTest {
     void updateTest_UpdatePassword() {
         // given
         User user = makeUserSample();
-        String testId = "testId";
         String testPassword = "testPassword";
         String encodedTestPassword = "encodedTestPassword";
 
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
-
-            when(userRepository.findById(testId))
-                .thenReturn(Optional.of(user));
+            mockGetUserIdAndFindById(securityUtilsMocked, user);
 
             when(passwordEncoder.encode(testPassword))
                 .thenReturn(encodedTestPassword);
@@ -397,16 +356,11 @@ class UserServiceImplTest {
     @Test
     void updateTest_UpdateBasicInfo() {
         // given
-        String testId = "testId";
         UpdateUserRequestDto updateUserRequestDto = makeUpdateUserRequestDto();
         User user = makeUserSample();
 
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(testId);
-
-            when(userRepository.findById(testId))
-                .thenReturn(Optional.of(user));
+            mockGetUserIdAndFindById(securityUtilsMocked, user);
 
             when(userRepository.findByEmail(updateUserRequestDto.getEmail()))
                 .thenReturn(Optional.empty());
@@ -449,19 +403,26 @@ class UserServiceImplTest {
     }
 
     private UpdateUserRequestDto makeUpdateUserRequestDto() {
-        String testEmail = "testEmail";
         int testEmailAlert = 1;
         Long countryId = 1L;
-        String testNickname = "testNickname";
         String testProfileImg = "testProfileImg";
 
         return UpdateUserRequestDto.builder()
-            .email(testEmail)
+            .email(TEST_EMAIL)
             .emailAlert(testEmailAlert)
             .countryId(countryId)
-            .nickname(testNickname)
+            .nickname(TEST_NICKNAME)
             .profileImg(testProfileImg)
             .build();
+    }
+
+    private void mockGetUserIdAndFindById(MockedStatic<SecurityUtils> securityUtilsMocked,
+        User user) {
+        securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+            .thenReturn(TEST_ID);
+
+        when(userRepository.findById(TEST_ID))
+            .thenReturn(Optional.ofNullable(user));
     }
 
     private List<Country> makeCountries() {
