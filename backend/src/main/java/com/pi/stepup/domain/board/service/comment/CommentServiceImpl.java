@@ -42,7 +42,8 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public Comment create(CommentSaveRequestDto commentSaveRequestDto) {
-        User writer = userRepository.findById(commentSaveRequestDto.getId())
+        String loggedInUserId = SecurityUtils.getLoggedInUserId();
+        User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         Board board = boardRepository.findOne(commentSaveRequestDto.getBoardId())
