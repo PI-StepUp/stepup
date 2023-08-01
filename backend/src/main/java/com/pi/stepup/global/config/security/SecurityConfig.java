@@ -1,5 +1,6 @@
 package com.pi.stepup.global.config.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.filter.JwtAccessDeniedHandler;
 import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationEntryPoint;
@@ -21,9 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,10 +45,10 @@ public class SecurityConfig {
             .anyRequest().permitAll()
             .and()
             .exceptionHandling()
-            .accessDeniedHandler(jwtAccessDeniedHandler)
-            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
+            .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
             .and()
-            .addFilterBefore(jwtAuthenticationFilter,
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
                 UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
