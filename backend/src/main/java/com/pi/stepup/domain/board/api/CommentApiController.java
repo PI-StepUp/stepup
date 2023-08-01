@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Tag(name = "comment", description = "comment domain apis")
 @RequiredArgsConstructor
 @RequestMapping("/api/board")
@@ -25,7 +27,7 @@ public class CommentApiController {
     @ApiResponse(responseCode = "201", description = "댓글 등록 완료")
 
     @PostMapping("comment/{boardId}")
-    public ResponseEntity<ResponseDto<?>> createComment(@PathVariable Long boardId, @RequestBody CommentSaveRequestDto commentSaveRequestDto) {
+    public ResponseEntity<ResponseDto<?>> createComment(@PathVariable Long boardId, @RequestBody @Valid CommentSaveRequestDto commentSaveRequestDto) {
         commentSaveRequestDto.setBoardId(boardId);
         commentService.create(commentSaveRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
@@ -38,7 +40,7 @@ public class CommentApiController {
     @ApiResponse(responseCode = "200", description = "댓글 삭제 완료")
 
     @DeleteMapping("comment/{commentId}")
-    public ResponseEntity<ResponseDto<?>> deleteComment(@PathVariable Long commentId){
+    public ResponseEntity<ResponseDto<?>> deleteComment(@PathVariable Long commentId) {
         commentService.delete(commentId);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 BoardResponseMessage.DELETE_COMMENT.getMessage()
