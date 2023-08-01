@@ -78,7 +78,7 @@ class RankRepositoryTest {
 
     private void makeRandomDance() {
         randomDance = RandomDance.builder()
-            .id(1L)
+//            .id(1L)
             .title("title")
             .content("content")
             .danceType(DanceType.RANKING)

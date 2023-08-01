@@ -97,7 +97,12 @@ public class User extends BaseEntity {
     }
 
     public void updatePoint(Integer point) {
-        this.point += point;
+        int updatedPoint = this.point + point;
+        if(updatedPoint >= 5000) {
+            this.point = 5000;
+        } else {
+            this.point = updatedPoint;
+        }
     }
 
     public void setRank(Rank rank) {

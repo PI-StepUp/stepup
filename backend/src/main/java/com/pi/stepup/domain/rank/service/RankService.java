@@ -4,5 +4,5 @@ import com.pi.stepup.domain.rank.dto.RankResponseDto.UserRankFindResponseDto;
 
 public interface RankService {
 
-    UserRankFindResponseDto readOne(String id);
+    UserRankFindResponseDto readOne();
 }
