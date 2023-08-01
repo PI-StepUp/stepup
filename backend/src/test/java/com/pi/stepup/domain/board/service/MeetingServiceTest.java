@@ -1,4 +1,4 @@
 package com.pi.stepup.domain.board.service;
 
-public class BoardServiceTest {
+public class MeetingServiceTest {
 }
