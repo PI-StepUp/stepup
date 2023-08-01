@@ -182,7 +182,6 @@ class MusicApiControllerTest {
 
     private void makeMusicSaveRequestDto() {
         musicSaveRequestDto = MusicSaveRequestDto.builder()
-            .musicId(1L)
             .title("spicy")
             .artist("aespa")
             .answer("")
