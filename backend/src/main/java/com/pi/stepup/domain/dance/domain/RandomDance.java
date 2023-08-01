@@ -71,12 +71,13 @@ public class RandomDance {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd HH:mm");
+
     public void update(DanceUpdateRequestDto danceUpdateRequestDto) {
         this.title = danceUpdateRequestDto.getTitle();
         this.content = danceUpdateRequestDto.getContent();
         this.startAt = LocalDateTime.parse(danceUpdateRequestDto.getStartAt(), formatter);
         this.endAt = LocalDateTime.parse(danceUpdateRequestDto.getEndAt(), formatter);
-        this.danceType = danceUpdateRequestDto.getDanceType();
+        this.danceType = DanceType.valueOf(danceUpdateRequestDto.getDanceType());
         this.maxUser = danceUpdateRequestDto.getMaxUser();
         this.thumbnail = danceUpdateRequestDto.getThumbnail();
     }
