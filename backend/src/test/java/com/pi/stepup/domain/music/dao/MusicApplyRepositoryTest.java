@@ -56,6 +56,7 @@ class MusicApplyRepositoryTest {
     @DisplayName("노래 신청 목록 조회 테스트")
     public void findAllMusicApplyRepositoryTest() {
         String keyword = "";
+        em.persist(user);
         insertMusicApply();
 
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, user.getId());
@@ -66,6 +67,7 @@ class MusicApplyRepositoryTest {
     @DisplayName("노래 신청 목록 키워드 조회 테스트")
     public void findAllMusicApplyByKeywordRepositoryTest() {
         String keyword = "1";
+        em.persist(user);
         insertMusicApply();
 
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, user.getId());
