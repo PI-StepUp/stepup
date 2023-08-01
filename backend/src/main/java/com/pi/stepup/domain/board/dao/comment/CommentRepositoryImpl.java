@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,6 +20,15 @@ public class CommentRepositoryImpl implements CommentRepository {
     public Comment insert(Comment comment) {
         em.persist(comment);
         return comment;
+    }
+
+    @Override
+    public Optional<Comment> findOne(Long commentId) {
+        try {
+            return Optional.ofNullable(em.find(Comment.class, commentId));
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
