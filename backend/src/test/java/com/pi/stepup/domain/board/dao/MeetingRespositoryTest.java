@@ -40,6 +40,9 @@ public class MeetingRespositoryTest {
                 .id("j3beom")
                 .build();
 
+        em.persist(writer);
+        em.flush();
+
         meeting1 = Meeting.builder()
                 .writer(writer)
                 .title("정모 테스트 제목")
@@ -49,6 +52,7 @@ public class MeetingRespositoryTest {
                 .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
                 .region("서울, 대한민국")
                 .build();
+
 
         meeting2 = Meeting.builder()
                 .writer(writer)
@@ -61,12 +65,9 @@ public class MeetingRespositoryTest {
                 .build();
     }
 
-
     @Test
-    @DisplayName("정모 게시글 신청 테스트")
+    @DisplayName("정모 게시글 등록 테스트")
     public void testInsert() {
-        em.persist(writer);
-        em.flush();
         // When
         Meeting savedMeeting1 = meetingRepository.insert(meeting1);
         Meeting savedMeeting2 = meetingRepository.insert(meeting2);
