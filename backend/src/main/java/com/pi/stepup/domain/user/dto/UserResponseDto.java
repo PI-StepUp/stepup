@@ -53,9 +53,11 @@ public class UserResponseDto {
 
     @Getter
     public static class AuthenticatedResponseDto {
+
         private final TokenInfo tokens;
         private final UserInfoResponseDto userInfo;
 
+        @Builder
         public AuthenticatedResponseDto(TokenInfo tokenInfo, User user) {
             tokens = tokenInfo;
             userInfo = UserInfoResponseDto.builder().user(user).build();
