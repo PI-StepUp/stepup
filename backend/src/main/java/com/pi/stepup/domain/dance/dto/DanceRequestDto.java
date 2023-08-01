@@ -5,7 +5,6 @@ import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.domain.User;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -42,7 +41,7 @@ public class DanceRequestDto {
         @NotBlank
         private String hostId;
         @NotNull
-        private List<Long> danceMusicIdList = new ArrayList<>();
+        private List<Long> danceMusicIdList;
 
         public RandomDance toEntity(User host) {
             return RandomDance.builder()
@@ -82,17 +81,15 @@ public class DanceRequestDto {
         @NotBlank
         private String hostId;
         @NotNull
-        private List<Long> danceMusicIdList = new ArrayList<>();
+        private List<Long> danceMusicIdList;
     }
 
-    //postman테스트 해보기
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DanceSearchRequestDto {
 
-        @NotBlank
         private String progressType;
         private String keyword;
     }
