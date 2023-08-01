@@ -41,7 +41,7 @@ public class MusicServiceImpl implements MusicService {
     public MusicFindResponseDto readOne(Long musicId) {
         return MusicFindResponseDto.builder()
             .music(musicRepository.findOne(musicId)
-                .orElseThrow(() -> new MusicNotFoundException(MUSIC_DELETE_FAIL.getMessage())))
+                .orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage())))
             .build();
     }
 
@@ -57,7 +57,7 @@ public class MusicServiceImpl implements MusicService {
     @Transactional
     public void delete(Long musicId) {
         musicRepository.findOne(musicId)
-            .orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
+            .orElseThrow(() -> new MusicNotFoundException(MUSIC_DELETE_FAIL.getMessage()));
         musicRepository.delete(musicId);
     }
 }
