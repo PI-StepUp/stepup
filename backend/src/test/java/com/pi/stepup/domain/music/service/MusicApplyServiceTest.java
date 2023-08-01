@@ -328,6 +328,7 @@ class MusicApplyServiceTest {
             .artist(musicApplySaveRequestDto.getArtist())
             .content(musicApplySaveRequestDto.getContent())
             .writer(user)
+            .heartCnt(0)
             .build();
     }
 
@@ -352,6 +353,7 @@ class MusicApplyServiceTest {
                 title("title" + i)
                 .artist("artist" + (i + 1))
                 .writer(user)
+                .heartCnt(0)
                 .build();
             musicApplies.add(tmp);
         }
