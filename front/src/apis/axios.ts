@@ -6,6 +6,6 @@ export const axiosUser = axios.create({
     baseURL: SERVER_URL + "/user"
 })
 
-export const axiosNotice = axios.create({
+export const axiosBoard = axios.create({
     baseURL: SERVER_URL + "/board"
 })

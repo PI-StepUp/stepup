@@ -1,3 +1,5 @@
+import {useState} from "react";
+
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
@@ -5,12 +7,25 @@ import Footer from "components/Footer";
 import LanguageButton from "components/LanguageButton";
 
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
+import { axiosBoard } from "apis/axios";
 
 const ArticleList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
+    const [articles, setArticles] = useState<any[]>();
+    const router = useRouter();
+
+    axiosBoard.get("/talk", {
+        params: {
+            keyword: "",
+        }
+    }).then((data) => {
+        setArticles(data.data.data);
+    })
+
     return (
         <>
             <Header/>
@@ -47,66 +62,18 @@ const ArticleList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
-                        <tr>
-                            <td>10</td>
-                            <td>김싸피</td>
-                            <td>10번째게시글입니다.</td>
-                            <td>2013.07.15</td>
-                        </tr>
+                        {articles?.map((article) => {
+                            return(
+                                <tr onClick={() => router.push({
+                                    pathname: `/article/detail/${article.boardId}`,
+                                })}>
+                                    <td>{article.boardId}</td>
+                                    <td>{article.writerName}</td>
+                                    <td>{article.title}</td>
+                                    <td>{article.commentCnt}</td>
+                                </tr>
+                            )
+                        })}
                     </tbody>
                     
                 </table>

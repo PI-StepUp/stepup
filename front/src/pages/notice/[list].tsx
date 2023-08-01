@@ -11,11 +11,11 @@ import Link from "next/link"
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
-import { axiosNotice } from "apis/axios"
+import { axiosBoard } from "apis/axios"
 
 const NoticeList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
-    axiosNotice.get("/notice").then((data) => {
+    axiosBoard.get("/notice").then((data) => {
         console.log(data);
     })
 
