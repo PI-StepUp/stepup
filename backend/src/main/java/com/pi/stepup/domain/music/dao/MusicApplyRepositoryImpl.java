@@ -31,16 +31,15 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    /**
-     * "SELECT new com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyJPAFindResponseDto("
-     *             + "ma.id, ma.title, ma.artist, ma.writer.nickname, ma.writer.profileImg, ma.heartCnt, h.id"
-     *             + ") "
-     *             + "FROM MusicApply ma "
-     *             + "JOIN ma.hearts h ON h.user.id = :id "
-     *             + "WHERE ma.writer.id = :id";
-     */
     public List<MusicApply> findAll(String keyword, String id) {
         log.info("현재 사용자 아이디 : {}", id);
+//        String sql =
+//            "SELECT new com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyJPAFindResponseDto("
+//                + "ma.id, ma.title, ma.artist, ma.writer.nickname, ma.writer.profileImg, ma.heartCnt, h.id"
+//                + ") "
+//                + "FROM MusicApply ma "
+//                + "LEFT JOIN ma.hearts h ON h.user.id = :id "
+//                + "WHERE ma.writer.id = :id";
         String sql = "SELECT DISTINCT ma FROM MusicApply ma "
             + "LEFT JOIN ma.hearts h ";
 //            + "LEFT JOIN h.user u ON u.id = :id";
@@ -55,15 +54,6 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public List<MusicApply> findById(String id) {
-        /**
-         * [자기가 좋아요 누른 자기꺼 노래 신청 목록 반환, 좋아요 안누른 노래 신청은 누락]
-         * "SELECT ma FROM MusicApply ma "
-         *                     + "JOIN FETCH ma.hearts h " +
-         *                     "WHERE ma.writer.id = :id "
-         *
-         * LEFT JOIN 으로 해결
-         */
-
         return em.createQuery(
                 "SELECT ma FROM MusicApply ma "
                     + "LEFT JOIN FETCH ma.hearts h " +
