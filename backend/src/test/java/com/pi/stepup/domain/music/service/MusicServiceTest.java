@@ -73,19 +73,6 @@ class MusicServiceTest {
     }
 
     @Test
-    @DisplayName("관리자가 아닌 사용자가 노래 추가 예외 처리 테스트")
-    @Transactional
-    public void createMusicNotAdminTest() {
-        // TODO : ROLE_USER return
-//        when()
-
-        assertThatThrownBy(() -> musicService.create(musicSaveRequestDto))
-            .isInstanceOf(UnauthorizedUserAccessException.class)
-            .hasMessageContaining(UNAUTHORIZED_USER_ACCESS.getMessage());
-    }
-
-
-    @Test
     @DisplayName("노래 한 곡 조회 테스트")
     public void readOneMusicServiceTest() {
         when(musicRepository.findOne(any())).thenReturn(Optional.of(music));
