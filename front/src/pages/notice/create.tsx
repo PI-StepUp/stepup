@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useRef} from "react";
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
@@ -7,16 +7,16 @@ import Footer from "components/Footer";
 import { axiosBoard } from "apis/axios";
 
 const NoticeCreate = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [file, setFile] = useState('');
-    const writeNotice = async (e: any) => {
+    const noticeTitle = useRef();
+    const noticeContent = useRef();
+    const noticeFile = useRef();
+    const createNotice = async (e: any) => {
         e.preventDefault();
         const createNotice = await axiosBoard.post("/notice", {
             id: "ssafy",
-            title: title,
-            content: content,
-            fileURL: file,
+            title: noticeTitle.current?.value,
+            content: noticeContent.current?.value,
+            fileURL: noticeFile.current?.value,
             randomDanceId: 1,
         })
         console.log(createNotice);
@@ -39,15 +39,15 @@ const NoticeCreate = () => {
                         <table>
                             <tr>
                                 <td>제목</td>
-                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" onChange={(e) => setTitle(e.target.value)}/></td>
+                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={noticeTitle}/></td>
                             </tr>
                             <tr>
                                 <td>내용</td>
-                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." onChange={(e) => setContent(e.target.value)}></textarea></td>
+                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={noticeContent}></textarea></td>
                             </tr>
                             <tr>
                                 <td>첨부파일</td>
-                                <td><input type="file" accept="image/*" id="file-upload" onChange={(e) => setFile(e.target.value)}/></td>
+                                <td><input type="file" accept="image/*" id="file-upload" ref={noticeFile}/></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -55,7 +55,7 @@ const NoticeCreate = () => {
                                     <div className="create-button-wrap">
                                         <ul>
                                             <li><button>취소하기</button></li>
-                                            <li><button onClick={writeNotice}>작성하기</button></li>
+                                            <li><button onClick={createNotice}>작성하기</button></li>
                                         </ul>
                                     </div>
                                 </td>

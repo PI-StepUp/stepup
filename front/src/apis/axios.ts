@@ -9,3 +9,7 @@ export const axiosUser = axios.create({
 export const axiosBoard = axios.create({
     baseURL: SERVER_URL + "/board"
 })
+
+export const axiosMusic = axios.create({
+    baseURL: SERVER_URL + "/music"
+})
