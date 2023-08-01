@@ -29,8 +29,9 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public List<MusicApply> findAll(String keyword) {
-        String sql = "SELECT ma FROM MusicApply ma ";
+    public List<MusicApply> findAll(String keyword, String id) {
+        String sql = "SELECT ma FROM MusicApply ma "
+            + "LEFT JOIN FETCH ma.hearts h "; // 이게 왜 되는..?
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
@@ -42,9 +43,20 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public List<MusicApply> findById(String id) {
+        /**
+         * [자기가 좋아요 누른 자기꺼 노래 신청 목록 반환, 좋아요 안누른 노래 신청은 누락]
+         * "SELECT ma FROM MusicApply ma "
+         *                     + "JOIN FETCH ma.hearts h " +
+         *                     "WHERE ma.writer.id = :id "
+         *
+         * LEFT JOIN 으로 해결
+         */
+
         return em.createQuery(
-                "SELECT ma FROM MusicApply ma " +
-                    "WHERE ma.writer.id = :id", MusicApply.class
+                "SELECT ma FROM MusicApply ma "
+                    + "LEFT JOIN FETCH ma.hearts h " +
+                    "WHERE ma.writer.id = :id "
+                , MusicApply.class
             )
             .setParameter("id", id)
             .getResultList();

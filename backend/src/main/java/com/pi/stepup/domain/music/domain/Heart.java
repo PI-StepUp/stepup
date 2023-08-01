@@ -30,4 +30,8 @@ public class Heart {
         this.user = user;
         this.musicApply = musicApply;
     }
+
+    public void setMusicApply(MusicApply musicApply) {
+        this.musicApply = musicApply;
+    }
 }

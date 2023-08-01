@@ -70,7 +70,7 @@ class MusicApplyRepositoryTest {
         String keyword = "";
         insertMusicApply();
 
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, writer.getId());
         assertThat(musicApplies.size()).isEqualTo(5);
     }
 
@@ -80,7 +80,7 @@ class MusicApplyRepositoryTest {
         String keyword = "1";
         insertMusicApply();
 
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, writer.getId());
         assertThat(musicApplies.size()).isEqualTo(2);
     }
 
