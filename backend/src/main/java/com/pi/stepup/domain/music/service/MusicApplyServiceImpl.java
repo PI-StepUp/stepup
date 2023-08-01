@@ -81,7 +81,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     }
 
     @Override
-    public MusicApplyFindResponseDto readOne(String id, Long musicApplyId) {
+    public MusicApplyFindResponseDto readOne(Long musicApplyId) {
         return MusicApplyFindResponseDto.builder()
             .musicApply(musicApplyRepository.findOne(musicApplyId)
                 .orElseThrow(

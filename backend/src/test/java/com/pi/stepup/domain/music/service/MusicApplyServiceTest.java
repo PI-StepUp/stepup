@@ -165,7 +165,7 @@ class MusicApplyServiceTest {
                 .thenReturn(user.getId());
             when(musicApplyRepository.findOne(any())).thenReturn(Optional.of(musicApply));
 
-            MusicApplyFindResponseDto result = musicApplyService.readOne(user.getId(),
+            MusicApplyFindResponseDto result = musicApplyService.readOne(
                 musicApply.getMusicApplyId());
 
             assertThat(result.getTitle()).isEqualTo(musicApply.getTitle());
@@ -182,7 +182,7 @@ class MusicApplyServiceTest {
             when(musicApplyRepository.findOne(any())).thenReturn(Optional.empty());
 
             assertThatThrownBy(
-                () -> musicApplyService.readOne(user.getId(), musicApply.getMusicApplyId()))
+                () -> musicApplyService.readOne(musicApply.getMusicApplyId()))
                 .isInstanceOf(MusicApplyNotFoundException.class)
                 .hasMessageContaining(MUSIC_APPLY_NOT_FOUND.getMessage());
         }

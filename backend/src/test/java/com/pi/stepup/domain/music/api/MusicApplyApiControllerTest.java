@@ -112,7 +112,7 @@ class MusicApplyApiControllerTest {
     @DisplayName("노래 신청 상세 조회 테스트")
     @WithMockUser
     public void readOneMusicControllerTest() throws Exception {
-        when(musicApplyService.readOne(any(), any())).thenReturn(musicApplyFindResponseDto);
+        when(musicApplyService.readOne(any())).thenReturn(musicApplyFindResponseDto);
 
         String url = "/api/music/apply/detail?id=" + user.getId()
             + "&musicApplyId=" + musicApply.getMusicApplyId();
@@ -127,7 +127,7 @@ class MusicApplyApiControllerTest {
     @DisplayName("없는 노래 신청 상세 조회 예외 테스트")
     @WithMockUser
     public void readOneNotExistMusicApplyControllerTest() throws Exception {
-        when(musicApplyService.readOne(any(), any()))
+        when(musicApplyService.readOne(any()))
             .thenThrow(new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
 
         String url = "/api/music/apply/detail?id=" + user.getId()
