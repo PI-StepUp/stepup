@@ -26,7 +26,6 @@ public class DanceMusic {
     @Column(name = "DANCE_MUSIC_ID")
     private Long danceMusicId;
 
-    //    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MUSIC_ID")
     private Music music;
@@ -50,10 +49,4 @@ public class DanceMusic {
         return danceMusic;
     }
 
-    @Override
-    public String toString() {
-        return "DanceMusic{" +
-            "music=" + music +
-            '}';
-    }
 }

@@ -54,19 +54,45 @@ public class DanceRepositoryImpl implements DanceRepository {
     public List<RandomDance> findAllMyOpenDance(String id) {
         return em.createQuery("SELECT r FROM RandomDance r "
                 + "WHERE r.host.id = :id", RandomDance.class)
-//                        + "JOIN r.host u "
-//                        + "WHERE u.id = :id", RandomDance.class)
             .setParameter("id", id)
             .getResultList();
     }
 
     @Override
     public List<RandomDance> findAllDance(String keyword) {
-        String sql = "SELECT r FROM RandomDance r ";
+        String sql = "SELECT r FROM RandomDance r "
+            + "WHERE r.endAt >= current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "WHERE r.title LIKE concat('%', " + keyword + ", '%') OR " +
-                "r.content LIKE concat('%', " + keyword + ", '%')";
+            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
+                "r.content LIKE concat('%', '" + keyword + "', '%')";
+        }
+
+        return em.createQuery(sql, RandomDance.class).getResultList();
+    }
+
+    @Override
+    public List<RandomDance> findScheduledDance(String keyword) {
+        String sql = "SELECT r FROM RandomDance r "
+            + "WHERE r.startAt > current_timestamp ";
+
+        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
+            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
+                "r.content LIKE concat('%', '" + keyword + "', '%')";
+        }
+
+        return em.createQuery(sql, RandomDance.class).getResultList();
+    }
+
+    @Override
+    public List<RandomDance> findInProgressDance(String keyword) {
+        String sql = "SELECT r FROM RandomDance r "
+            + "WHERE r.startAt <= current_timestamp "
+            + "AND r.endAt >= current_timestamp";
+
+        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
+            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
+                "r.content LIKE concat('%', '" + keyword + "', '%')";
         }
 
         return em.createQuery(sql, RandomDance.class).getResultList();
@@ -79,7 +105,8 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public Optional<Reservation> findByRandomDanceIdAndUserId(Long randomDanceId, Long userId) {
+    public Optional<Reservation> findReservationByRandomDanceIdAndUserId(Long randomDanceId,
+        Long userId) {
         Optional<Reservation> reservation = null;
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
@@ -96,9 +123,31 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
-    public void deleteReservation(Long reservationId) {
-        Reservation reservation = em.find(Reservation.class, reservationId);
-        em.remove(reservation);
+    public Optional<Reservation> findReservationByReservationIdAndRandomDanceId(Long reservationId,
+        Long randomDanceId) {
+        Optional<Reservation> reservation = null;
+        try {
+            reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
+                    + "WHERE r.reservationId = :reservationId "
+                    + "AND r.randomDance.randomDanceId = :randomDanceId", Reservation.class)
+                .setParameter("reservationId", reservationId)
+                .setParameter("randomDanceId", randomDanceId)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            reservation = Optional.empty();
+        } finally {
+            return reservation;
+        }
+    }
+
+    @Override
+    public void deleteReservation(Long randomDanceId, Long userId) {
+        em.createQuery("DELETE FROM Reservation r "
+                + "WHERE r.randomDance.randomDanceId = :randomDanceId "
+                + "AND r.user.userId = :userId")
+            .setParameter("randomDanceId", randomDanceId)
+            .setParameter("userId", userId)
+            .executeUpdate();
     }
 
     @Override
@@ -113,6 +162,24 @@ public class DanceRepositoryImpl implements DanceRepository {
     public AttendHistory insertAttend(AttendHistory attendHistory) {
         em.persist(attendHistory);
         return attendHistory;
+    }
+
+    @Override
+    public Optional<AttendHistory> findAttendByRandomDanceIdAndUserId(Long randomDanceId,
+        Long userId) {
+        Optional<AttendHistory> attend = null;
+        try {
+            attend = Optional.ofNullable(em.createQuery("SELECT a FROM AttendHistory a "
+                    + "WHERE a.randomDance.randomDanceId = :randomDanceId "
+                    + "AND a.user.userId = :userId", AttendHistory.class)
+                .setParameter("randomDanceId", randomDanceId)
+                .setParameter("userId", userId)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            attend = Optional.empty();
+        } finally {
+            return attend;
+        }
     }
 
     @Override

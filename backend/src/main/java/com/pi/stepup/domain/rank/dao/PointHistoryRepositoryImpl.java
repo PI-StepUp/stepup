@@ -1,23 +1,25 @@
 package com.pi.stepup.domain.rank.dao;
 
 import com.pi.stepup.domain.rank.domain.PointHistory;
+import java.util.List;
+import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class PointHistoryRepositoryImpl implements PointHistoryRepository {
+
     private final EntityManager em;
 
     @Override
-    public List<PointHistory> findAll() {
+    public List<PointHistory> findAll(String id) {
         return em.createQuery(
-                        "SELECT ph FROM PointHistory ph", PointHistory.class
-                )
-                .getResultList();
+                "SELECT ph FROM PointHistory ph "
+                    + "WHERE ph.user.id = :id", PointHistory.class
+            )
+            .setParameter("id", id)
+            .getResultList();
     }
 
     @Override

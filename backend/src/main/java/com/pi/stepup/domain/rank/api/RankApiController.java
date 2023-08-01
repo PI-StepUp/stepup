@@ -40,8 +40,8 @@ public class RankApiController {
         description = "사용자의 포인트 적립 내역들을 상세히 보여준다.")
     @ApiResponse(responseCode = "200",
         description = "포인트 적립 내역 조회 완료")
-    @GetMapping("/my/history/{id}")
-    public ResponseEntity<ResponseDto<?>> readAllPointHistory(@PathVariable("id") String id) {
+    @GetMapping("/my/history")
+    public ResponseEntity<ResponseDto<?>> readAllPointHistory() {
         log.info("포인트 적립 내역 : {}", pointHistoryService.readAll());
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_PONT_HISTORY_SUCCESS.getMessage(),
@@ -53,11 +53,11 @@ public class RankApiController {
         description = "사용자의 포인트를 조회한다.")
     @ApiResponse(responseCode = "200",
         description = "포인트 조회 완료")
-    @GetMapping("/my/point/{id}")
-    public ResponseEntity<ResponseDto<?>> readPoint(@PathVariable("id") String id) {
+    @GetMapping("/my/point")
+    public ResponseEntity<ResponseDto<?>> readPoint() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_POINT_SUCCESS.getMessage(),
-                pointHistoryService.readPoint(id)
+                pointHistoryService.readPoint()
         ));
     }
 
@@ -65,11 +65,11 @@ public class RankApiController {
         description = "사용자의 등급을 조회한다.")
     @ApiResponse(responseCode = "200",
         description = "사용자 등급 조회 완료")
-    @GetMapping("/my/grade/{id}")
-    public ResponseEntity<ResponseDto<?>> readUserRank(@PathVariable("id") String id) {
+    @GetMapping("/my/grade")
+    public ResponseEntity<ResponseDto<?>> readUserRank() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 READ_RANK_SUCCESS.getMessage(),
-                rankService.readOne(id)
+                rankService.readOne()
         ));
     }
 }
