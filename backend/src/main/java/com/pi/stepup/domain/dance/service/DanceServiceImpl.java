@@ -10,6 +10,7 @@ import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_UP
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_DELETE_FORBIDDEN;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_DUPLICATED;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_IMPOSSIBLE;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 import com.pi.stepup.domain.dance.constant.ProgressType;
@@ -31,6 +32,7 @@ import com.pi.stepup.domain.dance.exception.ReservationForbiddenException;
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
+import com.pi.stepup.domain.music.exception.MusicNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
@@ -67,14 +69,12 @@ public class DanceServiceImpl implements DanceService {
 
         //노래는 최소 10곡 ~ 최대 50곡
         List<Long> danceMusicIdList = danceCreateRequestDto.getDanceMusicIdList();
-        //지금은 일단 2곡 이상으로 해놓았음
-        if (danceMusicIdList.size() >= 2 && danceMusicIdList.size() <= 50) {
+        //지금은 일단 1곡 이상으로 해놓았음
+        if (danceMusicIdList.size() >= 1 && danceMusicIdList.size() <= 50) {
             for (int i = 0; i < danceMusicIdList.size(); i++) {
                 Music music = musicRepository.findOne(
-                    danceMusicIdList.get(i)).orElseThrow();
-                // TODO: merge 후 추가하기
-                //                    danceMusicIdList.get(i)).orElseThrow(()
-                //                    -> new MusicNotFoundException(.getMessage()));
+                    danceMusicIdList.get(i)).orElseThrow(()
+                    -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
                 DanceMusic danceMusic = DanceMusic.createDanceMusic(music);
                 randomDance.addDanceMusicAndSetThis(danceMusic);
             }
@@ -98,6 +98,9 @@ public class DanceServiceImpl implements DanceService {
     @Transactional
     public void update(DanceUpdateRequestDto danceUpdateRequestDto) {
         String loginUserId = SecurityUtils.getLoggedInUserId();
+        userRepository.findById(loginUserId).orElseThrow(()
+            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
         String HostId = danceUpdateRequestDto.getHostId();
         if (!loginUserId.equals(HostId)) {
             throw new DanceForbiddenException(DANCE_UPDATE_FORBIDDEN.getMessage());
@@ -121,6 +124,9 @@ public class DanceServiceImpl implements DanceService {
             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         String loginUserId = SecurityUtils.getLoggedInUserId();
+        userRepository.findById(loginUserId).orElseThrow(()
+            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
         String HostId = randomDance.getHost().getId();
         if (!loginUserId.equals(HostId)) {
             throw new DanceForbiddenException(DANCE_DELETE_FORBIDDEN.getMessage());
@@ -139,10 +145,8 @@ public class DanceServiceImpl implements DanceService {
         List<DanceMusic> danceMusicList = danceRepository.findAllDanceMusic(randomDanceId);
         for (int i = 0; i < danceMusicList.size(); i++) {
             Long musicId = danceMusicList.get(i).getMusic().getMusicId();
-            Music music = musicRepository.findOne(musicId).orElseThrow();
-            // TODO: merge 후 추가하기
-//                     musicId).orElseThrow(
-//                    -> new MusicNotFoundException(.getMessage()));
+            Music music = musicRepository.findOne(musicId).orElseThrow(()
+                -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
             MusicFindResponseDto musicFindResponseDto = MusicFindResponseDto.builder()
                 .music(music).build();
             allDanceMusic.add(musicFindResponseDto);

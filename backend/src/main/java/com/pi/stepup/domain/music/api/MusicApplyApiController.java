@@ -82,11 +82,10 @@ public class MusicApplyApiController {
         description = "노래 신청 상세 조회 완료")
     @GetMapping("/detail")
     public ResponseEntity<ResponseDto<?>> readOneMusicApply(
-        @RequestParam(name = "id") String id,
         @RequestParam(name = "musicApplyId") Long musicApplyId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             READ_ONE_MUSIC_APPLY_SUCCESS.getMessage(),
-            musicApplyService.readOne(id, musicApplyId)
+            musicApplyService.readOne(musicApplyId)
         ));
     }
 

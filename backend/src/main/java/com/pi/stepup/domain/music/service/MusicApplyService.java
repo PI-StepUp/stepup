@@ -11,7 +11,7 @@ public interface MusicApplyService {
 
     List<MusicApplyFindResponseDto> readAllByKeyword(String keyword);
 
-    MusicApplyFindResponseDto readOne(String id, Long musicApplyId);
+    MusicApplyFindResponseDto readOne(Long musicApplyId);
 
     void delete(Long musicApplyId);
 
