@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
@@ -122,13 +123,13 @@ class MusicServiceTest {
     }
 
     @Test
-    @DisplayName("없는 노래를 삭제할 때 MUSIC_NOT_FOUND 예외 테스트")
+    @DisplayName("없는 노래를 삭제할 때 예외 테스트")
     public void deleteOneMusicNotFoundTest() {
         when(musicRepository.findOne(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> musicService.delete(music.getMusicId()))
             .isInstanceOf(MusicNotFoundException.class)
-            .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
+            .hasMessageContaining(MUSIC_DELETE_FAIL.getMessage());
     }
 
     private List<Music> makeMusic() {
