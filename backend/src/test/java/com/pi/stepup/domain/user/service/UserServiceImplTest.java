@@ -19,6 +19,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
+import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
@@ -34,11 +35,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
+    @Spy
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -201,6 +204,24 @@ class UserServiceImplTest {
 
             assertThatNoException().isThrownBy(() -> userService.delete());
         }
+    }
+
+    @DisplayName("회원정보 조회에 성공할 경우 UserInfoResponseDto를 반환한다.")
+    @Test
+    void readOneTest() {
+        String testId = "testId";
+
+        // when, then
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(testId);
+
+            when(userRepository.findById(any(String.class)))
+                .thenReturn(Optional.of(User.builder().build()));
+
+            assertThat(userService.readOne()).isInstanceOf(UserInfoResponseDto.class);
+        }
+
     }
 
     private List<Country> makeCountries() {
