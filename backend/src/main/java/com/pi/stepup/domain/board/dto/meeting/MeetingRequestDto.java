@@ -22,9 +22,7 @@ public class MeetingRequestDto {
         @NotBlank
         private String content;
         private String fileURL;
-        @NotEmpty
         private LocalDateTime startAt;
-        @NotEmpty
         private LocalDateTime endAt;
         @NotBlank
         private String region;
