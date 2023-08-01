@@ -67,8 +67,8 @@ public class DanceServiceImpl implements DanceService {
 
         //노래는 최소 10곡 ~ 최대 50곡
         List<Long> danceMusicIdList = danceCreateRequestDto.getDanceMusicIdList();
-        //지금은 일단 2곡 이상으로 해놓았음
-        if (danceMusicIdList.size() >= 2 && danceMusicIdList.size() <= 50) {
+        //지금은 일단 1곡 이상으로 해놓았음
+        if (danceMusicIdList.size() >= 1 && danceMusicIdList.size() <= 50) {
             for (int i = 0; i < danceMusicIdList.size(); i++) {
                 Music music = musicRepository.findOne(
                     danceMusicIdList.get(i)).orElseThrow();
@@ -98,6 +98,9 @@ public class DanceServiceImpl implements DanceService {
     @Transactional
     public void update(DanceUpdateRequestDto danceUpdateRequestDto) {
         String loginUserId = SecurityUtils.getLoggedInUserId();
+        userRepository.findById(loginUserId).orElseThrow(()
+            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
         String HostId = danceUpdateRequestDto.getHostId();
         if (!loginUserId.equals(HostId)) {
             throw new DanceForbiddenException(DANCE_UPDATE_FORBIDDEN.getMessage());
@@ -121,6 +124,9 @@ public class DanceServiceImpl implements DanceService {
             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         String loginUserId = SecurityUtils.getLoggedInUserId();
+        userRepository.findById(loginUserId).orElseThrow(()
+            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
         String HostId = randomDance.getHost().getId();
         if (!loginUserId.equals(HostId)) {
             throw new DanceForbiddenException(DANCE_DELETE_FORBIDDEN.getMessage());
