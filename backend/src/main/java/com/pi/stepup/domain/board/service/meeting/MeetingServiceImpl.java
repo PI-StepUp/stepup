@@ -7,6 +7,7 @@ import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingSaveReque
 import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto.MeetingUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto.MeetingInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
+import com.pi.stepup.domain.board.exception.MeetingBadRequestException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
+import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.MEETING_INVALID_TIME;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
@@ -38,6 +40,11 @@ public class MeetingServiceImpl implements MeetingService {
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
         User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        //끝 시간이 시작 시간보다 이전이면 예외
+        if (meetingSaveRequestDto.getEndAt().isBefore(meetingSaveRequestDto.getStartAt())) {
+            throw new MeetingBadRequestException(MEETING_INVALID_TIME.getMessage());
+        }
 
         Meeting meeting = Meeting.builder()
                 .writer(writer)
@@ -59,6 +66,11 @@ public class MeetingServiceImpl implements MeetingService {
     public Meeting update(MeetingUpdateRequestDto meetingUpdateRequestDto) {
         Meeting meeting = meetingRepository.findOne(meetingUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+
+        //끝 시간이 시작 시간보다 이전이면 예외
+        if (meetingUpdateRequestDto.getEndAt().isBefore(meetingUpdateRequestDto.getStartAt())) {
+            throw new MeetingBadRequestException(MEETING_INVALID_TIME.getMessage());
+        }
 
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
         // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
