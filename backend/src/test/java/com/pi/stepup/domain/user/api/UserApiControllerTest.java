@@ -10,6 +10,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKN
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,15 +20,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
+import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.domain.Country;
+import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
+import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.service.UserService;
+import com.pi.stepup.domain.user.util.WithMockCustomUser;
+import com.pi.stepup.global.config.security.SecurityConfig;
+import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -35,9 +42,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+@Import(SecurityConfig.class)
 @WebMvcTest(UserApiController.class)
 class UserApiControllerTest {
 
@@ -46,6 +55,9 @@ class UserApiControllerTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private JwtTokenProvider jwtTokenProvider;
 
     private final Gson gson = new Gson();
     private final String UTF_8 = "UTF-8";
@@ -185,6 +197,21 @@ class UserApiControllerTest {
                     .content(content)
             )
             .andExpect(status().isConflict());
+    }
+
+    @DisplayName("회원정보 조회")
+    @WithMockCustomUser
+    @Test
+    void loginTest() throws Exception {
+        doReturn(UserInfoResponseDto.builder()
+            .user(User.builder()
+                .country(Country.builder().build())
+                .rank(Rank.builder().build())
+                .build())
+            .build()).when(userService).readOne();
+
+        mockMvc.perform(get("/api/user"))
+            .andExpect(status().isOk());
     }
 
     private String makeJsonRequestDto(Class<?> dtoType, String param) {
