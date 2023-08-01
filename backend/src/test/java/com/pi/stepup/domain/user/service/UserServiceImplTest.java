@@ -179,7 +179,8 @@ class UserServiceImplTest {
             securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
                 .thenReturn(testId);
 
-            when(userRepository.findById(any(String.class))).thenReturn(Optional.empty());
+            when(userRepository.findById(testId))
+                .thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> userService.delete())
                 .isInstanceOf(UserNotFoundException.class)
@@ -195,8 +196,8 @@ class UserServiceImplTest {
             securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
                 .thenReturn(testId);
 
-            when(this.userRepository.findById(any(String.class)))
-                .thenReturn(Optional.of(User.builder().id(testId).build()));
+            when(this.userRepository.findById(testId))
+                .thenReturn(Optional.of(User.builder().build()));
 
             assertThatNoException().isThrownBy(() -> userService.delete());
         }
