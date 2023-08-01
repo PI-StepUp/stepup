@@ -1,8 +1,15 @@
 package com.pi.stepup.domain.music.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.user.domain.User;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,17 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @Transactional
 class MusicApplyRepositoryTest {
+
     @PersistenceContext
     private EntityManager em;
 
@@ -28,27 +28,15 @@ class MusicApplyRepositoryTest {
     private MusicApplyRepository musicApplyRepository;
 
     private MusicApply musicApply;
-    private User writer;
+    private User user;
     private Heart heart;
 
     @Test
     @BeforeEach
     public void init() {
-        writer = User.builder()
-                .id("user")
-                .build();
-
-        musicApply = MusicApply.builder()
-                .title("title")
-                .artist("artist")
-                .content("content")
-                .writer(writer)
-                .build();
-
-        heart = Heart.builder()
-                .user(writer)
-                .musicApply(musicApply)
-                .build();
+        makeUser();
+        makeMusicApply();
+        makeHeart();
     }
 
     @Test
@@ -70,7 +58,7 @@ class MusicApplyRepositoryTest {
         String keyword = "";
         insertMusicApply();
 
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, writer.getId());
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, user.getId());
         assertThat(musicApplies.size()).isEqualTo(5);
     }
 
@@ -80,7 +68,7 @@ class MusicApplyRepositoryTest {
         String keyword = "1";
         insertMusicApply();
 
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, writer.getId());
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, user.getId());
         assertThat(musicApplies.size()).isEqualTo(2);
     }
 
@@ -90,7 +78,7 @@ class MusicApplyRepositoryTest {
         insertWriter();
         insertMusicApplyWithDifferentWriter();
 
-        List<MusicApply> musicApplies = musicApplyRepository.findById(writer.getId());
+        List<MusicApply> musicApplies = musicApplyRepository.findById(user.getId());
         assertThat(musicApplies.size()).isEqualTo(5);
     }
 
@@ -120,14 +108,14 @@ class MusicApplyRepositoryTest {
         assertThat(musicApplyRepository.findOne(musicApplyId)).isEmpty();
     }
 
-    private List<MusicApply> makeMusicApply() {
+    private List<MusicApply> makeMusicApplies() {
         List<MusicApply> musicApplies = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             MusicApply musicApply = MusicApply.builder()
-                    .title("t" + i)
-                    .artist("a" + (i + 1))
-                    .writer(writer)
-                    .build();
+                .title("t" + i)
+                .artist("a" + (i + 1))
+                .writer(user)
+                .build();
 
             musicApplies.add(musicApply);
         }
@@ -135,26 +123,26 @@ class MusicApplyRepositoryTest {
     }
 
     private void insertMusicApplyWithDifferentWriter() {
-        List<MusicApply> musicApplies = makeMusicApply();
+        List<MusicApply> musicApplies = makeMusicApplies();
 
         User tmp = User.builder().id("another").password("password").build();
         em.persist(tmp);
 
         musicApplies.add(MusicApply.builder()
-                .title("title")
-                .writer(tmp)
-                .build());
+            .title("title")
+            .writer(tmp)
+            .build());
 
         musicApplies.forEach(em::persist);
     }
 
     private void insertMusicApply() {
-        List<MusicApply> musicApplies = makeMusicApply();
+        List<MusicApply> musicApplies = makeMusicApplies();
         musicApplies.forEach(em::persist);
     }
 
     private void insertWriter() {
-        em.persist(writer);
+        em.persist(user);
     }
 
     @Test
@@ -165,5 +153,27 @@ class MusicApplyRepositoryTest {
         Heart result = musicApplyRepository.insert(heart);
 
         assertThat(result).isEqualTo(heart);
+    }
+
+    private void makeHeart() {
+        heart = Heart.builder()
+            .user(user)
+            .musicApply(musicApply)
+            .build();
+    }
+
+    private void makeMusicApply() {
+        musicApply = MusicApply.builder()
+            .title("title")
+            .artist("artist")
+            .content("content")
+            .writer(user)
+            .build();
+    }
+
+    private void makeUser() {
+        user = User.builder()
+            .id("user")
+            .build();
     }
 }
