@@ -20,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -40,8 +41,8 @@ public class MeetingServiceTest {
     @BeforeEach
     public void init() {
         makeWriter();
-        makeMeetingSaveRequestDto1();
         makeMeeting();
+        makeMeetingSaveRequestDto();
     }
 
     public User makeWriter() {
@@ -53,33 +54,21 @@ public class MeetingServiceTest {
     }
 
 
-//    public void makeMeeting() {
-//        meeting1 = Meeting.builder()
-//                .boardId(1L)
-//                .writer(writer)
-//                .title("정모 테스트 제목")
-//                .content("정모 테스트 내용")
-//                .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-//                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
-//                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
-//                .region("서울")
-//                .build();
-//    }
-
-    private void makeMeeting() {
+    public void makeMeeting() {
         meeting1 = Meeting.builder()
                 .boardId(1L)
-                .title(meetingSaveRequestDto.getTitle())
-                .content(meetingSaveRequestDto.getContent())
-                .fileURL(meetingSaveRequestDto.getFileURL())
-                .startAt(meetingSaveRequestDto.getStartAt())
-                .endAt(meetingSaveRequestDto.getEndAt())
-                .region(meetingSaveRequestDto.getRegion())
                 .writer(writer)
+                .title("정모 테스트 제목")
+                .content("정모 테스트 내용")
+                .fileURL("https://example.com/meeting_files/meeting_document.pdf")
+                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
+                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .region("서울")
                 .build();
     }
 
-    public void makeMeetingSaveRequestDto1() {
+
+    public void makeMeetingSaveRequestDto() {
         meetingSaveRequestDto = MeetingRequestDto.MeetingSaveRequestDto.builder()
                 .title("정모 테스트 제목")
                 .content("정모 테스트 내용")
@@ -90,28 +79,45 @@ public class MeetingServiceTest {
                 .build();
     }
 
-    public void makeMeetingUpdateRequestDto1() {
+    public void makeMeetingUpdateRequestDto() {
         meetingUpdateRequestDto = MeetingRequestDto.MeetingUpdateRequestDto.builder()
                 .boardId(1L)
                 .title("(수정)정모 테스트 제목")
                 .content("(수정)정모 테스트 내용")
                 .fileURL("(수정)https://example.com/meeting_files/meeting_document.pdf")
+                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
+                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .region("광주")
                 .build();
     }
 
     @Test
     @DisplayName("정모 게시글 등록 테스트")
-    public void createMeetingServiceTest() {
+    public void createTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
                 SecurityUtils.class)) {
             securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
                     .thenReturn(writer.getId());
             when(userRepository.findById(any(String.class))).thenReturn(Optional.of(writer));
 
-            makeMeetingSaveRequestDto1();
+            makeMeetingSaveRequestDto();
 
             meetingService.create(meetingSaveRequestDto);
             verify(meetingRepository, only()).insert(any(Meeting.class));
+        }
+    }
+
+    @Test
+    @DisplayName("정모 게시글 수정 테스트")
+    public void updateTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(writer.getId());
+            when(meetingRepository.findOne(any(Long.class)))
+                    .thenReturn(Optional.of(meeting1));
+            makeMeetingUpdateRequestDto();
+
+            assertThatNoException().isThrownBy(() -> meetingService.update(meetingUpdateRequestDto));
         }
     }
 
