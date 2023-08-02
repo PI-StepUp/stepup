@@ -1,18 +1,6 @@
 package com.pi.stepup.domain.dance.service;
 
 
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.ATTEND_DUPLICATED;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_DELETE_FORBIDDEN;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_INVALID_MUSIC;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_INVALID_TIME;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_NOT_FOUND;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_UPDATE_FORBIDDEN;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_DELETE_FORBIDDEN;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_DUPLICATED;
-import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_IMPOSSIBLE;
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
-import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
-
 import com.pi.stepup.domain.dance.constant.ProgressType;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.AttendHistory;
@@ -24,11 +12,7 @@ import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceSearchResponseDto;
-import com.pi.stepup.domain.dance.exception.AttendDuplicatedException;
-import com.pi.stepup.domain.dance.exception.DanceBadRequestException;
-import com.pi.stepup.domain.dance.exception.DanceForbiddenException;
-import com.pi.stepup.domain.dance.exception.ReservationDuplicatedException;
-import com.pi.stepup.domain.dance.exception.ReservationForbiddenException;
+import com.pi.stepup.domain.dance.exception.*;
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
@@ -37,12 +21,19 @@ import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.config.security.SecurityUtils;
-import java.util.ArrayList;
-import java.util.List;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.*;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +50,7 @@ public class DanceServiceImpl implements DanceService {
     public void create(DanceCreateRequestDto danceCreateRequestDto) {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         User host = userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         RandomDance randomDance = danceCreateRequestDto.toEntity(host);
         //시간이 잘못된 경우
@@ -73,8 +64,8 @@ public class DanceServiceImpl implements DanceService {
         if (danceMusicIdList.size() >= 2 && danceMusicIdList.size() <= 50) {
             for (int i = 0; i < danceMusicIdList.size(); i++) {
                 Music music = musicRepository.findOne(
-                    danceMusicIdList.get(i)).orElseThrow(()
-                    -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
+                        danceMusicIdList.get(i)).orElseThrow(()
+                        -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
                 DanceMusic danceMusic = DanceMusic.createDanceMusic(music);
                 randomDance.addDanceMusicAndSetThis(danceMusic);
             }
@@ -99,7 +90,7 @@ public class DanceServiceImpl implements DanceService {
     public void update(DanceUpdateRequestDto danceUpdateRequestDto) {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         String HostId = danceUpdateRequestDto.getHostId();
         if (!loginUserId.equals(HostId)) {
@@ -107,8 +98,8 @@ public class DanceServiceImpl implements DanceService {
         }
 
         RandomDance randomDance = danceRepository.findOne(danceUpdateRequestDto.getRandomDanceId())
-            .orElseThrow(()
-                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                .orElseThrow(()
+                        -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         randomDance.update(danceUpdateRequestDto);
     }
@@ -120,12 +111,12 @@ public class DanceServiceImpl implements DanceService {
     @Transactional
     public void delete(Long randomDanceId) {
         RandomDance randomDance
-            = danceRepository.findOne(randomDanceId).orElseThrow(()
-            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                = danceRepository.findOne(randomDanceId).orElseThrow(()
+                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         String loginUserId = SecurityUtils.getLoggedInUserId();
         userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         String HostId = randomDance.getHost().getId();
         if (!loginUserId.equals(HostId)) {
@@ -138,7 +129,7 @@ public class DanceServiceImpl implements DanceService {
     @Override
     public List<MusicFindResponseDto> readAllDanceMusic(Long randomDanceId) {
         danceRepository.findOne(randomDanceId).orElseThrow(()
-            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         List<MusicFindResponseDto> allDanceMusic = new ArrayList<>();
 
@@ -146,9 +137,9 @@ public class DanceServiceImpl implements DanceService {
         for (int i = 0; i < danceMusicList.size(); i++) {
             Long musicId = danceMusicList.get(i).getMusic().getMusicId();
             Music music = musicRepository.findOne(musicId).orElseThrow(()
-                -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
+                    -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
             MusicFindResponseDto musicFindResponseDto = MusicFindResponseDto.builder()
-                .music(music).build();
+                    .music(music).build();
             allDanceMusic.add(musicFindResponseDto);
         }
 
@@ -159,7 +150,7 @@ public class DanceServiceImpl implements DanceService {
     public List<DanceFindResponseDto> readAllMyOpenDance() {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         List<DanceFindResponseDto> allMyOpenDance = new ArrayList<>();
 
@@ -167,7 +158,7 @@ public class DanceServiceImpl implements DanceService {
         for (int i = 0; i < randomDanceList.size(); i++) {
             RandomDance randomDance = randomDanceList.get(i);
             DanceFindResponseDto danceFindResponseDto
-                = DanceFindResponseDto.builder().randomDance(randomDance).build();
+                    = DanceFindResponseDto.builder().randomDance(randomDance).build();
 
             allMyOpenDance.add(danceFindResponseDto);
         }
@@ -178,18 +169,32 @@ public class DanceServiceImpl implements DanceService {
     //TODO: 로그인 유저랑 비교해서 예약한 상태면 예약 버튼 안 뜨고, 예약 안 했으면 예약 버튼 뜨게 -> 0/1
     @Override
     public List<DanceSearchResponseDto> readAllRandomDance(
-        DanceSearchRequestDto danceSearchRequestDto) {
+            DanceSearchRequestDto danceSearchRequestDto) {
         List<RandomDance> randomDanceList = new ArrayList<>();
+
+        boolean isLogin = false;
+        String loginUserId = "id";
+        User user = null;
+
+        //로그인 안 한 경우에도 접근 가능
+        try {
+            loginUserId = SecurityUtils.getLoggedInUserId();
+            user = userRepository.findById(loginUserId).orElseThrow(()
+                    -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+            isLogin = true;
+        } catch (ForbiddenException e) {
+            loginUserId = "id";
+        }
 
         if (danceSearchRequestDto.getProgressType().equals(ProgressType.SCHEDULED.toString())) {
             randomDanceList
-                = danceRepository.findScheduledDance(danceSearchRequestDto.getKeyword());
+                    = danceRepository.findScheduledDance(danceSearchRequestDto.getKeyword());
         } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
             randomDanceList
-                = danceRepository.findInProgressDance(danceSearchRequestDto.getKeyword());
+                    = danceRepository.findInProgressDance(danceSearchRequestDto.getKeyword());
         } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.ALL.toString())) {
             randomDanceList
-                = danceRepository.findAllDance(danceSearchRequestDto.getKeyword());
+                    = danceRepository.findAllDance(danceSearchRequestDto.getKeyword());
         }
 
         List<DanceSearchResponseDto> allDance = new ArrayList<>();
@@ -197,10 +202,40 @@ public class DanceServiceImpl implements DanceService {
             RandomDance randomDance = randomDanceList.get(i);
 
             DanceSearchResponseDto danceSearchResponseDto
-                = DanceSearchResponseDto.builder()
-                .randomDance(randomDance)
-                .progressType(danceSearchRequestDto.getProgressType())
-                .build();
+                    = DanceSearchResponseDto.builder()
+                    .randomDance(randomDance)
+                    .progressType(danceSearchRequestDto.getProgressType())
+                    //로그인 안 한 사용자면 예약하기 버튼 비활성화 - 1
+                    .reserveStatus(1)
+                    .build();
+
+            if (isLogin) {
+                //자기가 개최한 거면 예약하기 버튼 비활성화 - 1
+                if(randomDance.getHost().getUserId().equals(loginUserId)) {
+                }
+
+                Optional<Reservation> reservation
+                        = danceRepository.findReservationByRandomDanceIdAndUserId
+                        (randomDance.getRandomDanceId(), user.getUserId());
+
+                //예약이 존재하면 예약하기 버튼 비활성화 - 1
+                if (reservation.isPresent()) {
+                    danceSearchResponseDto
+                            = DanceSearchResponseDto.builder()
+                            .randomDance(randomDance)
+                            .progressType(danceSearchRequestDto.getProgressType())
+                            .reserveStatus(1)
+                            .build();
+                } else {
+                    //예약이 존재하지 않으면 예약하기 버튼 활성화 - 0
+                    danceSearchResponseDto
+                            = DanceSearchResponseDto.builder()
+                            .randomDance(randomDance)
+                            .progressType(danceSearchRequestDto.getProgressType())
+                            .reserveStatus(0)
+                            .build();
+                }
+            }
 
             allDance.add(danceSearchResponseDto);
         }
@@ -213,10 +248,10 @@ public class DanceServiceImpl implements DanceService {
     public void createReservation(Long randomDanceId) {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         User user = userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow(()
-            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         //본인이 개최한 랜플댄에 예약하려고 할 때
         if (randomDance.getHost().getId().equals(loginUserId)) {
@@ -224,12 +259,12 @@ public class DanceServiceImpl implements DanceService {
         }
 
         if (danceRepository.findReservationByRandomDanceIdAndUserId
-            (randomDanceId, user.getUserId()).isPresent()) {
+                (randomDanceId, user.getUserId()).isPresent()) {
             throw new ReservationDuplicatedException(RESERVATION_DUPLICATED.getMessage());
         }
 
         Reservation reservation
-            = Reservation.builder().randomDance(randomDance).user(user).build();
+                = Reservation.builder().randomDance(randomDance).user(user).build();
 
         danceRepository.insertReservation(reservation);
     }
@@ -239,17 +274,17 @@ public class DanceServiceImpl implements DanceService {
     public void deleteReservation(Long randomDanceId) {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         Long userId = userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage())).getUserId();
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage())).getUserId();
 
         danceRepository.findOne(randomDanceId).orElseThrow(()
-            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         Reservation findRes1
-            = danceRepository.findReservationByRandomDanceIdAndUserId(
-            randomDanceId, userId).orElseThrow();
+                = danceRepository.findReservationByRandomDanceIdAndUserId(
+                randomDanceId, userId).orElseThrow();
         Reservation findRes2
-            = danceRepository.findReservationByReservationIdAndRandomDanceId(
-            findRes1.getReservationId(), randomDanceId).orElseThrow();
+                = danceRepository.findReservationByReservationIdAndRandomDanceId(
+                findRes1.getReservationId(), randomDanceId).orElseThrow();
 
         if (!loginUserId.equals(findRes2.getUser().getId())) {
             throw new ReservationForbiddenException(RESERVATION_DELETE_FORBIDDEN.getMessage());
@@ -262,7 +297,7 @@ public class DanceServiceImpl implements DanceService {
     public List<DanceFindResponseDto> readAllMyReserveDance() {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         Long userId = userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage())).getUserId();
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage())).getUserId();
 
         List<DanceFindResponseDto> allMyRandomDance = new ArrayList<>();
 
@@ -270,9 +305,9 @@ public class DanceServiceImpl implements DanceService {
         for (int i = 0; i < allMyReservation.size(); i++) {
             Long randomDanceId = allMyReservation.get(i).getRandomDance().getRandomDanceId();
             RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow(()
-                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                    -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
             DanceFindResponseDto danceFindResponseDto
-                = DanceFindResponseDto.builder().randomDance(randomDance).build();
+                    = DanceFindResponseDto.builder().randomDance(randomDance).build();
 
             allMyRandomDance.add(danceFindResponseDto);
         }
@@ -285,20 +320,20 @@ public class DanceServiceImpl implements DanceService {
     public void createAttend(Long randomDanceId) {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         User user = userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         RandomDance randomDance
-            = danceRepository.findOne(randomDanceId).orElseThrow(()
-            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                = danceRepository.findOne(randomDanceId).orElseThrow(()
+                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         //다시 참여버튼 누른 경우
         if (danceRepository.findAttendByRandomDanceIdAndUserId
-            (randomDanceId, user.getUserId()).isPresent()) {
+                (randomDanceId, user.getUserId()).isPresent()) {
             throw new AttendDuplicatedException(ATTEND_DUPLICATED.getMessage());
         }
 
         AttendHistory attendHistory
-            = AttendHistory.builder().randomDance(randomDance).user(user).build();
+                = AttendHistory.builder().randomDance(randomDance).user(user).build();
 
         danceRepository.insertAttend(attendHistory);
     }
@@ -307,7 +342,7 @@ public class DanceServiceImpl implements DanceService {
     public List<DanceFindResponseDto> readAllMyAttendDance() {
         String loginUserId = SecurityUtils.getLoggedInUserId();
         Long userId = userRepository.findById(loginUserId).orElseThrow(()
-            -> new UserNotFoundException(USER_NOT_FOUND.getMessage())).getUserId();
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage())).getUserId();
 
         List<DanceFindResponseDto> allMyRandomDance = new ArrayList<>();
 
@@ -315,9 +350,9 @@ public class DanceServiceImpl implements DanceService {
         for (int i = 0; i < allMyAttend.size(); i++) {
             Long randomDanceId = allMyAttend.get(i).getRandomDance().getRandomDanceId();
             RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow(()
-                -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                    -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
             DanceFindResponseDto danceFindResponseDto
-                = DanceFindResponseDto.builder().randomDance(randomDance).build();
+                    = DanceFindResponseDto.builder().randomDance(randomDance).build();
 
             allMyRandomDance.add(danceFindResponseDto);
         }
