@@ -97,6 +97,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public AuthenticatedResponseDto login(LoginRequestDto loginRequestDto) {
         TokenInfo tokenInfo = setFirstAuthentication(loginRequestDto.getId(),
             loginRequestDto.getPassword());
