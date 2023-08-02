@@ -2,6 +2,7 @@ package com.pi.stepup.domain.dance.service;
 
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.ATTEND_DUPLICATED;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_DELETE_FORBIDDEN;
+import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_INVALID_MUSIC;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_INVALID_TIME;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_NOT_FOUND;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_UPDATE_FORBIDDEN;
@@ -72,12 +73,12 @@ class DanceServiceTest {
     private DanceMusic danceMusic2;
     private User host;
     private User user;
+    private User user2;
     private Reservation reservation;
-    private Reservation reservation2;
     private AttendHistory attend;
-    private AttendHistory attend2;
     private final Long pk = 1L;
     private final Long pk2 = 2L;
+    private final Long pk3 = 3L;
     private final String title = "랜덤 플레이 댄스";
     private final String content = "함께 합시다";
     private final String startAt1 = "2023-07-20 10:00";
@@ -89,7 +90,9 @@ class DanceServiceTest {
         "yyyy-MM-dd HH:mm");
     private final DanceType type = DanceType.BASIC;
     private List<Long> danceMusicIdList = new ArrayList<>();
+    private List<Long> danceMusicIdExceptionList = new ArrayList<>();
     private List<DanceMusic> danceMusicList = new ArrayList<>();
+    private List<DanceMusic> danceMusicExceptionList = new ArrayList<>();
     private List<RandomDance> randomDanceList = new ArrayList<>();
     private DanceCreateRequestDto danceCreateRequestDto;
     private DanceUpdateRequestDto danceUpdateRequestDto;
@@ -100,47 +103,53 @@ class DanceServiceTest {
     public void init() {
         makeHost();
         makeUser();
+        makeUser2();
         makeMusic();
         makeMusic2();
         makeDance();
         makeDance2();
         makeDanceMusic();
         makeDanceMusic2();
+        makeDanceMusicException();
     }
 
-    public User makeHost() {
+    public void makeHost() {
         host = User.builder()
             .id("hostId")
             .build();
-        return host;
     }
 
-    public User makeUser() {
+    public void makeUser() {
         user = User.builder()
             .userId(pk2)
             .id("userId")
             .build();
-        return user;
     }
 
-    public Music makeMusic() {
+    public void makeUser2() {
+        user2 = User.builder()
+            .userId(pk3)
+            .id("userId2")
+            .build();
+    }
+
+    public void makeMusic() {
         music = Music.builder()
             .musicId(pk)
             .title(mTitle)
             .artist(artist)
             .build();
         danceMusicIdList.add(pk);
-        return music;
+        danceMusicIdExceptionList.add(pk);
     }
 
-    public Music makeMusic2() {
+    public void makeMusic2() {
         music2 = Music.builder()
             .musicId(pk2)
             .title(mTitle + "2")
             .artist(artist)
             .build();
         danceMusicIdList.add(pk2);
-        return music2;
     }
 
     public void makeDance() {
@@ -172,6 +181,12 @@ class DanceServiceTest {
         randomDance.addDanceMusicAndSetThis(danceMusic);
         randomDance2.addDanceMusicAndSetThis(danceMusic);
         danceMusicList.add(danceMusic);
+    }
+
+    public void makeDanceMusicException() {
+        danceMusic = DanceMusic.createDanceMusic(music);
+        randomDance.addDanceMusicAndSetThis(danceMusic);
+        danceMusicExceptionList.add(danceMusic);
     }
 
     public void makeDanceMusic2() {
@@ -235,7 +250,7 @@ class DanceServiceTest {
             .danceType(String.valueOf(type))
             .maxUser(30)
             .hostId(host.getId())
-            .danceMusicIdList(danceMusicIdList)
+            .danceMusicIdList(danceMusicIdExceptionList)
             .build();
     }
 
@@ -274,7 +289,7 @@ class DanceServiceTest {
         danceSearchRequestDto
             = DanceSearchRequestDto.builder()
             .progressType(ProgressType.IN_PROGRESS.toString())
-            .keyword("keyword")
+            .keyword("")
             .build();
     }
 
@@ -284,12 +299,16 @@ class DanceServiceTest {
         when(danceRepository.findOne(any(Long.class))).thenReturn(Optional.empty());
 
         assertThatThrownBy(()
+            -> danceService.delete(any(Long.class)))
+            .isInstanceOf(DanceBadRequestException.class)
+            .hasMessageContaining(DANCE_NOT_FOUND.getMessage());
+
+        assertThatThrownBy(()
             -> danceService.readAllDanceMusic(any(Long.class)))
             .isInstanceOf(DanceBadRequestException.class)
             .hasMessageContaining(DANCE_NOT_FOUND.getMessage());
     }
 
-    //유효하지 않은 시간, 유효하지 않은 노래 개수
     @Test
     @DisplayName("랜덤 플레이 댄스 개최 테스트")
     public void createDanceTest() {
@@ -330,28 +349,26 @@ class DanceServiceTest {
         }
     }
 
-    //beforeeach에서 노래를 2곡 생성해서 넣어서 지금은 테스트 통과 X
-//    @Test
-//    @DisplayName("랜덤 플레이 댄스 개최 예외 테스트 - 유효하지 않은 노래 개수인 경우")
-//    public void createDanceExceptionMusicTest() {
-//        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-//            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-//                .thenReturn(host.getId());
-//
-//            when(this.userRepository.findById(host.getId()))
-//                .thenReturn(Optional.of(host));
-//
-//            makeDanceCreateExceptionMusicRequestDto();
-//            assertThatThrownBy(()
-//                -> danceService.create(danceCreateRequestDto))
-//                .isInstanceOf(DanceBadRequestException.class)
-//                .hasMessageContaining(DANCE_INVALID_MUSIC.getMessage());
-//
-//            verify(danceRepository, times(0)).insert(any(RandomDance.class));
-//        }
-//    }
+    @Test
+    @DisplayName("랜덤 플레이 댄스 개최 예외 테스트 - 유효하지 않은 노래 개수인 경우")
+    public void createDanceExceptionMusicTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(host.getId());
 
-    //접근 권한
+            when(this.userRepository.findById(host.getId()))
+                .thenReturn(Optional.of(host));
+
+            makeDanceCreateExceptionMusicRequestDto();
+            assertThatThrownBy(()
+                -> danceService.create(danceCreateRequestDto))
+                .isInstanceOf(DanceBadRequestException.class)
+                .hasMessageContaining(DANCE_INVALID_MUSIC.getMessage());
+
+            verify(danceRepository, times(0)).insert(any(RandomDance.class));
+        }
+    }
+
     @Test
     @DisplayName("랜덤 플레이 댄스 수정 테스트")
     public void updateDanceTest() {
@@ -388,7 +405,6 @@ class DanceServiceTest {
         }
     }
 
-    //접근 권한
     @Test
     @DisplayName("랜덤 플레이 댄스 삭제 테스트")
     public void deleteDanceTest() {
@@ -401,6 +417,7 @@ class DanceServiceTest {
 
             when(danceRepository.findOne(any(Long.class))).thenReturn(Optional.of(randomDance));
             assertThatNoException().isThrownBy(() -> danceService.delete(pk));
+
             verify(danceRepository, times(1)).delete(pk);
         }
     }
@@ -420,6 +437,8 @@ class DanceServiceTest {
                 -> danceService.delete(pk))
                 .isInstanceOf(DanceForbiddenException.class)
                 .hasMessageContaining(DANCE_DELETE_FORBIDDEN.getMessage());
+
+            verify(danceRepository, times(0)).delete(pk);
         }
     }
 
@@ -453,7 +472,6 @@ class DanceServiceTest {
         }
     }
 
-    //조건별
     @Test
     @DisplayName("모든 랜덤 플레이 댄스 목록 테스트 - ALL")
     public void readAllDanceTest() {
@@ -496,8 +514,6 @@ class DanceServiceTest {
         verify(danceRepository, times(1)).findInProgressDance(danceSearchRequestDto.getKeyword());
     }
 
-    //개최자가 예약 시
-    //예약 중복
     @Test
     @DisplayName("랜덤 플레이 댄스 예약 테스트")
     public void createReservationTest() {
@@ -535,6 +551,8 @@ class DanceServiceTest {
                 -> danceService.createReservation(pk))
                 .isInstanceOf(ReservationDuplicatedException.class)
                 .hasMessageContaining(RESERVATION_IMPOSSIBLE.getMessage());
+
+            verify(danceRepository, times(0)).insertReservation(any(Reservation.class));
         }
     }
 
@@ -559,10 +577,11 @@ class DanceServiceTest {
                 -> danceService.createReservation(pk))
                 .isInstanceOf(ReservationDuplicatedException.class)
                 .hasMessageContaining(RESERVATION_DUPLICATED.getMessage());
+
+            verify(danceRepository, times(0)).insertReservation(any(Reservation.class));
         }
     }
 
-    //접근 권한
     @Test
     @DisplayName("랜덤 플레이 댄스 예약 취소 테스트")
     public void deleteReservationTest() {
@@ -595,24 +614,30 @@ class DanceServiceTest {
 //    public void deleteReservationExceptionTest() {
 //        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
 //            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-//                .thenReturn(host.getId());
+//                .thenReturn(user2.getId());
 //
-//            when(this.userRepository.findById(host.getId()))
-//                .thenReturn(Optional.of(host));
-//            when(this.userRepository.findById(user.getId()))
-//                .thenReturn(Optional.of(user));
+//            when(this.userRepository.findById(user2.getId()))
+//                .thenReturn(Optional.of(user2));
 //
 //            when(danceRepository.findOne(any(Long.class))).thenReturn(Optional.of(randomDance));
+//
 //            makeReservation();
 //            when(danceRepository.findReservationByRandomDanceIdAndUserId
-//                (any(Long.class), any(Long.class))).thenReturn(Optional.of(reservation));
+//                (any(Long.class), any(Long.class)))
+//                .thenReturn(Optional.of(reservation));
+//            when(danceRepository.findReservationByReservationIdAndRandomDanceId
+//                (any(Long.class), any(Long.class)))
+//                .thenReturn(Optional.of(reservation));
+//
+//            when(danceRepository.findReservationByRandomDanceIdAndUserId
+//                (reservation.getReservationId(), user2.getUserId()))
+//                .thenReturn(Optional.empty());
 //
 //            assertThatThrownBy(()
 //                -> danceService.deleteReservation(pk))
 //                .isInstanceOf(ReservationForbiddenException.class)
 //                .hasMessageContaining(RESERVATION_DELETE_FORBIDDEN.getMessage());
-//
-//            }
+//        }
 //    }
 
     @Test
@@ -633,7 +658,6 @@ class DanceServiceTest {
         }
     }
 
-    //참여 중복
     @Test
     @DisplayName("랜덤 플레이 댄스 참여 테스트")
     public void createAttendTest() {
@@ -675,6 +699,8 @@ class DanceServiceTest {
                 -> danceService.createAttend(pk))
                 .isInstanceOf(AttendDuplicatedException.class)
                 .hasMessageContaining(ATTEND_DUPLICATED.getMessage());
+
+            verify(danceRepository, times(0)).insertAttend(any(AttendHistory.class));
         }
     }
 
