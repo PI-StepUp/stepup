@@ -69,8 +69,8 @@ public class DanceServiceImpl implements DanceService {
 
         //노래는 최소 10곡 ~ 최대 50곡
         List<Long> danceMusicIdList = danceCreateRequestDto.getDanceMusicIdList();
-        //지금은 일단 1곡 이상으로 해놓았음
-        if (danceMusicIdList.size() >= 1 && danceMusicIdList.size() <= 50) {
+        //지금은 일단 2곡 이상으로 해놓았음
+        if (danceMusicIdList.size() >= 2 && danceMusicIdList.size() <= 50) {
             for (int i = 0; i < danceMusicIdList.size(); i++) {
                 Music music = musicRepository.findOne(
                     danceMusicIdList.get(i)).orElseThrow(()
@@ -184,11 +184,10 @@ public class DanceServiceImpl implements DanceService {
         if (danceSearchRequestDto.getProgressType().equals(ProgressType.SCHEDULED.toString())) {
             randomDanceList
                 = danceRepository.findScheduledDance(danceSearchRequestDto.getKeyword());
-        } else if (danceSearchRequestDto.getProgressType()
-            .equals(ProgressType.IN_PROGRESS.toString())) {
+        } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
             randomDanceList
                 = danceRepository.findInProgressDance(danceSearchRequestDto.getKeyword());
-        } else {
+        } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.ALL.toString())) {
             randomDanceList
                 = danceRepository.findAllDance(danceSearchRequestDto.getKeyword());
         }
@@ -242,7 +241,7 @@ public class DanceServiceImpl implements DanceService {
         Long userId = userRepository.findById(loginUserId).orElseThrow(()
             -> new UserNotFoundException(USER_NOT_FOUND.getMessage())).getUserId();
 
-        RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow(()
+        danceRepository.findOne(randomDanceId).orElseThrow(()
             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         Reservation findRes1
