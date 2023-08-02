@@ -8,6 +8,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.Gson;
+import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
@@ -202,16 +204,26 @@ class UserApiControllerTest {
     @DisplayName("회원정보 조회")
     @WithMockCustomUser
     @Test
-    void loginTest() throws Exception {
+    void readOneTest() throws Exception {
+        User user = User.builder()
+            .id(TEST_ID)
+            .email(TEST_EMAIL)
+            .nickname(TEST_NICKNAME)
+            .country(Country.builder().code("ko").build())
+            .rank(Rank.builder().name(RankName.BRONZE).build())
+            .build();
+
         doReturn(UserInfoResponseDto.builder()
-            .user(User.builder()
-                .country(Country.builder().build())
-                .rank(Rank.builder().build())
-                .build())
+            .user(user)
             .build()).when(userService).readOne();
 
         mockMvc.perform(get("/api/user"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(READ_ONE_SUCCESS.getMessage()))
+            .andExpect(jsonPath("data.email").value(user.getEmail()))
+            .andExpect(jsonPath("data.nickname").value(user.getNickname()))
+            .andExpect(jsonPath("data.countryCode").value(user.getCountry().getCode()))
+            .andExpect(jsonPath("data.rankName").value(user.getRank().getName().name()));
     }
 
     private String makeJsonRequestDto(Class<?> dtoType, String param) {
