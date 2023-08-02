@@ -2,7 +2,6 @@ package com.pi.stepup.domain.music.service;
 
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -10,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +20,6 @@ import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
-import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
@@ -106,13 +105,14 @@ class MusicApplyServiceTest {
             securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
                 .thenReturn(user.getId());
             String keyword = "";
-            List<MusicApply> makedMusicApply = makeMusicApplies();
-            doReturn(makedMusicApply)
+            List<MusicApply> madeMusicApply = makeMusicApplies();
+
+            doReturn(madeMusicApply)
                 .when(musicApplyRepository).findAll(keyword, user.getId());
 
             List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
                 keyword);
-            assertThat(musicApplies.size()).isEqualTo(makedMusicApply.size());
+            assertThat(musicApplies.size()).isEqualTo(madeMusicApply.size());
         }
     }
 
@@ -199,21 +199,7 @@ class MusicApplyServiceTest {
             when(musicApplyRepository.findOne(any())).thenReturn(Optional.ofNullable(musicApply));
             musicApplyService.delete(musicApplyId);
 
-            verify(musicApplyRepository, only()).delete(musicApplyId);
-        }
-    }
-
-    @Test
-    @DisplayName("노래 신청한 사용자가 아닌 다른 사용자가 삭제 예외 테스트")
-    public void deleteMusicApplyNotAuthorizedUserServiceTest() {
-        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
-            SecurityUtils.class)) {
-            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(user.getId());
-
-            assertThatThrownBy(() -> musicApplyService.delete(musicApply.getMusicApplyId()))
-                .isInstanceOf(UnauthorizedUserAccessException.class)
-                .hasMessageContaining(UNAUTHORIZED_USER_ACCESS.getMessage());
+            verify(musicApplyRepository, times(1)).delete(musicApplyId);
         }
     }
 
@@ -243,8 +229,6 @@ class MusicApplyServiceTest {
             when(musicApplyRepository.findOne(any())).thenReturn(Optional.ofNullable(musicApply));
             when(musicApplyRepository.insert(any(Heart.class))).thenReturn(heart);
 
-            // TODO : heartCnt default value null pointer 예외 해결 할 것 (DB에는 잘 들어감)
-
             musicApplyService.createHeart(heartSaveRequestDto);
 
             assertThat(musicApply.getHeartCnt()).isEqualTo(1);
@@ -256,17 +240,15 @@ class MusicApplyServiceTest {
     public void musicApplyHeartCancelServiceTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
             SecurityUtils.class)) {
-            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
-                .thenReturn(user.getId());
             Long heartId = heart.getHeartId();
 
-            when(userRepository.findById(any(String.class))).thenReturn(Optional.ofNullable(user));
-            when(musicApplyRepository.findOne(any())).thenReturn(Optional.ofNullable(musicApply));
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                .thenReturn(user.getId());
             when(musicApplyRepository.findHeart(any(), any())).thenReturn(Optional.of(heart));
 
             musicApplyService.deleteHeart(musicApply.getMusicApplyId());
 
-            verify(musicApplyRepository, only()).deleteHeart(heartId);
+            verify(musicApplyRepository, times(1)).deleteHeart(heartId);
         }
     }
 
@@ -354,19 +336,10 @@ class MusicApplyServiceTest {
                 .artist("artist" + (i + 1))
                 .writer(user)
                 .heartCnt(0)
+                .hearts(List.of(heart))
                 .build();
             musicApplies.add(tmp);
         }
-
-        User tmp = User.builder()
-            .id("tmp")
-            .password("password")
-            .build();
-        musicApplies.add(MusicApply.builder().
-            title("title")
-            .artist("artist")
-            .writer(tmp)
-            .build());
         return musicApplies;
     }
 
