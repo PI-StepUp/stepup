@@ -12,7 +12,6 @@ import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.global.config.security.SecurityUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,7 +62,7 @@ public class NoticeServiceTest {
         makeMusic();
         makeDance();
         makeDanceMusic();
-        makeNotice1();
+        makeNotice();
         makeNotice2();
     }
 
@@ -83,7 +82,7 @@ public class NoticeServiceTest {
         return adminUser;
     }
 
-    public void makeNotice1() {
+    public void makeNotice() {
         randomDance = makeDance();
         notice1 = Notice.builder()
                 .boardId(1L)
@@ -118,7 +117,7 @@ public class NoticeServiceTest {
         return randomDance;
     }
 
-    public void makeNoticeSaveRequestDto1() {
+    public void makeNoticeSaveRequestDto() {
         noticeSaveRequestDto1 = NoticeRequestDto.NoticeSaveRequestDto.builder()
                 .title("공지 테스트 제목")
                 .content("공지 테스트 내용")
@@ -127,7 +126,7 @@ public class NoticeServiceTest {
                 .build();
     }
 
-    public void makeNoticeUpdateRequestDto1() {
+    public void makeNoticeUpdateRequestDto() {
         noticeUpdateRequestDto1 = NoticeRequestDto.NoticeUpdateRequestDto.builder()
                 .boardId(1L)
                 .title("(수정)공지 테스트 제목")
@@ -174,7 +173,7 @@ public class NoticeServiceTest {
             when(danceRepository.findOne(any(Long.class))).thenReturn(Optional.of(randomDance));
             when(noticeRepository.insert(any(Notice.class))).thenReturn(notice1);
 
-            makeNoticeSaveRequestDto1();
+            makeNoticeSaveRequestDto();
             Notice savedNotice = noticeService.create(noticeSaveRequestDto1);
             verify(noticeRepository, times(1)).insert(any(Notice.class));
 
@@ -197,21 +196,20 @@ public class NoticeServiceTest {
         }
     }
 
-//    @Test
-//    @DisplayName("공지 게시글 수정 테스트")
-//    public void updateNoticeTest() {
-//        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-//            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
-//                    .thenReturn(adminUser.getId());
-//
-//            // Mock NoticeRepository
-//            when(noticeRepository.findOne(any(Long.class)))
-//                    .thenReturn(Optional.of(notice1));
-//
-//            makeNoticeUpdateRequestDto1();
-//
-//
-//            assertThatNoException().isThrownBy(() -> noticeService.update(noticeUpdateRequestDto1));
-//        }
-//    }
+    @Test
+    @DisplayName("공지 게시글 수정 테스트")
+    public void updateNoticeTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
+            securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(adminUser.getId());
+
+            // Mock NoticeRepository
+            when(noticeRepository.findOne(any(Long.class)))
+                    .thenReturn(Optional.of(notice1));
+            when(danceRepository.findOne(any(Long.class))).thenReturn(Optional.of(randomDance));
+            makeNoticeUpdateRequestDto();
+
+            assertThatNoException().isThrownBy(() -> noticeService.update(noticeUpdateRequestDto1));
+        }
+    }
 }
