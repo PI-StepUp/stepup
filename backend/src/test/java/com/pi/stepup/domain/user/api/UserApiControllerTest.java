@@ -4,11 +4,14 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_U
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -23,11 +26,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.google.gson.Gson;
 import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.domain.Rank;
+import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
+import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
@@ -37,6 +44,7 @@ import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.domain.user.util.WithMockCustomUser;
 import com.pi.stepup.global.config.security.SecurityConfig;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -47,6 +55,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 @Import(SecurityConfig.class)
 @WebMvcTest(UserApiController.class)
@@ -92,7 +101,7 @@ class UserApiControllerTest {
         // given
         doNothing().when(userService).checkEmailDuplicated(any(CheckEmailRequestDto.class));
 
-        String content = makeJsonRequestDto(CheckEmailRequestDto.class, TEST_EMAIL);
+        String content = makeJsonDuplicatedRequestDto(CheckEmailRequestDto.class, TEST_EMAIL);
 
         // when, then
         mockMvc.perform(
@@ -113,7 +122,7 @@ class UserApiControllerTest {
             .when(userService)
             .checkEmailDuplicated(any(CheckEmailRequestDto.class));
 
-        String content = makeJsonRequestDto(CheckEmailRequestDto.class, TEST_EMAIL);
+        String content = makeJsonDuplicatedRequestDto(CheckEmailRequestDto.class, TEST_EMAIL);
 
         // when, then
         mockMvc.perform(
@@ -132,7 +141,7 @@ class UserApiControllerTest {
         doNothing().when(userService)
             .checkNicknameDuplicated(any(CheckNicknameRequestDto.class));
 
-        String content = makeJsonRequestDto(CheckNicknameRequestDto.class, TEST_NICKNAME);
+        String content = makeJsonDuplicatedRequestDto(CheckNicknameRequestDto.class, TEST_NICKNAME);
 
         // when, then
         mockMvc.perform(
@@ -152,7 +161,7 @@ class UserApiControllerTest {
         doThrow(NicknameDuplicatedException.class)
             .when(userService).checkNicknameDuplicated(any(CheckNicknameRequestDto.class));
 
-        String content = makeJsonRequestDto(CheckNicknameRequestDto.class, TEST_NICKNAME);
+        String content = makeJsonDuplicatedRequestDto(CheckNicknameRequestDto.class, TEST_NICKNAME);
 
         // when, then
         mockMvc.perform(
@@ -169,7 +178,7 @@ class UserApiControllerTest {
     void checkIdDuplicatedTest_NoDuplicated() throws Exception {
         // given
         doNothing().when(userService).checkIdDuplicated(any(CheckIdRequestDto.class));
-        String content = makeJsonRequestDto(CheckIdRequestDto.class, TEST_ID);
+        String content = makeJsonDuplicatedRequestDto(CheckIdRequestDto.class, TEST_ID);
 
         //when, then
         mockMvc.perform(
@@ -189,7 +198,7 @@ class UserApiControllerTest {
         doThrow(IdDuplicatedException.class)
             .when(userService)
             .checkIdDuplicated(any(CheckIdRequestDto.class));
-        String content = makeJsonRequestDto(CheckIdRequestDto.class, TEST_ID);
+        String content = makeJsonDuplicatedRequestDto(CheckIdRequestDto.class, TEST_ID);
 
         // when, then
         mockMvc.perform(
@@ -201,32 +210,105 @@ class UserApiControllerTest {
             .andExpect(status().isConflict());
     }
 
-    @DisplayName("회원정보 조회")
+    @DisplayName("회원정보 조회에 성공한다.")
     @WithMockCustomUser
     @Test
     void readOneTest() throws Exception {
-        User user = User.builder()
-            .id(TEST_ID)
-            .email(TEST_EMAIL)
-            .nickname(TEST_NICKNAME)
-            .country(Country.builder().code("ko").build())
-            .rank(Rank.builder().name(RankName.BRONZE).build())
-            .build();
+        User user = makeSampleUserData();
 
         doReturn(UserInfoResponseDto.builder()
             .user(user)
             .build()).when(userService).readOne();
 
-        mockMvc.perform(get("/api/user"))
+        ResultActions resultActions = mockMvc.perform(get(READ_ONE_URL.getUrl()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("message").value(READ_ONE_SUCCESS.getMessage()))
-            .andExpect(jsonPath("data.email").value(user.getEmail()))
-            .andExpect(jsonPath("data.nickname").value(user.getNickname()))
-            .andExpect(jsonPath("data.countryCode").value(user.getCountry().getCode()))
-            .andExpect(jsonPath("data.rankName").value(user.getRank().getName().name()));
+            .andExpect(jsonPath("message").value(READ_ONE_SUCCESS.getMessage()));
+
+        checkUserInfoResponse(resultActions, user, "data.");
     }
 
-    private String makeJsonRequestDto(Class<?> dtoType, String param) {
+    @DisplayName("회원가입에 성공할 경우 토큰 정보와 회원 정보를 반환한다.")
+    @Test
+    void signUpTest() throws Exception {
+        // given
+        User user = makeSampleUserData();
+        TokenInfo tokenInfo = makeSampleTokenData();
+
+        doReturn(AuthenticatedResponseDto.builder()
+            .user(user)
+            .tokenInfo(tokenInfo)
+            .build()).when(userService).signUp(any(SignUpRequestDto.class));
+
+        // when, then
+        ResultActions resultActions = mockMvc.perform(
+                post(SIGN_UP_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(makeJsonSignUpRequestDto(user))
+            )
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("message").value(SIGN_UP_SUCCESS.getMessage()))
+            .andExpect(jsonPath("data.tokens.grantType").value(tokenInfo.getGrantType()))
+            .andExpect(jsonPath("data.tokens.accessToken").value(tokenInfo.getAccessToken()))
+            .andExpect(jsonPath("data.tokens.refreshToken").value(tokenInfo.getRefreshToken()));
+
+        checkUserInfoResponse(resultActions, user, "data.userInfo.");
+    }
+
+    private ResultActions checkUserInfoResponse(ResultActions resultActions, User user,
+        String prefix)
+        throws Exception {
+        return resultActions
+            .andExpect(jsonPath(prefix + "email").value(user.getEmail()))
+            .andExpect(jsonPath(prefix + "emailAlert").value(user.getEmailAlert()))
+            .andExpect(jsonPath(prefix + "countryId").value(user.getCountry().getCountryId()))
+            .andExpect(jsonPath(prefix + "countryCode").value(user.getCountry().getCode()))
+            .andExpect(jsonPath(prefix + "nickname").value(user.getNickname()))
+            .andExpect(jsonPath(prefix + "birth").value(user.getBirth().toString()))
+            .andExpect(jsonPath(prefix + "profileImg").value(user.getProfileImg()))
+            .andExpect(jsonPath(prefix + "point").value(user.getPoint()))
+            .andExpect(jsonPath(prefix + "rankName").value(user.getRank().getName().name()))
+            .andExpect(jsonPath(prefix + "rankImg").value(user.getRank().getRankImg()));
+    }
+
+    private TokenInfo makeSampleTokenData() {
+        String grantType = "Bearer";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+
+        return TokenInfo.builder()
+            .grantType(grantType)
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
+
+    private User makeSampleUserData() {
+        String password = "userPassword";
+        int emailAlert = 1;
+        Long countryId = 1L;
+        String countryCode = "ko";
+        LocalDate birth = LocalDate.now();
+        String profileImg = "";
+        int point = 0;
+        String rankImg = "rankImg";
+
+        return User.builder()
+            .id(TEST_ID)
+            .password(password)
+            .email(TEST_EMAIL)
+            .emailAlert(emailAlert)
+            .country(Country.builder().countryId(countryId).code(countryCode).build())
+            .nickname(TEST_NICKNAME)
+            .birth(birth)
+            .profileImg(profileImg)
+            .point(point)
+            .rank(Rank.builder().name(RankName.BRONZE).rankImg(rankImg).build())
+            .role(UserRole.ROLE_USER)
+            .build();
+    }
+
+    private String makeJsonDuplicatedRequestDto(Class<?> dtoType, String param) {
 
         if (dtoType == CheckEmailRequestDto.class) {
             return gson.toJson(
@@ -250,6 +332,20 @@ class UserApiControllerTest {
         }
 
         return "";
+    }
+
+    private String makeJsonSignUpRequestDto(User user) {
+        return gson.toJson(SignUpRequestDto.builder()
+            .id(user.getId())
+            .password(user.getPassword())
+            .email(user.getEmail())
+            .emailAlert(user.getEmailAlert())
+            .countryId(user.getCountry().getCountryId())
+            .nickname(user.getNickname())
+            .birth(user.getBirth().toString())
+            .profileImg(user.getProfileImg())
+            .role(user.getRole())
+            .build());
     }
 
     private List<CountryResponseDto> makeCountryResponseDtos() {
