@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -161,6 +162,28 @@ public class MeetingServiceTest {
             assert(result.size() == 2);
             assert(result.get(0).getTitle().equals("정모 테스트 제목"));
             assert(result.get(1).getTitle().equals("정모 테스트 제목2"));
+        }
+    }
+
+    @Test
+    @DisplayName("내가 쓴 정모 게시글 조회 테스트")
+    public void readOneTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
+                SecurityUtils.class)) {
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(writer.getId());
+
+            List<Meeting> myMeetings = new ArrayList<>();
+            myMeetings.add(meeting1);
+            myMeetings.add(meeting2);
+
+            when(meetingRepository.findById("j3beom")).thenReturn(myMeetings);
+
+            List<MeetingResponseDto.MeetingInfoResponseDto> result = meetingService.readAllById();
+            // Then
+            assert(result.size() == 2);
+            assertEquals("정모 테스트 제목", result.get(0).getTitle());
+            assertEquals("정모 테스트 내용", result.get(0).getContent());
         }
     }
 
