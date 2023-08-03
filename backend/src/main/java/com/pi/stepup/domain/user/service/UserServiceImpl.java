@@ -1,6 +1,6 @@
 package com.pi.stepup.domain.user.service;
 
-//import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.RANK_NOT_FOUND;
+import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.RANK_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.EMAIL_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
@@ -11,7 +11,7 @@ import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.NOT_MAT
 import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.dao.RankRepository;
 import com.pi.stepup.domain.rank.domain.Rank;
-//import com.pi.stepup.domain.rank.exception.RankNotFoundException;
+import com.pi.stepup.domain.rank.exception.RankNotFoundException;
 import com.pi.stepup.domain.user.constant.EmailGuideContent;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
