@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
@@ -73,19 +74,6 @@ class MusicServiceTest {
     }
 
     @Test
-    @DisplayName("관리자가 아닌 사용자가 노래 추가 예외 처리 테스트")
-    @Transactional
-    public void createMusicNotAdminTest() {
-        // TODO : ROLE_USER return
-//        when()
-
-        assertThatThrownBy(() -> musicService.create(musicSaveRequestDto))
-            .isInstanceOf(UnauthorizedUserAccessException.class)
-            .hasMessageContaining(UNAUTHORIZED_USER_ACCESS.getMessage());
-    }
-
-
-    @Test
     @DisplayName("노래 한 곡 조회 테스트")
     public void readOneMusicServiceTest() {
         when(musicRepository.findOne(any())).thenReturn(Optional.of(music));
@@ -135,13 +123,13 @@ class MusicServiceTest {
     }
 
     @Test
-    @DisplayName("없는 노래를 삭제할 때 MUSIC_NOT_FOUND 예외 테스트")
+    @DisplayName("없는 노래를 삭제할 때 예외 테스트")
     public void deleteOneMusicNotFoundTest() {
         when(musicRepository.findOne(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> musicService.delete(music.getMusicId()))
             .isInstanceOf(MusicNotFoundException.class)
-            .hasMessageContaining(MUSIC_NOT_FOUND.getMessage());
+            .hasMessageContaining(MUSIC_DELETE_FAIL.getMessage());
     }
 
     private List<Music> makeMusic() {

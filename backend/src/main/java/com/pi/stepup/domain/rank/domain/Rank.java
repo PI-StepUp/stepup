@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Table(name = "RANKS")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

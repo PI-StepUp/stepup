@@ -29,6 +29,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
+import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
@@ -96,7 +97,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TokenInfo login(LoginRequestDto loginRequestDto) {
+    @Transactional
+    public AuthenticatedResponseDto login(LoginRequestDto loginRequestDto) {
         TokenInfo tokenInfo = setFirstAuthentication(loginRequestDto.getId(),
             loginRequestDto.getPassword());
         log.debug("login token : {}", tokenInfo);
@@ -104,12 +106,15 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(loginRequestDto.getId()).get();
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
-        return tokenInfo;
+        return AuthenticatedResponseDto.builder()
+            .tokenInfo(tokenInfo)
+            .user(user)
+            .build();
     }
 
     @Override
     @Transactional
-    public TokenInfo signUp(SignUpRequestDto signUpRequestDto) {
+    public AuthenticatedResponseDto signUp(SignUpRequestDto signUpRequestDto) {
         validateSignUpUserInfo(signUpRequestDto);
 
         User user = signUpRequestDto.toUser(
@@ -120,6 +125,7 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new RankNotFoundException(RANK_NOT_FOUND.getMessage()));
 
         user.setRank(bronzeRank);
+        user.setPointZero();
 
         userRepository.insert(user);
 
@@ -131,7 +137,10 @@ public class UserServiceImpl implements UserService {
 
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
-        return tokenInfo;
+        return AuthenticatedResponseDto.builder()
+            .tokenInfo(tokenInfo)
+            .user(user)
+            .build();
     }
 
     @Override

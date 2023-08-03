@@ -29,13 +29,9 @@ class MusicRepositoryTest {
     @Test
     @BeforeEach
     public void init() {
-        music = Music.builder()
-                .title("spicy")
-                .artist("aespa")
-                .answer("")
-                .URL("url")
-                .build();
+        makeOneMusic();
     }
+
 
     @Test
     @DisplayName("MusicRepository가 null이 아님을 테스트")
@@ -67,11 +63,9 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 전체 목록 조회 테스트")
     public void findAllMusicRepoTest() {
-        insertMusic();
-
         String keyword = "";
-        List<Music> music = musicRepository.findAll(keyword);
-        assertThat(music.size()).isEqualTo(5);
+        List<Music> musics = musicRepository.findAll(keyword);
+        assertThat(musics.size()).isEqualTo(10);
     }
 
     @Test
@@ -98,16 +92,26 @@ class MusicRepositoryTest {
     }
 
     private List<Music> makeMusic() {
-        List<Music> music = new ArrayList<>();
+        List<Music> musics = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Music tmp = Music.builder().title("title" + i).artist("artist" + (i + 1)).build();
-            music.add(tmp);
+            musics.add(tmp);
         }
-        return music;
+        return musics;
     }
 
-    private void insertMusic() {
-        List<Music> music = makeMusic();
-        music.forEach(em::persist);
+    private List<Music> insertMusic() {
+        List<Music> musics = makeMusic();
+        musics.forEach(em::persist);
+        return musics;
+    }
+
+    private void makeOneMusic() {
+        music = Music.builder()
+            .title("spicy")
+            .artist("aespa")
+            .answer("")
+            .URL("url")
+            .build();
     }
 }

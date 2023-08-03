@@ -32,6 +32,7 @@ public class MusicResponseDto {
         private final Long musicApplyId;
         private final String title;
         private final String artist;
+        private final String content;
         private final String writerName;
         private final String writerProfileImg;
         private final Integer heartCnt;
@@ -44,10 +45,35 @@ public class MusicResponseDto {
             this.musicApplyId = musicApply.getMusicApplyId();
             this.title = musicApply.getTitle();
             this.artist = musicApply.getArtist();
+            this.content = musicApply.getContent();
             this.writerName = musicApply.getWriter().getNickname();
             this.writerProfileImg = musicApply.getWriter().getProfileImg();
             this.heartCnt = musicApply.getHeartCnt();
             this.canHeart = canHeart;
+        }
+    }
+
+    @Getter
+    public static class MusicApplyJPAFindResponseDto {
+
+        private final Long musicApplyId;
+        private final String title;
+        private final String artist;
+        private final String writerName;
+        private final String writerProfileImg;
+        private final Integer heartCnt;
+        private final Long heartId;
+
+        @Builder
+        public MusicApplyJPAFindResponseDto(Long musicApplyId, String title, String artist,
+            String writerName, String writerProfileImg, Integer heartCnt, Long heartId) {
+            this.musicApplyId = musicApplyId;
+            this.title = title;
+            this.artist = artist;
+            this.writerName = writerName;
+            this.writerProfileImg = writerProfileImg;
+            this.heartCnt = heartCnt;
+            this.heartId = heartId;
         }
     }
 

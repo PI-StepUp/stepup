@@ -4,7 +4,9 @@ public enum UserApiUrls {
     READ_ALL_COUNTRIES_URL("/country"),
     CHECK_EMAIL_DUPLICATED_URL("/dupemail"),
     CHECK_NICKNAME_DUPLICATED_URL("/dupnick"),
-    CHECK_ID_DUPLICATED_URL("/dupid");
+    CHECK_ID_DUPLICATED_URL("/dupid"),
+    READ_ONE_URL(""),
+    SIGN_UP_URL("");
 
     private final String url;
 
