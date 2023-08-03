@@ -4,7 +4,10 @@ import com.pi.stepup.domain.board.dao.talk.TalkRepository;
 import com.pi.stepup.domain.board.domain.Talk;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkSaveRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
+import com.pi.stepup.domain.board.dto.talk.TalkResponseDto;
 import com.pi.stepup.domain.board.service.talk.TalkServiceImpl;
+import com.pi.stepup.domain.music.domain.MusicApply;
+import com.pi.stepup.domain.music.dto.MusicResponseDto;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -18,8 +21,11 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -36,12 +42,14 @@ public class TalkServiceTest {
     private TalkUpdateRequestDto talkUpdateRequestDto;
     private User writer;
     private Talk talk1;
+    private Talk talk2;
 
     @Test
     @BeforeEach
     public void init() {
         makeWriter();
         makeTalk();
+        makeTalk2();
         makeTalkSaveRequestDto();
     }
 
@@ -64,6 +72,15 @@ public class TalkServiceTest {
                 .build();
     }
 
+    public void makeTalk2() {
+        talk2 = Talk.builder()
+                .boardId(2L)
+                .writer(writer)
+                .title("자유게시판 테스트 제목")
+                .content("자유게시판 테스트 내용")
+                .fileURL("https://example.com/talk_files/meeting_document.pdf")
+                .build();
+    }
 
     public void makeTalkSaveRequestDto() {
         talkSaveRequestDto = TalkSaveRequestDto.builder()
@@ -109,6 +126,30 @@ public class TalkServiceTest {
             makeTalkUpdateRequestDto();
 
             assertThatNoException().isThrownBy(() -> talkService.update(talkUpdateRequestDto));
+        }
+    }
+
+    @Test
+    @DisplayName("자유게시판 목록 조회 테스트")
+    public void readAllTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
+                SecurityUtils.class)) {
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(writer.getId());
+            String keyword = "제목";
+
+            List<Talk> makeTalks = new ArrayList<>();
+            makeTalks.add(talk1);
+            makeTalks.add(talk2);
+
+            when(talkRepository.findAll(anyString())).thenReturn(makeTalks);
+
+            List<TalkResponseDto.TalkInfoResponseDto> result = talkService.readAll(keyword);
+
+            // 테스트 결과 검증
+            assert(result.size() == 2);
+            assert(result.get(0).getTitle().equals("자유게시판 테스트 제목"));
+            assert(result.get(1).getTitle().equals("자유게시판 테스트 제목"));
         }
     }
 
