@@ -1,6 +1,6 @@
 package com.pi.stepup.global.config.security;
 
-import com.pi.stepup.global.util.jwt.JwtTokenProvider;
+import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.global.util.jwt.filter.JwtAccessDeniedHandler;
 import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationEntryPoint;
 import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationFilter;
@@ -21,9 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,18 +36,29 @@ public class SecurityConfig {
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
+
             .authorizeRequests()
-//            .antMatchers(HttpMethod.GET, "/api/user").authenticated()
-//            .antMatchers(HttpMethod.DELETE, "/api/user").authenticated()
-//            .antMatchers(HttpMethod.PUT, "/api/user").authenticated()
-//            .antMatchers(HttpMethod.POST, "/api/user/checkpw").authenticated()
-            .anyRequest().permitAll()
+            //로그인하지 않아도 접근 가능
+            .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
+            .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
+
+            //관리자 권한
+            .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
+            .hasAuthority(UserRole.ROLE_ADMIN.name())
+            .regexMatchers(HttpMethod.DELETE, Constants.AdminPermitArray)
+            .hasAuthority(UserRole.ROLE_ADMIN.name())
+            .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
+            .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
+
+            //그외는 모두 로그인해야 접근 가능
+            .anyRequest().authenticated()
+
             .and()
             .exceptionHandling()
-            .accessDeniedHandler(jwtAccessDeniedHandler)
-            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
+            .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
             .and()
-            .addFilterBefore(jwtAuthenticationFilter,
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
                 UsernamePasswordAuthenticationFilter.class);
 
         http

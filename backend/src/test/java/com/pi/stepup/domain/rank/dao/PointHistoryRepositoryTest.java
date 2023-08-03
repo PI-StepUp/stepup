@@ -50,7 +50,7 @@ class PointHistoryRepositoryTest {
         List<PointHistory> made = makePointHistories();
         insertPointHistories(made);
 
-        List<PointHistory> result = pointHistoryRepository.findAll();
+        List<PointHistory> result = pointHistoryRepository.findAll(user.getId());
 
         assertThat(result.size()).isEqualTo(made.size());
     }

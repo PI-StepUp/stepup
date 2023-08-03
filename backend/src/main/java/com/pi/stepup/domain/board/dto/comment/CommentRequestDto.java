@@ -5,14 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class CommentRequestDto {
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CommentSaveRequestDto{
+    public static class CommentSaveRequestDto {
+        @NotNull
         private Long boardId;
-        private String id;
+        @NotBlank
         private String content;
     }
 }

@@ -42,6 +42,9 @@ dependencies {
 
 	// Swagger
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+
+	// https://mvnrepository.com/artifact/org.mockito/mockito-inline
+	testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.6.1'
 }
 
 tasks.named('test') {

@@ -14,4 +14,6 @@ public interface MusicRepository {
     List<Music> findAll(String keyword);
 
     void delete(Long musicId);
+
+    Optional<Music> findByTitleAndArtist(String title, String artist);
 }

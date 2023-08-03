@@ -1,13 +1,14 @@
 package com.pi.stepup.domain.music.dao;
 
 import com.pi.stepup.domain.music.domain.Music;
-import java.util.List;
-import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class MusicRepositoryImpl implements MusicRepository {
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE m.title LIKE '%" + keyword + "%' OR " +
-                "m.artist LIKE '%" + keyword + "%'";
+                    "m.artist LIKE '%" + keyword + "%'";
         }
 
         return em.createQuery(sql, Music.class).getResultList();
@@ -50,5 +51,21 @@ public class MusicRepositoryImpl implements MusicRepository {
     public void delete(Long musicId) {
         Music music = em.find(Music.class, musicId);
         em.remove(music);
+    }
+
+    @Override
+    public Optional<Music> findByTitleAndArtist(String title, String artist) {
+        Optional<Music> music;
+        try {
+            music = Optional.ofNullable(em.createQuery(
+                            "SELECT m FROM Music m " +
+                                    "WHERE m.title = :title AND m.artist = :artist", Music.class
+                    ).setParameter("title", title)
+                    .setParameter("artist", artist)
+                    .getSingleResult());
+        } catch (NoResultException e) {
+            music = Optional.empty();
+        }
+        return music;
     }
 }
