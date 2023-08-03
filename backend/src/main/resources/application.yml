@@ -1,9 +1,13 @@
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/stepup
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:mariadb://52.78.93.184:3306/stepup?characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: vkdlxlaWkd123#
+    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:h2:tcp://localhost/~/stepup
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
   jpa:
     hibernate:
       ddl-auto: create
