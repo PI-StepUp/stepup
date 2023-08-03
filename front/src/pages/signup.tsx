@@ -1,3 +1,4 @@
+import React, {useState, useRef} from "react";
 import Header from "components/Header";
 import Footer from "components/Footer";
 import LanguageButton from "components/LanguageButton";
@@ -5,8 +6,150 @@ import LanguageButton from "components/LanguageButton";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
+import { axiosUser } from "apis/axios";
+import { useRouter } from "next/router";
+
 const SignUp = () => {
+    const router = useRouter();
+    const [id, setId] = useState('');
+    const [nickname, setNickname] = useState('');
+    const [email, setEmail] = useState('');
+    const [duplId, setDuplId] = useState(false);
+    const [duplNickname, setDuplNickname] = useState(false);
+    const [duplEmail, setDuplEmail] = useState(false);
+    const [password, setPassword] = useState('');
+    const [checkPassword, setCheckPassword] = useState('');
+    const [birth, setBirth] = useState('');
+    const [region, setRegion] = useState('');
+    const privacyAgree = useRef<any>();
+    const marketingAgree = useRef<any>();
     const [lang, setLang] = useRecoilState(LanguageState);
+
+    const checkDuplId = async (e: any) => {
+        e.preventDefault();
+        try{
+            const duplId = await axiosUser.post("/dupid", {
+                id: id,
+            })
+            if(duplId.data.message === "아이디 사용 가능"){
+                alert("사용가능한 아이디 입니다.");
+                setDuplId(true);
+            }
+        }catch(e){
+            alert("사용불가능한 아이디입니다. 다른 아이디를 입력해주세요.");
+        }
+    }
+
+    const checkDuplNickname = async (e:any) => {
+        e.preventDefault();
+        try{
+            const duplNickname = await axiosUser.post("/dupnick", {
+                nickName : nickname,
+            });
+            if(duplNickname.data.message === "닉네임 사용 가능"){
+                alert("사용가능한 닉네임 입니다.");
+                setDuplNickname(true);
+            }
+        }catch(e){
+            alert("사용불가능한 닉네임입니다. 다른 닉네임을 입력해주세요.");
+        }
+    }
+
+    const checkDuplEmail = async (e:any) => {
+        e.preventDefault();
+        try{
+            const duplEmail = await axiosUser.post("/dupemail", {
+                email: email,
+            });
+            if(duplEmail.data.message === "이메일 사용 가능"){
+                alert("사용가능한 이메일 입니다.");
+                setDuplEmail(true);
+            }
+        }catch(e){
+            alert("사용불가능한 이메일입니다. 다른 이메일을 입력해주세요.");
+        }
+    }
+
+    const submitSignUp = async (e:any) => {
+        e.preventDefault();
+
+        if(!privacyAgree.current.checked){
+            alert("개인정보 수집 및 이용 동의에 체크해주세요.");
+            return;
+        }
+
+        if(!marketingAgree.current.checked){
+            alert("이메일 수신 여부 동의에 체크해주세요.");
+            return;
+        }
+
+        if(id === ""){
+            alert("id를 입력해주세요.");
+            return;
+        }
+
+        if(password === "" || checkPassword === ""){
+            alert("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        if(password != checkPassword){
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        if("^([A-Za-z0-9가-힣]{2,})+".match(nickname)){
+            alert("닉네임은 두글자 이상으로 작성해주세요.");
+            return;
+        }
+
+        if("^([0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$)".match(email)){
+            alert("이메일을 형식에 맞춰서 작성해주세요.");
+            return;
+        }
+
+        if(birth < "1900-01-01"){
+            alert("생년월일을 입력해주세요.");
+            return;
+        }
+
+        if(region === ""){
+            alert("국가를 입력해주세요.");
+            return;
+        }
+
+        if(!duplId){
+            alert("아이디 중복검사를 진행해주세요.");
+            return;
+        }
+        if(!duplNickname){
+            alert("닉네임 중복검사를 진행해주세요.");
+            return;
+        }
+        if(!duplEmail){
+            alert("이메일 중복검사를 진행해주세요.");
+            return;
+        }
+
+        const signup = await axiosUser.post("/", {
+            id: id,
+            password: password,
+            email: email,
+            countryId: 1,
+            emailAlert: 0,
+            nickname: nickname,
+            birth: birth,
+            role: "ROLE_USER"
+        })
+
+        if(signup.data.message === "회원가입 완료"){
+            router.push('/login');
+        }else{
+            alert('회원가입 실패');
+            router.push('signup');
+        }
+    }
+    
     return(
         <>
             <Header/>
@@ -16,23 +159,23 @@ const SignUp = () => {
                         <h3>{lang==="en" ? "JOIN MEMBERSHIP" : lang==="cn" ? "注册会员" : "회원가입" }</h3>
                     </div>
                     <div className="signup-content">
-                        <form action="/">
+                        <form>
                             <div className="flex-wrap">
-                                <input type="text" placeholder={lang==="en" ? "ID" : lang==="cn" ? "用户名" : "아이디" } className="input-id"/>
-                                <button className="button-id">{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
+                                <input type="text" placeholder={lang==="en" ? "ID" : lang==="cn" ? "用户名" : "아이디" } className="input-id" onChange={(e) => setId(e.target.value)}/>
+                                <button className="button-id" onClick={checkDuplId}>{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
                             </div>
                             <div className="flex-wrap">
-                                <input type="text" placeholder={lang==="en" ? "Nickname" : lang==="cn" ? "用户名" : "닉네임" } className="input-nickname"/>
-                                <button className="button-password">{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
+                                <input type="text" placeholder={lang==="en" ? "Nickname" : lang==="cn" ? "用户名" : "닉네임" } className="input-nickname" onChange={(e) => setNickname(e.target.value)}/>
+                                <button className="button-password" onClick={checkDuplNickname}>{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
                             </div>
                             <div className="flex-wrap">
-                                <input type="email" placeholder={lang==="en" ? "email" : lang==="cn" ? "电子邮件" : "이메일" } className="input-email"/>
-                                <button className="button-email">{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
+                                <input type="email" placeholder={lang==="en" ? "email" : lang==="cn" ? "电子邮件" : "이메일" } className="input-email" onChange={(e) => setEmail(e.target.value)}/>
+                                <button className="button-email" onClick={checkDuplEmail}>{lang==="en" ? "Dupl check" : lang==="cn" ? "重复确认" : "중복확인" }</button>
                             </div>
-                            <input type="password" placeholder={lang==="en" ? "Password" : lang==="cn" ? "密码" : "비밀번호" } className="input-password"/>
-                            <input type="password" placeholder={lang==="en" ? "Password verification" : lang==="cn" ? "密码确认" : "비밀번호확인" } className="input-password-check"/>
-                            <input type="text" placeholder={lang==="en" ? "Date of birth" : lang==="cn" ? "出生年月日" : "생년월일" } className="input-birthday"/>
-                            <input type="text" placeholder={lang==="en" ? "Nation" : lang==="cn" ? "国家" : "국가" } className="input-region"/>
+                            <input type="password" placeholder={lang==="en" ? "Password" : lang==="cn" ? "密码" : "비밀번호" } className="input-password" onChange={(e) => setPassword(e.target.value)}/>
+                            <input type="password" placeholder={lang==="en" ? "Password verification" : lang==="cn" ? "密码确认" : "비밀번호확인" } className="input-password-check" onChange={(e) => setCheckPassword(e.target.value)}/>
+                            <input type="date" placeholder={lang==="en" ? "Date of birth" : lang==="cn" ? "出生年月日" : "생년월일" } className="input-birthday" onChange={(e) => setBirth(e.target.value)}/>
+                            <input type="text" placeholder={lang==="en" ? "Nation" : lang==="cn" ? "国家" : "국가" } className="input-region" onChange={(e) => setRegion(e.target.value)}/>
                             <textarea name="" id="" readOnly>
                                 'STEP UP (이하 '회사'는) 고객님의 개인정보를 중요시하며, "정보통신망 이용촉진 및 정보보호"에 관한 법률을 준수하고 있습니다. 회사는 개인정보취급방침을 통하여 고객님께서 제공하시는 개인정보가 어떠한 용도와 방식으로 이용되고 있으며, 개인정보보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다. 회사는 개인정보취급방침을 개정하는 경우 웹사이트 공지사항(또는 개별공지)을 통하여 공지할 것입니다.
 본 방침은 : 2023 년 07 월 19 일 부터 시행됩니다.
@@ -91,7 +234,7 @@ const SignUp = () => {
                             </textarea>
                             <div className="agree-check-wrap">
                                 <p>{lang==="en" ? "Do you agree to collect and use personal information?" : lang==="cn" ? "您同意收集和使用个人信息吗？" : "개인정보 수집 및 이용에 동의하십니까?" }</p>
-                                <input type="checkbox" />
+                                <input type="checkbox" ref={privacyAgree}/>
                             </div>
                             <textarea name="" id="" readOnly>
                                 STEP UP은 개인정보보호법 등에 관한 법률 등 관계법령에 따라 광고성 정보를 전송하
@@ -112,9 +255,9 @@ const SignUp = () => {
                             </textarea>
                             <div className="agree-check-wrap">
                                 <p>{lang==="en" ? "Do you agree to receive an email?" : lang==="cn" ? "你是否同意接收电子邮件?" : "이메일 수신 여부에 동의하십니까?" }</p>
-                                <input type="checkbox" />
+                                <input type="checkbox" ref={marketingAgree}/>
                             </div>
-                            <input type="submit" value={lang==="en" ? "JOIN MEMBERSHIP" : lang==="cn" ? "注册会员" : "회원가입" }/>
+                            <input type="submit" value={lang==="en" ? "JOIN MEMBERSHIP" : lang==="cn" ? "注册会员" : "회원가입" } onClick={submitSignUp}/>
                         </form>
                     </div>
                 </div>

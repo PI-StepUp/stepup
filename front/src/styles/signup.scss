@@ -57,6 +57,7 @@
                     @include font(11px, 400, #536BF6);
                     line-height: 18px;
                     margin-top:10px;
+                    margin-left:0px;
                 }
                 .agree-check-wrap{
                     @include block-center(600px);
