@@ -1,7 +1,9 @@
 package com.pi.stepup.domain.board.service;
 
 import com.pi.stepup.domain.board.dao.talk.TalkRepository;
+import com.pi.stepup.domain.board.domain.Comment;
 import com.pi.stepup.domain.board.domain.Talk;
+import com.pi.stepup.domain.board.dto.comment.CommentResponseDto;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkSaveRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkResponseDto;
@@ -27,6 +29,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -152,6 +155,30 @@ public class TalkServiceTest {
             assert(result.get(1).getTitle().equals("자유게시판 테스트 제목"));
         }
     }
+
+    @Test
+    @DisplayName("내가 쓴 자유게시판 조회 테스트")
+    public void readOneTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
+                SecurityUtils.class)) {
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(writer.getId());
+
+            List<Talk> myTalks = new ArrayList<>();
+            myTalks.add(talk1);
+            myTalks.add(talk2);
+
+            when(talkRepository.findById("j3beom")).thenReturn(myTalks);
+
+            List<TalkResponseDto.TalkInfoResponseDto> result = talkService.readAllById();
+            // Then
+            assert(result.size() == 2);
+            assertEquals("자유게시판 테스트 제목", result.get(0).getTitle());
+            assertEquals("자유게시판 테스트 내용", result.get(0).getContent());
+        }
+    }
+
+
 
     @Test
     @DisplayName("자유게시판 게시글 삭제 테스트")
