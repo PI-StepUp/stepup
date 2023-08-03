@@ -4,7 +4,8 @@ import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
-import { axiosBoard } from "apis/axios";
+import { axiosDance } from "apis/axios";
+import { useRouter } from "next/router";
 
 const RoomCreate = () => {
     const roomTitle = useRef<any>();
@@ -14,22 +15,28 @@ const RoomCreate = () => {
     const roomEndTime = useRef<any>();
     const roomMaxNum = useRef<any>();
     const roomFile = useRef<any>();
-    const [danceType, setDanceType] = useState('랜덤플레이');
+    const [danceType, setDanceType] = useState('RANKING');
+
+    const router = useRouter();
+
     const createRoom = async (e: any) => {
         e.preventDefault();
-        const createNotice = await axiosBoard.post("/notice", {
-            id: "ssafy",
+        const createNotice = await axiosDance.post("/", {
             title: roomTitle.current?.value,
             content: roomContent.current?.value,
-            startAt: roomStartDate.current?.value + "T" + roomStartTime.current?.value,
-            endAt: roomStartDate.current?.value + "T" + roomEndTime.current?.value,
-            danceType: "",
-            maxUser: roomMaxNum.current?.value,
-            thumbnail: " ",
+            startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
+            endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
+            danceType: danceType,
+            maxUser: Number(roomMaxNum.current?.value),
+            thumbnail: "",
             hostId: "ssafy",
             danceMusicIdList: [],
+        }).then((data) => {
+            if(data.data.message = "랜덤 플레이 댄스 생성 완료"){
+                alert("방 생성이 완료되었습니다.");
+                router.push('/randomplay/list');
+            }
         })
-        console.log(createNotice);
     }
     return(
         <>
@@ -58,10 +65,10 @@ const RoomCreate = () => {
                             <tr>
                                 <td>방 유형</td>
                                 <td>
-                                    <select name="" id="">
-                                        <option value="">랜덤플레이</option>
-                                        <option value="">서바이벌</option>
-                                        <option value="">자율모드</option>
+                                    <select name="" id="" onChange={(e) => setDanceType(e.target.value)}>
+                                        <option value="RANKING">랜덤플레이</option>
+                                        <option value="SURVIVAL">서바이벌</option>
+                                        <option value="BASIC">자율모드</option>
                                     </select>
                                 </td>
                             </tr>
