@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.user.service;
 
+import static com.pi.stepup.domain.rank.constant.RankExceptionMessage.RANK_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.EMAIL_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
@@ -7,6 +8,10 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_F
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.NOT_MATCHED_TOKEN;
 
+import com.pi.stepup.domain.rank.constant.RankName;
+import com.pi.stepup.domain.rank.dao.RankRepository;
+import com.pi.stepup.domain.rank.domain.Rank;
+import com.pi.stepup.domain.rank.exception.RankNotFoundException;
 import com.pi.stepup.domain.user.constant.EmailGuideContent;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.Country;
@@ -14,15 +19,17 @@ import com.pi.stepup.domain.user.domain.EmailContent;
 import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
-import com.pi.stepup.domain.user.dto.UserRequestDto.AuthenticationRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
+import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
@@ -32,6 +39,7 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
 import com.pi.stepup.global.config.security.CustomUserDetails;
+import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
 import java.util.List;
@@ -53,6 +61,7 @@ import org.springframework.util.StringUtils;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RankRepository rankRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -88,25 +97,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TokenInfo login(AuthenticationRequestDto authenticationRequestDto) {
-        TokenInfo tokenInfo = setFirstAuthentication(authenticationRequestDto.getId(),
-            authenticationRequestDto.getPassword());
+    @Transactional
+    public AuthenticatedResponseDto login(LoginRequestDto loginRequestDto) {
+        TokenInfo tokenInfo = setFirstAuthentication(loginRequestDto.getId(),
+            loginRequestDto.getPassword());
         log.debug("login token : {}", tokenInfo);
 
-        User user = userRepository.findById(authenticationRequestDto.getId()).get();
+        User user = userRepository.findById(loginRequestDto.getId()).get();
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
-        return tokenInfo;
+        return AuthenticatedResponseDto.builder()
+            .tokenInfo(tokenInfo)
+            .user(user)
+            .build();
     }
 
     @Override
     @Transactional
-    public TokenInfo signUp(SignUpRequestDto signUpRequestDto) {
+    public AuthenticatedResponseDto signUp(SignUpRequestDto signUpRequestDto) {
         validateSignUpUserInfo(signUpRequestDto);
 
         User user = signUpRequestDto.toUser(
             passwordEncoder.encode(signUpRequestDto.getPassword()),
             userRepository.findOneCountry(signUpRequestDto.getCountryId()));
+
+        Rank bronzeRank = rankRepository.getRankByName(RankName.BRONZE)
+            .orElseThrow(() -> new RankNotFoundException(RANK_NOT_FOUND.getMessage()));
+
+        user.setRank(bronzeRank);
+        user.setPointZero();
 
         userRepository.insert(user);
 
@@ -118,22 +137,25 @@ public class UserServiceImpl implements UserService {
 
         user.setRefreshToken(tokenInfo.getRefreshToken());
 
-        return tokenInfo;
+        return AuthenticatedResponseDto.builder()
+            .tokenInfo(tokenInfo)
+            .user(user)
+            .build();
     }
 
     @Override
-    public UserInfoResponseDto readOne(String id) {
-        // TODO: user not found exception 설정
+    public UserInfoResponseDto readOne() {
         return UserInfoResponseDto.builder()
-            .user(userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(
-                USER_NOT_FOUND.getMessage())))
+            .user(userRepository.findById(SecurityUtils.getLoggedInUserId())
+                .orElseThrow(() -> new UserNotFoundException(
+                    USER_NOT_FOUND.getMessage())))
             .build();
     }
 
     @Override
     @Transactional
-    public void delete(String id) {
-        User user = userRepository.findById(id)
+    public void delete() {
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         log.debug("[delete()] user : {}", user);
@@ -142,11 +164,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void checkPassword(AuthenticationRequestDto authenticationRequestDto) {
-        User user = userRepository.findById(authenticationRequestDto.getId())
+    public void checkPassword(CheckPasswordRequestDto checkPasswordRequestDto) {
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        if (!isSamePassword(user.getPassword(), authenticationRequestDto.getPassword())) {
+        if (!isSamePassword(user.getPassword(), checkPasswordRequestDto.getPassword())) {
             throw new UserNotFoundException(WRONG_PASSWORD.getMessage());
         }
     }
@@ -154,7 +176,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(UpdateUserRequestDto updateUserRequestDto) {
-        User user = userRepository.findById(updateUserRequestDto.getId())
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         validateUpdateUserInfo(user, updateUserRequestDto);

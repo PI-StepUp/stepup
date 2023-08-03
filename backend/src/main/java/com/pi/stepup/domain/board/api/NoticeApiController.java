@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
 @Tag(name = "notice", description = "notice domain apis")
 @RestController
 @RequestMapping("/api/board")
@@ -24,7 +27,7 @@ public class NoticeApiController {
     @Operation(summary = "공지사항 게시글 작성", description = "관리자만 정모 게시글을 작성한다. 사이트 자체 랜덤 댄스 개최 공지가 가능하다.")
     @ApiResponse(responseCode = "201", description = "공지사항 등록 완료")
     @PostMapping("/notice")
-    public ResponseEntity<ResponseDto<?>> createNotice(@RequestBody NoticeSaveRequestDto noticeSaveRequestDto) {
+    public ResponseEntity<ResponseDto<?>> createNotice(@RequestBody @Valid NoticeSaveRequestDto noticeSaveRequestDto) {
 
         noticeService.create(noticeSaveRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
@@ -37,7 +40,7 @@ public class NoticeApiController {
             description = "관리자가 작성한 공지 게시글 제목, 내용, 이미지 파일, 개최한 랜덤 댄스를 수정한다.")
     @ApiResponse(responseCode = "200", description = "공지사항 수정 완료")
     @PutMapping("/notice")
-    public ResponseEntity<ResponseDto<?>> updateNotice(@RequestBody NoticeUpdateRequestDto noticeUpdateRequestDto) {
+    public ResponseEntity<ResponseDto<?>> updateNotice(@RequestBody @Valid NoticeUpdateRequestDto noticeUpdateRequestDto) {
 
         noticeService.update(noticeUpdateRequestDto).getBoardId();
 

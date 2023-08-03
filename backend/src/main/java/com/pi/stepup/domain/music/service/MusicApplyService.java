@@ -2,7 +2,6 @@ package com.pi.stepup.domain.music.service;
 
 import com.pi.stepup.domain.music.dto.MusicRequestDto.HeartSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicApplySaveRequestDto;
-import com.pi.stepup.domain.music.dto.MusicResponseDto.AllMusicApplyFindResponseDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto;
 import java.util.List;
 
@@ -10,17 +9,17 @@ public interface MusicApplyService {
 
     void create(MusicApplySaveRequestDto musicApplySaveRequestDto);
 
-    List<AllMusicApplyFindResponseDto> readAllByKeyword(String keyword);
+    List<MusicApplyFindResponseDto> readAllByKeyword(String keyword);
 
-    MusicApplyFindResponseDto readOne(String id, Long musicApplyId);
+    MusicApplyFindResponseDto readOne(Long musicApplyId);
 
-    void delete(Long musicId);
+    void delete(Long musicApplyId);
 
-    List<AllMusicApplyFindResponseDto> readAllById(String id);
+    List<MusicApplyFindResponseDto> readAllById();
 
     void createHeart(HeartSaveRequestDto heartSaveRequestDto);
 
-    void deleteHeart(String id, Long musicRequestId);
+    void deleteHeart(Long musicRequestId);
 
-    Integer findHeartStatus(String id, Long musicApplyId);
+    Integer findHeartStatus(Long musicApplyId);
 }

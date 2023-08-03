@@ -5,8 +5,9 @@ import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.domain.User;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,15 +24,24 @@ public class DanceRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DanceCreateRequestDto {
+
+        @NotBlank
         private String title;
+        @NotBlank
         private String content;
+        @NotBlank
         private String startAt;
+        @NotBlank
         private String endAt;
-        private DanceType danceType;
+        @NotBlank
+        private String danceType;
+        @NotNull
         private int maxUser;
         private String thumbnail;
+        @NotBlank
         private String hostId;
-        private List<Long> danceMusicIdList = new ArrayList<>();
+        @NotNull
+        private List<Long> danceMusicIdList;
 
         public RandomDance toEntity(User host) {
             return RandomDance.builder()
@@ -39,7 +49,7 @@ public class DanceRequestDto {
                 .content(this.content)
                 .startAt(LocalDateTime.parse(this.startAt, formatter))
                 .endAt(LocalDateTime.parse(this.endAt, formatter))
-                .danceType(this.danceType)
+                .danceType(DanceType.valueOf(danceType))
                 .maxUser(this.maxUser)
                 .thumbnail(this.thumbnail)
                 .host(host)
@@ -52,47 +62,26 @@ public class DanceRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DanceUpdateRequestDto {
+
+        @NotNull
         private Long randomDanceId;
+        @NotBlank
         private String title;
+        @NotBlank
         private String content;
+        @NotBlank
         private String startAt;
+        @NotBlank
         private String endAt;
-        private DanceType danceType;
+        @NotBlank
+        private String danceType;
+        @NotNull
         private int maxUser;
         private String thumbnail;
+        @NotBlank
         private String hostId;
-        private List<Long> danceMusicIdList = new ArrayList<>();
-
-        public RandomDance toEntity(User host) {
-            return RandomDance.builder()
-                .title(this.title)
-                .content(this.content)
-                .startAt(LocalDateTime.parse(this.startAt, formatter))
-                .endAt(LocalDateTime.parse(this.endAt, formatter))
-                .danceType(this.danceType)
-                .maxUser(this.maxUser)
-                .thumbnail(this.thumbnail)
-                .host(host)
-                .build();
-        }
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DanceReserveRequestDto {
-        private String id;
-        private Long randomDanceId;
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DanceAttendRequestDto {
-        private String id;
-        private Long randomDanceId;
+        @NotNull
+        private List<Long> danceMusicIdList;
     }
 
     @Data
@@ -100,6 +89,7 @@ public class DanceRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DanceSearchRequestDto {
+
         private String progressType;
         private String keyword;
     }

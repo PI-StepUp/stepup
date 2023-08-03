@@ -57,7 +57,6 @@ public class User extends BaseEntity {
 
     private String refreshToken;
 
-    // TODO: Rank 엔티티 연관관계 설정
     @ManyToOne
     @JoinColumn(name = "RANK_ID")
     private Rank rank;
@@ -97,9 +96,17 @@ public class User extends BaseEntity {
         this.password = encodedUpdatePassword;
     }
 
-    // TODO : 포인트, 랭크 수정 메서드 추가
     public void updatePoint(Integer point) {
-        this.point += point;
+        int updatedPoint = this.point + point;
+        if (updatedPoint >= 5000) {
+            this.point = 5000;
+        } else {
+            this.point = updatedPoint;
+        }
+    }
+
+    public void setPointZero() {
+        this.point = 0;
     }
 
     public void setRank(Rank rank) {
