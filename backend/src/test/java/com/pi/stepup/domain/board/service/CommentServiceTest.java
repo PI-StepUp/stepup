@@ -5,8 +5,11 @@ import com.pi.stepup.domain.board.dao.comment.CommentRepository;
 import com.pi.stepup.domain.board.dao.talk.TalkRepository;
 import com.pi.stepup.domain.board.domain.Board;
 import com.pi.stepup.domain.board.domain.Comment;
+import com.pi.stepup.domain.board.domain.Notice;
 import com.pi.stepup.domain.board.domain.Talk;
 import com.pi.stepup.domain.board.dto.comment.CommentRequestDto.CommentSaveRequestDto;
+import com.pi.stepup.domain.board.dto.comment.CommentResponseDto;
+import com.pi.stepup.domain.board.dto.notice.NoticeResponseDto;
 import com.pi.stepup.domain.board.service.comment.CommentServiceImpl;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -21,6 +24,8 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +49,7 @@ public class CommentServiceTest {
     private Board board;
     private Talk talk;
     private Comment comment1;
+    private Comment comment2;
 
     @Test
     @BeforeEach
@@ -52,6 +58,7 @@ public class CommentServiceTest {
         makeBoard();
         makeTalk();
         makeComment();
+        makeComment2();
         makeCommentSaveRequestDto();
     }
 
@@ -90,11 +97,18 @@ public class CommentServiceTest {
     }
 
     public void makeComment() {
-        //   board = makeBoard();
         comment1 = Comment.builder()
                 .board(board)
                 .writer(writer)
                 .content("댓글입니당")
+                .build();
+    }
+
+    public void makeComment2() {
+        comment2 = Comment.builder()
+                .board(board)
+                .writer(writer)
+                .content("댓글입니다아아아")
                 .build();
     }
 
@@ -117,6 +131,31 @@ public class CommentServiceTest {
             makeCommentSaveRequestDto();
             commentService.create(commentSaveRequestDto);
             verify(commentRepository, only()).insert(any(Comment.class));
+        }
+    }
+
+    @Test
+    @DisplayName("댓글 하나 조회 테스트")
+    public void readOneTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
+                SecurityUtils.class)) {
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(writer.getId());
+
+            List<Comment> comments = new ArrayList<>();
+            comments.add(comment1);
+            comments.add(comment2);
+
+            // When
+            when(boardRepository.findOne(1L)).thenReturn(Optional.of(board));
+            when(commentRepository.findByBoardId(1L)).thenReturn(comments);
+
+            List<CommentResponseDto.CommentInfoResponseDto> result = commentService.readByBoardId(1L);
+
+            // Then
+            assert(result.size() == 2);
+            assert(result.get(0).getContent().equals("댓글입니당"));
+            assert(result.get(1).getContent().equals("댓글입니다아아아"));
         }
     }
 
