@@ -4,7 +4,7 @@ import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
-import { axiosNotice } from "apis/axios";
+import { axiosBoard } from "apis/axios";
 
 const NoticeCreate = () => {
     const [title, setTitle] = useState('');
@@ -12,8 +12,8 @@ const NoticeCreate = () => {
     const [file, setFile] = useState('');
     const writeNotice = async (e: any) => {
         e.preventDefault();
-        const createNotice = await axiosNotice.post("/notice", {
-            id: "관리자",
+        const createNotice = await axiosBoard.post("/notice", {
+            id: "ssafy",
             title: title,
             content: content,
             fileURL: file,
