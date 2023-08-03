@@ -2,7 +2,10 @@ package com.pi.stepup.domain.board.service;
 
 import com.pi.stepup.domain.board.dao.meeting.MeetingRepository;
 import com.pi.stepup.domain.board.domain.Meeting;
+import com.pi.stepup.domain.board.domain.Talk;
 import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto;
+import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto;
+import com.pi.stepup.domain.board.dto.talk.TalkResponseDto;
 import com.pi.stepup.domain.board.service.meeting.MeetingServiceImpl;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -18,6 +21,8 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
@@ -36,12 +41,14 @@ public class MeetingServiceTest {
     private MeetingRequestDto.MeetingUpdateRequestDto meetingUpdateRequestDto;
     private User writer;
     private Meeting meeting1;
+    private Meeting meeting2;
 
     @Test
     @BeforeEach
     public void init() {
         makeWriter();
         makeMeeting();
+        makeMeeting2();
         makeMeetingSaveRequestDto();
     }
 
@@ -67,6 +74,18 @@ public class MeetingServiceTest {
                 .build();
     }
 
+    public void makeMeeting2() {
+        meeting2 = Meeting.builder()
+                .boardId(2L)
+                .writer(writer)
+                .title("정모 테스트 제목2")
+                .content("정모 테스트 내용2")
+                .fileURL("https://example.com/meeting_files/meeting_document.pdf")
+                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
+                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .region("광주")
+                .build();
+    }
 
     public void makeMeetingSaveRequestDto() {
         meetingSaveRequestDto = MeetingRequestDto.MeetingSaveRequestDto.builder()
@@ -118,6 +137,30 @@ public class MeetingServiceTest {
             makeMeetingUpdateRequestDto();
 
             assertThatNoException().isThrownBy(() -> meetingService.update(meetingUpdateRequestDto));
+        }
+    }
+
+    @Test
+    @DisplayName("정모 게시글 목록 조회 테스트")
+    public void readAllTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
+                SecurityUtils.class)) {
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(writer.getId());
+            String keyword = "제목";
+
+            List<Meeting> makeMeetings = new ArrayList<>();
+            makeMeetings.add(meeting1);
+            makeMeetings.add(meeting2);
+
+            when(meetingRepository.findAll(anyString())).thenReturn(makeMeetings);
+
+            List<MeetingResponseDto.MeetingInfoResponseDto> result = meetingService.readAll(keyword);
+
+            // 테스트 결과 검증
+            assert(result.size() == 2);
+            assert(result.get(0).getTitle().equals("정모 테스트 제목"));
+            assert(result.get(1).getTitle().equals("정모 테스트 제목2"));
         }
     }
 
