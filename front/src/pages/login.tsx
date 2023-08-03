@@ -28,17 +28,7 @@ const Login = () => {
             if(user.data.message === "로그인 완료"){
                 setAccessToken(user.data.data.accessToken);
                 setRefreshToken(user.data.data.refreshToken);
-                try{
-                    const login = await axiosUser.get("/",{
-                        params:{
-                            id: id,
-                        }
-                    });
-                    console.log(login);
-                }catch(e){
-                    console.error(e);
-                }
-                // router.push('/');
+                router.push('/');
             }
         }catch(e){
             alert("가입되지 않은 고객입니다. 회원가입 후 이용해주세요.");
