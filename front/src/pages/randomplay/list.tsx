@@ -22,6 +22,8 @@ import { axiosDance } from "apis/axios"
 const RandomPlayList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [rooms, setRooms] = useState<any[]>();
+    const [inprogress, setInprogress] = useState<any[]>();
+    const [scheduled, setScheduled] = useState<any[]>();
     useEffect(() => {
         axiosDance.get('/',{
             params: {
@@ -31,6 +33,29 @@ const RandomPlayList = () => {
         }).then((data) => {
             if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
                 setRooms(data.data.data);
+            }
+        })
+
+        axiosDance.get('/',{
+            params: {
+                progressType: "IN_PROGRESS",
+                keyword: "",
+            }
+        }).then((data) => {
+            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+                setInprogress(data.data.data);
+                console.log(inprogress);
+            }
+        })
+
+        axiosDance.get('/',{
+            params: {
+                progressType: "SCHEDULED",
+                keyword: "",
+            }
+        }).then((data) => {
+            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+                setScheduled(data.data.data);
             }
         })
     },[]);
@@ -84,48 +109,26 @@ const RandomPlayList = () => {
                     </div>
                     <div className="section-content">
                         <ul>
-                            <li>
-                                <div className="section-content-img">
-                                    <span>서바이벌</span>
-                                    <Image src={RandomplayThumbnail} alt=""/>
-                                </div>
-                                <div className="section-content-info">
-                                    <h4>여기서요? 4세대 남돌·여돌 곡 모음 여기서요? 4세대 남돌·여돌 곡 모음 여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                    <span>호스트이름</span>
-                                    <div className="flex-wrap">
-                                        <button>예약하기</button>
-                                        <span>참여 PM6시 ~ PM7시</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="section-content-img">
-                                    <span>서바이벌</span>
-                                    <Image src={RandomplayThumbnail} alt=""/>
-                                </div>
-                                <div className="section-content-info">
-                                    <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                    <span>호스트이름</span>
-                                    <div className="flex-wrap">
-                                        <button>예약하기</button>
-                                        <span>참여 PM6시 ~ PM7시</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="section-content-img">
-                                    <span>서바이벌</span>
-                                    <Image src={RandomplayThumbnail} alt=""/>
-                                </div>
-                                <div className="section-content-info">
-                                    <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                    <span>호스트이름</span>
-                                    <div className="flex-wrap">
-                                        <button>예약하기</button>
-                                        <span>참여 PM6시 ~ PM7시</span>
-                                    </div>
-                                </div>
-                            </li>
+                            {inprogress?.map((inprogress) => {
+                                return(
+                                    <li>
+                                        <Link href="/danceroom">
+                                            <div className="section-content-img">
+                                                <span>{inprogress.danceType === "SURVIVAL" ? "서바이벌" : inprogress.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
+                                                <Image src={RandomplayThumbnail} alt=""/>
+                                            </div>
+                                            <div className="section-content-info">
+                                                <h4>{inprogress.title}</h4>
+                                                <span>{inprogress.hostNickname}</span>
+                                                <div className="flex-wrap">
+                                                    <button>예약하기</button>
+                                                    <span>참여 PM6시 ~ PM7시</span>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
                     <div className="more-button-wrap">
@@ -141,48 +144,28 @@ const RandomPlayList = () => {
                     </div>
                     <div className="section-content">
                         <ul>
-                            <li>
-                                <div className="section-content-img">
-                                    <span>서바이벌</span>
-                                    <Image src={RandomplayThumbnail} alt=""/>
-                                </div>
-                                <div className="section-content-info">
-                                    <h4>여기서요? 4세대 남돌·여돌 곡 모음 여기서요? 4세대 남돌·여돌 곡 모음 여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                    <span>호스트이름</span>
-                                    <div className="flex-wrap">
-                                        <button>예약하기</button>
-                                        <span>참여 PM6시 ~ PM7시</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="section-content-img">
-                                    <span>서바이벌</span>
-                                    <Image src={RandomplayThumbnail} alt=""/>
-                                </div>
-                                <div className="section-content-info">
-                                    <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                    <span>호스트이름</span>
-                                    <div className="flex-wrap">
-                                        <button>예약하기</button>
-                                        <span>참여 PM6시 ~ PM7시</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="section-content-img">
-                                    <span>서바이벌</span>
-                                    <Image src={RandomplayThumbnail} alt=""/>
-                                </div>
-                                <div className="section-content-info">
-                                    <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                    <span>호스트이름</span>
-                                    <div className="flex-wrap">
-                                        <button>예약하기</button>
-                                        <span>참여 PM6시 ~ PM7시</span>
-                                    </div>
-                                </div>
-                            </li>
+                            {
+                                scheduled?.map((scheduled) => {
+                                    return(
+                                        <li>
+                                            <Link href="/danceroom">
+                                                <div className="section-content-img">
+                                                    <span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
+                                                    <Image src={RandomplayThumbnail} alt=""/>
+                                                </div>
+                                                <div className="section-content-info">
+                                                    <h4>{scheduled.title}</h4>
+                                                    <span>{scheduled.hostNickname}</span>
+                                                    <div className="flex-wrap">
+                                                        <button>예약하기</button>
+                                                        <span>참여 PM6시 ~ PM7시</span>
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                    )
+                                })
+                            }
                         </ul>
                     </div>
                     <div className="more-button-wrap">
