@@ -54,11 +54,15 @@ public class MusicApplyServiceImpl implements MusicApplyService {
         String id = getLoggedInUserId();
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, id);
         log.info("신청 목록 : {}", musicApplies);
-        log.info("노래 신청 첫번째 - 로그인 아이디 : {}", id);
-        if (!musicApplies.get(0).getHearts().isEmpty()) {
-            for (Heart h : musicApplies.get(0).getHearts()) {
-                log.info("좋아요 누른사람 아이디 : {}",
-                    h.getUser().getId());
+        log.info("로그인 아이디 : {}", id);
+
+        // for log
+        if (!musicApplies.isEmpty()) {
+            if (!musicApplies.get(0).getHearts().isEmpty()) {
+                for (Heart h : musicApplies.get(0).getHearts()) {
+                    log.info("좋아요 누른사람 아이디 : {}",
+                        h.getUser().getId());
+                }
             }
         }
 
