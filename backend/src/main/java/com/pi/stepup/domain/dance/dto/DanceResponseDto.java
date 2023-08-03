@@ -47,7 +47,7 @@ public class DanceResponseDto {
         private final int maxUser;
         private final String thumbnail;
         private final String hostNickname;
-        private String progressType;
+        private final String progressType;
         private final Integer reserveStatus;
 
         @Builder
