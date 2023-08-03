@@ -28,7 +28,7 @@ const RandomPlayList = () => {
                             <Image src={ArticleIcon} alt=""/>
                             <h3>{lang==="en" ? "Popular right now" : lang==="cn" ? "现在很有人气的随机舞蹈" : "현재 인기 있는 랜덤 플레이 댄스" }</h3>
                         </div>
-                         <button>{lang==="en" ? "Holding" : lang==="cn" ? "打开" : "개최하기" }</button>
+                         <button><Link href="/randomplay/create">{lang==="en" ? "Holding" : lang==="cn" ? "打开" : "개최하기" }</Link></button>
                     </div>
                     <div className="section-content">
                         <ul>
