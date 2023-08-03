@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
@@ -17,14 +17,16 @@ const ArticleList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [articles, setArticles] = useState<any[]>();
     const router = useRouter();
-
-    axiosBoard.get("/talk", {
-        params: {
-            keyword: "",
-        }
-    }).then((data) => {
-        setArticles(data.data.data);
-    })
+        
+    useEffect(() => {
+        axiosBoard.get("/talk", {
+            params: {
+                keyword: "",
+            }
+        }).then((data) => {
+            setArticles(data.data.data);
+        })
+    }, [])
 
     return (
         <>

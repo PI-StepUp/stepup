@@ -56,6 +56,32 @@
                                 @include font(14px, 500, #454545);
                                 margin-left:0px;
                             }
+                            .input-max{
+                                @include setSize(900px, 70px);
+                                background-color:#EDEDED;
+                                border:none;
+                                border-radius:10px;
+                                @include box-padding(20px);
+                                @include font(14px, 500, #454545);
+                            }
+                            select{
+                                @include setSize(900px, 70px);
+                                background-color:#EDEDED;
+                                border:none;
+                                border-radius:10px;
+                                @include box-padding(20px);
+                                @include font(14px, 500, #454545);
+                                box-sizing: border-box;
+                                padding: 20px;
+                                option{
+                                    @include setSize(860px, 70px);
+                                    background-color:#EDEDED;
+                                    border:none;
+                                    border-radius:10px;
+                                    @include box-padding(20px);
+                                    @include font(14px, 500, #454545);
+                                }
+                            }
                             input[type="file"]{
                                 &::file-selector-button {
                                     @include setSize(150px, 30px);
