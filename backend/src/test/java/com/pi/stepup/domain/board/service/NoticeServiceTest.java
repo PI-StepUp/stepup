@@ -1,8 +1,11 @@
 package com.pi.stepup.domain.board.service;
 
 import com.pi.stepup.domain.board.dao.notice.NoticeRepository;
+import com.pi.stepup.domain.board.domain.Meeting;
 import com.pi.stepup.domain.board.domain.Notice;
+import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto;
 import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto;
+import com.pi.stepup.domain.board.dto.notice.NoticeResponseDto;
 import com.pi.stepup.domain.board.service.notice.NoticeServiceImpl;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
@@ -23,6 +26,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
@@ -210,6 +215,30 @@ public class NoticeServiceTest {
             makeNoticeUpdateRequestDto();
 
             assertThatNoException().isThrownBy(() -> noticeService.update(noticeUpdateRequestDto1));
+        }
+    }
+
+    @Test
+    @DisplayName("공지 게시글 목록 조회 테스트")
+    public void readAllTest() {
+        try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(
+                SecurityUtils.class)) {
+            securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId)
+                    .thenReturn(adminUser.getId());
+            String keyword = "제목";
+
+            List<Notice> makeNotices = new ArrayList<>();
+            makeNotices.add(notice1);
+            makeNotices.add(notice2);
+
+            when(noticeRepository.findAll(anyString())).thenReturn(makeNotices);
+
+            List<NoticeResponseDto.NoticeInfoResponseDto> result = noticeService.readAll(keyword);
+
+            // 테스트 결과 검증
+            assert(result.size() == 2);
+            assert(result.get(0).getTitle().equals("공지 테스트 제목"));
+            assert(result.get(1).getTitle().equals("공지 테스트 제목2"));
         }
     }
 }
