@@ -42,9 +42,9 @@ public class MeetingServiceImpl implements MeetingService {
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         //끝 시간이 시작 시간보다 이전이면 예외
-        if (meetingSaveRequestDto.getEndAt().isBefore(meetingSaveRequestDto.getStartAt())) {
-            throw new MeetingBadRequestException(MEETING_INVALID_TIME.getMessage());
-        }
+//        if (meetingSaveRequestDto.getEndAt().isBefore(meetingSaveRequestDto.getStartAt())) {
+//            throw new MeetingBadRequestException(MEETING_INVALID_TIME.getMessage());
+//        }
 
         Meeting meeting = Meeting.builder()
                 .writer(writer)

@@ -1,14 +1,17 @@
-import {useRef} from "react";
+import {useRef, useEffect} from "react";
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import Footer from "components/Footer";
 import SubNav from "components/subNav";
-import { axiosBoard } from "apis/axios";
+import { axiosBoard, axiosUser } from "apis/axios";
 
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
+
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
     const router = useRouter();
@@ -16,21 +19,35 @@ const DetailArticle = () => {
     const articleTitle = useRef<any>();
     const articleContent = useRef<any>();
 
-    axiosBoard.get(`/talk/${boardId}`, {
-        params:{
-            boardId: Number(boardId),
-        }
-    }).then((data) => {
-        if(data.data.message === "자유게시판 게시글 조회 완료"){
-            articleTitle.current.innerText = data.data.data.title;
-            articleContent.current.innerText = data.data.data.content;
-        }
-    })
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
 
     const deleteArticle = async () => {
+        try{
+            await axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
         await axiosBoard.delete(`/talk/${boardId}`,{
             params:{
                 boardId: Number(boardId),
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
             if(data.data.message === "자유게시판 삭제 완료"){
@@ -39,6 +56,40 @@ const DetailArticle = () => {
             }
         })
     }
+
+    useEffect(() => {
+        try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        axiosBoard.get(`/talk/${boardId}`, {
+            params:{
+                boardId: Number(boardId),
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }).then((data) => {
+            if(data.data.message === "자유게시판 게시글 조회 완료"){
+                articleTitle.current.innerText = data.data.data.title;
+                articleContent.current.innerText = data.data.data.content;
+            }
+        });
+    }, [])
     return (
         <>
             <Header></Header>
