@@ -17,6 +17,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -34,12 +37,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            //Cors옵션 활성화
+            .cors().configurationSource(corsConfigurationSource())
+            .and()
+
             .httpBasic().disable()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
 
             .authorizeRequests()
+
+            //문서 관련도 로그인하지 않아도 접근 가능
+            .antMatchers("/swagger-ui/**").permitAll()
+            .antMatchers("/v3/api-docs/**").permitAll()
+            .antMatchers("/**/*.html").permitAll()
+            .antMatchers("/**/*.css").permitAll()
+            .antMatchers("/**/*.js").permitAll()
+            .antMatchers("/**/*.png").permitAll()
+            .antMatchers("/images/**").permitAll()
+
             //로그인하지 않아도 접근 가능
             .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
             .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
@@ -63,11 +80,23 @@ public class SecurityConfig {
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
                 UsernamePasswordAuthenticationFilter.class);
 
-        http
-                .cors();
-
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
 
+        configuration.addAllowedOriginPattern("*");
+//        configuration.addAllowedOrigin("도메인 지정");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 }
