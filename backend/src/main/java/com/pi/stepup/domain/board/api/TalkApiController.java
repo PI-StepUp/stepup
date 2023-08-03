@@ -21,7 +21,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/board")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders="*")
 public class TalkApiController {
 
     private final TalkService talkService;
