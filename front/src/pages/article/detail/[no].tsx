@@ -66,7 +66,7 @@ const DetailArticle = () => {
                     </div>
                     <div className="button-wrap">
                         <button onClick={deleteArticle}>삭제하기</button>
-                        <button>수정하기</button>
+                        <button onClick={() => router.push(`/article/edit/${boardId}`)}>수정하기</button>
                     </div>
                 </div>
                 <div className="comment-wrap">
