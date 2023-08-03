@@ -1,8 +1,16 @@
 import {atom} from "recoil"
 
-const LanguageState = atom({
+export const LanguageState = atom({
     key: 'languageState',
     default: 'ko',
 });
 
-export {LanguageState};
+export const accessTokenState = atom({
+    key: 'accessTokenState',
+    default: '',
+})
+
+export const refreshTokenState = atom({
+    key: 'refreshTokenState',
+    default: '',
+})

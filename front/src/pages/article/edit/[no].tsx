@@ -1,4 +1,4 @@
-import {useRef} from "react";
+import {useRef, useEffect, useState} from "react";
 
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
@@ -8,31 +8,52 @@ import Footer from "components/Footer";
 import { axiosBoard } from "apis/axios";
 import { useRouter } from "next/router";
 
-const ArticleCreate = () => {
+const ArticleEdit = () => {
     const title = useRef<any>();
     const content = useRef<any>();
     const file = useRef<any>();
+    const [article, setArticle] = useState<any>();
     const router = useRouter();
+    const boardId = router.query.no;
 
     const createArticle = async (e:any) => {
         e.preventDefault();
 
         try{
-            const create = await axiosBoard.post('/talk', {
-                id: 'ssafy',
+            const create = await axiosBoard.put('/talk', {
+                boardId: boardId,
                 title: title.current.value,
                 content: content.current.value,
+                writerName: article.writerName,
+                writerProfileImg: article.writerProfileImg,
                 fileURL: file.current.value,
+                boardType: article.boardType,
             })
 
-            if(create.data.message === "자유게시판 등록 완료"){
-                alert("글 등록이 완료되었습니다.");
+            if(create.data.message === "자유게시판 수정 완료"){
+                alert("글 수정이 완료되었습니다.");
                 router.push('/article/list');
             }
         }catch(e){
             alert("글 등록 실패, 관리자에게 문의하세요.");
         }
     }
+
+    useEffect(() => {
+        axiosBoard.get(`/talk/${boardId}`, {
+            params:{
+                boardId: Number(boardId),
+            }
+        }).then((data) => {
+            console.log(data);
+            if(data.data.message === "자유게시판 게시글 조회 완료"){
+                title.current.value = data.data.data.title;
+                content.current.value = data.data.data.content;
+                file.current.value = data.data.data.fileURL;
+                setArticle(data.data.data);
+            }
+        })
+    }, [])
     return(
         <>
             <Header/>
@@ -81,4 +102,4 @@ const ArticleCreate = () => {
     )
 }
 
-export default ArticleCreate;
+export default ArticleEdit;

@@ -1,3 +1,5 @@
+import {useEffect} from  "react";
+
 import Header from "components/Header"
 import MainBanner from "components/MainBanner"
 import SubNav from "components/subNav"
@@ -9,9 +11,14 @@ import Link from "next/link"
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
+import { axiosBoard } from "apis/axios"
 
 const NoticeList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
+    axiosBoard.get("/notice").then((data) => {
+        console.log(data);
+    })
+
     return(
         <>
             <Header/>

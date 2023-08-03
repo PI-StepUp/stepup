@@ -37,8 +37,10 @@ import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.config.security.SecurityUtils;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -175,16 +177,31 @@ public class DanceServiceImpl implements DanceService {
         return allMyOpenDance;
     }
 
-    //TODO: 로그인 유저랑 비교해서 예약한 상태면 예약 버튼 안 뜨고, 예약 안 했으면 예약 버튼 뜨게 -> 0/1
+    //TODO: 수정 필요
     @Override
     public List<DanceSearchResponseDto> readAllRandomDance(
         DanceSearchRequestDto danceSearchRequestDto) {
         List<RandomDance> randomDanceList = new ArrayList<>();
 
+        boolean isLogin = false;
+        String loginUserId = "id";
+        User user = null;
+
+        //로그인 안 한 경우에도 접근 가능
+        try {
+            loginUserId = SecurityUtils.getLoggedInUserId();
+            user = userRepository.findById(loginUserId).orElseThrow(()
+                -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+            isLogin = true;
+        } catch (ForbiddenException e) {
+            loginUserId = "id";
+        }
+
         if (danceSearchRequestDto.getProgressType().equals(ProgressType.SCHEDULED.toString())) {
             randomDanceList
                 = danceRepository.findScheduledDance(danceSearchRequestDto.getKeyword());
-        } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.IN_PROGRESS.toString())) {
+        } else if (danceSearchRequestDto.getProgressType()
+            .equals(ProgressType.IN_PROGRESS.toString())) {
             randomDanceList
                 = danceRepository.findInProgressDance(danceSearchRequestDto.getKeyword());
         } else if (danceSearchRequestDto.getProgressType().equals(ProgressType.ALL.toString())) {
@@ -196,11 +213,50 @@ public class DanceServiceImpl implements DanceService {
         for (int i = 0; i < randomDanceList.size(); i++) {
             RandomDance randomDance = randomDanceList.get(i);
 
+            //로그인 안 한 사용자면 예약하기 버튼 비활성화 - 1
             DanceSearchResponseDto danceSearchResponseDto
                 = DanceSearchResponseDto.builder()
                 .randomDance(randomDance)
                 .progressType(danceSearchRequestDto.getProgressType())
+                .reserveStatus(1)
                 .build();
+
+            if (isLogin) {
+                //자기가 개최한 거면 예약하기 버튼 비활성화 - 1
+                if (randomDance.getHost().getId().equals(loginUserId)) {
+                    danceSearchResponseDto
+                        = DanceSearchResponseDto.builder()
+                        .randomDance(randomDance)
+                        .progressType(danceSearchRequestDto.getProgressType())
+                        .reserveStatus(1)
+                        .build();
+
+                    //자기가 개최한 게 아니면 예약 현황 가져오기
+                } else {
+                    Optional<Reservation> reservation
+                        = danceRepository.findReservationByRandomDanceIdAndUserId
+                        (randomDance.getRandomDanceId(), user.getUserId());
+
+                    //예약이 존재하면 예약하기 버튼 비활성화 - 1
+                    if (reservation.isPresent()) {
+                        danceSearchResponseDto
+                            = DanceSearchResponseDto.builder()
+                            .randomDance(randomDance)
+                            .progressType(danceSearchRequestDto.getProgressType())
+                            .reserveStatus(1)
+                            .build();
+
+                        //예약이 존재하지 않으면 예약하기 버튼 활성화 - 0
+                    } else {
+                        danceSearchResponseDto
+                            = DanceSearchResponseDto.builder()
+                            .randomDance(randomDance)
+                            .progressType(danceSearchRequestDto.getProgressType())
+                            .reserveStatus(0)
+                            .build();
+                    }
+                }
+            }
 
             allDance.add(danceSearchResponseDto);
         }

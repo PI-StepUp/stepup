@@ -47,9 +47,7 @@ public class MeetingRequestDto {
         private String boardType;
         @NotBlank
         private String region;
-        @NotEmpty
         private LocalDateTime startAt;
-        @NotEmpty
         private LocalDateTime endAt;
     }
 }

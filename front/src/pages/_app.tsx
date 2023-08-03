@@ -18,20 +18,26 @@ import "../styles/language.scss"
 import "../styles/mypage.css"
 import "../styles/mypageedit.css"
 import "../styles/responsively.scss";
+import "../styles/detail.scss";
 
 import type {AppProps} from 'next/app';
 import Head from "next/head";
 import {RecoilRoot} from "recoil";
+import {QueryClient, QueryClientProvider} from "react-query";
+
+const queryClient = new QueryClient();
 
 const StepUp = ({Component} : AppProps) => {
     return (
         <>
-            <Head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            </Head>
-            <RecoilRoot>
-                <Component/>
-            </RecoilRoot>
+            <QueryClientProvider client={queryClient}>
+                <Head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                </Head>
+                <RecoilRoot>
+                    <Component/>
+                </RecoilRoot>
+            </QueryClientProvider>
         </>
     )
 }

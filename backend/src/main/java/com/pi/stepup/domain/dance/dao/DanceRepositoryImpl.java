@@ -64,8 +64,8 @@ public class DanceRepositoryImpl implements DanceRepository {
             + "WHERE r.endAt >= current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
-                "r.content LIKE concat('%', '" + keyword + "', '%')";
+            sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
+                "r.content LIKE '%" + keyword + "%')";
         }
 
         return em.createQuery(sql, RandomDance.class).getResultList();
@@ -77,8 +77,8 @@ public class DanceRepositoryImpl implements DanceRepository {
             + "WHERE r.startAt > current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
-                "r.content LIKE concat('%', '" + keyword + "', '%')";
+            sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
+                "r.content LIKE '%" + keyword + "%')";
         }
 
         return em.createQuery(sql, RandomDance.class).getResultList();
@@ -88,11 +88,11 @@ public class DanceRepositoryImpl implements DanceRepository {
     public List<RandomDance> findInProgressDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
             + "WHERE r.startAt <= current_timestamp "
-            + "AND r.endAt >= current_timestamp";
+            + "AND r.endAt >= current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "AND r.title LIKE concat('%', '" + keyword + "', '%') OR " +
-                "r.content LIKE concat('%', '" + keyword + "', '%')";
+            sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
+                "r.content LIKE '%" + keyword + "%')";
         }
 
         return em.createQuery(sql, RandomDance.class).getResultList();
