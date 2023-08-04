@@ -8,7 +8,8 @@ import { axiosMusic, axiosUser } from "apis/axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import CommentDefaultImage from "/public/images/comment-default-img.svg";
+import HeartFillIcon from "/public/images/icon-heart-fill.svg";
+import HeartEmptyIcon from "/public/images/icon-heart-empty.svg";
 
 import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
@@ -21,6 +22,39 @@ const DetailArticle = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+
+    const addHeart = async () => {
+        try{
+            await axiosUser.post('/auth', {
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        if(article.canHeart === 1){
+            axiosMusic.post('/apply/heart', {
+                musicApplyId: musicId,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                }
+            }).then(() => {
+                alert('좋아요가 추가되었습니다.');
+                router.push(`/playlist/detail/${musicId}`);
+            })
+        }
+    }
 
     const deleteArticle = async () => {
 
@@ -106,54 +140,26 @@ const DetailArticle = () => {
                 </div>
                 <div className="detail-content">
                     <div className="list-wrap">
-                        <button><Link href="/article/list">목록보기</Link></button>
+                        <button><Link href="/playlist/list">목록보기</Link></button>
                     </div>
                     <div className="detail-main-title">
                         <span>{article?.artist}</span>
                         <h4>{article?.title}</h4>
-                        <p>2023년 07월 15일 AM 10시</p>
+                        <div className="like-wrap" onClick={addHeart}>
+                            {
+                                article?.canHeart === 1 ? 
+                                <Image src={HeartEmptyIcon} alt=""></Image> :
+                                <Image src={HeartFillIcon} alt=""></Image>
+                            }
+                            
+                            <span>{article?.heartCnt}</span>
+                        </div>
                     </div>
                     <div className="detail-main-content">
                         <p>{article?.content}</p>
                     </div>
                     <div className="button-wrap">
                         <button onClick={deleteArticle}>삭제하기</button>
-                    </div>
-                </div>
-                <div className="comment-wrap">
-                    <ul>
-                        <li>
-                            <div className="img-wrap">
-                                <Image src={CommentDefaultImage} alt=""/>
-                            </div>
-                            <div className="comment-main">
-                                <div className="comment-content">
-                                    <h5>Nickname</h5>
-                                    <p>댓글의 내용이 들어갈 부분이에요 이곳에 댓글의 내용이</p>
-                                </div>
-                                <div className="comment-button">
-                                    <button>댓글삭제</button>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="img-wrap">
-                                <Image src={CommentDefaultImage} alt=""/>
-                            </div>
-                            <div className="comment-main">
-                                <div className="comment-content">
-                                    <h5>Nickname</h5>
-                                    <p>댓글의 내용이 들어갈 부분이에요 이곳에 댓글의 내용이</p>
-                                </div>
-                                <div className="comment-button">
-                                    <button>댓글삭제</button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div className="comment-input">
-                        <textarea name="" id=""></textarea>
-                        <button>댓글등록</button>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import SideMenu from "components/SideMenu";
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
@@ -19,12 +19,19 @@ import { LanguageState } from "states/states";
 import Image from "next/image"
 import Link from "next/link"
 
+import { axiosMusic, axiosUser } from "apis/axios";
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+
 const PracticeRoom = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [reflect, setReflect] = useState(false);
     const [mic, setMic] = useState(false);
     const [camera, setCamera] = useState(false);
     const [moredot, setMoredot] = useState(false);
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+    const [musics, setMusics] = useState<any>();
     const reflectHover = () => {
         setReflect(true);
     }
@@ -49,6 +56,38 @@ const PracticeRoom = () => {
     const moreDotLeave = () => {
         setMoredot(false);
     }
+    useEffect(() => {
+
+        try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        axiosMusic.get("",{
+            params:{
+                keyword: "",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }).then((data) => {
+            console.log(data);
+            setMusics(data.data.data);
+        })
+    }, [])
     return(
         <>
             <div className="practiceroom-wrap">
@@ -115,80 +154,28 @@ const PracticeRoom = () => {
                 <div className="musiclist">
                     <div className="musiclist-title">
                         <h3>{lang==="en" ? "List of practice rooms" : lang==="cn" ? "练习室列表" : "연습실 목록" }</h3>
-                        <span>5</span>
+                        <span>{musics?.length}</span>
                     </div>
                     <div className="musiclist-content">
                         <ul>
-                            <li>
-                                <div className="flex-wrap">
-                                    <div className="musiclist-content-thumbnail">
-                                        <Image src={PlayThumbnail} alt=""/>
-                                    </div>
-                                    <div className="musiclist-content-info">
-                                        <h4>One and Only</h4>
-                                        <span>보이넥스트도어</span>
-                                    </div>
-                                </div>
-                                <div className="musiclist-content-control-icon">
-                                    <span><Image src={PlayIcon} alt=""/></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="flex-wrap">
-                                    <div className="musiclist-content-thumbnail">
-                                        <Image src={PlayThumbnail} alt=""/>
-                                    </div>
-                                    <div className="musiclist-content-info">
-                                        <h4>One and Only</h4>
-                                        <span>보이넥스트도어</span>
-                                    </div>
-                                </div>
-                                <div className="musiclist-content-control-icon">
-                                    <span><Image src={PlayIcon} alt=""/></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="flex-wrap">
-                                    <div className="musiclist-content-thumbnail">
-                                        <Image src={PlayThumbnail} alt=""/>
-                                    </div>
-                                    <div className="musiclist-content-info">
-                                        <h4>One and Only</h4>
-                                        <span>보이넥스트도어</span>
-                                    </div>
-                                </div>
-                                <div className="musiclist-content-control-icon">
-                                    <span><Image src={PlayIcon} alt=""/></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="flex-wrap">
-                                    <div className="musiclist-content-thumbnail">
-                                        <Image src={PlayThumbnail} alt=""/>
-                                    </div>
-                                    <div className="musiclist-content-info">
-                                        <h4>One and Only</h4>
-                                        <span>보이넥스트도어</span>
-                                    </div>
-                                </div>
-                                <div className="musiclist-content-control-icon">
-                                    <span><Image src={PlayIcon} alt=""/></span>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="flex-wrap">
-                                    <div className="musiclist-content-thumbnail">
-                                        <Image src={PlayThumbnail} alt=""/>
-                                    </div>
-                                    <div className="musiclist-content-info">
-                                        <h4>One and Only</h4>
-                                        <span>보이넥스트도어</span>
-                                    </div>
-                                </div>
-                                <div className="musiclist-content-control-icon">
-                                    <span><Image src={PlayIcon} alt=""/></span>
-                                </div>
-                            </li>
+                            {musics?.map((music:any) => {
+                                return(
+                                    <li>
+                                        <div className="flex-wrap">
+                                            <div className="musiclist-content-thumbnail">
+                                                <Image src={PlayThumbnail} alt=""/>
+                                            </div>
+                                            <div className="musiclist-content-info">
+                                                <h4>{music.title}</h4>
+                                                <span>{music.artist}</span>
+                                            </div>
+                                        </div>
+                                        <div className="musiclist-content-control-icon">
+                                            <span><Image src={PlayIcon} alt=""/></span>
+                                        </div>
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </div>
                 </div>

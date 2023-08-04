@@ -236,6 +236,13 @@
         }
         .musiclist-content{
             margin-top:38px;
+            height: 80vh;
+            overflow-y: scroll;
+            -ms-overflow-style: none; /* 인터넷 익스플로러 */
+            scrollbar-width: none; /* 파이어폭스 */
+            &::-webkit-scrollbar{
+                display:none;
+            }
             ul{
                 li{
                     @include flex(space-between, center);
