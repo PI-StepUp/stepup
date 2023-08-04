@@ -75,6 +75,16 @@ class MusicApplyRepositoryTest {
     }
 
     @Test
+    @DisplayName("비로그인 사용자 노래 신청 목록 조회 테스트")
+    public void findAllMusicApplyNotIdRepositoryTest() {
+        String keyword = "";
+        insertMusicApply();
+
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
+        assertThat(musicApplies.size()).isEqualTo(10);
+    }
+
+    @Test
     @DisplayName("노래 신청 목록 사용자 아이디로 조회 테스트")
     public void findAllMusicApplyByUserRepositoryTest() {
         insertWriter();
