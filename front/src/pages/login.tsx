@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useRef} from "react"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import LanguageButton from "components/LanguageButton"
@@ -6,8 +6,10 @@ import LanguageButton from "components/LanguageButton"
 import { useRecoilState } from "recoil";
 import { axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import ModalCloseIcon from "/public/images/icon-modal-close.svg";
 
-import { LanguageState, accessTokenState, refreshTokenState } from "states/states";
+import { LanguageState, accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState } from "states/states";
 
 const Login = () => {
     const [id, setId] = useState('');
@@ -15,8 +17,52 @@ const Login = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [idStat, setIdStat] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+    const [rankName, setRankName] = useRecoilState(rankNameState);
+    const emailValue = useRef<any>();
+    const dateValue = useRef<any>();
+    const modal = useRef<any>();
+    const idValue = useRef<any>();
+    const pwModal = useRef<any>();
 
     const router = useRouter();
+
+    const findIdClick = () => {
+        modal.current.style.display = "block";
+    }
+
+    const findPasswordClick = () => {
+        pwModal.current.style.display = "block";
+    }
+
+    const findPw = async () => {
+        await axiosUser.post('/findpw',{
+            id: idValue.current.value,
+            email: emailValue.current.value,
+        }).then((data) => {
+            if(data.data.message === "임시 비밀번호 전송 완료"){
+                alert('임시 비밀번호를 메일로 발송해드렸습니다.');
+            }
+        })
+    }
+
+    const modalClose = () => {
+        modal.current.style.display = "none";
+        pwModal.current.style.display = "none";
+    }
+
+    const findId = async () => {
+        await axiosUser.post('/findid',{
+            email: emailValue.current.value,
+            birth: dateValue.current.value,
+        }).then((data) => {
+            if(data.data.message === "아이디 전송 완료"){
+                alert('아이디 정보를 보내드렸습니다. 이메일을 확인해주세요.');
+            }
+        })
+    }
 
     const login = async () => {
         try{
@@ -24,10 +70,13 @@ const Login = () => {
                 id: id,
                 password: password,
             })
-            console.log(user);
             if(user.data.message === "로그인 완료"){
-                setAccessToken(user.data.data.accessToken);
-                setRefreshToken(user.data.data.refreshToken);
+                setAccessToken(user.data.data.tokens.accessToken);
+                setRefreshToken(user.data.data.tokens.refreshToken);
+                setIdStat(id);
+                setNickname(user.data.data.userInfo.nickname);
+                setProfileImg(user.data.data.userInfo.profileImg);
+                setRankName(user.data.data.userInfo.rankName);
                 router.push('/');
             }
         }catch(e){
@@ -49,9 +98,9 @@ const Login = () => {
                                 <div className="flex-box">
                                     <label htmlFor=""><input type="checkbox" />{lang==="en" ? "Save ID" : lang==="cn" ? "保存用户名" : "아이디 저장" }</label>
                                     <ul>
-                                        <li>{lang==="en" ? "Sign up for membership" : lang==="cn" ? "注册会员" : "회원가입하기" }</li>
+                                        <li onClick={findIdClick}>{lang==="en" ? "Find ID" : lang==="cn" ? "查找用户名" : "아이디찾기" }</li>
                                         <div className="separate-vertical-line"></div>
-                                        <li>{lang==="en" ? "Find a password" : lang==="cn" ? "找回密码" : "비밀번호찾기" }</li>
+                                        <li onClick={findPasswordClick}>{lang==="en" ? "Find a password" : lang==="cn" ? "找回密码" : "비밀번호찾기" }</li>
                                     </ul>
                                 </div>
                             </form>
@@ -62,6 +111,38 @@ const Login = () => {
                 </div>
                 <LanguageButton/>
             <Footer/>
+            <div className="modal-back" ref={modal}>
+                <div className="modal-main">
+                    <div className="modal-title">
+                        <h4>아이디 찾기</h4>
+                        <Image src={ModalCloseIcon} alt="" onClick={modalClose}></Image>
+                    </div>
+                    <div className="modal-content">
+                        <span>이메일로 찾기</span>
+                        <input type="email" placeholder="이메일을 입력해주세요." ref={emailValue} />
+                        <input type="date" placeholder="생년월일을 입력해주세요." ref={dateValue} />
+                    </div>
+                    <div className="modal-button-wrap">
+                        <button onClick={findId}>아이디 찾기</button>
+                    </div>
+                </div>
+            </div>
+            <div className="modal-back" ref={pwModal}>
+                <div className="modal-main">
+                    <div className="modal-title">
+                        <h4>비밀번호찾기</h4>
+                        <Image src={ModalCloseIcon} alt="" onClick={modalClose}></Image>
+                    </div>
+                    <div className="modal-content">
+                        <span>아이디 & 이메일로 찾기</span>
+                        <input type="text" placeholder="아이디를 입력해주세요." ref={idValue}/>
+                        <input type="email" placeholder="이메일을 입력해주세요." ref={emailValue} />
+                    </div>
+                    <div className="modal-button-wrap">
+                        <button onClick={findPw}>비밀번호 찾기</button>
+                    </div>
+                </div>
+            </div>
         </>
     )
 }

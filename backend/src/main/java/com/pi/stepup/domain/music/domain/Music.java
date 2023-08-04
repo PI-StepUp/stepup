@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Music {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MUSIC_ID")
@@ -24,12 +25,16 @@ public class Music {
 
     private String URL;
 
+    private Integer playtime;
+
     @Builder
-    public Music(Long musicId, String title, String artist, String answer, String URL) {
+    public Music(Long musicId, String title, String artist, String answer, String URL,
+        Integer playtime) {
         this.musicId = musicId;
         this.title = title;
         this.artist = artist;
         this.answer = answer;
         this.URL = URL;
+        this.playtime = playtime;
     }
 }

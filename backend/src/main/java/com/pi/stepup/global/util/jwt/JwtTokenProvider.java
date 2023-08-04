@@ -131,8 +131,9 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 
+        log.debug("bearertoken : {}", bearerToken);
         if (StringUtils.hasText(bearerToken)) {
-            if (bearerToken.startsWith("Bearer")) {
+            if (bearerToken.startsWith("Bearer") && bearerToken.length() > 7) {
                 int tokenStartIndex = 7;
                 return bearerToken.substring(tokenStartIndex);
             }

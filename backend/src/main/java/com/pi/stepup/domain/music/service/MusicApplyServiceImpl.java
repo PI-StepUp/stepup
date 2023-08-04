@@ -20,9 +20,12 @@ import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,16 +54,29 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
-        String id = getLoggedInUserId();
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, id);
-        log.info("신청 목록 : {}", musicApplies);
-        log.info("노래 신청 첫번째 - 로그인 아이디 : {}", id);
-        if (!musicApplies.get(0).getHearts().isEmpty()) {
-            for (Heart h : musicApplies.get(0).getHearts()) {
-                log.info("좋아요 누른사람 아이디 : {}",
-                    h.getUser().getId());
+        String id;
+        List<MusicApply> musicApplies;
+
+        try {
+            id = getLoggedInUserId();
+        } catch (ForbiddenException e) {
+            id = null;
+        }
+
+        if (id == null) {
+            musicApplies = musicApplyRepository.findAll(keyword);
+        } else {
+            musicApplies = musicApplyRepository.findAll(keyword, id);
+            log.info("노래 신청 - 로그인 아이디 : {}", id);
+            log.info("신청 목록 : {}", musicApplies);
+            if (!musicApplies.get(0).getHearts().isEmpty()) {
+                for (Heart h : musicApplies.get(0).getHearts()) {
+                    log.info("좋아요 누른사람 아이디 : {}",
+                        h.getUser().getId());
+                }
             }
         }
+
 
         return setCanHeart(musicApplies, id);
     }

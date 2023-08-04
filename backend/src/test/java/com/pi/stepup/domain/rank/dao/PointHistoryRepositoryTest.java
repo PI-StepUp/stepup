@@ -5,6 +5,7 @@ import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.rank.domain.PointHistory;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.user.domain.User;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,7 @@ class PointHistoryRepositoryTest {
     public void init() {
         makePointPolicy();
         makeUser();
+        makeRandomDance();
         makePointHistory();
     }
 
@@ -63,10 +65,11 @@ class PointHistoryRepositoryTest {
         pointHistories = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             PointHistory tmp = PointHistory.builder()
-                    .user(user)
-                    .randomDance(randomDance)
-                    .count(0)
-                    .build();
+                .user(user)
+                .randomDance(randomDance)
+                .pointPolicy(pointPolicy)
+                .count(0)
+                .build();
             pointHistories.add(tmp);
         }
         return pointHistories;
@@ -74,36 +77,35 @@ class PointHistoryRepositoryTest {
 
     private void makePointPolicy() {
         pointPolicy = PointPolicy.builder()
-                .pointType(FIRST_PRIZE)
-                .point(100)
-                .build();
+            .pointType(FIRST_PRIZE)
+            .point(100)
+            .build();
         em.persist(pointPolicy);
     }
 
     private void makeUser() {
         user = User.builder()
-                .id("user")
-                .password("pass")
-                .point(0)
-                .build();
+            .id("user")
+            .password("pass")
+            .point(0)
+            .build();
         em.persist(user);
     }
 
     private void makePointHistory() {
         pointHistory = PointHistory.builder()
-                .pointPolicy(pointPolicy)
-                .user(user)
-                .randomDance(randomDance)
-                .count(0)
-                .build();
+            .pointPolicy(pointPolicy)
+            .user(user)
+            .randomDance(randomDance)
+            .count(0)
+            .build();
+        em.persist(pointPolicy);
     }
 
     private void makeRandomDance() {
         randomDance = RandomDance.builder()
-                .title("title")
-                .content("content")
-                .danceType(DanceType.RANKING)
-                .build();
+            .host(user)
+            .build();
         em.persist(randomDance);
     }
 }

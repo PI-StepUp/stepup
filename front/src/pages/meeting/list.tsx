@@ -8,9 +8,10 @@ import LanguageButton from "components/LanguageButton";
 
 import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg"
 
+import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
-import { axiosBoard } from "apis/axios";
+import { axiosBoard, axiosUser } from "apis/axios";
 
 import Image from "next/image"
 import Link from "next/link"
@@ -19,6 +20,10 @@ import { useRouter } from "next/router"
 const MeetingList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [meetings, setMeetings] = useState<any[]>();
+
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
 
     useEffect(() => {
         axiosBoard.get('/meeting', {

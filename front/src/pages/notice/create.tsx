@@ -4,22 +4,58 @@ import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
-import { axiosBoard } from "apis/axios";
+import { axiosBoard, axiosUser } from "apis/axios";
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { useRecoilState } from "recoil";
+
+import { useRouter } from "next/router";
 
 const NoticeCreate = () => {
-    const noticeTitle = useRef();
-    const noticeContent = useRef();
-    const noticeFile = useRef();
+    const noticeTitle = useRef<any>();
+    const noticeContent = useRef<any>();
+    const noticeFile = useRef<any>();
+
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+
+    const router = useRouter();
     const createNotice = async (e: any) => {
         e.preventDefault();
-        const createNotice = await axiosBoard.post("/notice", {
-            id: "ssafy",
-            title: noticeTitle.current?.value,
-            content: noticeContent.current?.value,
-            fileURL: noticeFile.current?.value,
+
+        try{
+            await axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        await axiosBoard.post("/notice", {
+            title: noticeTitle.current.value,
+            content: noticeContent.current.value,
+            fileURL: noticeFile.current.value,
             randomDanceId: 1,
+        },{
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }).then((data) => {
+            if(data.data.message === "공지사항 등록 완료"){
+                alert("공지사항이 등록되었습니다.");
+                router.push('/notice/list');
+            }
         })
-        console.log(createNotice);
     }
     return(
         <>

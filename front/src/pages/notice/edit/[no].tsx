@@ -1,33 +1,32 @@
-import {useRef, useEffect, useState} from "react";
-
+import React, {useState, useRef, useEffect} from "react";
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
 import { axiosBoard, axiosUser } from "apis/axios";
-import { useRouter } from "next/router";
 
 import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
+import { useRouter } from "next/router";
 
-const ArticleEdit = () => {
-    const title = useRef<any>();
-    const content = useRef<any>();
-    const file = useRef<any>();
-    const [article, setArticle] = useState<any>();
+const NoticeCreate = () => {
+    const noticeTitle = useRef<any>();
+    const noticeContent = useRef<any>();
+    const noticeFile = useRef<any>();
     const router = useRouter();
     const boardId = router.query.no;
 
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [notice, setNotice] = useState<any>();
 
-    const createArticle = async (e:any) => {
+    const editNotice = async (e: any) => {
         e.preventDefault();
 
         try{
-            await axiosUser.post('/auth',{
+            axiosUser.post('/auth',{
                 id: id,
             },{
                 headers:{
@@ -44,28 +43,25 @@ const ArticleEdit = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        try{
-            const create = await axiosBoard.put('/talk', {
-                boardId: boardId,
-                title: title.current.value,
-                content: content.current.value,
-                writerName: article.writerName,
-                writerProfileImg: article.writerProfileImg,
-                fileURL: file.current.value,
-                boardType: article.boardType,
-            },{
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                }
-            })
-
-            if(create.data.message === "자유게시판 수정 완료"){
-                alert("글 수정이 완료되었습니다.");
-                router.push('/article/list');
+        await axiosBoard.put("/notice", {
+            boardId: boardId,
+            title: noticeTitle.current?.value,
+            content: noticeContent.current?.value,
+            writerName: notice.writerName,
+            writerProfileImg: notice.writerProfileImg,
+            fileURL: noticeFile.current?.value,
+            boardType: notice.boardType,
+            randomDanceId: 1,
+        },{
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
-        }catch(e){
-            alert("글 등록 실패, 관리자에게 문의하세요.");
-        }
+        }).then((data) => {
+            if(data.data.message === "공지사항 수정 완료"){
+                alert("게시글이 수정되었습니다.");
+                router.push('/notice/list');
+            }
+        })
     }
 
     useEffect(() => {
@@ -87,20 +83,20 @@ const ArticleEdit = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        axiosBoard.get(`/talk/${boardId}`, {
+
+        axiosBoard.get(`/notice/${boardId}`, {
             params:{
-                boardId: Number(boardId),
+                boardId: boardId,
             },
             headers:{
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${accessToken}`
             }
         }).then((data) => {
-            console.log(data);
-            if(data.data.message === "자유게시판 게시글 조회 완료"){
-                title.current.value = data.data.data.title;
-                content.current.value = data.data.data.content;
-                file.current.value = data.data.data.fileURL;
-                setArticle(data.data.data);
+            if(data.data.message === "공지사항 게시글 조회 완료"){
+                noticeTitle.current.value = data.data.data.title;
+                noticeContent.current.value = data.data.data.content;
+                noticeFile.current.value = data.data.data.fileURL;
+                setNotice(data.data.data);
             }
         })
     }, [])
@@ -122,15 +118,15 @@ const ArticleEdit = () => {
                         <table>
                             <tr>
                                 <td>제목</td>
-                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={title}/></td>
+                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={noticeTitle}/></td>
                             </tr>
                             <tr>
                                 <td>내용</td>
-                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={content}></textarea></td>
+                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={noticeContent}></textarea></td>
                             </tr>
                             <tr>
                                 <td>첨부파일</td>
-                                <td><input type="file" accept="image/*" id="file-upload" ref={file}/></td>
+                                <td><input type="file" accept="image/*" id="file-upload" ref={noticeFile}/></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -138,7 +134,7 @@ const ArticleEdit = () => {
                                     <div className="create-button-wrap">
                                         <ul>
                                             <li><button>취소하기</button></li>
-                                            <li><button onClick={createArticle}>작성하기</button></li>
+                                            <li><button onClick={editNotice}>작성하기</button></li>
                                         </ul>
                                     </div>
                                 </td>
@@ -152,4 +148,4 @@ const ArticleEdit = () => {
     )
 }
 
-export default ArticleEdit;
+export default NoticeCreate;
