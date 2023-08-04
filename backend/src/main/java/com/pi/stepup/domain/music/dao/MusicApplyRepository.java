@@ -15,6 +15,8 @@ public interface MusicApplyRepository {
 
     Optional<Heart> findHeart(String id, Long musicApplyId);
 
+    List<MusicApply> findAll(String keyword);
+
     List<MusicApply> findAll(String keyword, String id);
 
     List<MusicApply> findById(String id);

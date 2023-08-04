@@ -80,16 +80,16 @@ public class MusicApplyApiController {
     @Operation(summary = "노래 신청 상세 조회", description = "사용자가 신청한 노래의 상세 정보를 불러온다.")
     @ApiResponse(responseCode = "200",
         description = "노래 신청 상세 조회 완료")
-    @GetMapping("/detail")
+    @GetMapping("/detail/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> readOneMusicApply(
-        @RequestParam(name = "musicApplyId") Long musicApplyId) {
+        @PathVariable(name = "musicApplyId") Long musicApplyId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             READ_ONE_MUSIC_APPLY_SUCCESS.getMessage(),
             musicApplyService.readOne(musicApplyId)
         ));
     }
 
-    @Operation(summary = "노래 신청 삭제", 
+    @Operation(summary = "노래 신청 삭제",
         description = "사용자는 자신이 작성한 신청 글을 삭제 할 수 있다.")
     // TODO : 사용자 아이디도 가져와야 할 듯
     @ApiResponse(responseCode = "200",
@@ -122,9 +122,9 @@ public class MusicApplyApiController {
         description = "사용자의 해당하는 노래 신청 좋아요 상태가 0 이면 좋아요를 취소 할 수 있다.")
     @ApiResponse(responseCode = "200",
         description = "좋아요 취소 완료")
-    @DeleteMapping("/heart")
+    @DeleteMapping("/heart/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> deleteMusicApplyHeart(
-        @RequestParam(name = "musicApplyId") Long musicApplyId) {
+        @PathVariable(name = "musicApplyId") Long musicApplyId) {
         musicApplyService.deleteHeart(musicApplyId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -136,9 +136,9 @@ public class MusicApplyApiController {
         description = "사용자의 해당하는 노래 신청 좋아요 상태를 확인 할 수 있다.")
     @ApiResponse(responseCode = "200",
         description = "노래 신청 좋아요 상태 확인 완료")
-    @GetMapping("/heart")
+    @GetMapping("/heart/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> readMusicApplyHeartStatus(
-        @RequestParam(name = "musicApplyId") Long musicApplyId) {
+        @PathVariable(name = "musicApplyId") Long musicApplyId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             READ_MUSIC_APPLY_HEART_STATUS_SUCCESS.getMessage(),
             musicApplyService.findHeartStatus(musicApplyId)
