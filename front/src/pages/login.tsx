@@ -24,6 +24,8 @@ const Login = () => {
     const emailValue = useRef<any>();
     const dateValue = useRef<any>();
     const modal = useRef<any>();
+    const idValue = useRef<any>();
+    const pwModal = useRef<any>();
 
     const router = useRouter();
 
@@ -32,10 +34,25 @@ const Login = () => {
     }
 
     const findPasswordClick = () => {
+        pwModal.current.style.display = "block";
+    }
 
+    const findPw = async () => {
+        await axiosUser.post('/findpw',{
+            id: idValue.current.value,
+            email: emailValue.current.value,
+        }).then((data) => {
+            if(data.data.message === "임시 비밀번호 전송 완료"){
+                alert('임시 비밀번호를 메일로 발송해드렸습니다.');
+            }
+        })
     }
 
     const modalClose = () => {
+        modal.current.style.display = "none";
+    }
+
+    const clickModalBack = () => {
         modal.current.style.display = "none";
     }
 
@@ -97,7 +114,7 @@ const Login = () => {
                 </div>
                 <LanguageButton/>
             <Footer/>
-            <div className="modal-back" ref={modal}>
+            <div className="modal-back" ref={modal} onClick={clickModalBack}>
                 <div className="modal-main">
                     <div className="modal-title">
                         <h4>아이디 찾기</h4>
@@ -110,6 +127,22 @@ const Login = () => {
                     </div>
                     <div className="modal-button-wrap">
                         <button onClick={findId}>아이디 찾기</button>
+                    </div>
+                </div>
+            </div>
+            <div className="modal-back" ref={pwModal} onClick={clickModalBack}>
+                <div className="modal-main">
+                    <div className="modal-title">
+                        <h4>비밀번호찾기</h4>
+                        <Image src={ModalCloseIcon} alt="" onClick={modalClose}></Image>
+                    </div>
+                    <div className="modal-content">
+                        <span>아이디 & 이메일로 찾기</span>
+                        <input type="text" placeholder="아이디를 입력해주세요." ref={idValue}/>
+                        <input type="email" placeholder="이메일을 입력해주세요." ref={emailValue} />
+                    </div>
+                    <div className="modal-button-wrap">
+                        <button onClick={findPw}>비밀번호 찾기</button>
                     </div>
                 </div>
             </div>
