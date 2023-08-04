@@ -52,12 +52,14 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
         String id = getLoggedInUserId();
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, id);
-        log.info("신청 목록 : {}", musicApplies);
-        log.info("로그인 아이디 : {}", id);
+        List<MusicApply> musicApplies;
 
-        // for log
-        if (!musicApplies.isEmpty()) {
+        if (id == null) {
+            musicApplies = musicApplyRepository.findAll(keyword);
+        } else {
+            musicApplies = musicApplyRepository.findAll(keyword, id);
+            log.info("노래 신청 - 로그인 아이디 : {}", id);
+            log.info("신청 목록 : {}", musicApplies);
             if (!musicApplies.get(0).getHearts().isEmpty()) {
                 for (Heart h : musicApplies.get(0).getHearts()) {
                     log.info("좋아요 누른사람 아이디 : {}",

@@ -75,6 +75,16 @@ class MusicApplyRepositoryTest {
     }
 
     @Test
+    @DisplayName("비로그인 사용자 노래 신청 목록 조회 테스트")
+    public void findAllMusicApplyNotIdRepositoryTest() {
+        String keyword = "";
+        insertMusicApplyNotLogin();
+
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
+        assertThat(musicApplies.size()).isEqualTo(5);
+    }
+
+    @Test
     @DisplayName("노래 신청 목록 사용자 아이디로 조회 테스트")
     public void findAllMusicApplyByUserRepositoryTest() {
         insertWriter();
@@ -124,6 +134,19 @@ class MusicApplyRepositoryTest {
         return musicApplies;
     }
 
+    private List<MusicApply> makeMusicAppliesNotLogin() {
+        List<MusicApply> musicApplies = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            MusicApply musicApply = MusicApply.builder()
+                .title("t" + i)
+                .artist("a" + (i + 1))
+                .build();
+
+            musicApplies.add(musicApply);
+        }
+        return musicApplies;
+    }
+
     private void insertMusicApplyWithDifferentWriter() {
         List<MusicApply> musicApplies = makeMusicApplies();
 
@@ -140,6 +163,11 @@ class MusicApplyRepositoryTest {
 
     private void insertMusicApply() {
         List<MusicApply> musicApplies = makeMusicApplies();
+        musicApplies.forEach(em::persist);
+    }
+
+    private void insertMusicApplyNotLogin() {
+        List<MusicApply> musicApplies = makeMusicAppliesNotLogin();
         musicApplies.forEach(em::persist);
     }
 
