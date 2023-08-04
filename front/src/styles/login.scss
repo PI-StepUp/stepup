@@ -113,6 +113,15 @@
                 display:inline-block;
                 margin-top:42px;
             }
+            input[type="text"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-top:36px;
+                box-sizing: border-box;
+                padding:10px;
+            }
             input[type="email"]{
                 @include setSize(100%, 48px);
                 background-color:#E6EEFB;
@@ -122,6 +131,7 @@
                 box-sizing: border-box;
                 padding:10px;
             }
+            
             input[type="date"]{
                 @include setSize(100%, 48px);
                 background-color:#E6EEFB;
