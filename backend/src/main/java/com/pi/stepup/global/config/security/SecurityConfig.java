@@ -37,6 +37,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                //Cors옵션 활성화
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
                 .httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -44,8 +47,14 @@ public class SecurityConfig {
 
                 .authorizeRequests()
                 //로그인하지 않아도 접근 가능
+//                .antMatchers(HttpMethod.GET, "/api/dance?progressType=ALL").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/dance?progressType=SCHEDULED").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/dance?progressType=IN_PROGRESS").permitAll()
+
+
                 .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
                 .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/music/apply").permitAll()
 
                 //관리자 권한
                 .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
@@ -73,10 +82,6 @@ public class SecurityConfig {
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
                         UsernamePasswordAuthenticationFilter.class);
-
-        http
-                //Cors옵션 활성화
-                .cors().configurationSource(corsConfigurationSource());
 
         return http.build();
     }

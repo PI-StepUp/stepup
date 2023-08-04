@@ -1,4 +1,4 @@
-import {useRef, useEffect} from "react";
+import {useRef, useEffect, useState} from "react";
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import Footer from "components/Footer";
@@ -18,10 +18,83 @@ const DetailArticle = () => {
     const boardId = router.query.no;
     const articleTitle = useRef<any>();
     const articleContent = useRef<any>();
+    const commentValue = useRef<any>();
 
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [comments, setComments] = useState<any[]>();
+
+    const deleteComment = async (commentId: any) => {
+        try{
+            await axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        await axiosBoard.delete(`/comment/${commentId}`, {
+            params: {
+                commentId: commentId,
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }).then((data) => {
+            if(data.data.message === "댓글 삭제 완료"){
+                alert("댓글이 삭제되었습니다.");
+                router.push(`/article/detail/${boardId}`);
+            }
+        })
+    }
+
+    const createComment = async () => {
+        try{
+            await axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        await axiosBoard.post(`/comment/${boardId}`, {
+            boardId: boardId,
+            content: commentValue.current.value,
+        },{
+            params:{
+                boardId: boardId,
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }).then((data) => {
+            if(data.data.message === "댓글 등록 완료"){
+                alert("댓글이 추가되었습니다.");
+                router.push(`/article/detail/${boardId}`);
+            }
+        })
+    }
 
     const deleteArticle = async () => {
         try{
@@ -87,8 +160,10 @@ const DetailArticle = () => {
             if(data.data.message === "자유게시판 게시글 조회 완료"){
                 articleTitle.current.innerText = data.data.data.title;
                 articleContent.current.innerText = data.data.data.content;
+                setComments(data.data.data.comments);
             }
         });
+
     }, [])
     return (
         <>
@@ -122,38 +197,30 @@ const DetailArticle = () => {
                 </div>
                 <div className="comment-wrap">
                     <ul>
-                        <li>
-                            <div className="img-wrap">
-                                <Image src={CommentDefaultImage} alt=""/>
-                            </div>
-                            <div className="comment-main">
-                                <div className="comment-content">
-                                    <h5>Nickname</h5>
-                                    <p>댓글의 내용이 들어갈 부분이에요 이곳에 댓글의 내용이</p>
-                                </div>
-                                <div className="comment-button">
-                                    <button>댓글삭제</button>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="img-wrap">
-                                <Image src={CommentDefaultImage} alt=""/>
-                            </div>
-                            <div className="comment-main">
-                                <div className="comment-content">
-                                    <h5>Nickname</h5>
-                                    <p>댓글의 내용이 들어갈 부분이에요 이곳에 댓글의 내용이</p>
-                                </div>
-                                <div className="comment-button">
-                                    <button>댓글삭제</button>
-                                </div>
-                            </div>
-                        </li>
+                        {
+                            comments?.map((comment) => {
+                                return(
+                                    <li>
+                                        <div className="img-wrap">
+                                            <Image src={CommentDefaultImage} alt=""/>
+                                        </div>
+                                        <div className="comment-main">
+                                            <div className="comment-content">
+                                                <h5>{comment.writerName}</h5>
+                                                <p>{comment.content}</p>
+                                            </div>
+                                            <div className="comment-button">
+                                                <button onClick={() => {deleteComment(comment.commentId)}}>댓글삭제</button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                )
+                            })
+                        }
                     </ul>
                     <div className="comment-input">
-                        <textarea name="" id=""></textarea>
-                        <button>댓글등록</button>
+                        <textarea name="" id="" ref={commentValue}></textarea>
+                        <button onClick={createComment}>댓글등록</button>
                     </div>
                 </div>
             </div>

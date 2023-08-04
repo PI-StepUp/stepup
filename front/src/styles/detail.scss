@@ -35,7 +35,7 @@
         .detail-main-title{
             margin-top:24px;
             border-top: 2px solid #E1E1E1;
-            span{
+            > span{
                 @include font(18px, 500, #A7A5A8);
                 display: inline-block;
                 margin-top:10px;
@@ -47,6 +47,19 @@
             p{
                 @include font(18px, 400, #A7A5A8);
                 margin-top:20px;
+            }
+            .like-wrap{
+                margin-top:20px;
+                @include flex(flex-start, center);
+                cursor:pointer;
+                img{
+                    @include setSize(24px, 24px);
+                }
+                span{
+                    display:inline-block;
+                    @include font(18px, 400, #A7A5A8);
+                    margin-left:6px;
+                }
             }
         }
         .detail-main-content{
@@ -105,6 +118,10 @@
                             border:none;
                             @include font(14px, 600, #343434);
                             cursor:pointer;
+                            &:hover{
+                                background-color:#343434;
+                                @include font(14px, 600, #FFF);
+                            }
                         }
                     }
                 }

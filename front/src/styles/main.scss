@@ -30,6 +30,7 @@
             li{
                 @include font(18px, 700, #E2EFFF);
                 margin-right:16px;
+                cursor:pointer;
                 &:first-child{
                     margin-left:38px;
                 }
@@ -45,6 +46,7 @@
             li{
                 @include font(18px, 700, #E2EFFF);
                 margin-left:16px;
+                cursor:pointer;
             }
         }
     }

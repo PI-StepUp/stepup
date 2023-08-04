@@ -23,6 +23,8 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
     @Override
     public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
         String id = getLoggedInUserId();
+
         List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, id);
         log.info("신청 목록 : {}", musicApplies);
         log.info("노래 신청 첫번째 - 로그인 아이디 : {}", id);
