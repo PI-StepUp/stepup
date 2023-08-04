@@ -51,10 +51,20 @@
                 }
                 .user-wrap{
                     margin-top:53px;
-                    @include flex(flex-start, center);
-                    span{
-                        @include font(20px, 700, #6BBDA7);
-                        margin-left:17px;
+                    @include flex(space-between, center);
+                    .flex-wrap{
+                        @include flex(flex-start, center);
+                        span{
+                            @include font(20px, 700, #6BBDA7);
+                            margin-left:17px;
+                        }
+                    }
+                    .heart-wrap{
+                        @include flex(center, center);
+                        span{
+                            @include font(20px, 700, #6BBDA7);
+                            margin-left:10px;
+                        }
                     }
                 }
             }

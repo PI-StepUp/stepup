@@ -112,13 +112,14 @@
                 @include font(24px, 400, #000000);
                 display:inline-block;
                 margin-top:42px;
+                margin-bottom:36px;
             }
             input[type="text"]{
                 @include setSize(100%, 48px);
                 background-color:#E6EEFB;
                 border-radius:4px;
                 border:none;
-                margin-top:36px;
+                margin-bottom:14px;
                 box-sizing: border-box;
                 padding:10px;
             }
@@ -127,11 +128,9 @@
                 background-color:#E6EEFB;
                 border-radius:4px;
                 border:none;
-                margin-top:36px;
                 box-sizing: border-box;
                 padding:10px;
             }
-            
             input[type="date"]{
                 @include setSize(100%, 48px);
                 background-color:#E6EEFB;
@@ -144,7 +143,7 @@
         }
         .modal-button-wrap{
             button{
-                @include setSize(100%, 56px);
+                @include setSize(100%, 58px);
                 background-color:#3182F8;
                 border-radius:4px;
                 border:none;
