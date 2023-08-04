@@ -14,23 +14,51 @@ import TopIcon from "/public/images/icon-top.svg"
 import NowIcon from "/public/images/icon-now.svg"
 import SoonIcon from "/public/images/icon-soon.svg"
 
+import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
-import { axiosDance } from "apis/axios"
+import { axiosDance, axiosUser } from "apis/axios"
 
 const RandomPlayList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [rooms, setRooms] = useState<any[]>();
     const [inprogress, setInprogress] = useState<any[]>();
     const [scheduled, setScheduled] = useState<any[]>();
+
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
     useEffect(() => {
+
+        try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
         axiosDance.get('/',{
             params: {
                 progressType: "ALL",
                 keyword: "",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
+            console.log("all", data);
             if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
                 setRooms(data.data.data);
             }
@@ -40,9 +68,13 @@ const RandomPlayList = () => {
             params: {
                 progressType: "IN_PROGRESS",
                 keyword: "",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+            console.log("inprogree", data);
+            if(data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료"){
                 setInprogress(data.data.data);
                 console.log(inprogress);
             }
@@ -52,9 +84,13 @@ const RandomPlayList = () => {
             params: {
                 progressType: "SCHEDULED",
                 keyword: "",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+            console.log("예정된", data);
+            if(data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료"){
                 setScheduled(data.data.data);
             }
         })

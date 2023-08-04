@@ -66,6 +66,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             }
         }
 
+
         return setCanHeart(musicApplies, id);
     }
 

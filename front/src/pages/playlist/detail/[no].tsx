@@ -3,39 +3,90 @@ import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import Footer from "components/Footer";
 import SubNav from "components/subNav";
-import { axiosBoard } from "apis/axios";
+import { axiosMusic, axiosUser } from "apis/axios";
 
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { useRecoilState } from "recoil";
+
 const DetailArticle = () => {
     const router = useRouter();
-    const boardId = router.query.no;
+    const musicId = router.query.no;
     const [article, setArticle] = useState<any>();
 
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+
     const deleteArticle = async () => {
-        await axiosBoard.delete(`/meeting/${boardId}`, {
+
+        try{
+            await axiosUser.post('/auth', {
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+
+        await axiosMusic.delete(`/apply/${musicId}`, {
             params:{
-                boardId: Number(boardId),
+                boardId: Number(musicId),
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            if(data.data.message === "정모 삭제 완료"){
-                alert("게시글 삭제 완료");
-                router.push('/meeting/list');
+            console.log(data);
+            if(data.data.message === "노래 신청 삭제 완료"){
+                alert("해당 게시글이 삭제되었습니다.");
+                router.push('/playlist/list');
             }
         })
     }
 
     useEffect(() => {
-        axiosBoard.get(`/meeting/${boardId}`, {
+        try{
+            axiosUser.post('/auth', {
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        axiosMusic.get(`/apply/detail`,{
             params:{
-                boardId: boardId,
+                musicApplyId: musicId,
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log(data);
-            if(data.data.message === "정모 게시글 조회 완료"){
+            if(data.data.message === "노래 신청 상세 조회 완료"){
                 setArticle(data.data.data);
             }
         })
@@ -58,7 +109,7 @@ const DetailArticle = () => {
                         <button><Link href="/article/list">목록보기</Link></button>
                     </div>
                     <div className="detail-main-title">
-                        <span>공지사항</span>
+                        <span>{article?.artist}</span>
                         <h4>{article?.title}</h4>
                         <p>2023년 07월 15일 AM 10시</p>
                     </div>
@@ -67,7 +118,6 @@ const DetailArticle = () => {
                     </div>
                     <div className="button-wrap">
                         <button onClick={deleteArticle}>삭제하기</button>
-                        <button>수정하기</button>
                     </div>
                 </div>
                 <div className="comment-wrap">

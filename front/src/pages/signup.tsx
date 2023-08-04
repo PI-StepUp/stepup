@@ -131,7 +131,7 @@ const SignUp = () => {
             return;
         }
 
-        const signup = await axiosUser.post("/", {
+        const signup = await axiosUser.post("", {
             id: id,
             password: password,
             email: email,
@@ -139,8 +139,10 @@ const SignUp = () => {
             emailAlert: 0,
             nickname: nickname,
             birth: birth,
-            role: "ROLE_USER"
+            role: "ROLE_USER",
         })
+
+        console.log(signup);
 
         if(signup.data.message === "회원가입 완료"){
             router.push('/login');

@@ -17,6 +17,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -34,40 +37,65 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .httpBasic().disable()
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
 
-            .authorizeRequests()
-            //로그인하지 않아도 접근 가능
-            .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
-            .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
+                .authorizeRequests()
+                //로그인하지 않아도 접근 가능
+                .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
+                .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
 
-            //관리자 권한
-            .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
-            .hasAuthority(UserRole.ROLE_ADMIN.name())
-            .regexMatchers(HttpMethod.DELETE, Constants.AdminPermitArray)
-            .hasAuthority(UserRole.ROLE_ADMIN.name())
-            .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
-            .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
+                //관리자 권한
+                .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
+                .hasAuthority(UserRole.ROLE_ADMIN.name())
+                .regexMatchers(HttpMethod.DELETE, Constants.AdminPermitArray)
+                .hasAuthority(UserRole.ROLE_ADMIN.name())
+                .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
+                .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
 
-            //그외는 모두 로그인해야 접근 가능
-            .anyRequest().authenticated()
+                //문서 관련도 로그인하지 않아도 접근 가능
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/**/*.css").permitAll()
+                .antMatchers("/**/*.js").permitAll()
+                .antMatchers("/**/*.png").permitAll()
+                .antMatchers("/images/**").permitAll()
+                .antMatchers("/v3/api-docs/**").permitAll()
 
-            .and()
-            .exceptionHandling()
-            .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
-            .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
-            .and()
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
-                UsernamePasswordAuthenticationFilter.class);
+                //그외는 모두 로그인해야 접근 가능
+                .anyRequest().authenticated()
+
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
+                .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
+                        UsernamePasswordAuthenticationFilter.class);
 
         http
-                .cors();
+                //Cors옵션 활성화
+                .cors().configurationSource(corsConfigurationSource());
 
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOriginPattern("*");
+//        configuration.addAllowedOrigin("도메인 지정");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 
 }

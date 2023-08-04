@@ -5,24 +5,51 @@ import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
-import { axiosBoard } from "apis/axios";
+import { axiosBoard, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
+
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { useRecoilState } from "recoil";
 
 const ArticleCreate = () => {
     const title = useRef<any>();
     const content = useRef<any>();
     const file = useRef<any>();
     const router = useRouter();
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
 
     const createArticle = async (e:any) => {
         e.preventDefault();
 
         try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+        try{
             const create = await axiosBoard.post('/talk', {
-                id: 'ssafy',
                 title: title.current.value,
                 content: content.current.value,
                 fileURL: file.current.value,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                }
             })
 
             if(create.data.message === "자유게시판 등록 완료"){

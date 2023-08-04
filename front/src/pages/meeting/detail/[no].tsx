@@ -3,38 +3,91 @@ import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import Footer from "components/Footer";
 import SubNav from "components/subNav";
-import { axiosBoard } from "apis/axios";
+import { axiosBoard, axiosUser } from "apis/axios";
 
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { useRecoilState } from "recoil";
+
 const DetailArticle = () => {
     const router = useRouter();
     const boardId = router.query.no;
     const [article, setArticle] = useState<any>();
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
 
     const deleteArticle = async () => {
-        await axiosBoard.delete(`/meeting/${boardId}`, {
-            params:{
-                boardId: Number(boardId),
-            }
-        }).then((data) => {
-            if(data.data.message === "정모 삭제 완료"){
-                alert("게시글 삭제 완료");
-                router.push('/meeting/list');
-            }
-        })
+
+        try{
+            await axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+        try{
+            await axiosBoard.delete(`/meeting/${boardId}`, {
+                params:{
+                    boardId: Number(boardId),
+                },
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                }
+            }).then((data) => {
+                if(data.data.message === "정모 삭제 완료"){
+                    alert("게시글 삭제 완료");
+                    router.push('/meeting/list');
+                }
+            })
+        }catch(e){
+            alert("글 삭제 실패, 관리자에게 문의하세요.");
+        }
     }
 
     useEffect(() => {
+
+        try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
+
         axiosBoard.get(`/meeting/${boardId}`, {
             params:{
                 boardId: boardId,
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`
             }
         }).then((data) => {
-            console.log(data);
             if(data.data.message === "정모 게시글 조회 완료"){
                 setArticle(data.data.data);
             }
@@ -67,7 +120,7 @@ const DetailArticle = () => {
                     </div>
                     <div className="button-wrap">
                         <button onClick={deleteArticle}>삭제하기</button>
-                        <button>수정하기</button>
+                        <button onClick={() => router.push('/meeting/edit/' + article.boardId)}>수정하기</button>
                     </div>
                 </div>
                 <div className="comment-wrap">

@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
@@ -16,7 +16,19 @@ import { axiosBoard } from "apis/axios";
 const ArticleList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [articles, setArticles] = useState<any[]>();
+    const searchValue = useRef<any>();
     const router = useRouter();
+
+    const searchArticles = async (e:any) => {
+        e.preventDefault();
+        axiosBoard.get("/talk", {
+            params: {
+                keyword: searchValue.current.value,
+            }
+        }).then((data) => {
+            setArticles(data.data.data);
+        })
+    }
         
     useEffect(() => {
         axiosBoard.get("/talk", {
@@ -43,9 +55,9 @@ const ArticleList = () => {
                     </h3>
                 </div>
                 <div className="search-wrap">
-                    <form action="/">
-                        <input type="text" placeholder={lang==="en" ? "Please enter a search term" : lang==="cn" ? "请输入搜索词" : "검색어를 입력해주세요" }/>
-                        <input type="submit" value={lang==="en" ? "Search" : lang==="cn" ? "检索" : "검색" }/>
+                    <form>
+                        <input type="text" placeholder={lang==="en" ? "Please enter a search term" : lang==="cn" ? "请输入搜索词" : "검색어를 입력해주세요" } ref={searchValue}/>
+                        <input type="submit" value={lang==="en" ? "Search" : lang==="cn" ? "检索" : "검색" } onClick={searchArticles}/>
                     </form>
                 </div>
                 <table>
