@@ -21,6 +21,7 @@ public class MusicRequestDto {
         private String artist;
         private String answer;
         private String URL;
+        private Integer playtime;
 
         public Music toEntity() {
             return Music.builder()
@@ -28,6 +29,7 @@ public class MusicRequestDto {
                 .artist(this.artist)
                 .answer(this.answer)
                 .URL(this.URL)
+                .playtime(this.playtime)
                 .build();
         }
     }
