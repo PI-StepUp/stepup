@@ -40,7 +40,7 @@ public class InitDb {
             makeMusic();
             makePoint();
             makeRank();
-            makeAdmin();
+//            makeAdmin();
             makeUser();
             makeDance();
             makeReservation();
@@ -164,7 +164,7 @@ public class InitDb {
                         + "  email, email_alert, id, nickname, password, point, profile_img, rank_id, refresh_token, role) "
                         + " values (?, '2023-08-01', '2023-08-01', '1997-01-01', 1, '"
                         + id[i]
-                        + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'refresh_token', 'ROLE_ADMIN')";
+                        + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'refresh_token', 'ROLE_USER')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 2));
                 query.setParameter(2, id[i]);
