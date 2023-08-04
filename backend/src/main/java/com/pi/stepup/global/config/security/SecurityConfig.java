@@ -37,51 +37,48 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                //Cors옵션 활성화
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .httpBasic().disable()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+            //Cors옵션 활성화
+            .cors().configurationSource(corsConfigurationSource())
+            .and()
 
-                .authorizeRequests()
-                //로그인하지 않아도 접근 가능
-//                .antMatchers(HttpMethod.GET, "/api/dance?progressType=ALL").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/dance?progressType=SCHEDULED").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/dance?progressType=IN_PROGRESS").permitAll()
+            .httpBasic().disable()
+            .csrf().disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
 
+            .authorizeRequests()
 
-                .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
-                .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/music/apply").permitAll()
+            //로그인하지 않아도 접근 가능
+            .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
+            .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
 
-                //관리자 권한
-                .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
-                .hasAuthority(UserRole.ROLE_ADMIN.name())
-                .regexMatchers(HttpMethod.DELETE, Constants.AdminPermitArray)
-                .hasAuthority(UserRole.ROLE_ADMIN.name())
-                .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
-                .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
+            //관리자 권한
+            .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
+            .hasAuthority(UserRole.ROLE_ADMIN.name())
+            .regexMatchers(HttpMethod.DELETE, Constants.AdminPermitArray)
+            .hasAuthority(UserRole.ROLE_ADMIN.name())
+            .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
+            .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
 
-                //문서 관련도 로그인하지 않아도 접근 가능
-                .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/**/*.css").permitAll()
-                .antMatchers("/**/*.js").permitAll()
-                .antMatchers("/**/*.png").permitAll()
-                .antMatchers("/images/**").permitAll()
-                .antMatchers("/v3/api-docs/**").permitAll()
+            //문서 관련도 로그인하지 않아도 접근 가능
+            .antMatchers("/swagger-ui/**").permitAll()
+            .antMatchers("/v3/api-docs/**").permitAll()
+            .antMatchers("/**/*.html").permitAll()
+            .antMatchers("/**/*.css").permitAll()
+            .antMatchers("/**/*.js").permitAll()
+            .antMatchers("/**/*.png").permitAll()
+            .antMatchers("/images/**").permitAll()
 
-                //그외는 모두 로그인해야 접근 가능
-                .anyRequest().authenticated()
+            //그외는 모두 로그인해야 접근 가능
+            .anyRequest().authenticated()
 
-                .and()
-                .exceptionHandling()
-                .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
-                        UsernamePasswordAuthenticationFilter.class);
+            .and()
+            .exceptionHandling()
+            .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
+            .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
+            .and()
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
+                UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -102,5 +99,4 @@ public class SecurityConfig {
 
         return source;
     }
-
 }

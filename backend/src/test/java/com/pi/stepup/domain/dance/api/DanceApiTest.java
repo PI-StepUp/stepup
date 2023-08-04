@@ -26,10 +26,10 @@ public class DanceApiTest {
 //        gson = new Gson();
     }
 
-    @Test
-    @DisplayName("랜덤 플레이 댄스 개최 테스트")
-    public void createDanceApiTest() {
-        final String url = "";
-    }
+//    @Test
+//    @DisplayName("랜덤 플레이 댄스 개최 테스트")
+//    public void createDanceApiTest() {
+//        final String url = "";
+//    }
 
 }
