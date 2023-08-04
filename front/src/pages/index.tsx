@@ -33,7 +33,7 @@ const Index = () => {
 					<div className="login-wrap">
 						<ul>
 							<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
-							<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
+							<li><Link href="/mypage">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
 						</ul>
 					</div>
 				</div>

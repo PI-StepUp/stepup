@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link"
 
 import Header from "../components/Header"
@@ -15,15 +15,83 @@ import img_vector from "/public/images/icon-vector.png"
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+
+import { axiosUser, axiosDance, axiosBoard } from "apis/axios";
 
 const MyPage = () => {
   const [lang, setLang] = useRecoilState(LanguageState);
+  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+  const [id, setId] = useRecoilState(idState);
+
+  const [loginUser, setLoginUser] = useState<any>();
+  const [reserved, setReserved] = useState<any[]>();
+
+  // console.log("Language ")
+  // console.log(lang);
+  // console.log("Token ")
+  // console.log(accessToken);
 
   // 작성한 게시글 목록으로 스크롤 이동
   const list = useRef<HTMLDivElement>(null);
   const scrollEvent = () => {
     list.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  useEffect(() => {
+    try {
+      axiosUser.post('/auth', {
+        id: id,
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          refreshToken: refreshToken,
+        }
+      }).then((data) => {
+        if (data.data.message === "토큰 재발급 완료") {
+          setAccessToken(data.data.data.accessToken);
+          setRefreshToken(data.data.data.refreshToken);
+        }
+      })
+    } catch (e) {
+      alert('시스템 에러, 관리자에게 문의하세요.');
+    }
+
+    // 로그인 유저 정보 조회
+    axiosUser.get("", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }).then((data) => {
+      console.log("로그인 유저 정보 조회", data);
+      if (data.data.message === "회원정보 조회 완료") {
+        setLoginUser(data.data.data);
+        console.log("로그인 유저 정보", loginUser);
+      }
+    })
+
+    // 로그인 유저의 랜플댄 예약 목록 조회
+    axiosDance.get("/my/reserve", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    }).then((data) => {
+      console.log("로그인 유저 랜플댄 예약 목록 조회", data);
+      if(data.data.message === "내가 예약한 랜덤 플레이 댄스 목록 조회 완료"){
+        setReserved(data.data.data);
+        console.log("내 예약 목록", reserved);
+      }
+    })
+    
+    // 로그인 유저가 작성한 정모 게시글 조회
+    axiosBoard.get(`/meeting/my?id=${id}`, {
+    }).then((data) => {
+      console.log("로그인 유저가 작성한 정모 게시글 조회", data);
+      
+
+    })
+  }, [])
 
   return (
     <>
@@ -123,9 +191,9 @@ const MyPage = () => {
         <div className="settings">
           <details>
             <summary>
-              <Image src={img_settings} className="img-setting"></Image>
+              <Image src={img_settings} className="img-setting" alt="img_settings"></Image>
               <p className="settings-title">{lang === "en" ? "Edit My Info" : lang === "cn" ? "编辑会员信息" : "회원 정보 수정"}</p>
-              <Image className="img-vector" src={img_vector}></Image>
+              <Image className="img-vector" src={img_vector} alt="img_arrow"></Image>
             </summary>
             <div className="enter-password">
               <p>{lang === "en" ? "Password" : lang === "cn" ? "密码" : "현재 비밀번호"}</p>

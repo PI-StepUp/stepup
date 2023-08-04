@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react"
+    import React, {useState, useRef} from "react"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import LanguageButton from "components/LanguageButton"
@@ -74,13 +74,17 @@ const Login = () => {
                 password: password,
             })
             if(user.data.message === "로그인 완료"){
+                console.log(user.data);
                 setAccessToken(user.data.data.tokens.accessToken);
                 setRefreshToken(user.data.data.tokens.refreshToken);
                 setIdStat(id);
                 setNickname(user.data.data.userInfo.nickname);
                 setProfileImg(user.data.data.userInfo.profileImg);
                 setRankName(user.data.data.userInfo.rankName);
+                console.log("로그인 완료");
+                console.log(accessToken);
                 router.push('/');
+                
             }
         }catch(e){
             alert("가입되지 않은 고객입니다. 회원가입 후 이용해주세요.");
