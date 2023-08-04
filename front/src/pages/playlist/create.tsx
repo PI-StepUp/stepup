@@ -5,23 +5,52 @@ import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
-import { axiosMusic } from "apis/axios";
+import { axiosMusic, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { useRecoilState } from "recoil";
+
 const PlayListCreate = () => {
-    const playlistTitle = useRef();
-    const artist = useRef();
-    const playlistContent = useRef();
+    const playlistTitle = useRef<any>();
+    const artist = useRef<any>();
+    const playlistContent = useRef<any>();
+
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
 
     const router = useRouter();
 
     const createPlaylist = (e: any) => {
         e.preventDefault();
+
+        try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
         axiosMusic.post('/apply',{
-            writerId: "ssafy",
             title: playlistTitle.current?.value,
             artist: artist.current?.value,
-            content: playlistContent?.value,
+            content: playlistContent.current?.value,
+        },{
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
         }).then((data) => {
             if(data.data.message === "노래 신청 완료"){
                 alert("노래 신청이 완료되었습니다.");

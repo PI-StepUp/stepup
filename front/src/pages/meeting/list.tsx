@@ -8,9 +8,10 @@ import LanguageButton from "components/LanguageButton";
 
 import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg"
 
+import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
-import { axiosBoard } from "apis/axios";
+import { axiosBoard, axiosUser } from "apis/axios";
 
 import Image from "next/image"
 import Link from "next/link"
@@ -20,10 +21,36 @@ const MeetingList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [meetings, setMeetings] = useState<any[]>();
 
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+
     useEffect(() => {
+
+        try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
         axiosBoard.get('/meeting', {
             params: {
                 keyword: "",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
             if(data.data.message === "정모 목록 조회 완료"){

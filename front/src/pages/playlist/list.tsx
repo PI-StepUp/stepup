@@ -9,24 +9,52 @@ import Image from "next/image";
 import Link from "next/link";
 import DefaultProfileImage from "/public/images/playlist-default-profile-img.svg";
 
+import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
-import { axiosMusic } from "apis/axios";
+import { axiosMusic, axiosUser } from "apis/axios";
 
 const PlayList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [playlist, setPlaylist] = useState<any[]>();
 
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+
     useEffect(() => {
+
+        try{
+            axiosUser.post('/auth',{
+                id: id,
+            },{
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    refreshToken: refreshToken,
+                }
+            }).then((data) => {
+                if(data.data.message === "토큰 재발급 완료"){
+                    setAccessToken(data.data.data.accessToken);
+                    setRefreshToken(data.data.data.refreshToken);
+                }
+            })
+        }catch(e){
+            alert('시스템 에러, 관리자에게 문의하세요.');
+        }
+
         axiosMusic.get("/apply",{
             params:{
                 keyword:"",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`
             }
         }).then((data) => {
             setPlaylist(data.data.data);
         })
     }, []);
+    
     return (
         <>
             <Header/>
@@ -46,7 +74,7 @@ const PlayList = () => {
                     <ul>
                         {playlist?.map((playlist) => {
                             return(
-                                <li><Link href={"/article/detail/" + playlist.musicApplyId}>
+                                <li><Link href={"/playlist/detail/" + playlist.musicApplyId}>
                                     <span>{playlist.artist}</span>
                                     <h4>{playlist.title}</h4>
                                     <p>이프푸 Boom, Boom, Boom 챌린지하고 싶어요. 플레이리스트에 넣어주세요.</p>
