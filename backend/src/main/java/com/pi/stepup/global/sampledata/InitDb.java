@@ -320,7 +320,7 @@ public class InitDb {
             for (int i = 0; i < 5; i++) {
                 String sql =
                     "insert into music_apply (MUSIC_APPLY_ID, ARTIST, CONTENT, HEART_CNT, TITLE, WRITER_ID) "
-                        + " values (?, ?, ?, 0, ?, ?)";
+                        + " values (?, ?, ?, 1, ?, ?)";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
                 query.setParameter(2, artist);
