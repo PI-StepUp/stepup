@@ -48,15 +48,6 @@ public class SecurityConfig {
 
             .authorizeRequests()
 
-            //문서 관련도 로그인하지 않아도 접근 가능
-            .antMatchers("/swagger-ui/**").permitAll()
-            .antMatchers("/v3/api-docs/**").permitAll()
-            .antMatchers("/**/*.html").permitAll()
-            .antMatchers("/**/*.css").permitAll()
-            .antMatchers("/**/*.js").permitAll()
-            .antMatchers("/**/*.png").permitAll()
-            .antMatchers("/images/**").permitAll()
-
             //로그인하지 않아도 접근 가능
             .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
             .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
@@ -68,6 +59,15 @@ public class SecurityConfig {
             .hasAuthority(UserRole.ROLE_ADMIN.name())
             .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
             .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
+
+            //문서 관련도 로그인하지 않아도 접근 가능
+            .antMatchers("/swagger-ui/**").permitAll()
+            .antMatchers("/v3/api-docs/**").permitAll()
+            .antMatchers("/**/*.html").permitAll()
+            .antMatchers("/**/*.css").permitAll()
+            .antMatchers("/**/*.js").permitAll()
+            .antMatchers("/**/*.png").permitAll()
+            .antMatchers("/images/**").permitAll()
 
             //그외는 모두 로그인해야 접근 가능
             .anyRequest().authenticated()
