@@ -98,6 +98,18 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    public List<MusicApply> findAll(String keyword) {
+        String sql = "SELECT ma FROM MusicApply ma ";
+
+        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
+            sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
+                "ma.artist LIKE '%" + keyword + "%'";
+        }
+
+        return em.createQuery(sql, MusicApply.class).getResultList();
+    }
+
+    @Override
     public void delete(Long musicApplyId) {
         MusicApply musicApply = em.find(MusicApply.class, musicApplyId);
         em.remove(musicApply);

@@ -138,6 +138,20 @@ class MusicApplyServiceTest {
     }
 
     @Test
+    @DisplayName("비로그인 유저 노래 신청 목록 조회 테스트")
+    public void readAllMusicApplyNotLoginServiceTest() {
+        String keyword = "";
+        List<MusicApply> madeMusicApply = makeMusicApplies();
+
+        doReturn(madeMusicApply)
+            .when(musicApplyRepository).findAll(user.getId());
+
+        List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
+            keyword);
+        assertThat(musicApplies.size()).isEqualTo(madeMusicApply.size());
+    }
+
+    @Test
     @DisplayName("내 노래 신청 목록 조회 테스트")
     public void readAllMusicApplyByUserServiceTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(

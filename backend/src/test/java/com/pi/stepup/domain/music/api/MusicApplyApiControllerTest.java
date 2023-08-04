@@ -1,5 +1,9 @@
 package com.pi.stepup.domain.music.api;
 
+import static com.pi.stepup.domain.music.constant.MusicApplyApiUrl.CREATE_MUSIC_APPLY_URL;
+import static com.pi.stepup.domain.music.constant.MusicApplyApiUrl.DELETE_MUSIC_APPLY_URL;
+import static com.pi.stepup.domain.music.constant.MusicApplyApiUrl.READ_ALL_BY_ID_MUSIC_APPLY_URL;
+import static com.pi.stepup.domain.music.constant.MusicApplyApiUrl.READ_ONE_MUSIC_APPLY;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -68,7 +72,7 @@ class MusicApplyApiControllerTest {
     @DisplayName("노래 신청 등록 테스트")
     @WithMockUser
     public void createMusicApplyControllerTest() throws Exception {
-        String url = "/api/music/apply";
+        String url = CREATE_MUSIC_APPLY_URL.getUrl();
 
         final ResultActions postAction = mockMvc.perform(
             MockMvcRequestBuilders.post(url).with(csrf())
@@ -83,7 +87,7 @@ class MusicApplyApiControllerTest {
     @DisplayName("로그인 안한 사용자가 노래 신청 등록 할 경우 예외 처리 테스트")
     @WithAnonymousUser
     public void createMusicApplyNotLoginUserControllerTest() throws Exception {
-        String url = "/api/music/apply";
+        String url = CREATE_MUSIC_APPLY_URL.getUrl();
         final ResultActions postAction = mockMvc.perform(
             MockMvcRequestBuilders.post(url).with(csrf())
                 .content(gson.toJson(musicApplySaveRequestDto))
@@ -100,7 +104,7 @@ class MusicApplyApiControllerTest {
         String keyword = "";
         when(musicApplyService.readAllByKeyword(keyword)).thenReturn(makeMusicApplies());
 
-        String url = "/api/music/apply?keyword=" + keyword;
+        String url = READ_ALL_BY_ID_MUSIC_APPLY_URL.getUrl() + keyword;
         final ResultActions getAction = mockMvc.perform(
             get(url)
         );
@@ -114,8 +118,7 @@ class MusicApplyApiControllerTest {
     public void readOneMusicControllerTest() throws Exception {
         when(musicApplyService.readOne(any())).thenReturn(musicApplyFindResponseDto);
 
-        String url = "/api/music/apply/detail?id=" + user.getId()
-            + "&musicApplyId=" + musicApply.getMusicApplyId();
+        String url = READ_ONE_MUSIC_APPLY.getUrl() + musicApply.getMusicApplyId();
         final ResultActions getAction = mockMvc.perform(
             get(url)
         );
@@ -130,8 +133,7 @@ class MusicApplyApiControllerTest {
         when(musicApplyService.readOne(any()))
             .thenThrow(new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
 
-        String url = "/api/music/apply/detail?id=" + user.getId()
-            + "&musicApplyId=" + musicApply.getMusicApplyId();
+        String url = READ_ONE_MUSIC_APPLY.getUrl() + musicApply.getMusicApplyId();
         final ResultActions getAction = mockMvc.perform(
             get(url)
         );
@@ -144,8 +146,7 @@ class MusicApplyApiControllerTest {
     @DisplayName("로그인 안한 사용자가 노래 신청 상세 조회 예외 테스트")
     @WithAnonymousUser
     public void readOneMusicApplyNotLoginUserControllerTest() throws Exception {
-        String url = "/api/music/apply/detail?id=" + user.getId()
-            + "&musicApplyId=" + musicApply.getMusicApplyId();
+        String url = READ_ONE_MUSIC_APPLY.getUrl() + musicApply.getMusicApplyId();
         final ResultActions getAction = mockMvc.perform(
             get(url)
         );
@@ -160,7 +161,8 @@ class MusicApplyApiControllerTest {
         Long musicApplyId = 1L;
 
         final ResultActions deleteAction = mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/music/apply/" + musicApplyId).with(csrf())
+            MockMvcRequestBuilders.delete(DELETE_MUSIC_APPLY_URL.getUrl() + musicApplyId)
+                .with(csrf())
         );
 
         verify(musicApplyService, only()).delete(musicApplyId);
@@ -177,7 +179,8 @@ class MusicApplyApiControllerTest {
             .delete(musicApplyId);
 
         final ResultActions deleteAction = mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/music/apply/" + musicApplyId).with(csrf())
+            MockMvcRequestBuilders.delete(DELETE_MUSIC_APPLY_URL.getUrl() + musicApplyId)
+                .with(csrf())
         );
 
         verify(musicApplyService, only()).delete(musicApplyId);
@@ -192,7 +195,8 @@ class MusicApplyApiControllerTest {
         Long musicApplyId = 1L;
 
         final ResultActions deleteAction = mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/music/apply/" + musicApplyId).with(csrf())
+            MockMvcRequestBuilders.delete(DELETE_MUSIC_APPLY_URL.getUrl() + musicApplyId)
+                .with(csrf())
         );
 
         deleteAction.andExpect(status().isUnauthorized());
