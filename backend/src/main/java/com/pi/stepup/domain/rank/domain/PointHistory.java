@@ -19,12 +19,15 @@ public class PointHistory {
     private Long pointHistoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "POINT_POLICY_ID")
     private PointPolicy pointPolicy;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RANDOM_DANCE_ID")
     private RandomDance randomDance;
 
     private Integer count;
