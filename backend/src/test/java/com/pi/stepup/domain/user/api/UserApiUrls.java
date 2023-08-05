@@ -11,7 +11,8 @@ public enum UserApiUrls {
     FIND_ID_URL("/findid"),
     FIND_PASSWORD_URL("/findpw"),
     DELETE_URL(""),
-    REISSUE_TOKENS_URL("/auth");
+    REISSUE_TOKENS_URL("/auth"),
+    UPDATE_URL("");
 
     private final String url;
 

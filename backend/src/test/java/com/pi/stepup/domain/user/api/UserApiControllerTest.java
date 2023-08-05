@@ -11,6 +11,7 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.REISSUE_TOKENS_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.UPDATE_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
@@ -22,6 +23,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_CO
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOKENS_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,6 +54,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
@@ -408,6 +412,24 @@ class UserApiControllerTest {
 
         String tokenInfoPrefix = "data.";
         checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
+    }
+
+    @DisplayName("수정에 성공할 경우 성공 상태 및 메세지가 반환된다.")
+    @WithMockUser
+    @Test
+    void updateTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .update(any(UpdateUserRequestDto.class));
+
+        mockMvc.perform(
+                put(UPDATE_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(UpdateUserRequestDto.builder().build()))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(UPDATE_USER_SUCCESS.getMessage()));
     }
 
     private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,
