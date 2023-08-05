@@ -93,7 +93,7 @@ class UserApiControllerTest {
     private final String TEST_ID = "testId";
     private final String TEST_NICKNAME = "testNickname";
 
-    @DisplayName("국가 정보 목록 조회 api 테스트")
+    @DisplayName("조회에 성공할 경우 국가 정보와 성공 상태 및 메세지가 반환된다.")
     @Test
     void readAllCountries() throws Exception {
         // given
@@ -110,7 +110,7 @@ class UserApiControllerTest {
 
     }
 
-    @DisplayName("이메일 중복 검사 테스트 - 중복 아님")
+    @DisplayName("service의 checkEmailDuplicated 메서드가 호출되며 중복이 아닐 경우 성공 상태 및 메세지가 반환된다.")
     @Test
     void checkEmailDuplicated_NoDuplicated() throws Exception {
         // given
@@ -127,9 +127,11 @@ class UserApiControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_EMAIL_DUPLICATED_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).checkEmailDuplicated(any(CheckEmailRequestDto.class));
     }
 
-    @DisplayName("이메일 중복 검사 테스트 - 중복")
+    @DisplayName("service의 checkEmailDuplicated 메서드가 호출되며 중복일 경우 충돌 상태가 반환된다.")
     @Test
     void checkEmailDuplicated_Duplicated() throws Exception {
         // given
@@ -147,9 +149,11 @@ class UserApiControllerTest {
                     .content(content)
             )
             .andExpect(status().isConflict());
+
+        verify(userService, times(1)).checkEmailDuplicated(any(CheckEmailRequestDto.class));
     }
 
-    @DisplayName("닉네임 중복 검사 테스트 - 중복 아님")
+    @DisplayName("service의 checkNicknameDuplicated 메서드가 호출되며 중복이 아닐 경우 성공 상태 및 메세지가 반환된다.")
     @Test
     void checkNicknameDuplicatedTest_NoDuplicated() throws Exception {
         // given
@@ -167,9 +171,11 @@ class UserApiControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_NICKNAME_DUPLICATED_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).checkNicknameDuplicated(any(CheckNicknameRequestDto.class));
     }
 
-    @DisplayName("닉네임 중복 검사 테스트 - 중복")
+    @DisplayName("service의 checkNicknameDuplicated 메서드가 호출되며 중복일 경우 충돌 상태가 반환된다.")
     @Test
     void checkNicknameDuplicated_Duplicated() throws Exception {
         // given
@@ -186,9 +192,11 @@ class UserApiControllerTest {
                     .content(content)
             )
             .andExpect(status().isConflict());
+
+        verify(userService, times(1)).checkNicknameDuplicated(any(CheckNicknameRequestDto.class));
     }
 
-    @DisplayName("아이디 중복 검사 테스트 - 중복 아님")
+    @DisplayName("service의 checkIdDuplicated 메서드가 호출되며 중복이 아닐 경우 성공 상태 및 메세지가 반환된다.")
     @Test
     void checkIdDuplicatedTest_NoDuplicated() throws Exception {
         // given
@@ -204,9 +212,11 @@ class UserApiControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_ID_DUPLICATED_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).checkIdDuplicated(any(CheckIdRequestDto.class));
     }
 
-    @DisplayName("아이디 중복 검사 테스트 - 중복")
+    @DisplayName("service의 checkIdDuplicated 메서드가 호출되며 중복일 경우 충돌 상태가 반환된다.")
     @Test
     void checkIdDuplicatedTest_Duplicated() throws Exception {
         // given
@@ -223,9 +233,11 @@ class UserApiControllerTest {
                     .content(content)
             )
             .andExpect(status().isConflict());
+
+        verify(userService, times(1)).checkIdDuplicated(any(CheckIdRequestDto.class));
     }
 
-    @DisplayName("회원정보 조회에 성공한다.")
+    @DisplayName("조회에 성공할 경우 토큰 정보와 회원 정보를 반환한다.")
     @WithMockCustomUser
     @Test
     void readOneTest() throws Exception {
@@ -303,7 +315,7 @@ class UserApiControllerTest {
         checkUserInfoResponse(resultActions, user, userInfoPrefix);
     }
 
-    @DisplayName("아이디 찾기에 성공한다.")
+    @DisplayName("아이디 찾기에 성공할 경우 service의 findId 메서드가 호출되며 성공 상태 및 메세지가 반환된다.")
     @Test
     void findIdTest() throws Exception {
         doNothing()
@@ -324,7 +336,7 @@ class UserApiControllerTest {
         verify(userService, times(1)).findId(any(FindIdRequestDto.class));
     }
 
-    @DisplayName("비밀번호 찾기에 성공한다.")
+    @DisplayName("비밀번호 찾기에 성공할 경우 service의 findPassword 메서드가 호출되며 성공 상태 및 메세지가 반환된다.")
     @Test
     void findPasswordTest() throws Exception {
         doNothing()
@@ -345,7 +357,7 @@ class UserApiControllerTest {
         verify(userService, times(1)).findPassword(any(FindPasswordRequestDto.class));
     }
 
-    @DisplayName("회원 탈퇴에 성공한다.")
+    @DisplayName("회원 탈퇴에 성공할 경우 service의 delete 메서드가 호출되며 성공 상태 및 메세지가 반환된다.")
     @WithMockUser
     @Test
     void deleteTest() throws Exception {
