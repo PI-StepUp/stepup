@@ -8,7 +8,8 @@ public enum UserApiUrls {
     READ_ONE_URL(""),
     SIGN_UP_URL(""),
     LOGIN_URL("/login"),
-    FIND_ID_URL("/findid");
+    FIND_ID_URL("/findid"),
+    FIND_PASSWORD_URL("/findpw");
 
     private final String url;
 

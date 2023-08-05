@@ -4,6 +4,7 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_U
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_ID_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_PASSWORD_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.LOGIN_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
@@ -12,6 +13,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
@@ -40,6 +42,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
@@ -315,6 +318,27 @@ class UserApiControllerTest {
             .andExpect(jsonPath("message").value(FIND_ID_SUCCESS.getMessage()));
 
         verify(userService, times(1)).findId(any(FindIdRequestDto.class));
+    }
+
+    @DisplayName("비밀번호 찾기에 성공한다.")
+    @Test
+    void findPasswordTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .findPassword(any(FindPasswordRequestDto.class));
+
+        mockMvc.perform(
+                post(FIND_PASSWORD_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(
+                        FindPasswordRequestDto.builder().build()
+                    ))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(FIND_PASSWORD_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).findPassword(any(FindPasswordRequestDto.class));
     }
 
     private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,
