@@ -17,6 +17,7 @@ import { LanguageState } from "states/states";
 
 import { axiosMusic } from "apis/axios";
 import Pagination from "react-js-pagination";
+import { useInView } from "react-intersection-observer";
 
 const PlayList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
@@ -26,6 +27,7 @@ const PlayList = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [playlistTitle, inView] = useInView();
 
     const handlePageChange = (page: any) => {
         setPage(page);
@@ -42,20 +44,32 @@ const PlayList = () => {
             console.log(data);
             setPlaylist(data.data.data);
         })
-    }, []);
+    }, [inView]);
     
     return (
         <>
             <Header/>
             <MainBanner/>
             <div className="playlist-wrap">
-                <div className="playlist-title">
-                    <span>THE NEW STEPUP’S PLAYLIST</span>
-                    <h3>
-                        {lang==="en" ? "STEPUP's new playlist" : lang==="cn" ? "STEPUP的新歌单" : "STEPUP의 새로운 플레이리스트" }<br/>
-                        {lang==="en" ? "Enjoy it with more songs" : lang==="cn" ? "用更多的歌曲来享受吧" : "더 많은 곡으로 즐기세요" }
-                    </h3>
-                </div>
+                {
+                    inView ?
+                    <div className="playlist-title" ref={playlistTitle} style={{animationName: "left-animation"}}>
+                        <span>THE NEW STEPUP’S PLAYLIST</span>
+                        <h3>
+                            {lang==="en" ? "STEPUP's new playlist" : lang==="cn" ? "STEPUP的新歌单" : "STEPUP의 새로운 플레이리스트" }<br/>
+                            {lang==="en" ? "Enjoy it with more songs" : lang==="cn" ? "用更多的歌曲来享受吧" : "더 많은 곡으로 즐기세요" }
+                        </h3>
+                    </div>
+                    :
+                    <div className="playlist-title" ref={playlistTitle}>
+                        <span>THE NEW STEPUP’S PLAYLIST</span>
+                        <h3>
+                            {lang==="en" ? "STEPUP's new playlist" : lang==="cn" ? "STEPUP的新歌单" : "STEPUP의 새로운 플레이리스트" }<br/>
+                            {lang==="en" ? "Enjoy it with more songs" : lang==="cn" ? "用更多的歌曲来享受吧" : "더 많은 곡으로 즐기세요" }
+                        </h3>
+                    </div>
+                }
+                
                 <div className="playlist-create-button-wrap">
                     <button><Link href="/playlist/create">{lang==="en" ? "Request" : lang==="cn" ? "申请新曲" : "신곡 신청하기" }</Link></button>
                 </div>

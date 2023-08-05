@@ -1,6 +1,27 @@
 @import "function.scss";
 @import "./responsively.scss";
 
+@keyframes top-animation{
+    0%{
+        top:180px;
+        opacity:0%;
+    }
+    100%{
+        top:0px;
+        opacity:100%;
+    }
+}
+@keyframes down-animation{
+    0%{
+        top:0px;
+        opacity:100%;
+    }
+    100%{
+        top:120px;
+        opacity:0%;
+    }
+}
+
 .main-header{
     @include setSize(100%, 100px);
     .block-margin{
@@ -51,15 +72,21 @@
         }
     }
 }
+.main-banner1{
+    background-image: url("/images/main-mainbanner.png");
+}
+.main-banner2{
+    background-image: url("/images/main-mainbanner2.jpg");
+}
 
 .main-banner{
     @include setSize(100%, 700px);
-    background-image: url("/images/main-mainbanner.png");
     background-position: center;
     background-size:cover;
     position:relative;
     top:-100px;
     z-index:-1;
+    animation-duration: 2s;
     @include mobile{
         @include setSize(100%, 575px);
     }
@@ -75,9 +102,13 @@
     }
     .flex-wrap{
         @include flex(space-between);
+        position:relative;
+        top:0px;
+        animation-duration: 2s;
         h3{
             @include font(48px, 900, #414149);
             line-height:64px;
+            
             @include mobile{
                 @include font(22px, 900, #414149);
                 line-height:32px;

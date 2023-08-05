@@ -1,5 +1,27 @@
 @import "./function.scss";
 
+@keyframes slide-up-animation{
+    0%{
+        top:90px;
+        opacity:0%;
+    }
+    100%{
+        top:0px;
+        opacity:100%;
+    }
+}
+
+@keyframes slide-down-animation{
+    0%{
+        top:-90px;
+        opacity:0%;
+    }
+    100%{
+        top:0px;
+        opacity:100%;
+    }
+}
+
 .meeting-wrap{
     @include setSize(100%);
     background-color: #EFF0F2;
@@ -17,6 +39,9 @@
                 h3{
                     @include font(48px, 700, #353638);
                     line-height:60px;
+                    position:relative;
+                    top:0px;
+                    animation-duration: 2s;
                 }
                 span{
                     background-color:#29B5D6;
@@ -26,6 +51,9 @@
                     padding:10px 30px;
                     border-radius:50px;
                     margin-top:19px;
+                    position:relative;
+                    top:0px;
+                    animation-duration: 2s;
                 }
             }
         }
