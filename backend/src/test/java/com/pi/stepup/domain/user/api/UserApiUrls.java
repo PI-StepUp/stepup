@@ -12,7 +12,8 @@ public enum UserApiUrls {
     FIND_PASSWORD_URL("/findpw"),
     DELETE_URL(""),
     REISSUE_TOKENS_URL("/auth"),
-    UPDATE_URL("");
+    UPDATE_URL(""),
+    CHECK_PASSWORD_URL("/checkpw");
 
     private final String url;
 

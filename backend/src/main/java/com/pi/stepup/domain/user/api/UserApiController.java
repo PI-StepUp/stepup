@@ -172,7 +172,7 @@ public class UserApiController {
         @ApiResponse(responseCode = "200", description = "비밀번호 일치")
     })
     @PostMapping("/checkpw")
-    public ResponseEntity<ResponseDto<?>> checkPw(
+    public ResponseEntity<ResponseDto<?>> checkPassword(
         @RequestBody CheckPasswordRequestDto checkPasswordRequestDto) {
         userService.checkPassword(checkPasswordRequestDto);
 

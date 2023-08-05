@@ -3,6 +3,7 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_PASSWORD_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.DELETE_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_ID_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_PASSWORD_URL;
@@ -15,6 +16,7 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.UPDATE_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWORD_SUCCESS;
@@ -49,6 +51,7 @@ import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
@@ -61,6 +64,7 @@ import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.domain.user.util.WithMockCustomUser;
 import com.pi.stepup.global.config.security.SecurityConfig;
@@ -430,6 +434,41 @@ class UserApiControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(UPDATE_USER_SUCCESS.getMessage()));
+    }
+
+    @DisplayName("비밀번호가 일치할 경우 성공 상태 및 메세지가 반환된다.")
+    @WithMockUser
+    @Test
+    void checkPasswordTest_Same() throws Exception {
+        doNothing()
+            .when(userService)
+            .checkPassword(any(CheckPasswordRequestDto.class));
+
+        mockMvc.perform(
+            post(CHECK_PASSWORD_URL.getUrl())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(UTF_8)
+                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(CHECK_PASSWORD_SUCCESS.getMessage()));
+    }
+
+    @DisplayName("비밀번호가 일치하지 않을 경우 잘못된 요청 상태가 반환된다.")
+    @WithMockUser
+    @Test
+    void checkPasswordTest_NotSame() throws Exception {
+        doThrow(UserNotFoundException.class)
+            .when(userService)
+            .checkPassword(any(CheckPasswordRequestDto.class));
+
+        mockMvc.perform(
+            post(CHECK_PASSWORD_URL.getUrl())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(UTF_8)
+                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+        )
+            .andExpect(status().isBadRequest());
     }
 
     private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,
