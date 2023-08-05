@@ -3,12 +3,14 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.LOGIN_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
@@ -33,6 +35,7 @@ import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -247,12 +250,54 @@ class UserApiControllerTest {
                     .content(makeJsonSignUpRequestDto(user))
             )
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("message").value(SIGN_UP_SUCCESS.getMessage()))
-            .andExpect(jsonPath("data.tokens.grantType").value(tokenInfo.getGrantType()))
-            .andExpect(jsonPath("data.tokens.accessToken").value(tokenInfo.getAccessToken()))
-            .andExpect(jsonPath("data.tokens.refreshToken").value(tokenInfo.getRefreshToken()));
+            .andExpect(jsonPath("message").value(SIGN_UP_SUCCESS.getMessage()));
 
-        checkUserInfoResponse(resultActions, user, "data.userInfo.");
+        String tokenInfoPrefix = "data.tokens.";
+        String userInfoPrefix = "data.userInfo.";
+        checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
+        checkUserInfoResponse(resultActions, user, userInfoPrefix);
+    }
+
+    @DisplayName("로그인에 성공할 경우 토큰 정보와 회원 정보를 반환한다.")
+    @Test
+    void loginTest() throws Exception {
+        User user = makeSampleUserData();
+        TokenInfo tokenInfo = makeSampleTokenData();
+
+        doReturn(AuthenticatedResponseDto.builder()
+            .user(user)
+            .tokenInfo(tokenInfo)
+            .build())
+            .when(userService)
+            .login(any(LoginRequestDto.class));
+
+        ResultActions resultActions = mockMvc.perform(
+            post(LOGIN_URL.getUrl())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(UTF_8)
+                .content(gson.toJson(
+                    LoginRequestDto.builder()
+                        .id(user.getId())
+                        .password(user.getPassword())
+                        .build()
+                ))
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(LOGIN_SUCCESS.getMessage()));
+
+        String tokenInfoPrefix = "data.tokens.";
+        String userInfoPrefix = "data.userInfo.";
+        checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
+        checkUserInfoResponse(resultActions, user, userInfoPrefix);
+    }
+
+    private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,
+        String prefix)
+        throws Exception {
+        return resultActions
+            .andExpect(jsonPath(prefix + "grantType").value(tokenInfo.getGrantType()))
+            .andExpect(jsonPath(prefix + "accessToken").value(tokenInfo.getAccessToken()))
+            .andExpect(jsonPath(prefix + "refreshToken").value(tokenInfo.getRefreshToken()));
     }
 
     private ResultActions checkUserInfoResponse(ResultActions resultActions, User user,
