@@ -3,6 +3,7 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_ID_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.LOGIN_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
@@ -10,6 +11,7 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
@@ -18,6 +20,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,6 +39,7 @@ import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
@@ -272,16 +277,16 @@ class UserApiControllerTest {
             .login(any(LoginRequestDto.class));
 
         ResultActions resultActions = mockMvc.perform(
-            post(LOGIN_URL.getUrl())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .characterEncoding(UTF_8)
-                .content(gson.toJson(
-                    LoginRequestDto.builder()
-                        .id(user.getId())
-                        .password(user.getPassword())
-                        .build()
-                ))
-        )
+                post(LOGIN_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(
+                        LoginRequestDto.builder()
+                            .id(user.getId())
+                            .password(user.getPassword())
+                            .build()
+                    ))
+            )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(LOGIN_SUCCESS.getMessage()));
 
@@ -289,6 +294,27 @@ class UserApiControllerTest {
         String userInfoPrefix = "data.userInfo.";
         checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
         checkUserInfoResponse(resultActions, user, userInfoPrefix);
+    }
+
+    @DisplayName("아이디 찾기에 성공한다.")
+    @Test
+    void findIdTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .findId(any(FindIdRequestDto.class));
+
+        mockMvc.perform(
+                post(FIND_ID_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(
+                        FindIdRequestDto.builder().build()
+                    ))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(FIND_ID_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).findId(any(FindIdRequestDto.class));
     }
 
     private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,

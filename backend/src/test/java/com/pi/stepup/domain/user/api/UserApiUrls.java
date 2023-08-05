@@ -7,7 +7,8 @@ public enum UserApiUrls {
     CHECK_ID_DUPLICATED_URL("/dupid"),
     READ_ONE_URL(""),
     SIGN_UP_URL(""),
-    LOGIN_URL("/login");
+    LOGIN_URL("/login"),
+    FIND_ID_URL("/findid");
 
     private final String url;
 
