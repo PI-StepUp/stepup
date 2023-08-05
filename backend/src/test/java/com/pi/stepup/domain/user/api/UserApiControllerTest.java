@@ -9,6 +9,7 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_PASSWORD_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.LOGIN_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.REISSUE_TOKENS_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
@@ -19,6 +20,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWO
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOKENS_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -47,6 +49,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
@@ -372,6 +375,39 @@ class UserApiControllerTest {
             .andExpect(jsonPath("message").value(DELETE_SUCCESS.getMessage()));
 
         verify(userService, times(1)).delete();
+    }
+
+    @DisplayName("재발급에 성공할 경우 생성 상태와 토큰 정보를 반환한다.")
+    @WithMockUser
+    @Test
+    void reissueTokensTest() throws Exception {
+        String grantType = "Bearer";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+        String headerRefreshToken = "headerRefreshToken";
+
+        TokenInfo tokenInfo = TokenInfo.builder()
+            .grantType(grantType)
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+
+        doReturn(tokenInfo)
+            .when(userService)
+            .reissueTokens(any(String.class), any(ReissueTokensRequestDto.class));
+
+        ResultActions resultActions = mockMvc.perform(
+                post(REISSUE_TOKENS_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .header("refreshToken", headerRefreshToken)
+                    .content(gson.toJson(ReissueTokensRequestDto.builder().build()))
+            )
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("message").value(REISSUE_TOKENS_SUCCESS.getMessage()));
+
+        String tokenInfoPrefix = "data.";
+        checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
     }
 
     private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,
