@@ -9,7 +9,8 @@ public enum UserApiUrls {
     SIGN_UP_URL(""),
     LOGIN_URL("/login"),
     FIND_ID_URL("/findid"),
-    FIND_PASSWORD_URL("/findpw");
+    FIND_PASSWORD_URL("/findpw"),
+    DELETE_URL("");
 
     private final String url;
 

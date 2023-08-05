@@ -3,6 +3,7 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.DELETE_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_ID_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_PASSWORD_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.LOGIN_URL;
@@ -12,6 +13,7 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -65,6 +68,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -339,6 +343,23 @@ class UserApiControllerTest {
             .andExpect(jsonPath("message").value(FIND_PASSWORD_SUCCESS.getMessage()));
 
         verify(userService, times(1)).findPassword(any(FindPasswordRequestDto.class));
+    }
+
+    @DisplayName("회원 탈퇴에 성공한다.")
+    @WithMockUser
+    @Test
+    void deleteTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .delete();
+
+        mockMvc.perform(
+                delete(DELETE_URL.getUrl())
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(DELETE_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).delete();
     }
 
     private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,
