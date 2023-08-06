@@ -58,7 +58,11 @@ io.on('connection', socket => {
     });
 
     socket.on('send_message', (data,roomName) => {
-      io.sockets.to(socket.id).emit('message', data);
+        io.emit('message', data);
+    });
+
+    socket.on('playMusic', (data,roomName) => {
+        io.emit('startRandomplay', data);
     });
 
     socket.on('disconnect', () => {
