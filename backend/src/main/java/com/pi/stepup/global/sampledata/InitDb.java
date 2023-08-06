@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -51,6 +52,9 @@ public class InitDb {
             makePointHistory();
             makeHeart();
             makeNotice();
+            makeTalk();
+            makeMeeting();
+            makeComment();
         }
 
         public void makeCountry() {
@@ -384,7 +388,7 @@ public class InitDb {
                     "url1",
                     "url2",
                     "url3",
-                    "url4",
+                    "",
                     "url5"
             };
 
@@ -415,6 +419,203 @@ public class InitDb {
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
                 query.setParameter(2, randomDanceId[i]);
+                query.executeUpdate();
+            }
+        }
+
+        public void makeTalk() {
+
+            String[] title = new String[]{
+                    "내일 성수 카페 갈 사람 모여주세요!",
+                    "오늘 저녁 같이 먹을 사람 구해요",
+                    "여행 같이 갈 사람 ??!",
+                    "영화 보러 같이 가실 분(서현 !!)",
+                    "강남 운동 같이 할 친구 구해요"
+            };
+
+            String[] content = new String[]{
+                    "요즘 성수 카페 새로 생긴데 많던데 같이 갈사람 댓글 남겨주세요 ~~",
+                    "오늘 저녁에 같이 먹을 사람을 구해요. 같이 식사하며 이야기 나누고 싶어요!",
+                    "여행을 같이 떠날 친구를 찾아요. 원하시는 여행지 있으면 같이 정해봐요!",
+                    "영화 보러 갈 사람을 찾아요. 같이 영화 관람하면서 즐거운 시간 보내요. 분당쪽 입니다 ",
+                    "강남에서 운동을 같이 할 친구를 찾아요. 건강하게 함께 운동합시다!"
+            };
+
+            String[] fileURL = new String[]{
+                    "url6",
+                    "",
+                    "url8",
+                    "url9",
+                    ""
+            };
+
+            int[] comment_cnt = new int[]{
+                    3,
+                    1,
+                    2,
+                    1,
+                    2
+            };
+
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
+                        " file_url, board_type) VALUES (?, '2023-08-02', '2023-08-02', 1, ?, ?, ?, 'Talk')";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 6));
+                query.setParameter(2, title[i]);
+                query.setParameter(3, content[i]);
+                query.setParameter(4, fileURL[i]);
+                query.executeUpdate();
+
+            }
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO talk (board_id, comment_cnt) VALUES (?,?)";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 6));
+                query.setParameter(2, comment_cnt[i]);
+                query.executeUpdate();
+            }
+        }
+
+        public void makeMeeting() {
+
+            String[] title = new String[]{
+                    "주말 댄스 모임 참여자 모집",
+                    "서울 강남역 연습실 같이 빌리실 분 구해요",
+                    "같이 댄스 연습할 친구 모집합니다",
+                    "오프라인 댄스 파티 참가자 모집",
+                    "댄스 실력 상관없이 함께 춤출 분 찾아요!"
+            };
+
+            String[] content = new String[]{
+                    "주말에 서울 강남역 근처 연습실을 같이 빌려서 댄스 연습하실 분을 찾습니다. 함께 실력을 향상시키고 즐겁게 춤추요!",
+                    "강남역 근처 연습실을 예약하려고 하는데 혼자서는 비용이 부담스러워요. 함께 빌려서 실력을 향상시킬 댄서를 모집합니다.",
+                    "댄스를 좋아하는 분들과 함께 정기적으로 모여서 연습하고 발전하는 모임을 만들려고 합니다. 관심 있으신 분들은 연락주세요!",
+                    "오프라인 댄스 파티에 참가하실 분을 모집합니다. 음악과 함께 즐거운 시간 보내고 멋진 댄서들과 인연을 만들어요!",
+                    "댄스 실력에 상관없이 즐겁게 춤출 수 있는 모임을 만들어요. 댄스를 좋아하고 함께 즐길 친구들을 찾습니다!"
+            };
+
+            String[] fileURL = new String[]{
+                    "url11",
+                    "",
+                    "url13",
+                    "url14",
+                    ""
+            };
+
+            String[] region = new String[]{
+                    "서울 강남역 근처",
+                    "서울 분당역 근처",
+                    "인천 연수구",
+                    "대구 동성로",
+                    "부산 서면"
+            };
+
+            int[] comment_cnt = new int[]{
+                    0,
+                    3,
+                    1,
+                    2,
+                    1
+            };
+
+            LocalDateTime now = LocalDateTime.now();
+
+            LocalDateTime[] start_at = {
+                    now.plusDays(1).plusHours(10),
+                    now.plusDays(2).plusHours(14),
+                    now.plusDays(3).plusHours(12),
+                    now.plusDays(4).plusHours(15),
+                    now.plusDays(5).plusHours(11)
+            };
+
+            LocalDateTime[] end_at = {
+                    start_at[0].plusHours(3),
+                    start_at[1].plusHours(2),
+                    start_at[2].plusHours(4),
+                    start_at[3].plusHours(3),
+                    start_at[4].plusHours(2)
+            };
+
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
+                        " file_url, board_type) VALUES (?, '2023-08-03', '2023-08-03', 1, ?, ?, ?, 'Meeting')";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 11));
+                query.setParameter(2, title[i]);
+                query.setParameter(3, content[i]);
+                query.setParameter(4, fileURL[i]);
+                query.executeUpdate();
+
+            }
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO meeting (board_id, region, start_at, end_at, comment_cnt) VALUES (?,?,?,?,?)";
+
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 11));
+                query.setParameter(2, region[i]);
+                query.setParameter(3, start_at[i]);
+                query.setParameter(4, end_at[i]);
+                query.setParameter(5, comment_cnt[i]);
+                query.executeUpdate();
+            }
+        }
+
+        public void makeComment() {
+            String[] content = new String[]{
+                    "저도 성수 카페에 관심 있어요! 같이 가면 좋을 것 같아요.",
+                    "저도 서울 성동구에 사는데 성수 카페 모임에 함께하고 싶어요!",
+                    "오늘은 시간이 안되서 아쉽네요. 다음 기회에는 꼭 함께하고 싶어요!",
+                    "오늘 저녁 시간이 맞으면 함께 먹고 싶어요. 장소는 어디인가요?",
+                    "몇 명 생각하고 계세요? 같이 가는 사람들과 같이 아이디어를 공유하면 좋을 것 같아요!",
+                    "저도 여행 같이 갈 친구를 찾고 있어요! 어디 생각하세요 ??",
+                    "영화 새로 나온거 보고싶었는데 저는 양재라 중간 위치 괜찮으세요?",
+                    "저도 강남에서 운동 다니고 있는데 같이 운동을 하면 더욱 좋을 것 같아요.",
+                    "무게 몇 정도 치세요?",
+                    "오 저도 비용이 부담스러웠는데 함께 연습하면 더 재미있겠죠!",
+                    "강남역 근처인데, 위치가 좋네요! 함께 참가하고 싶어요~",
+                    "강남역 근처 연습실 좋네요. 같이 할래요!",
+                    "저도 댄스를 좋아해서 관심이 있어요. 연락 주세요!",
+                    "파티에 참가하고 싶어요. 어떻게 신청하면 되나요?",
+                    "댄스 파티 너무 기대돼요!",
+                    "댄스 실력에 상관없이 함께 춤출 친구를 찾고 있어요. 조금 부족한데 괜찮나요?"
+            };
+
+            Long[] board_id = new Long[]{
+                    6l,
+                    6l,
+                    6L,
+                    7L,
+                    8L,
+                    8L,
+                    9L,
+                    10l,
+                    10l,
+                    12l,
+                    12L,
+                    12L,
+                    13L,
+                    14L,
+                    14L,
+                    15L
+            };
+
+            for (int i = 0; i < content.length; i++) {
+                String sql = "INSERT INTO comment (comment_id,  created_at, modified_at, user_id,  content, board_id) " +
+                        "VALUES (?,'2023-08-02', '2023-08-02', 1, ?,?)";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 1));
+                query.setParameter(2, content[i]);
+                query.setParameter(3, board_id[i]);
                 query.executeUpdate();
             }
         }
