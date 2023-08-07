@@ -2,6 +2,7 @@ package com.pi.stepup.domain.dance.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.global.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "DANCE_MUSIC")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DanceMusic {
+public class DanceMusic extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
