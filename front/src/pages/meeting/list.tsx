@@ -101,7 +101,7 @@ const MeetingList = () => {
                     </div>
                     <div className="pagination">
                         <ul>
-                            <Pagination
+                            {/* <Pagination
                                 activePage={page}
                                 itemsCountPerPage={10}
                                 totalItemsCount={meetings?.length}
@@ -109,7 +109,7 @@ const MeetingList = () => {
                                 prevPageText={'<'}
                                 nextPageText={'>'}
                                 onChange={handlePageChange}
-                            />
+                            /> */}
                         </ul>
                     </div>
                 </div>

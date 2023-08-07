@@ -40,7 +40,7 @@ const pc_config = {
 };
 const SOCKET_SERVER_URL = 'http://localhost:4002';
 
-const EMBED_URL = {
+const EMBED_URL: any = {
     13: "",
     14: "https://www.youtube.com/embed/gV4j4oKnA7s",
     15: "https://www.youtube.com/embed/xCb9V33T-D8",
@@ -50,11 +50,11 @@ const EMBED_URL = {
 
 const DanceRoom = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
-    const socketRef = useRef<SocketIOClient.Socket>();
+    const socketRef = useRef<any>();
 	const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
-	const localVideoRef = useRef<HTMLVideoElement>(null);
+	const localVideoRef = useRef<any>(null);
 	const localStreamRef = useRef<MediaStream>();
-	const [users, setUsers] = useState<WebRTCUser[]>([]);
+	const [users, setUsers] = useState<any[]>([]);
 
     const [msgList, setMsgList] = useState<any[]>([]);
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
@@ -126,7 +126,7 @@ const DanceRoom = () => {
         }
     }
 
-    const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyPress = (e: any) => {
         if (e.key === 'Enter') {
             socketRef.current.emit("send_message", inputChat.current?.value, roomId);
             socketRef.current.on('message', (data:any) => {
@@ -307,7 +307,7 @@ const DanceRoom = () => {
     }
 
 	useEffect(() => {
-		socketRef.current = io.connect(SOCKET_SERVER_URL);
+		// socketRef.current = io.connect(SOCKET_SERVER_URL);
 		getLocalStream();
 
 		socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string }>) => {
