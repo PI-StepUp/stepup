@@ -21,7 +21,7 @@ import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
-import { createLandmarker, calculateSimilarity } from "../utils/motionsetter";
+import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter";
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
 
@@ -66,6 +66,7 @@ const DanceRoom = () => {
     const [urlNo, setUrlNo] = useState<any>(0);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
+    const [end, setEnd] = useState(false);
     const roomName = 1;
 
     let danceRecord: any[] = [];
@@ -98,6 +99,10 @@ const DanceRoom = () => {
     }
     const moreDotLeave = () => {
         setMoredot(false);
+    }
+
+    const youtubeChange = (e: any) => {
+        setEnd(true);
     }
 
     const sendMessage = () => {
@@ -297,11 +302,6 @@ const DanceRoom = () => {
         
     }
 
-	// ========== 안무 유사도 측정 ============
-	async function saveMotionArray() {
-		
-	}
-
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
 		getLocalStream();
@@ -413,27 +413,29 @@ const DanceRoom = () => {
 
                         const danceAnswer = await JSON.parse(response.data.answer);
                         console.log("danceAnswer 값", response.data);
-
-                        setTimeout(async () => {
-                            saveMotion = false;
-
-                            await calculateSimilarity(danceRecord, danceAnswer).then((score) => {
-                                console.log("score", score);
-                                if(score < 60){
-                                    setPlayResult("failure");
-                                    setTimeout(() => {
-                                        setPlayResult("");
-                                    }, 5000)
-                                }else{
-                                    setPlayResult("success");
-                                    setTimeout(() => {
-                                        setPlayResult("");
-                                    }, 5000)
-                                }
-                            });
-
-                            // TODO : 선택된 노래의 playTime으로 설정
-                        }, response.data.playtime*1000);
+                        
+                        if(end){
+                            setTimeout(async () => {
+                                saveMotion = false;
+    
+                                await calculateSimilarity(danceRecord, danceAnswer).then((score) => {
+                                    console.log("score", score);
+                                    if(score < 60){
+                                        setPlayResult("failure");
+                                        setTimeout(() => {
+                                            setPlayResult("");
+                                        }, 5000)
+                                    }else{
+                                        setPlayResult("success");
+                                        setTimeout(() => {
+                                            setPlayResult("");
+                                        }, 5000)
+                                    }
+                                });
+    
+                                // TODO : 선택된 노래의 playTime으로 설정
+                            }, (response.data.playtime+2)*1000);
+                        }
 
                     }, 2000);
                 }, 2000);
@@ -489,7 +491,7 @@ const DanceRoom = () => {
                                     {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li><button className="exit-button" onClick={saveMotionArray}>{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
                                 <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
                                     <button>
                                     {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
@@ -630,7 +632,7 @@ const DanceRoom = () => {
             }
             {
                 urlNo ?
-                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"></iframe>
+                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay" onLoad={youtubeChange}></iframe>
                 :
                 <></>
             }
