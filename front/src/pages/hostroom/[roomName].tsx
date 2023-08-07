@@ -19,8 +19,9 @@ import { LanguageState } from "states/states";
 
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/router";
 
-import { axiosMusic, axiosUser } from "apis/axios";
+import { axiosMusic, axiosUser, axiosDance } from "apis/axios";
 import axios from "axios";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState } from "states/states";
 
@@ -53,6 +54,8 @@ const Hostroom = () => {
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankname, setRankname] = useRecoilState(rankNameState);
     const [musics, setMusics] = useState<any>();
+    const router = useRouter();
+    const roomTitle = router.query.title;
     const reflectHover = () => {
         setReflect(true);
     }
@@ -80,6 +83,7 @@ const Hostroom = () => {
 
     const playMusic = (musicId : number) => {
         socketRef.current.emit("playMusic", musicId, roomName);
+        alert("새로운 곡이 재생됩니다.");
     }
     useEffect(() => {    
         socketRef.current = io.connect(SOCKET_SERVER_URL);
@@ -109,6 +113,20 @@ const Hostroom = () => {
             if(data.data.message === "노래 목록 조회 완료"){
                 setMusics(data.data.data);
             }
+        }).then(() => {
+            axiosDance.get('',{
+                params: {
+                    progressType: "ALL",
+                }
+            }).then((data) => {
+                if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+                    for(let i=0; i<data.data.data.length; i++) {
+                        if(data.data.data[i].title === roomTitle){
+                            console.log(data.data.data[i]);
+                        }
+                    }
+                }
+            })
         })
     }, [])
     return(
