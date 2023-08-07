@@ -39,7 +39,7 @@ const Hostroom = () => {
         ],
     };
     const SOCKET_SERVER_URL = 'http://localhost:4002';
-    const socketRef = useRef<SocketIOClient.Socket>();
+    const socketRef = useRef<any>();
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
@@ -92,7 +92,7 @@ const Hostroom = () => {
     }
 
     useEffect(() => {    
-        socketRef.current = io.connect(SOCKET_SERVER_URL);
+        // socketRef.current = io.connect(SOCKET_SERVER_URL);
 
         axios.post("http://52.78.93.184:8080/api/user/login",{
             id: "ssafy",

@@ -79,7 +79,7 @@ const NoticeList = () => {
                 </div>
                 <div className="pagination">
                     <ul>
-                        <Pagination
+                        {/* <Pagination
                             activePage={page}
                             itemsCountPerPage={10}
                             totalItemsCount={notices?.length}
@@ -87,7 +87,7 @@ const NoticeList = () => {
                             prevPageText={'<'}
                             nextPageText={'>'}
                             onChange={handlePageChange}
-                        />
+                        /> */}
                     </ul>
                 </div>
             </div>
