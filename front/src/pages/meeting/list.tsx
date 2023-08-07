@@ -17,6 +17,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import Pagination from "react-js-pagination"
+import { useInView } from "react-intersection-observer";
 
 const MeetingList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
@@ -26,6 +27,7 @@ const MeetingList = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [meetingTitle, inView] = useInView();
 
     const handlePageChange = (page: any) => {
         setPage(page);
@@ -42,7 +44,7 @@ const MeetingList = () => {
                 setMeetings(data.data.data);
             }
         })
-    }, [])
+    }, [inView])
     return (
         <>
             <Header/>
@@ -50,15 +52,28 @@ const MeetingList = () => {
             <SubNav linkNo="3"/>
             <div className="meeting-wrap">
                 <div className="block-center-wrap">
-                    <div className="geography-wrap">
-                        <div className="geography-title">
-                            <h3>
-                                View the World<br/>
-                                Random Play Dance
-                            </h3>
-                            <span>KR : 한국</span>
+                    {
+                        inView ?
+                        <div className="geography-wrap" >
+                            <div className="geography-title" ref={meetingTitle}>
+                                <h3 style={{animationName: "slide-up-animation"}}>
+                                    View the World<br/>
+                                    Random Play Dance
+                                </h3>
+                                <span style={{animationName: "slide-down-animation"}}>KR : 한국</span>
+                            </div>
                         </div>
-                    </div>
+                        :
+                        <div className="geography-wrap">
+                            <div className="geography-title" ref={meetingTitle}>
+                                <h3>
+                                    View the World<br/>
+                                    Random Play Dance
+                                </h3>
+                                <span>KR : 한국</span>
+                            </div>
+                        </div>
+                    }
                     <div className="button-wrap">
                         <button><Link href="/meeting/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
                     </div>

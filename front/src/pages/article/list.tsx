@@ -8,6 +8,7 @@ import LanguageButton from "components/LanguageButton";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useInView } from "react-intersection-observer";
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
@@ -21,6 +22,7 @@ const ArticleList = () => {
     const [page, setPage] = useState<any>(1);
     const searchValue = useRef<any>();
     const router = useRouter();
+    const [articleTitle, inView] = useInView();
 
     const handlePageChange = (page: any) => {
         setPage(page);
@@ -47,7 +49,7 @@ const ArticleList = () => {
         }).then((data) => {
             setArticles(data.data.data);
         })
-    }, [])
+    }, [inView])
 
     return (
         <>
@@ -55,14 +57,26 @@ const ArticleList = () => {
             <MainBanner/>
             <SubNav linkNo="2"/>
             <div className="article-list-wrap">
-                <div className="article-list-title">
-                    <span>{lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }</span>
-                    <h3>
-                        {lang==="en" ? "All the things KPOP needs" : lang==="cn" ? "KPOP所需的所有" : "KPOP에 필요한 모든" }<br/>
-                        {lang==="en" ? "a place where we meet, step up" : lang==="cn" ? "相聚的地方，舞步舞动" : "만남이 모이는 곳, 스텝업" }<br/>
-                        {lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }
-                    </h3>
-                </div>
+                {
+                    inView ?
+                    <div className="article-list-title" style={{animationName: "left-animation"}} ref={articleTitle}>
+                        <span>{lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }</span>
+                        <h3>
+                            {lang==="en" ? "All the things KPOP needs" : lang==="cn" ? "KPOP所需的所有" : "KPOP에 필요한 모든" }<br/>
+                            {lang==="en" ? "a place where we meet, step up" : lang==="cn" ? "相聚的地方，舞步舞动" : "만남이 모이는 곳, 스텝업" }<br/>
+                            {lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }
+                        </h3>
+                    </div>
+                    :
+                    <div className="article-list-title" ref={articleTitle}>
+                        <span>{lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }</span>
+                        <h3>
+                            {lang==="en" ? "All the things KPOP needs" : lang==="cn" ? "KPOP所需的所有" : "KPOP에 필요한 모든" }<br/>
+                            {lang==="en" ? "a place where we meet, step up" : lang==="cn" ? "相聚的地方，舞步舞动" : "만남이 모이는 곳, 스텝업" }<br/>
+                            {lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }
+                        </h3>
+                    </div>
+                }
                 <div className="search-wrap">
                     <form>
                         <input type="text" placeholder={lang==="en" ? "Please enter a search term" : lang==="cn" ? "请输入搜索词" : "검색어를 입력해주세요" } ref={searchValue}/>
