@@ -168,11 +168,11 @@ public class InitDb {
             String password = passwordEncoder.encode("ssafy");
             for (int i = 0; i < 7; i++) {
                 String sql =
-                        "insert into users (user_id, created_at, modified_at, birth, country_id, "
-                                + "  email, email_alert, id, nickname, password, point, profile_img, rank_id, refresh_token, role) "
-                                + " values (?, '2023-08-01', '2023-08-01', '1997-01-01', 1, '"
-                                + id[i]
-                                + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'refresh_token', 'ROLE_ADMIN')";
+                    "insert into users (user_id, created_at, modified_at, birth, country_id, "
+                        + "  email, email_alert, id, nickname, password, point, profile_img, rank_id, refresh_token, role) "
+                        + " values (?, '2023-08-01', '2023-08-01', '1997-01-01', 1, '"
+                        + id[i]
+                        + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'refresh_token', 'ROLE_USER')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 2));
                 query.setParameter(2, id[i]);
@@ -219,10 +219,10 @@ public class InitDb {
             //랭킹
             for (int i = 0; i < 5; i++) {
                 String sql =
-                        "insert into random_dance (random_dance_id, content, dance_type,"
-                                + " end_at, user_id, max_user, start_at, thumbnail, title) "
-                                + " values (?, ?, 'RANKING', '2023-08-31 18:00', 4, 10,"
-                                + " '2023-08-01 10:00', 'url', ?) ";
+                    "insert into random_dance (random_dance_id, created_at, modified_at, content, dance_type,"
+                        + " end_at, user_id, max_user, start_at, thumbnail, title) "
+                        + " values (?, '2023-08-01', '2023-08-01', ?, 'RANKING', '2023-08-31 18:00', 4, 10,"
+                        + " '2023-08-01 10:00', 'url', ?) ";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
@@ -233,10 +233,10 @@ public class InitDb {
             //자율
             for (int i = 5; i < 10; i++) {
                 String sql =
-                        "insert into random_dance (random_dance_id, content, dance_type,"
-                                + " end_at, user_id, max_user, start_at, thumbnail, title) "
-                                + " values (?, ?, 'BASIC', '2023-08-31 18:00', 5, 15,"
-                                + " '2023-08-20 10:00', 'url', ?) ";
+                    "insert into random_dance (random_dance_id, created_at, modified_at, content, dance_type,"
+                        + " end_at, user_id, max_user, start_at, thumbnail, title) "
+                        + " values (?,'2023-08-01', '2023-08-01', ?, 'BASIC', '2023-08-31 18:00', 5, 15,"
+                        + " '2023-08-20 10:00', 'url', ?) ";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
@@ -248,8 +248,8 @@ public class InitDb {
 
         public void makeReservation() {
             for (int i = 2; i <= 8; i++) {
-                String sql = "insert into reservation (RESERVATION_ID, RANDOM_DANCE_ID, USER_ID) "
-                        + " values (?, 5, " + i + ")";
+                String sql = "insert into reservation (RESERVATION_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (?, 5, " + i + ",'2023-08-01', '2023-08-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i - 1));
                 query.executeUpdate();
@@ -259,8 +259,8 @@ public class InitDb {
         public void makeAttend() {
             for (int i = 2; i <= 8; i++) {
                 String sql =
-                        "insert into attend_history (ATTEND_HISTORY_ID, RANDOM_DANCE_ID, USER_ID) "
-                                + " values (?, 1, " + i + ")";
+                    "insert into attend_history (ATTEND_HISTORY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                        + " values (?, 1, " + i + ",'2023-08-01', '2023-08-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i - 1));
                 query.executeUpdate();
@@ -270,44 +270,44 @@ public class InitDb {
         public void makePointHistory() {
             //개최자
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (1, 1, 5, 1, 2)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (1, 1, 5, 1, 2,'2023-08-01', '2023-08-01')").executeUpdate();
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (2, 1, 5, 2, 3)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (2, 1, 5, 2, 3,'2023-08-01', '2023-08-01')").executeUpdate();
 
             //1번 랜플댄 참여 - 각 123등
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (3, 1, 1, 1, 3)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (3, 1, 1, 1, 3,'2023-08-01', '2023-08-01')").executeUpdate();
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (4, 1, 2, 1, 4)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (4, 1, 2, 1, 4,'2023-08-01', '2023-08-01')").executeUpdate();
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (5, 1, 3, 1, 5)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (5, 1, 3, 1, 5,'2023-08-01', '2023-08-01')").executeUpdate();
 
             //1번 랜플댄 참여 - 노래 성공 (참여자 6명+개최자 1명)
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (6, 3, 4, 1, 3)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (6, 3, 4, 1, 3,'2023-08-01', '2023-08-01')").executeUpdate();
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (7, 2, 4, 1, 4)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (7, 2, 4, 1, 4,'2023-08-01', '2023-08-01')").executeUpdate();
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (8, 2, 4, 1, 5)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (8, 2, 4, 1, 5,'2023-08-01', '2023-08-01')").executeUpdate();
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (9, 1, 4, 1, 6)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (9, 1, 4, 1, 6,'2023-08-01', '2023-08-01')").executeUpdate();
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (10, 1, 4, 1, 7)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (10, 1, 4, 1, 7,'2023-08-01', '2023-08-01')").executeUpdate();
 
             //연습실 참여
             em.createNativeQuery
-                    ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                            + " values (11, 5, 6, null, 2)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (11, 5, 6, null, 2,'2023-08-01', '2023-08-01')").executeUpdate();
         }
 
         public void makeMusicApply() {
@@ -327,8 +327,8 @@ public class InitDb {
                     "Get Up", "ASAP"};
             for (int i = 0; i < 5; i++) {
                 String sql =
-                        "insert into music_apply (MUSIC_APPLY_ID, ARTIST, CONTENT, HEART_CNT, TITLE, WRITER_ID) "
-                                + " values (?, ?, ?, 1, ?, ?)";
+                    "insert into music_apply (MUSIC_APPLY_ID, ARTIST, CONTENT, HEART_CNT, TITLE, WRITER_ID, created_at, modified_at) "
+                        + " values (?, ?, ?, 1, ?, ?,'2023-08-01', '2023-08-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
                 query.setParameter(2, artist);
@@ -344,8 +344,8 @@ public class InitDb {
             for (int j = 1; j <= 10; j++) {
                 for (int i = 1; i <= 10; i++) {
                     String sql =
-                            "insert into dance_music (DANCE_MUSIC_ID, RANDOM_DANCE_ID, MUSIC_ID) "
-                                    + " values (?, ?, ?)";
+                        "insert into dance_music (DANCE_MUSIC_ID, RANDOM_DANCE_ID, MUSIC_ID, created_at, modified_at) "
+                            + " values (?, ?, ?,'2023-08-01', '2023-08-01')";
                     Query query = em.createNativeQuery(sql);
                     query.setParameter(1, pk++);
                     query.setParameter(2, j);
@@ -359,8 +359,8 @@ public class InitDb {
             int pk = 1;
             for (int i = 2; i < 7; i++) {
                 String sql =
-                        "insert into heart (HEART_ID, MUSIC_APPLY_ID, USER_ID) "
-                                + " values (?, ?, " + i + ")";
+                    "insert into heart (HEART_ID, MUSIC_APPLY_ID, USER_ID, created_at, modified_at) "
+                        + " values (?, ?, " + i + ",'2023-08-01', '2023-08-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, pk++);
                 query.setParameter(2, (i - 1));
