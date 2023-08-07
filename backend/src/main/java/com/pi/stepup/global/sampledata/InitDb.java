@@ -436,9 +436,17 @@ public class InitDb {
             String[] content = new String[]{
                     "요즘 성수 카페 새로 생긴데 많던데 같이 갈사람 댓글 남겨주세요 ~~",
                     "오늘 저녁에 같이 먹을 사람을 구해요. 같이 식사하며 이야기 나누고 싶어요!",
-                    "여행을 같이 떠날 친구를 찾아요. 원하시는 여행지 있으면 같이 정해봐요!",
-                    "영화 보러 갈 사람을 찾아요. 같이 영화 관람하면서 즐거운 시간 보내요. 분당쪽 입니다 ",
-                    "강남에서 운동을 같이 할 친구를 찾아요. 건강하게 함께 운동합시다!"
+                    "여행 같이 떠날 친구 구합니당. 원하시는 여행지 있으면 같이 정해봐요!",
+                    "영화 보러 갈 사람을 찾아요~ 같이 영화 관람하면서 즐거운 시간 보내요. 분당쪽 입니다 ",
+                    "강남에서 같이 운동 하실 분?? 서로 자세도 봐주고 건강하게 함께 운동합시다 :)"
+            };
+
+            Long[] writer = new Long[]{
+                    6L,
+                    3L,
+                    5L,
+                    4L,
+                    8L
             };
 
             String[] fileURL = new String[]{
@@ -460,13 +468,14 @@ public class InitDb {
 
             for (int i = 0; i < title.length; i++) {
                 String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
-                        " file_url, board_type) VALUES (?, '2023-08-02', '2023-08-02', 1, ?, ?, ?, 'Talk')";
+                        " file_url, board_type) VALUES (?, '2023-08-02', '2023-08-02', ?, ?, ?, ?, 'Talk')";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 6));
-                query.setParameter(2, title[i]);
-                query.setParameter(3, content[i]);
-                query.setParameter(4, fileURL[i]);
+                query.setParameter(2, writer[i]);
+                query.setParameter(3, title[i]);
+                query.setParameter(4, content[i]);
+                query.setParameter(5, fileURL[i]);
                 query.executeUpdate();
 
             }
@@ -492,11 +501,19 @@ public class InitDb {
             };
 
             String[] content = new String[]{
-                    "주말에 서울 강남역 근처 연습실을 같이 빌려서 댄스 연습하실 분을 찾습니다. 함께 실력을 향상시키고 즐겁게 춤추요!",
-                    "강남역 근처 연습실을 예약하려고 하는데 혼자서는 비용이 부담스러워요. 함께 빌려서 실력을 향상시킬 댄서를 모집합니다.",
-                    "댄스를 좋아하는 분들과 함께 정기적으로 모여서 연습하고 발전하는 모임을 만들려고 합니다. 관심 있으신 분들은 연락주세요!",
-                    "오프라인 댄스 파티에 참가하실 분을 모집합니다. 음악과 함께 즐거운 시간 보내고 멋진 댄서들과 인연을 만들어요!",
+                    "주말에 서울 강남역 근처 연습실을 같이 빌려서 댄스 연습하실 분을 찾습니다. 함께 실력을 향상시키고 즐겁게 춤춰요!",
+                    "강남역 근처 연습실을 예약하려고 하는데 혼자서는 비용이 부담스럽네요 ㅠㅠ 같이 연습실 빌려서 실력을 향상시킬 댄서를 모집합니다.",
+                    "춤 좋아하는 분들과 함께 정기적으로 모여서 연습하고 발전하는 모임을 만들려고 합니다. 관심 있으신 분들은 연락주세요! (오픈채팅)",
+                    "오프라인 댄스 파티에 참가하실 분을 모집합니다. 음악과 함께 즐거운 시간 보내고 멋진 댄서들과 인연을 만들어요! ㅋㅋㅋ",
                     "댄스 실력에 상관없이 즐겁게 춤출 수 있는 모임을 만들어요. 댄스를 좋아하고 함께 즐길 친구들을 찾습니다!"
+            };
+
+            Long[] writer = new Long[]{
+                    2L,
+                    3L,
+                    7L,
+                    5L,
+                    6L
             };
 
             String[] fileURL = new String[]{
@@ -544,13 +561,14 @@ public class InitDb {
 
             for (int i = 0; i < title.length; i++) {
                 String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
-                        " file_url, board_type) VALUES (?, '2023-08-03', '2023-08-03', 1, ?, ?, ?, 'Meeting')";
+                        " file_url, board_type) VALUES (?, '2023-08-03', '2023-08-03', ?, ?, ?, ?, 'Meeting')";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 11));
-                query.setParameter(2, title[i]);
-                query.setParameter(3, content[i]);
-                query.setParameter(4, fileURL[i]);
+                query.setParameter(2, writer[i]);
+                query.setParameter(3, title[i]);
+                query.setParameter(4, content[i]);
+                query.setParameter(5, fileURL[i]);
                 query.executeUpdate();
 
             }
@@ -572,21 +590,21 @@ public class InitDb {
         public void makeComment() {
             String[] content = new String[]{
                     "저도 성수 카페에 관심 있어요! 같이 가면 좋을 것 같아요.",
-                    "저도 서울 성동구에 사는데 성수 카페 모임에 함께하고 싶어요!",
-                    "오늘은 시간이 안되서 아쉽네요. 다음 기회에는 꼭 함께하고 싶어요!",
-                    "오늘 저녁 시간이 맞으면 함께 먹고 싶어요. 장소는 어디인가요?",
+                    "저도 서울 성동구에 사는데 성수 카페 같이가요 ! ㅋㅋㅋ",
+                    "오늘은 시간이 안되서 아쉽네요ㅠㅠ 다음 기회에는 꼭 함께하고 싶어요!",
+                    "오늘 저녁 시간이 맞으면 함께 먹고 싶은데 장소는 어디인가요?",
                     "몇 명 생각하고 계세요? 같이 가는 사람들과 같이 아이디어를 공유하면 좋을 것 같아요!",
-                    "저도 여행 같이 갈 친구를 찾고 있어요! 어디 생각하세요 ??",
-                    "영화 새로 나온거 보고싶었는데 저는 양재라 중간 위치 괜찮으세요?",
-                    "저도 강남에서 운동 다니고 있는데 같이 운동을 하면 더욱 좋을 것 같아요.",
+                    "저도 여행 같이 갈 친구를 찾고 있는데 ! 혹시 어디 생각하세요 ??",
+                    "영화 새로 나온거 보고싶었는데 저는 양재라 중간 위치도 괜찮으세요?",
+                    "저도 강남에서 운동 다니고 있는데 같이 운동을 하면 좋을 거 같네요 ㅋㅋ",
                     "무게 몇 정도 치세요?",
-                    "오 저도 비용이 부담스러웠는데 함께 연습하면 더 재미있겠죠!",
+                    "오 저도 비용이 부담스러웠는데 같이 연습하면 부담없고 더 재밌을거 같네용!",
                     "강남역 근처인데, 위치가 좋네요! 함께 참가하고 싶어요~",
-                    "강남역 근처 연습실 좋네요. 같이 할래요!",
-                    "저도 댄스를 좋아해서 관심이 있어요. 연락 주세요!",
+                    "강남역 근처 연습실 좋네요. 저도 같이 할래요!!!!!",
+                    "저도 춤 좋아해서 관심이 있어요. 카카오톡 아이디로 연락 주세요!",
                     "파티에 참가하고 싶어요. 어떻게 신청하면 되나요?",
-                    "댄스 파티 너무 기대돼요!",
-                    "댄스 실력에 상관없이 함께 춤출 친구를 찾고 있어요. 조금 부족한데 괜찮나요?"
+                    "댄스 파티 너무 기대돼요 ㅎㅎㅎ",
+                    "저도 참여하고 싶긴한데 조금 부족해도 괜찮나요?"
             };
 
             Long[] board_id = new Long[]{
@@ -608,14 +626,34 @@ public class InitDb {
                     15L
             };
 
+            Long[] user_id = new Long[]{
+                    2l,
+                    7l,
+                    8L,
+                    2L,
+                    3L,
+                    4L,
+                    5L,
+                    6l,
+                    7l,
+                    8l,
+                    4L,
+                    5L,
+                    2L,
+                    4L,
+                    6L,
+                    7L
+            };
+
             for (int i = 0; i < content.length; i++) {
                 String sql = "INSERT INTO comment (comment_id,  created_at, modified_at, user_id,  content, board_id) " +
-                        "VALUES (?,'2023-08-02', '2023-08-02', 1, ?,?)";
+                        "VALUES (?,'2023-08-02', '2023-08-02', ?, ?,?)";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
-                query.setParameter(2, content[i]);
-                query.setParameter(3, board_id[i]);
+                query.setParameter(2, user_id[i]);
+                query.setParameter(3, content[i]);
+                query.setParameter(4, board_id[i]);
                 query.executeUpdate();
             }
         }
