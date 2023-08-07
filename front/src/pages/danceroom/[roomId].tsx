@@ -534,9 +534,9 @@ const DanceRoom = () => {
                                     <span>임시 이름</span>
                                 </li>
                                 {
-                                    users.map((data) => {
+                                    users.map((data,index) => {
                                         return(
-                                            <li>
+                                            <li key={index}>
                                                 <Image src={ChatDefaultImg} alt=""/>
                                                 <span>{data.id}</span>
                                             </li>

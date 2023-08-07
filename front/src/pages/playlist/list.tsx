@@ -78,7 +78,7 @@ const PlayList = () => {
                         {playlist?.map((playlist, index) => {
                             if(index+1 <= page*10 && index+1 > page*10-10){
                                 return(
-                                    <li><Link href={"/playlist/detail/" + playlist.musicApplyId}>
+                                    <li key={index}><Link href={"/playlist/detail/" + playlist.musicApplyId}>
                                         <span>{playlist.artist}</span>
                                         <h4>{playlist.title}</h4>
                                         <p>{playlist.content}</p>

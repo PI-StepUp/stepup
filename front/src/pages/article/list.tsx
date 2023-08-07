@@ -104,7 +104,7 @@ const ArticleList = () => {
                                 return(
                                     <tr onClick={() => router.push({
                                         pathname: `/article/detail/${article.boardId}`,
-                                    })}>
+                                    })} key={index}>
                                         <td>{article.boardId}</td>
                                         <td>{article.writerName}</td>
                                         <td>{article.title}</td>
