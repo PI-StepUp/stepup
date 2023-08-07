@@ -40,22 +40,22 @@ const Hostroom = () => {
     };
     const SOCKET_SERVER_URL = 'http://localhost:4002';
     const socketRef = useRef<SocketIOClient.Socket>();
-    const roomName = 1;
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+    const [roomName, setRoomName] = useState<any>();
 
     const [lang, setLang] = useRecoilState(LanguageState);
     const [reflect, setReflect] = useState(false);
     const [mic, setMic] = useState(false);
     const [camera, setCamera] = useState(false);
     const [moredot, setMoredot] = useState(false);
-    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-    const [id, setId] = useRecoilState(idState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankname, setRankname] = useRecoilState(rankNameState);
     const [musics, setMusics] = useState<any>();
     const router = useRouter();
-    const roomTitle = router.query.title;
+    const [roomTitle, setRoomTitle] = useState(router.query.roomName);
     const reflectHover = () => {
         setReflect(true);
     }
@@ -85,6 +85,12 @@ const Hostroom = () => {
         socketRef.current.emit("playMusic", musicId, roomName);
         alert("새로운 곡이 재생됩니다.");
     }
+
+    const finishRandomPlay = () => {
+        socketRef.current.emit("finish", roomName);
+        alert("랜덤플레이댄스가 종료되었습니다.");
+    }
+
     useEffect(() => {    
         socketRef.current = io.connect(SOCKET_SERVER_URL);
 
@@ -119,10 +125,11 @@ const Hostroom = () => {
                     progressType: "ALL",
                 }
             }).then((data) => {
+                console.log(data);
                 if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
                     for(let i=0; i<data.data.data.length; i++) {
                         if(data.data.data[i].title === roomTitle){
-                            console.log(data.data.data[i]);
+                            setRoomName(data.data.data[i].randomDanceId);
                         }
                     }
                 }
@@ -176,7 +183,7 @@ const Hostroom = () => {
                                         {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li onClick={finishRandomPlay}><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
                                 <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
                                     <button>
                                         {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
