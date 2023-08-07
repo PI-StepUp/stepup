@@ -1,10 +1,24 @@
 @import "./function.scss";
 
+@keyframes left-animation{
+    0%{
+        left:180px;
+        opacity:0%;
+    }
+    100%{
+        left:0px;
+        opacity:100%;
+    }
+}
+
 .article-list-wrap{
     @include block-center(1200px);
     .article-list-title{
         padding-top:73px;
         padding-left:10px;
+        position:relative;
+        left:0px;
+        animation-duration: 3s;
         span{
             @include font(28px, 700, #6BBDA7);
         }

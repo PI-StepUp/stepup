@@ -1,4 +1,4 @@
-import {useEffect, useState, useRef} from "react"
+import {useEffect, useState} from "react"
 
 import Link from "next/link"
 import Image from "next/image"
@@ -14,7 +14,9 @@ import LanguageButton from "components/LanguageButton";
 
 import { useRecoilState } from "recoil";
 import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState } from "states/states";
-import { useRouter } from "next/router"
+import { useRouter } from "next/router";
+import { useInView } from "react-intersection-observer";
+import { useInterval } from "usehooks-ts";
 
 const Index = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
@@ -24,15 +26,26 @@ const Index = () => {
     const [id, setId] = useRecoilState(idState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankname, setRankname] = useRecoilState(rankNameState);
+	const [mainBanner, setMainBanner] = useState<any>(1);
 
 	const router = useRouter();
 
-	const li1 = useRef<any>();
-	const li2 = useRef<any>();
+	const [mainInfo, inView] = useInView();
 	const [nav, setNav] = useState<any>(<ul>
 		<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
 		<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
 	</ul>);
+
+	useInterval(() => {
+		if(mainBanner === 1){
+			console.log("2로 바꿉니다.");
+			setMainBanner(2);
+		}else if(mainBanner === 2){
+			console.log("1로 바꿉니다.");
+			setMainBanner(1);
+		}
+	}, 4000)
+
 
 	const signout = () => {
 		alert("로그아웃 되었습니다.");
@@ -63,7 +76,8 @@ const Index = () => {
 				</ul>
 			);
 		}
-	}, [])
+
+	}, [inView])
 
 	return (
 		<>
@@ -85,26 +99,52 @@ const Index = () => {
 					</div>
 				</div>
 			</header>
-			<div className="main-banner">
+			{
+				mainBanner === 1 ?
+				<div className="main-banner main-banner1">
 
-			</div>
-			<div className="main-info">
-				<div className="flex-wrap">
-					<h3>
-						{lang === "en" ? "What KPOP needs" : lang === "cn" ? "KPOP所需的" : "KPOP에 필요한"}<br />
-						{lang === "en" ? "Every encounter" : lang === "cn" ? "所有的相遇" : "모든 만남이"}<br />
-						{lang === "en" ? "where you are" : lang === "cn" ? "所在地方" : "있는 곳"}
-					</h3>
-					<div className="main-info-text">
-						<p>
-							{lang === "en" ? "Dance that you want regardless of the place, anytime, anywhere," : lang === "cn" ? "无论何时何地，不受场所限制，跳自己喜欢的舞蹈，" : "언제, 어디서든 장소에 구애받지 않고 원하는 춤을,"}<br />
-							{lang === "en" ? "Everyone can enjoy it in one screen." : lang === "cn" ? "大家可以在一个画面中享受。" : "모두가 한 화면속에서 즐길 수 있어요."}
-						</p>
-						<p>
-							{lang === "en" ? "A lanfle dan stage is provided according to your time." : lang === "cn" ? "根据您的时间，提供随机跳舞的舞台。" : "당신의 시간에 맞게 랜플댄 무대가 제공됩니다."}
-						</p>
-					</div>
 				</div>
+				:
+				<div className="main-banner main-banner2">
+
+				</div>
+			}
+			<div className="main-info" ref={mainInfo}>
+				{inView ? 
+					<div className="flex-wrap" style={{animationName: "top-animation"}}>
+						<h3>
+							{lang === "en" ? "What KPOP needs" : lang === "cn" ? "KPOP所需的" : "KPOP에 필요한"}<br />
+							{lang === "en" ? "Every encounter" : lang === "cn" ? "所有的相遇" : "모든 만남이"}<br />
+							{lang === "en" ? "where you are" : lang === "cn" ? "所在地方" : "있는 곳"}
+						</h3>
+						<div className="main-info-text">
+							<p>
+								{lang === "en" ? "Dance that you want regardless of the place, anytime, anywhere," : lang === "cn" ? "无论何时何地，不受场所限制，跳自己喜欢的舞蹈，" : "언제, 어디서든 장소에 구애받지 않고 원하는 춤을,"}<br />
+								{lang === "en" ? "Everyone can enjoy it in one screen." : lang === "cn" ? "大家可以在一个画面中享受。" : "모두가 한 화면속에서 즐길 수 있어요."}
+							</p>
+							<p>
+								{lang === "en" ? "A lanfle dan stage is provided according to your time." : lang === "cn" ? "根据您的时间，提供随机跳舞的舞台。" : "당신의 시간에 맞게 랜플댄 무대가 제공됩니다."}
+							</p>
+						</div>
+					</div>
+					:
+					<div className="flex-wrap">
+						<h3>
+							{lang === "en" ? "What KPOP needs" : lang === "cn" ? "KPOP所需的" : "KPOP에 필요한"}<br />
+							{lang === "en" ? "Every encounter" : lang === "cn" ? "所有的相遇" : "모든 만남이"}<br />
+							{lang === "en" ? "where you are" : lang === "cn" ? "所在地方" : "있는 곳"}
+						</h3>
+						<div className="main-info-text">
+							<p>
+								{lang === "en" ? "Dance that you want regardless of the place, anytime, anywhere," : lang === "cn" ? "无论何时何地，不受场所限制，跳自己喜欢的舞蹈，" : "언제, 어디서든 장소에 구애받지 않고 원하는 춤을,"}<br />
+								{lang === "en" ? "Everyone can enjoy it in one screen." : lang === "cn" ? "大家可以在一个画面中享受。" : "모두가 한 화면속에서 즐길 수 있어요."}
+							</p>
+							<p>
+								{lang === "en" ? "A lanfle dan stage is provided according to your time." : lang === "cn" ? "根据您的时间，提供随机跳舞的舞台。" : "당신의 시간에 맞게 랜플댄 무대가 제공됩니다."}
+							</p>
+						</div>
+					</div>
+				}
 				<div className="main-info-icon-wrap">
 					<ul>
 						<li>
