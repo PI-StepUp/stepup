@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.dance.domain;
 
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.global.entity.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Reservation {
+public class Reservation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
