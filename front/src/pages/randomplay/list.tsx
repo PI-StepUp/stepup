@@ -82,7 +82,7 @@ const RandomPlayList = () => {
                             {rooms?.map((room) => {
                                 return(
                                     <li>
-                                        <Link href="/danceroom">
+                                        <Link href={`/danceroom/${room.randomDanceId}`}>
                                             <div className="section-content-img">
                                                 <span>{room.danceType === "SURVIVAL" ? "서바이벌" : room.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
                                                 <Image src={RandomplayThumbnail} alt=""/>

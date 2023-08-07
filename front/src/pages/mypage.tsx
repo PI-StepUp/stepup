@@ -296,225 +296,228 @@ const MyPage = () => {
     <>
       <Header />
       <Banner />
-      <div className="background-color">
-        <div>
-          <ul className="mypage-profile">
-            <li>
-              <div className="info">
-                <div className="cnt">{reservedRandomDanceCnt}</div>
-                <div className="cnt-title">{lang === "en" ? "RESERVATION" : lang === "cn" ? "预订" : "예약된 랜플댄"}</div>
-                <div className="btn-info">
-                  <Link href="/randomplay/list">{lang === "en" ? "RPDance LIST" : lang === "cn" ? "舞蹈清单" : "랜플댄 목록 보기"}</Link>
-                </div>
-              </div>
-            </li>
-            <li>
-              {/* 프로필 클릭 시 포인트 적립 내역 모달창 추가 필요 */}
-              <div className="info history">
-                <div className="img-profile">
-                  <Image className="img" src={profileImg} alt="profile"></Image>
-                </div>
-                <div>
-                  <progress value={point} max={rankGoalPoint}></progress>
-                  <div className="progress-text">
-                    <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {pointLeft}</p>
-                    <p>{point}/{rankGoalPoint}</p>
-                  </div>
-                  <div className="info-user">
-                    <p className="ranking" style={{ backgroundColor: rankBtnColor }}>{rankName === "브론즈" ? "BRONZE" : rankName === "실버" ? "SILVER" : rankName === "골드" ? "GOLD" : "PLATINUM"}</p>
-                    <p className="name">{loginUserNickname}</p>
+      <div className="ce">
+
+        <div className="background-color">
+          <div>
+            <ul className="mypage-profile">
+              <li>
+                <div className="info">
+                  <div className="cnt">{reservedRandomDanceCnt}</div>
+                  <div className="cnt-title">{lang === "en" ? "RESERVATION" : lang === "cn" ? "预订" : "예약된 랜플댄"}</div>
+                  <div className="btn-info">
+                    <Link href="/randomplay/list">{lang === "en" ? "RPDance LIST" : lang === "cn" ? "舞蹈清单" : "랜플댄 목록 보기"}</Link>
                   </div>
                 </div>
+              </li>
+              <li>
+                {/* 프로필 클릭 시 포인트 적립 내역 모달창 추가 필요 */}
+                <div className="info history">
+                  <div className="img-profile">
+                    <Image className="img" src={profileImg} alt="profile"></Image>
+                  </div>
+                  <div>
+                    <progress value={point} max={rankGoalPoint}></progress>
+                    <div className="progress-text">
+                      <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {pointLeft}</p>
+                      <p>{point}/{rankGoalPoint}</p>
+                    </div>
+                    <div className="info-user">
+                      <p className="ranking" style={{ backgroundColor: rankBtnColor }}>{rankName === "브론즈" ? "BRONZE" : rankName === "실버" ? "SILVER" : rankName === "골드" ? "GOLD" : "PLATINUM"}</p>
+                      <p className="name">{loginUserNickname}</p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="info">
+                  <div className="cnt">{boardCnt}</div>
+                  <div className="cnt-title">{lang === "en" ? "Number of POSTS" : lang === "cn" ? "撰写的帖子数量" : "작성한 글 수"}</div>
+                  <div className="btn-info">
+                    <div onClick={scrollEvent}>{lang === "en" ? "CHECK POSTS" : lang === "cn" ? "检查帖子" : "게시글 확인하기"}</div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          {/* end - profile information */}
+          <div>
+            <ul className="list">
+              <div>{lang === "en" ? "My Reservation" : lang === "cn" ? "我的预订" : "내 예약"}</div>
+              <div>
+                {reserved?.map((reservation) => {
+                  const reservationId = reservation.randomDanceId;
+                  return (
+                    <li className="contents">
+                      <div className="img-box">
+                        <Image className="img" src={reservation.thumbnail} alt="reserved"></Image>
+                      </div>
+                      <div className="description">
+                        <div className="time">Korea {reservation.startAt} ~ {reservation.endAt} (KST)</div>
+                        <div className="title">{reservation.title}</div>
+                        <div className="learner">{reservation.danceType}</div>
+                      </div>
+                      <div className="btn-contents">
+                        <a onClick={() => cancelRandomDance({ reservationId })}>{lang === "en" ? "Cancel" : lang === "cn" ? "取消参与" : "예약 취소"}</a>
+                      </div>
+                    </li>
+                  )
+                })}
               </div>
-            </li>
-            <li>
-              <div className="info">
-                <div className="cnt">{boardCnt}</div>
-                <div className="cnt-title">{lang === "en" ? "Number of POSTS" : lang === "cn" ? "撰写的帖子数量" : "작성한 글 수"}</div>
-                <div className="btn-info">
-                  <div onClick={scrollEvent}>{lang === "en" ? "CHECK POSTS" : lang === "cn" ? "检查帖子" : "게시글 확인하기"}</div>
+            </ul>
+          </div>
+          {/* end - my reservation */}
+          <div>
+            <ul className="list">
+              <div>{lang === "en" ? "My Organized" : lang === "cn" ? "我举办的活动" : "개최한 랜플댄"}</div>
+              <div>
+                {myRandomDance?.map((randomDance) => {
+                  const randomDanceId = randomDance.randomDanceId;
+                  return (
+                    <li className="contents">
+                      <div className="img-box">
+                        <Image className="img" src={randomDance.thumbnail} alt="reserved"></Image>
+                      </div>
+                      <div className="description">
+                        <div className="time">Korea {randomDance.startAt} ~ {randomDance.endAt} (KST)</div>
+                        <div className="title">{randomDance.title}</div>
+                        <div className="learner">{randomDance.danceType}</div>
+                      </div>
+                      <div className="btn-contents">
+                        <a onClick={() => deleteMyRandomDance({ randomDanceId })}>{lang === "en" ? "Host - Cancel" : lang === "cn" ? "取消活动" : "방 생성 취소"}</a>
+                      </div>
+                    </li>
+                  )
+                })}
+              </div>
+            </ul>
+          </div>
+          {/* end - my open */}
+          <div className="settings">
+            <details>
+              <summary>
+                <Image src={img_settings} className="img-setting" alt="img_settings"></Image>
+                <p className="settings-title">{lang === "en" ? "Edit My Info" : lang === "cn" ? "编辑会员信息" : "회원 정보 수정"}</p>
+                <Image className="img-vector" src={img_vector} alt="img_arrow"></Image>
+              </summary>
+              <div className="enter-password">
+                <p>{lang === "en" ? "Password" : lang === "cn" ? "密码" : "현재 비밀번호"}</p>
+                <input className="pw" type="password" ref={pwValue} />
+                <div className="btn-submit" onClick={checkPw}>
+                  {lang === "en" ? "Enter" : lang === "cn" ? "输入" : "입력"}
                 </div>
               </div>
-            </li>
-          </ul>
-        </div>
-        {/* end - profile information */}
-        <div>
-          <ul className="list">
-            <div>{lang === "en" ? "My Reservation" : lang === "cn" ? "我的预订" : "내 예약"}</div>
-            <div>
-              {reserved?.map((reservation) => {
-                const reservationId = reservation.randomDanceId;
-                return (
-                  <li className="contents">
-                    <div className="img-box">
-                      <Image className="img" src={reservation.thumbnail} alt="reserved"></Image>
-                    </div>
-                    <div className="description">
-                      <div className="time">Korea {reservation.startAt} ~ {reservation.endAt} (KST)</div>
-                      <div className="title">{reservation.title}</div>
-                      <div className="learner">{reservation.danceType}</div>
-                    </div>
-                    <div className="btn-contents">
-                      <a onClick={() => cancelRandomDance({ reservationId })}>{lang === "en" ? "Cancel" : lang === "cn" ? "取消参与" : "예약 취소"}</a>
-                    </div>
-                  </li>
-                )
-              })}
-            </div>
-          </ul>
-        </div>
-        {/* end - my reservation */}
-        <div>
-          <ul className="list">
-            <div>{lang === "en" ? "My Organized" : lang === "cn" ? "我举办的活动" : "개최한 랜플댄"}</div>
-            <div>
-              {myRandomDance?.map((randomDance) => {
-                const randomDanceId = randomDance.randomDanceId;
-                return (
-                  <li className="contents">
-                    <div className="img-box">
-                      <Image className="img" src={randomDance.thumbnail} alt="reserved"></Image>
-                    </div>
-                    <div className="description">
-                      <div className="time">Korea {randomDance.startAt} ~ {randomDance.endAt} (KST)</div>
-                      <div className="title">{randomDance.title}</div>
-                      <div className="learner">{randomDance.danceType}</div>
-                    </div>
-                    <div className="btn-contents">
-                      <a onClick={() => deleteMyRandomDance({ randomDanceId })}>{lang === "en" ? "Host - Cancel" : lang === "cn" ? "取消活动" : "방 생성 취소"}</a>
-                    </div>
-                  </li>
-                )
-              })}
-            </div>
-          </ul>
-        </div>
-        {/* end - my open */}
-        <div className="settings">
-          <details>
-            <summary>
-              <Image src={img_settings} className="img-setting" alt="img_settings"></Image>
-              <p className="settings-title">{lang === "en" ? "Edit My Info" : lang === "cn" ? "编辑会员信息" : "회원 정보 수정"}</p>
-              <Image className="img-vector" src={img_vector} alt="img_arrow"></Image>
-            </summary>
-            <div className="enter-password">
-              <p>{lang === "en" ? "Password" : lang === "cn" ? "密码" : "현재 비밀번호"}</p>
-              <input className="pw" type="password" ref={pwValue} />
-              <div className="btn-submit" onClick={checkPw}>
-                {lang === "en" ? "Enter" : lang === "cn" ? "输入" : "입력"}
+            </details>
+          </div>
+          {/* end - settings */}
+          <div>
+            <ul className="list">
+              <div>{lang === "en" ? "Participation History" : lang === "cn" ? "参与历史" : "참여 이력"}</div>
+              <div>
+                {myRandomDanceHistory?.slice(0, visibleItems)?.map((randomDance) => {
+                  const randomDanceId = randomDance.randomDanceId;
+                  return (
+                    <li className="contents">
+                      <div className="img-box">
+                        <Image className="img" src={randomDance.thumbnail} alt="history"></Image>
+                      </div>
+                      <div className="description">
+                        <div className="time">Korea {randomDance.startAt} ~ {randomDance.endAt} (KST)</div>
+                        <div className="title">{randomDance.title}</div>
+                        <div className="learner">{randomDance.danceType}</div>
+                      </div>
+                      <div className="rank">
+                        <p>-</p>
+                        {/* 2.2.6 API에 등수가 기록되지 않음 > 확인 필요 */}
+                      </div>
+                    </li>
+                  )
+                })}
               </div>
-            </div>
-          </details>
-        </div>
-        {/* end - settings */}
-        <div>
-          <ul className="list">
-            <div>{lang === "en" ? "Participation History" : lang === "cn" ? "参与历史" : "참여 이력"}</div>
-            <div>
-              {myRandomDanceHistory?.slice(0, visibleItems)?.map((randomDance) => {
-                const randomDanceId = randomDance.randomDanceId;
-                return (
-                  <li className="contents">
-                    <div className="img-box">
-                      <Image className="img" src={randomDance.thumbnail} alt="history"></Image>
-                    </div>
-                    <div className="description">
-                      <div className="time">Korea {randomDance.startAt} ~ {randomDance.endAt} (KST)</div>
-                      <div className="title">{randomDance.title}</div>
-                      <div className="learner">{randomDance.danceType}</div>
-                    </div>
-                    <div className="rank">
-                      <p>-</p>
-                      {/* 2.2.6 API에 등수가 기록되지 않음 > 확인 필요 */}
-                    </div>
-                  </li>
-                )
-              })}
-            </div>
-          </ul>
-          {myRandomDanceHistory && visibleItems < myRandomDanceHistory.length && (
-            <button onClick={() => setVisibleItems(visibleItems + 3)}>
-              {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
-            </button>
-          )}
-        </div>
-        {/* end - past random play dance */}
-        <div ref={list}>
-          <ul className="list">
-            <div>{lang === "en" ? "Written Posts - Offline Meetings" : lang === "cn" ? "撰写的帖子 - 线下聚会" : "작성한 글 - 오프라인 정모"}</div>
-            <div>
-              {meetingBoard?.slice(0, visibleItems)?.map((board) => {
-                const boardId = board.boardId;
-                return (
-                  <li className="contents">
-                    <div className="img-box">
-                      <Image className="img" src={img_offline} alt="history"></Image>
-                    </div>
-                    <div className="description">
-                      <div className="time">{lang === "en" ? "Offline Meetings" : lang === "cn" ? "线下聚会" : "오프라인 정모"}</div>
-                      <div className="title-past">{board.title}</div>
-                      <div className="learner">comment {board.commentCnt}</div>
-                    </div>
-                    <div className="detail">
-                      <a href="">{lang === "en" ? "View" : lang === "cn" ? "查看帖子" : "글 보기"}</a>
-                      {/* 게시글 상세보기 url 확인 필요*/}
-                    </div>
-                  </li>
-                )
-              })}
-            </div>
-            {meetingBoard && visibleItems < meetingBoard.length && (
+            </ul>
+            {myRandomDanceHistory && visibleItems < myRandomDanceHistory.length && (
               <button onClick={() => setVisibleItems(visibleItems + 3)}>
                 {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
               </button>
             )}
-          </ul>
-          {/* end - meeting board */}
-          <ul className="list">
-            <div>{lang === "en" ? "Written Posts - Free Board" : lang === "cn" ? "撰写的帖子 - 自由留言板" : "작성한 글 - 자유게시판"}</div>
-            <div>
-              {talkBoard?.slice(0, visibleItems)?.map((board) => {
-                const boardId = board.boardId;
-                return (
-                  <li className="contents">
-                    <div className="img-box">
-                      <Image className="img" src={img_offline} alt="history"></Image>
-                    </div>
-                    <div className="description">
-                      <div className="time">{lang === "en" ? "Offline Meetings" : lang === "cn" ? "线下聚会" : "오프라인 정모"}</div>
-                      <div className="title-past">{board.title}</div>
-                      <div className="learner">comment {board.commentCnt}</div>
-                    </div>
-                    <div className="detail">
-                      <a href="">{lang === "en" ? "View" : lang === "cn" ? "查看帖子" : "글 보기"}</a>
-                      {/* 게시글 상세보기 url 확인 필요*/}
-                    </div>
-                  </li>
-                )
-              })}
+          </div>
+          {/* end - past random play dance */}
+          <div ref={list}>
+            <ul className="list">
+              <div>{lang === "en" ? "Written Posts - Offline Meetings" : lang === "cn" ? "撰写的帖子 - 线下聚会" : "작성한 글 - 오프라인 정모"}</div>
+              <div>
+                {meetingBoard?.slice(0, visibleItems)?.map((board) => {
+                  const boardId = board.boardId;
+                  return (
+                    <li className="contents">
+                      <div className="img-box">
+                        <Image className="img" src={img_offline} alt="history"></Image>
+                      </div>
+                      <div className="description">
+                        <div className="time">{lang === "en" ? "Offline Meetings" : lang === "cn" ? "线下聚会" : "오프라인 정모"}</div>
+                        <div className="title-past">{board.title}</div>
+                        <div className="learner">comment {board.commentCnt}</div>
+                      </div>
+                      <div className="detail">
+                        <a href="">{lang === "en" ? "View" : lang === "cn" ? "查看帖子" : "글 보기"}</a>
+                        {/* 게시글 상세보기 url 확인 필요*/}
+                      </div>
+                    </li>
+                  )
+                })}
+              </div>
+              {meetingBoard && visibleItems < meetingBoard.length && (
+                <button onClick={() => setVisibleItems(visibleItems + 3)}>
+                  {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
+                </button>
+              )}
+            </ul>
+            {/* end - meeting board */}
+            <ul className="list">
+              <div>{lang === "en" ? "Written Posts - Free Board" : lang === "cn" ? "撰写的帖子 - 自由留言板" : "작성한 글 - 자유게시판"}</div>
+              <div>
+                {talkBoard?.slice(0, visibleItems)?.map((board) => {
+                  const boardId = board.boardId;
+                  return (
+                    <li className="contents">
+                      <div className="img-box">
+                        <Image className="img" src={img_offline} alt="history"></Image>
+                      </div>
+                      <div className="description">
+                        <div className="time">{lang === "en" ? "Offline Meetings" : lang === "cn" ? "线下聚会" : "오프라인 정모"}</div>
+                        <div className="title-past">{board.title}</div>
+                        <div className="learner">comment {board.commentCnt}</div>
+                      </div>
+                      <div className="detail">
+                        <a href="">{lang === "en" ? "View" : lang === "cn" ? "查看帖子" : "글 보기"}</a>
+                        {/* 게시글 상세보기 url 확인 필요*/}
+                      </div>
+                    </li>
+                  )
+                })}
+              </div>
+              {talkBoard && visibleItems < talkBoard.length && (
+                <button onClick={() => setVisibleItems(visibleItems + 3)}>
+                  {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
+                </button>
+              )}
+            </ul>
+            {/* end - board */}
+          </div>
+          <div className="ad-enjoy">
+            <div className="ad-title">
+              <span>{lang === "en" ? "STEP UP " : lang === "cn" ? "STEP UP " : "STEP UP의 "}</span>
+              <span>{lang === "en" ? "Enjoy More Attractions" : lang === "cn" ? "更多乐趣体验" : "더 많은 즐길거리 즐기기"}</span>
             </div>
-            {talkBoard && visibleItems < talkBoard.length && (
-              <button onClick={() => setVisibleItems(visibleItems + 3)}>
-                {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
-              </button>
-            )}
-          </ul>
-          {/* end - board */}
-        </div>
-        <div className="ad-enjoy">
-          <div className="ad-title">
-            <span>{lang === "en" ? "STEP UP " : lang === "cn" ? "STEP UP " : "STEP UP의 "}</span>
-            <span>{lang === "en" ? "Enjoy More Attractions" : lang === "cn" ? "更多乐趣体验" : "더 많은 즐길거리 즐기기"}</span>
-          </div>
-          <div className="ad-btn">
-            <a id="ad-whitebox" href="">{lang === "en" ? "Reservation" : lang === "cn" ? "预约" : "랜플댄 예약하기"}</a>
-            <a id="ad-bluebox" href="">{lang === "en" ? "Practice Room" : lang === "cn" ? "使用练习室" : "개인연습실 이용하기"}</a>
-            {/* url 확인 필요 */}
+            <div className="ad-btn">
+              <a id="ad-whitebox" href="">{lang === "en" ? "Reservation" : lang === "cn" ? "预约" : "랜플댄 예약하기"}</a>
+              <a id="ad-bluebox" href="">{lang === "en" ? "Practice Room" : lang === "cn" ? "使用练习室" : "개인연습실 이용하기"}</a>
+              {/* url 확인 필요 */}
+            </div>
           </div>
         </div>
+        {/* end - advertisement */}
       </div>
-      {/* end - advertisement */}
       <Footer />
     </>
   )
