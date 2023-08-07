@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.rank.domain;
 
 import com.pi.stepup.domain.rank.constant.PointType;
+import com.pi.stepup.global.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PointPolicy {
+public class PointPolicy extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
