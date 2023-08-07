@@ -470,7 +470,7 @@ public class InitDb {
 
             for (int i = 0; i < title.length; i++) {
                 String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
-                        " file_url, board_type) VALUES (?, '2023-08-02', '2023-08-02', ?, ?, ?, ?, 'Talk')";
+                        " file_url, board_type) VALUES (?, '2023-08-02', '2023-08-02', ?, ?, ?, ?, 'TALK')";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 6));
@@ -563,7 +563,7 @@ public class InitDb {
 
             for (int i = 0; i < title.length; i++) {
                 String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
-                        " file_url, board_type) VALUES (?, '2023-08-03', '2023-08-03', ?, ?, ?, ?, 'Meeting')";
+                        " file_url, board_type) VALUES (?, '2023-08-03', '2023-08-03', ?, ?, ?, ?, 'MEETING')";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 11));
