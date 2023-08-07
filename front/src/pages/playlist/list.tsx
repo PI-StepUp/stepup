@@ -104,7 +104,7 @@ const PlayList = () => {
                 </div>
                 <div className="pagination">
                     <ul>
-                        <Pagination
+                        {/* <Pagination
                             activePage={page}
                             itemsCountPerPage={10}
                             totalItemsCount={playlist?.length}
@@ -112,7 +112,7 @@ const PlayList = () => {
                             prevPageText={'<'}
                             nextPageText={'>'}
                             onChange={handlePageChange}
-                        />
+                        /> */}
                     </ul>
                 </div>
             </div>
