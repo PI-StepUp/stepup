@@ -232,7 +232,7 @@ const MyPage = () => {
     })
 
     // 작성한 게시글 개수 합산
-    boardCnt = meetingBoard?.length + talkBoard?.length;
+    // boardCnt = meetingBoard?.length + talkBoard?.length;
 
 
 
