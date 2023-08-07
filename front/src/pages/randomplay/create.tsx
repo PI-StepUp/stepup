@@ -7,7 +7,7 @@ import Footer from "components/Footer";
 import { axiosDance, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const RoomCreate = () => {
@@ -23,6 +23,7 @@ const RoomCreate = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const router = useRouter();
 
@@ -56,16 +57,16 @@ const RoomCreate = () => {
                 danceType: danceType,
                 maxUser: Number(roomMaxNum.current?.value),
                 thumbnail: "",
-                hostId: "ssafy",
+                hostId: nickname,
                 danceMusicIdList: [1,2,3,4,5,6,7,8,9,10],
             },{
                 headers:{
                     Authorization: `Bearer ${accessToken}`,
                 }
             }).then((data) => {
-                if(data.data.message = "랜덤 플레이 댄스 생성 완료"){
+                if(data.data.message === "랜덤 플레이 댄스 생성 완료"){
                     alert("방 생성이 완료되었습니다.");
-                    router.push('/randomplay/list');
+                    router.push(`/hostroom/${roomTitle.current?.value}`);
                 }
             })
         }catch(e){
@@ -125,10 +126,6 @@ const RoomCreate = () => {
                             <tr>
                                 <td>대표이미지</td>
                                 <td><input type="file" ref={roomFile}/></td>
-                            </tr>
-                            <tr>
-                                <td>플레이리스트</td>
-                                <td></td>
                             </tr>
                             <tr>
                                 <td></td>
