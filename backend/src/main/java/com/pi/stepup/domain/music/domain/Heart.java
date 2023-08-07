@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.domain;
 
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.global.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Heart {
+public class Heart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HEART_ID")
