@@ -1,59 +1,54 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link"
 import Header from "../components/Header"
+import Banner from "components/MypageeditBanner";
 import Footer from "../components/Footer"
 import Image from "next/image"
 import img_profile from "/public/images/profile-default.png"
 import img_leave from "/public/images/icon-leave.svg"
 
 import { useRecoilState } from "recoil";
+import { useRouter } from "next/router";
 import { LanguageState } from "states/states";
+import { accessTokenState, refreshTokenState, idState } from "states/states";
+
+import { axiosUser } from "apis/axios";
 
 const MyPageEdit = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
+	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+
+	const [loginUser, setLoginUser] = useState<any>();
+	const [id, setId] = useState('');
+	const [password, setPassword] = useState('');
+	const [email, setEmail] = useState('');
+	let [emailAlert, setEmailAlert] = useState<number>();
+	const [countryId, setcountryId] = useState<number>();
+	const [countryCode, setcountryCode] = useState('');
+	const [nickname, setNickname] = useState('');
+	const [birth, setBirth] = useState('');
+	const [profileImg, setProfileImg] = useState('');
+	const [point, setPoint] = useState<number>();
+	const [rankName, setRankName] = useState('');
+
+	const [nicknameFlag, setNicknameFlag] = useState<boolean>(true);
+	const [emailFlag, setEmailFlag] = useState<boolean>(true);
+	const [pwFlag, setPwFlag] = useState<boolean>(true);
+
 	const [open, setOpen] = useState({ display: 'none' });
 	const [option, setOption] = useState<String>(lang === "en" ? "KOREA" : lang === "cn" ? "韩国" : "대한민국");
 
-	// const componentDidMount = () => {
-	// 	// 중복 확인 버튼 클릭 이벤트
-	// 	const displayWarning = document.getElementById("display-overlapping");
-	// 	const clickWarning = (ev: Event) => {
-	// 		if (ev.target instanceof HTMLInputElement) {
-	// 			displayWarning!.textContent = '중복된 닉네임입니다';
-	// 			ev.target;
-	// 		}
-	// 	}
-	// 	const btnElements = document.getElementById("btn-overlapping");
-	// 	btnElements?.addEventListener("click", clickWarning);
-	// }
+	const nicknameValue = useRef<any>();
+	const emailValue = useRef<any>();
+	const pw1Value = useRef<any>();
+	const pw2Value = useRef<any>();
 
-	// const label = document.querySelector('.country');
-	// const options = document.querySelectorAll('.option-item');
-	// // 선택한 옵션을 label에 배치
-	// const handleSelect = (item: Element) => {
-	// 	const rm = label?.parentNode as Element;
-	// 	rm.classList.remove('active');
-	// };
-	// // 옵션 클릭 시 클릭한 옵션 선택
-	// options.forEach(option => {
-	// 	option.addEventListener('click', () =>
-	// 		handleSelect(option))
-	// });
-	// 라벨 클릭 시 옵션 목록 열림 닫힘
-	// label?.addEventListener('click', () => {
-	// 	const status = label.parentNode as Element;
-	// 	console.log(status);
-	// 	if (status.classList.contains('active'))
-	// 		status.classList.remove('active');
-	// 	else
-	// 		status.classList.add('active');
-	// });
-
-	///////////////////////////////////////////////////
-	// useEffect(() => { })
+	const router = useRouter();
 
 	const handleOpen = () => {
-		console.log(open.display)
+		console.log(open.display);
+		setcountryCode(open.display);
 		if (open.display === 'none') {
 			setOpen({ display: 'flex' });
 		} else {
@@ -61,11 +56,26 @@ const MyPageEdit = () => {
 		}
 	}
 
+	// 닉네임 중복 체크
+	let nicknameCheck;
+	// 이메일 중복 체크
+	let emailCheck;
+	// 이메일 수신 동의 여부 체크
+	let agreementCheck;
+	// 회원 정보 수정
+	let editInfo;
+	// 비밀번호 수정
+	let editPw;
+	// 회원 탈퇴
+	let leaveStepup;
 
 	// map, 조건부렌더링으로 치환해둘 것!
 	const handleSelect = (country: string) => {
 		console.log(country);
 		switch (country) {
+			case 'KOREA':
+				setOption(lang === "en" ? "KOREA" : lang === "cn" ? "大韩民国" : "대한민국");
+				break;
 			case 'USA':
 				setOption(lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국");
 				break;
@@ -90,46 +100,190 @@ const MyPageEdit = () => {
 		}
 	}
 
-	// const changeLang = (country: string) => {
-	// 	console.log(country);
-	// 	switch (country) {
-	// 		case 'USA':
-	// 			setOption(lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국");
-	// 			break;
-	// 		case 'CANADA':
-	// 			setOption(lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다");
-	// 			break;
-	// 		case 'CHINA':
-	// 			setOption(lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국");
-	// 			break;
-	// 		case 'JAPAN':
-	// 			setOption(lang === "en" ? "JAPAN" : lang === "cn" ? "日本" : "일본");
-	// 			break;
-	// 		case 'UK':
-	// 			setOption(lang === "en" ? "UK" : lang === "cn" ? "英国" : "영국");
-	// 			break;
-	// 		case 'FRANCE':
-	// 			setOption(lang === "en" ? "FRANCE" : lang === "cn" ? "法国" : "프랑스");
-	// 			break;
-	// 		case 'AUSTRIA':
-	// 			setOption(lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주");
-	// 			break;
-	// 	}
-	// }
+	useEffect(() => {
+		// 접근 권한(로그인 여부) 확인
+		try {
+			axiosUser.post('/auth', {
+				id: id,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					refreshToken: refreshToken,
+				}
+			}).then((data) => {
+				if (data.data.message === "토큰 재발급 완료") {
+					setAccessToken(data.data.data.accessToken);
+					setRefreshToken(data.data.data.refreshToken);
+				}
+			})
+		} catch (e) {
+			alert('시스템 에러, 관리자에게 문의하세요.');
+		}
 
-	///////////////////////////////////////////////////
+		// 로그인 유저 정보 조회
+		axiosUser.get("", {
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		}).then((data) => {
+			console.log("로그인 유저 정보 조회", data);
+			if (data.data.message === "회원정보 조회 완료") {
+				setLoginUser(data.data.data);
+				setProfileImg(data.data.data.profileImg);
+				if (profileImg === null) {
+					setProfileImg("profileImg_default.png");
+				}
+				setId(data.data.data.id);
+				setPassword(data.data.data.password);
+				setEmail(data.data.data.email);
+				setEmailAlert(data.data.data.emailAlert);
+				setcountryId(data.data.data.countryId);
+				setcountryCode(data.data.data.countryCode);
+				setNickname(data.data.data.nickName);
+				setBirth(data.data.data.birth);
+				setProfileImg(data.data.data.profileImg);
+				setPoint(data.data.data.point);
+				setRankName(data.data.data.rankName);
+
+				console.log("로그인 유저 정보", loginUser);
+			}
+		})
+	}, [])
+
+	useEffect(() => {
+
+		nicknameCheck = async () => {
+			await axiosUser.post("/dupnick", {
+				nickname: nicknameValue.current.value,
+			}).then((data) => {
+				if (data.data.message === "닉네임 사용 가능") {
+					console.log("닉네임 사용 가능");
+					setNicknameFlag(true);
+				} else {
+					console.log("닉네임 사용 불가능");
+					setNicknameFlag(false);
+				}
+			})
+		}
+
+		emailCheck = async () => {
+			await axiosUser.post("/dupemail", {
+				nickname: emailValue.current.value,
+			}).then((data) => {
+				if (data.data.message === "이메일 사용 가능") {
+					console.log("이메일 사용 가능");
+					setEmailFlag(true);
+				} else {
+					console.log("이메일 사용 불가능");
+					setEmailFlag(false);
+				}
+			})
+		}
+
+		agreementCheck = async () => {
+			if (emailAlert = 0) {
+				setEmailAlert(1);
+			} else {
+				setEmailAlert(0);
+			}
+		}
+
+		editInfo = async () => {
+			await axiosUser.post("", {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				},
+				id: id,
+				password: password,
+				email: email,
+				emailAlert: emailAlert,
+				countryId: countryId,
+				countryCode: countryCode,
+				nickname: nickname,
+				birth: birth,
+				profileImg: profileImg,
+				point: point,
+				rankName: rankName,
+			}).then((data) => {
+				if (data.data.message === "회원정보 수정 완료") {
+					console.log("회원정보 수정 완료");
+					router.push('/');
+				} else {
+					console.log("회원정보 수정 미완료");
+					alert("회원정보 수정에 실패했습니다. 다시 한 번 시도해주세요.");
+				}
+			})
+		}
+
+		editPw = async () => {
+			if (pwFlag) {
+				await axiosUser.post("", {
+					headers: {
+						Authorization: `Bearer ${accessToken}`
+					},
+					id: id,
+					password: password,
+					email: email,
+					emailAlert: emailAlert,
+					countryId: countryId,
+					countryCode: countryCode,
+					nickname: nickname,
+					birth: birth,
+					profileImg: profileImg,
+					point: point,
+					rankName: rankName,
+				}).then((data) => {
+					if (data.data.message === "비밀번호 수정 완료") {
+						console.log("비밀번호 수정 완료");
+						router.push('/');
+					} else {
+						console.log("비밀번호 수정 미완료");
+						alert("비밀번호 수정에 실패했습니다. 다시 한 번 시도해주세요.");
+					}
+				})
+			} else {
+				alert("비밀번호를 재입력 해주세요.");
+			}
+		}
+
+		leaveStepup = async () => {
+			await axiosUser.delete(`?id=${id}`, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				},
+			}).then((data) => {
+				if(data.data.message === "회원 탈퇴 완료"){
+					console.log("탈퇴 완료");
+					alert("탈퇴되었습니다. 이용해주셔서 감사합니다.");
+					router.push('/');
+				} else {
+					alert("회원 탈퇴에 실패하셨습니다. 다시 한 번 시도해주세요.");
+				}
+			})
+		}
+
+		const comparePw = async () => {
+			if (pw1Value === pw2Value) {
+				setPwFlag(true);
+			} else {
+				setPwFlag(false);
+			}
+		}
+	})
 
 	return (
 		<>
 			<Header />
+			<Banner />
 			<div className="background-color">
 				<div>
 					<ul className="myinfo mb-30">
 						<li>
+							{/* 프로필 이미지 업로드 기능 추가 필요 */}
 							<div className="list-title mt-70">{lang === "en" ? "PROFILE IMAGE" : lang === "cn" ? "个人资料图片" : "프로필 이미지"}</div>
 							<div className="profile">
 								<div className="img-box">
-									<Image className="img" src={img_profile} alt="profile"></Image>
+									<Image className="img" src={profileImg} alt="profile"></Image>
 								</div>
 								<div className="upload">
 									<div>
@@ -146,11 +300,15 @@ const MyPageEdit = () => {
 							<div className="option mt-25">
 								<div className="o-title">{lang === "en" ? "NICKNAME" : lang === "cn" ? "昵称" : "닉네임"}</div>
 								<div className="o-input">
-									<input type="text" className="o-input-ol" />
-									<p className="o-warning" id="">{lang === "en" ? "Available nickname" : lang === "cn" ? "可用昵称" : "사용 가능한 닉네임입니다"}</p>
+									<input type="text" className="o-input-ol" ref={nicknameValue} onChange={(e) => setNickname(e.target.value)} />
+									{nicknameFlag ? (
+										<p className="o-warning" id="">{lang === "en" ? "Available Nickname" : lang === "cn" ? "可用昵称" : "사용 가능한 닉네임입니다"}</p>
+									) : (
+										<p className="o-warning" id="">{lang === "en" ? "Unavailable Nickname" : lang === "cn" ? "不可用昵称" : "사용 불가능한 닉네임입니다"}</p>
+									)}
 								</div>
 								<div className="o-btn">
-									<input type="button" className="o-btn-ol" id="nickname-overlapping" value={lang === "en" ? "CHECK" : lang === "cn" ? "查看" : "중복 확인"} />
+									<input onClick={nicknameCheck} type="button" className="o-btn-ol" id="nickname-overlapping" value={lang === "en" ? "CHECK" : lang === "cn" ? "查看" : "중복 확인"} />
 								</div>
 							</div>
 						</li>
@@ -159,11 +317,15 @@ const MyPageEdit = () => {
 							<div className="option mt-25">
 								<div className="o-title">{lang === "en" ? "EMAIL" : lang === "cn" ? "电子邮件" : "이메일"}</div>
 								<div className="o-input">
-									<input type="text" className="o-input-ol" />
-									<p className="o-warning" id="">{lang === "en" ? "Available email" : lang === "cn" ? "此电子邮件可用" : "사용 가능한 이메일입니다"}</p>
+									<input type="text" className="o-input-ol" ref={emailValue} onChange={(e) => setEmail(e.target.value)} />
+									{emailFlag ? (
+										<p className="o-warning" id="">{lang === "en" ? "Available Email" : lang === "cn" ? "可用电子邮件" : "사용 가능한 이메일입니다"}</p>
+									) : (
+										<p className="o-warning" id="">{lang === "en" ? "Unavailable Email" : lang === "cn" ? "不可用电子邮件" : "사용 불가능한 이메일입니다"}</p>
+									)}
 								</div>
 								<div className="o-btn">
-									<input type="button" className="o-btn-ol" id="email-overlapping" value={lang === "en" ? "CHECK" : lang === "cn" ? "查看" : "중복 확인"} />
+									<input onClick={emailCheck} type="button" className="o-btn-ol" id="email-overlapping" value={lang === "en" ? "CHECK" : lang === "cn" ? "查看" : "중복 확인"} />
 								</div>
 							</div>
 						</li>
@@ -175,13 +337,6 @@ const MyPageEdit = () => {
 									<div className="selectbox" onClick={handleOpen}>
 										<button className="country">{option}</button>
 										<ul className="option-list" style={open}>
-											{/* <li className="option-item" onClick={() => handleSelect("USA")} onChange={() => changeLang("USA")}>{lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국"}</li>
-											<li className="option-item" onClick={() => handleSelect("CANADA")} onChange={() => changeLang("CANADA")}>{lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다"}</li>
-											<li className="option-item" onClick={() => handleSelect("CHINA")} onChange={() => changeLang("CHINA")}>{lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국"}</li>
-											<li className="option-item" onClick={() => handleSelect("JAPAN")} onChange={() => changeLang("JAPAN")}>{lang === "en" ? "JAPAN" : lang === "cn" ? "日本" : "일본"}</li>
-											<li className="option-item" onClick={() => handleSelect("UK")} onChange={() => changeLang("UK")}>{lang === "en" ? "UK" : lang === "cn" ? "英国" : "영국"}</li>
-											<li className="option-item" onClick={() => handleSelect("FRANCE")} onChange={() => changeLang("FRANCE")}>{lang === "en" ? "FRANCE" : lang === "cn" ? "法国" : "프랑스"}</li>
-										<li className="option-item" onClick={() => handleSelect("AUSTRIA")} onChange={() => changeLang("AUSTRIA")}>{lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주"}</li> */}
 											<li className="option-item" onClick={() => handleSelect("USA")}>{lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국"}</li>
 											<li className="option-item" onClick={() => handleSelect("CANADA")}>{lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다"}</li>
 											<li className="option-item" onClick={() => handleSelect("CHINA")}>{lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국"}</li>
@@ -228,7 +383,7 @@ Even after consenting to receiving, you can withdraw your consent according to y
 								<div className="btn-agreement">
 									{/* <Image src={img_checkbox}></Image> */}
 									<span>{lang === "en" ? "I agree to receive emails" : lang === "cn" ? "我同意接收电子邮件" : "이메일 수신에 동의"}</span>
-									<input type="checkbox" id="btn-agreement" />
+									<input type="checkbox" id="btn-agreement" onClick={agreementCheck} />
 									<label htmlFor="btn-agreement"></label>
 									{/* <input type="checkbox" id="btn-agreement" />
 									<label htmlFor="btn-agreement"><span>{lang === "en" ? "I agree to receive emails" : lang === "cn" ? "我同意接收电子邮件" : "이메일 수신에 동의"}</span></label> */}
@@ -238,7 +393,7 @@ Even after consenting to receiving, you can withdraw your consent according to y
 						{/* end - agreement */}
 						<div className="btn-info mt-40">
 							<div className="cancel"><Link href="/mypageedit">{lang === "en" ? "CANCEL" : lang === "cn" ? "消除" : "취소"}</Link></div>
-							<div className="save"><Link href="/mypageedit">{lang === "en" ? "SAVE" : lang === "cn" ? "节省" : "저장"}</Link></div>
+							<div className="save" onClick={editInfo}>{lang === "en" ? "SAVE" : lang === "cn" ? "节省" : "저장"}</div>
 						</div>
 					</ul>
 				</div>
@@ -248,33 +403,37 @@ Even after consenting to receiving, you can withdraw your consent according to y
 					<div className="option mt-25">
 						<div className="o-pw-title">{lang === "en" ? "New Password" : lang === "cn" ? "新密码" : "새 비밀번호"}</div>
 						<div className="o-pw-input">
-							<input className="o-pw-input-ol" type="password" />
+							<input className="o-pw-input-ol" type="password" ref={pw1Value} />
 							<p className="o-warning" id="">{lang === "en" ? "Please include 8-20 letters, numbers, and special characters" : lang === "cn" ? "请包含 8-20 个字母、数字和特殊字符" : "8~20자의 영문, 숫자, 특수문자를 포함해주세요"}</p>
 						</div>
 					</div>
 					<div className="option">
 						<div className="o-pw-title">{lang === "en" ? "Confirm New Password" : lang === "cn" ? "确认新密码" : "새 비밀번호 확인"}</div>
 						<div className="o-pw-input">
-							<input className="o-pw-input-ol" type="password" />
-							<p className="o-warning" id="">{lang === "en" ? "Passwords do not match" : lang === "cn" ? "密码不匹配" : "비밀번호가 일치하지 않습니다."}</p>
-						</div>
-					</div>
-					<div className="btn-change mt-40">
-						<div className="change"><Link href="/mypageedit">{lang === "en" ? "CHANGE" : lang === "cn" ? "改变" : "변경"}</Link></div>
-					</div>
-				</div>
-				{/* end - change password */}
-				<div className="myinfo">
-					<div className="list-title mt-70">{lang === "en" ? "DELETE ACCOUNT" : lang === "cn" ? "分裂国家" : "회원 탈퇴"}</div>
-					<div className="btn-leave mt-25">
-						<Image className="img-leave" src={img_leave}></Image>
-						<div className="leave"><Link href="/">{lang === "en" ? "DELETE" : lang === "cn" ? "分裂国家" : "탈퇴"}</Link></div>
-						{/* 탈퇴 버튼 클릭시 탈퇴 재질문 모달창 생성 필요 */}
+							<input className="o-pw-input-ol" type="password" ref={pw2Value} />
+							{pwFlag ? (
+								<p className = "o-warning"></p>
+							): (
+								<p className = "o-warning">{lang === "en" ? "Passwords do not match" : lang === "cn" ? "密码不匹配" : "비밀번호가 일치하지 않습니다."}</p>
+							)}
 					</div>
 				</div>
-				{/* end - leave */}
-				<div className="background-color mb"></div>
+				<div className="btn-change mt-40">
+					<div className="change" onClick={editPw}>{lang === "en" ? "CHANGE" : lang === "cn" ? "改变" : "변경"}</div>
+				</div>
 			</div>
+			{/* end - change password */}
+			<div className="myinfo">
+				<div className="list-title mt-70">{lang === "en" ? "DELETE ACCOUNT" : lang === "cn" ? "分裂国家" : "회원 탈퇴"}</div>
+				<div className="btn-leave mt-25">
+					<Image className="img-leave" src={img_leave} alt="leave"></Image>
+					<div className="leave" onClick={leaveStepup}>{lang === "en" ? "DELETE" : lang === "cn" ? "分裂国家" : "탈퇴"}</div>
+					{/* 탈퇴 버튼 클릭시 탈퇴 재질문 모달창 생성 필요 */}
+				</div>
+			</div>
+			{/* end - leave */}
+			<div className="background-color mb"></div>
+		</div >
 			<Footer />
 		</>
 	)

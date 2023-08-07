@@ -4,7 +4,7 @@
 
 .mypage-profile {
 	position: relative;
-	/* top: -135px; */
+	top: -135px;
 	display: flex;
 	width: 1200px;
 	height: 420px;
@@ -115,10 +115,10 @@ progress {
 }
 
 .ranking {
-	background-color: #FFB028;
+	/* background-color: #FFB028; */
 	color: #FFFFFF;
 	font-weight: bold;
-	font-size: 20px;
+	font-size: 15px;
 	text-align: center;
 	width: 80px;
 	height: 35px;
@@ -148,7 +148,8 @@ progress {
 	flex-direction: column;
 	width: 965px;
 	margin: auto;
-	margin-top: 30px;
+	margin-top: -105px;
+	margin-bottom: 135px;
 	padding: 74px 101px 116px 134px;
 	background-color: white;
 	box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -254,7 +255,8 @@ progress {
 	display: flex;
 	width: 955.5px;
 	margin: auto;
-	margin-top: 30px;
+	margin-top: -105px;
+	margin-bottom: 135px;
 	padding: 60px 120.5px 60px 124px;
 	background-color: white;
 	box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -416,7 +418,7 @@ details[open] summary .img-vector {
 .ad-enjoy {
 	background-color: #677DFA;
 	height: 250px;
-	margin-top: 60px;
+	margin-top: -75px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
