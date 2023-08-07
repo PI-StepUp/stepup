@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.rank.domain;
 
 import com.pi.stepup.domain.rank.constant.RankName;
+import com.pi.stepup.global.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Rank {
+public class Rank extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "RANK_ID")

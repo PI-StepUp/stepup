@@ -97,7 +97,7 @@ const DetailArticle = () => {
         <>
             <Header></Header>
             <MainBanner></MainBanner>
-            <SubNav></SubNav>
+            <SubNav linkNo="3"></SubNav>
             <div className="detail-article-wrap">
                 <div className="detail-title">
                     <span>게시글</span>

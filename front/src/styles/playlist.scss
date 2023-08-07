@@ -1,10 +1,24 @@
 @import "./function.scss";
 
+@keyframes left-animation{
+    0%{
+        left:180px;
+        opacity:0%;
+    }
+    100%{
+        left:0px;
+        opacity:100%;
+    }
+}
+
 .playlist-wrap{
     @include block-center(1200px);
     padding-top:154px;
     padding-bottom:120px;
     .playlist-title{
+        position:relative;
+        left:0px;
+        animation-duration: 3s;
         span{
             @include font(28px, 700, #6BBDA7);
         }
@@ -82,8 +96,18 @@
                 margin-left:2px;
                 cursor:pointer;
                 &:first-child{
+                    display:none;
+                }
+                &:nth-child(2){
                     margin-left:0px;
                 }
+                &:last-child{
+                    display:none;
+                }
+            }
+            .active{
+                border: 2px solid #585858;
+                @include font(14px, 400, #585858);
             }
         }
     }

@@ -6,7 +6,14 @@ public enum UserApiUrls {
     CHECK_NICKNAME_DUPLICATED_URL("/dupnick"),
     CHECK_ID_DUPLICATED_URL("/dupid"),
     READ_ONE_URL(""),
-    SIGN_UP_URL("");
+    SIGN_UP_URL(""),
+    LOGIN_URL("/login"),
+    FIND_ID_URL("/findid"),
+    FIND_PASSWORD_URL("/findpw"),
+    DELETE_URL(""),
+    REISSUE_TOKENS_URL("/auth"),
+    UPDATE_URL(""),
+    CHECK_PASSWORD_URL("/checkpw");
 
     private final String url;
 

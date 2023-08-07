@@ -88,8 +88,17 @@
                 margin-left:9px;
                 cursor: pointer;
                 &:first-child{
+                    display:none;
+                }
+                &:nth-child(2){
                     margin-left:0px;
                 }
+                &:last-child{
+                    display:none;
+                }
+            }
+            .active{
+                @include font(14px, 400, #585858);
             }
         }
     }

@@ -145,7 +145,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
         MusicApply musicApply = musicApplyRepository.findOne(musicApplyId)
             .orElseThrow(
-                () -> new MusicApplyNotFoundException(MUSIC_APPLY_DELETE_FAIL.getMessage())
+                () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage())
             );
 
         if (id.equals(musicApply.getWriter().getId())) {

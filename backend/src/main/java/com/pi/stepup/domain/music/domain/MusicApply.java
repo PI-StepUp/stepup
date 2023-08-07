@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.domain;
 
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.global.entity.BaseEntity;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -23,7 +24,7 @@ import org.hibernate.annotations.DynamicInsert;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
-public class MusicApply {
+public class MusicApply extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
