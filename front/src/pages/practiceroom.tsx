@@ -158,9 +158,9 @@ const PracticeRoom = () => {
                     </div>
                     <div className="musiclist-content">
                         <ul>
-                            {musics?.map((music:any) => {
+                            {musics?.map((music:any, index: any) => {
                                 return(
-                                    <li>
+                                    <li key={index}>
                                         <div className="flex-wrap">
                                             <div className="musiclist-content-thumbnail">
                                                 <Image src={PlayThumbnail} alt=""/>

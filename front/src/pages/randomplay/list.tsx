@@ -79,9 +79,9 @@ const RandomPlayList = () => {
                     </div>
                     <div className="section-content">
                         <ul>
-                            {rooms?.map((room) => {
+                            {rooms?.map((room, index) => {
                                 return(
-                                    <li>
+                                    <li key={index}>
                                         <Link href={`/danceroom/${room.randomDanceId}`}>
                                             <div className="section-content-img">
                                                 <span>{room.danceType === "SURVIVAL" ? "서바이벌" : room.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
@@ -114,9 +114,9 @@ const RandomPlayList = () => {
                     </div>
                     <div className="section-content">
                         <ul>
-                            {inprogress?.map((inprogress) => {
+                            {inprogress?.map((inprogress, index) => {
                                 return(
-                                    <li>
+                                    <li key={index}>
                                         <Link href="/danceroom">
                                             <div className="section-content-img">
                                                 <span>{inprogress.danceType === "SURVIVAL" ? "서바이벌" : inprogress.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
@@ -150,9 +150,9 @@ const RandomPlayList = () => {
                     <div className="section-content">
                         <ul>
                             {
-                                scheduled?.map((scheduled) => {
+                                scheduled?.map((scheduled, index) => {
                                     return(
-                                        <li>
+                                        <li key={index}>
                                             <Link href="/danceroom">
                                                 <div className="section-content-img">
                                                     <span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>

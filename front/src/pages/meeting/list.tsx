@@ -83,7 +83,7 @@ const MeetingList = () => {
                                 meetings?.map((meeting, index) => {
                                     if(index+1 <= page*10 && index+1 > page*10-10){
                                         return(
-                                            <li>
+                                            <li key={index}>
                                                 <div className="user-wrap">
                                                     {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={meeting.profileImg} alt=""/>}
                                                     <p>{meeting.writerName}</p>
