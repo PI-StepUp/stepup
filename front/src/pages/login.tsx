@@ -80,7 +80,7 @@ const Login = () => {
                 router.push('/');
             }
         }catch(e){
-            alert("가입되지 않은 고객입니다. 회원가입 후 이용해주세요.");
+            alert("아이디 또는 비밀번호가 틀렸습니다.");
         }
     }
     return(
