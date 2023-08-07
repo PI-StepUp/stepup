@@ -2,7 +2,7 @@ package com.pi.stepup.domain.board.constant;
 
 public enum TalkApiUrls {
     CREATE_TALK_URL(""),
-    UPDATE_TALK_URL("/"),
+    UPDATE_TALK_URL(""),
     DELETE_TALK_URL("/"),
     READ_ONE_TALK_URL("/"),
     READ_ALL_TALK_URL("?keyword="),
