@@ -18,12 +18,13 @@ import MicHoverIcon from "/public/images/icon-hover-mic.svg"
 import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
 import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter";
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const pc_config = {
 	iceServers: [
@@ -62,12 +63,15 @@ const DanceRoom = () => {
     const [count2, setCount2] = useState(false);
     const [count1, setCount1] = useState(false);
     const [id, setId] = useRecoilState(idState);
+    const [correct, setCorrect] = useState(0);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     const [playResult, setPlayResult] = useState('');
     const [urlNo, setUrlNo] = useState<any>(0);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
     const [end, setEnd] = useState(false);
-    const roomName = 1;
+    const router = useRouter();
+    const roomId = router.query.roomId;
 
     let danceRecord: any[] = [];
 
@@ -106,7 +110,7 @@ const DanceRoom = () => {
     }
 
     const sendMessage = () => {
-        socketRef.current.emit("send_message", inputChat.current?.value, roomName);
+        socketRef.current.emit("send_message", inputChat.current?.value, roomId);
         socketRef.current.on('message', (data:any) => {
             setMsgList([...msgList, data]);
         })
@@ -124,7 +128,7 @@ const DanceRoom = () => {
 
     const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            socketRef.current.emit("send_message", inputChat.current?.value, roomName);
+            socketRef.current.emit("send_message", inputChat.current?.value, roomId);
             socketRef.current.on('message', (data:any) => {
                 setMsgList([...msgList, data]);
             })
@@ -153,7 +157,7 @@ const DanceRoom = () => {
             }
 			if (!socketRef.current) return;
 			socketRef.current.emit('join_room', {
-				room: roomName,
+				room: roomId,
 				email: 'sample@naver.com',
 			});
 		} catch (e) {
@@ -392,6 +396,18 @@ const DanceRoom = () => {
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
 		});
 
+        socketRef.current.on('cntCorrect', (roomName: any) => {
+            if(roomId == roomName){
+                socketRef.current.emit('close_randomplay', nickname, correct, roomName);
+            }
+        });
+
+        socketRef.current.on("congraturation", (roomName: any, winner: any) => {
+            if(roomId == roomName){
+                alert(`${winner}님 1등을 축하드립니다.`);
+            }
+        })
+
         socketRef.current.on("startRandomplay", async (musicId: number) => {
             await setCount3(true);
             await setTimeout(async() => {
@@ -414,28 +430,26 @@ const DanceRoom = () => {
                         const danceAnswer = await JSON.parse(response.data.answer);
                         console.log("danceAnswer 값", response.data);
                         
-                        if(end){
-                            setTimeout(async () => {
-                                saveMotion = false;
-    
-                                await calculateSimilarity(danceRecord, danceAnswer).then((score) => {
-                                    console.log("score", score);
-                                    if(score < 60){
-                                        setPlayResult("failure");
-                                        setTimeout(() => {
-                                            setPlayResult("");
-                                        }, 5000)
-                                    }else{
-                                        setPlayResult("success");
-                                        setTimeout(() => {
-                                            setPlayResult("");
-                                        }, 5000)
-                                    }
-                                });
-    
-                                // TODO : 선택된 노래의 playTime으로 설정
-                            }, (response.data.playtime+2)*1000);
-                        }
+                        setTimeout(async () => {
+                            saveMotion = false;
+
+                            await calculateSimilarity(danceRecord, danceAnswer).then((score) => {
+                                console.log("score", score);
+                                if(score < 60){
+                                    setPlayResult("failure");
+                                    setTimeout(() => {
+                                        setPlayResult("");
+                                    }, 5000)
+                                }else{
+                                    setPlayResult("success");
+                                    setTimeout(() => {
+                                        setPlayResult("");
+                                    }, 5000)
+                                }
+                            });
+
+                            // TODO : 선택된 노래의 playTime으로 설정
+                        }, (response.data.playtime+2)*1000);
 
                     }, 2000);
                 }, 2000);

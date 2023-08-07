@@ -16,6 +16,8 @@ let users = {};
 
 let socketToRoom = {};
 
+let result = [];
+
 const maximum = process.env.MAXIMUM || 4;
 
 io.on('connection', socket => {
@@ -61,9 +63,31 @@ io.on('connection', socket => {
         io.emit('message', data);
     });
 
-    socket.on('playMusic', (data,roomName) => {
+    socket.on('playMusic', (data, roomName) => {
         io.emit('startRandomplay', data);
     });
+
+    socket.on('close_randomplay', (nickname, correct, roomName) => {
+        console.log(nickname, correct);
+        result.push({nickname, correct});
+        let winner = "";
+        let max = 0;
+        // 같은 방 구분할 것
+        if(Object.keys(users).length == result.length){
+            for(let i=0; i<result.length; i++){
+                if(max <= result[i].correct){
+                    max = result[i].correct;
+                    winner = result[i].nickname;
+                }
+            }
+
+            io.emit("congraturation", roomName, winner);
+        }
+    });
+
+    socket.on('finish', (roomName) => {
+        io.emit('cntCorrect', roomName);
+    })
 
     socket.on('disconnect', () => {
         console.log(`[${socketToRoom[socket.id]}]: ${socket.id} exit`);
