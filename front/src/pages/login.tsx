@@ -50,10 +50,7 @@ const Login = () => {
 
     const modalClose = () => {
         modal.current.style.display = "none";
-    }
-
-    const clickModalBack = () => {
-        modal.current.style.display = "none";
+        pwModal.current.style.display = "none";
     }
 
     const findId = async () => {
@@ -87,7 +84,7 @@ const Login = () => {
                 
             }
         }catch(e){
-            alert("가입되지 않은 고객입니다. 회원가입 후 이용해주세요.");
+            alert("아이디 또는 비밀번호가 틀렸습니다.");
         }
     }
     return(
@@ -118,7 +115,7 @@ const Login = () => {
                 </div>
                 <LanguageButton/>
             <Footer/>
-            <div className="modal-back" ref={modal} onClick={clickModalBack}>
+            <div className="modal-back" ref={modal}>
                 <div className="modal-main">
                     <div className="modal-title">
                         <h4>아이디 찾기</h4>
@@ -134,7 +131,7 @@ const Login = () => {
                     </div>
                 </div>
             </div>
-            <div className="modal-back" ref={pwModal} onClick={clickModalBack}>
+            <div className="modal-back" ref={pwModal}>
                 <div className="modal-main">
                     <div className="modal-title">
                         <h4>비밀번호찾기</h4>

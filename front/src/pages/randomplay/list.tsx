@@ -30,66 +30,35 @@ const RandomPlayList = () => {
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     useEffect(() => {
-
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
-        axiosDance.get('/',{
+        axiosDance.get('',{
             params: {
                 progressType: "ALL",
-                keyword: "",
             },
-            headers:{
-                Authorization: `Bearer ${accessToken}`,
-            }
+            // headers:{
+            //     Authorization: `Bearer ${accessToken}`,
+            // }
         }).then((data) => {
-            console.log("all", data);
             if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
                 setRooms(data.data.data);
             }
         })
 
-        axiosDance.get('/',{
+        axiosDance.get('',{
             params: {
                 progressType: "IN_PROGRESS",
-                keyword: "",
-            },
-            headers:{
-                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log("inprogree", data);
             if(data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료"){
                 setInprogress(data.data.data);
                 console.log(inprogress);
             }
         })
 
-        axiosDance.get('/',{
+        axiosDance.get('',{
             params: {
                 progressType: "SCHEDULED",
-                keyword: "",
-            },
-            headers:{
-                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log("예정된", data);
             if(data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료"){
                 setScheduled(data.data.data);
             }

@@ -51,10 +51,20 @@
                 }
                 .user-wrap{
                     margin-top:53px;
-                    @include flex(flex-start, center);
-                    span{
-                        @include font(20px, 700, #6BBDA7);
-                        margin-left:17px;
+                    @include flex(space-between, center);
+                    .flex-wrap{
+                        @include flex(flex-start, center);
+                        span{
+                            @include font(20px, 700, #6BBDA7);
+                            margin-left:17px;
+                        }
+                    }
+                    .heart-wrap{
+                        @include flex(center, center);
+                        span{
+                            @include font(20px, 700, #6BBDA7);
+                            margin-left:10px;
+                        }
                     }
                 }
             }
@@ -72,8 +82,18 @@
                 margin-left:2px;
                 cursor:pointer;
                 &:first-child{
+                    display:none;
+                }
+                &:nth-child(2){
                     margin-left:0px;
                 }
+                &:last-child{
+                    display:none;
+                }
+            }
+            .active{
+                border: 2px solid #585858;
+                @include font(14px, 400, #585858);
             }
         }
     }

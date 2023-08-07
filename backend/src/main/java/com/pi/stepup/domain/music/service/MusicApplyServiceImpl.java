@@ -20,9 +20,12 @@ import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,8 +54,14 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     public List<MusicApplyFindResponseDto> readAllByKeyword(String keyword) {
-        String id = getLoggedInUserId();
+        String id;
         List<MusicApply> musicApplies;
+
+        try {
+            id = getLoggedInUserId();
+        } catch (ForbiddenException e) {
+            id = null;
+        }
 
         if (id == null) {
             musicApplies = musicApplyRepository.findAll(keyword);

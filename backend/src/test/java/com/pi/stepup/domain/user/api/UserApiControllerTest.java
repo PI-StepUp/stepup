@@ -3,22 +3,40 @@ package com.pi.stepup.domain.user.api;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_EMAIL_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_ID_DUPLICATED_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_NICKNAME_DUPLICATED_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.CHECK_PASSWORD_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.DELETE_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_ID_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_PASSWORD_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.LOGIN_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.REISSUE_TOKENS_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
+import static com.pi.stepup.domain.user.api.UserApiUrls.UPDATE_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_PASSWORD_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.DELETE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_ID_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWORD_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOKENS_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,13 +51,20 @@ import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
+import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.domain.user.util.WithMockCustomUser;
 import com.pi.stepup.global.config.security.SecurityConfig;
@@ -54,6 +79,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -78,7 +104,7 @@ class UserApiControllerTest {
     private final String TEST_ID = "testId";
     private final String TEST_NICKNAME = "testNickname";
 
-    @DisplayName("국가 정보 목록 조회 api 테스트")
+    @DisplayName("조회에 성공할 경우 국가 정보와 성공 상태 및 메세지가 반환된다.")
     @Test
     void readAllCountries() throws Exception {
         // given
@@ -95,7 +121,7 @@ class UserApiControllerTest {
 
     }
 
-    @DisplayName("이메일 중복 검사 테스트 - 중복 아님")
+    @DisplayName("service의 checkEmailDuplicated 메서드가 호출되며 중복이 아닐 경우 성공 상태 및 메세지가 반환된다.")
     @Test
     void checkEmailDuplicated_NoDuplicated() throws Exception {
         // given
@@ -112,9 +138,11 @@ class UserApiControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_EMAIL_DUPLICATED_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).checkEmailDuplicated(any(CheckEmailRequestDto.class));
     }
 
-    @DisplayName("이메일 중복 검사 테스트 - 중복")
+    @DisplayName("service의 checkEmailDuplicated 메서드가 호출되며 중복일 경우 충돌 상태가 반환된다.")
     @Test
     void checkEmailDuplicated_Duplicated() throws Exception {
         // given
@@ -132,9 +160,11 @@ class UserApiControllerTest {
                     .content(content)
             )
             .andExpect(status().isConflict());
+
+        verify(userService, times(1)).checkEmailDuplicated(any(CheckEmailRequestDto.class));
     }
 
-    @DisplayName("닉네임 중복 검사 테스트 - 중복 아님")
+    @DisplayName("service의 checkNicknameDuplicated 메서드가 호출되며 중복이 아닐 경우 성공 상태 및 메세지가 반환된다.")
     @Test
     void checkNicknameDuplicatedTest_NoDuplicated() throws Exception {
         // given
@@ -152,9 +182,11 @@ class UserApiControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_NICKNAME_DUPLICATED_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).checkNicknameDuplicated(any(CheckNicknameRequestDto.class));
     }
 
-    @DisplayName("닉네임 중복 검사 테스트 - 중복")
+    @DisplayName("service의 checkNicknameDuplicated 메서드가 호출되며 중복일 경우 충돌 상태가 반환된다.")
     @Test
     void checkNicknameDuplicated_Duplicated() throws Exception {
         // given
@@ -171,9 +203,11 @@ class UserApiControllerTest {
                     .content(content)
             )
             .andExpect(status().isConflict());
+
+        verify(userService, times(1)).checkNicknameDuplicated(any(CheckNicknameRequestDto.class));
     }
 
-    @DisplayName("아이디 중복 검사 테스트 - 중복 아님")
+    @DisplayName("service의 checkIdDuplicated 메서드가 호출되며 중복이 아닐 경우 성공 상태 및 메세지가 반환된다.")
     @Test
     void checkIdDuplicatedTest_NoDuplicated() throws Exception {
         // given
@@ -189,9 +223,11 @@ class UserApiControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_ID_DUPLICATED_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).checkIdDuplicated(any(CheckIdRequestDto.class));
     }
 
-    @DisplayName("아이디 중복 검사 테스트 - 중복")
+    @DisplayName("service의 checkIdDuplicated 메서드가 호출되며 중복일 경우 충돌 상태가 반환된다.")
     @Test
     void checkIdDuplicatedTest_Duplicated() throws Exception {
         // given
@@ -208,9 +244,11 @@ class UserApiControllerTest {
                     .content(content)
             )
             .andExpect(status().isConflict());
+
+        verify(userService, times(1)).checkIdDuplicated(any(CheckIdRequestDto.class));
     }
 
-    @DisplayName("회원정보 조회에 성공한다.")
+    @DisplayName("조회에 성공할 경우 토큰 정보와 회원 정보를 반환한다.")
     @WithMockCustomUser
     @Test
     void readOneTest() throws Exception {
@@ -247,12 +285,199 @@ class UserApiControllerTest {
                     .content(makeJsonSignUpRequestDto(user))
             )
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("message").value(SIGN_UP_SUCCESS.getMessage()))
-            .andExpect(jsonPath("data.tokens.grantType").value(tokenInfo.getGrantType()))
-            .andExpect(jsonPath("data.tokens.accessToken").value(tokenInfo.getAccessToken()))
-            .andExpect(jsonPath("data.tokens.refreshToken").value(tokenInfo.getRefreshToken()));
+            .andExpect(jsonPath("message").value(SIGN_UP_SUCCESS.getMessage()));
 
-        checkUserInfoResponse(resultActions, user, "data.userInfo.");
+        String tokenInfoPrefix = "data.tokens.";
+        String userInfoPrefix = "data.userInfo.";
+        checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
+        checkUserInfoResponse(resultActions, user, userInfoPrefix);
+    }
+
+    @DisplayName("로그인에 성공할 경우 토큰 정보와 회원 정보를 반환한다.")
+    @Test
+    void loginTest() throws Exception {
+        User user = makeSampleUserData();
+        TokenInfo tokenInfo = makeSampleTokenData();
+
+        doReturn(AuthenticatedResponseDto.builder()
+            .user(user)
+            .tokenInfo(tokenInfo)
+            .build())
+            .when(userService)
+            .login(any(LoginRequestDto.class));
+
+        ResultActions resultActions = mockMvc.perform(
+                post(LOGIN_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(
+                        LoginRequestDto.builder()
+                            .id(user.getId())
+                            .password(user.getPassword())
+                            .build()
+                    ))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(LOGIN_SUCCESS.getMessage()));
+
+        String tokenInfoPrefix = "data.tokens.";
+        String userInfoPrefix = "data.userInfo.";
+        checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
+        checkUserInfoResponse(resultActions, user, userInfoPrefix);
+    }
+
+    @DisplayName("아이디 찾기에 성공할 경우 service의 findId 메서드가 호출되며 성공 상태 및 메세지가 반환된다.")
+    @Test
+    void findIdTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .findId(any(FindIdRequestDto.class));
+
+        mockMvc.perform(
+                post(FIND_ID_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(
+                        FindIdRequestDto.builder().build()
+                    ))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(FIND_ID_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).findId(any(FindIdRequestDto.class));
+    }
+
+    @DisplayName("비밀번호 찾기에 성공할 경우 service의 findPassword 메서드가 호출되며 성공 상태 및 메세지가 반환된다.")
+    @Test
+    void findPasswordTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .findPassword(any(FindPasswordRequestDto.class));
+
+        mockMvc.perform(
+                post(FIND_PASSWORD_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(
+                        FindPasswordRequestDto.builder().build()
+                    ))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(FIND_PASSWORD_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).findPassword(any(FindPasswordRequestDto.class));
+    }
+
+    @DisplayName("회원 탈퇴에 성공할 경우 service의 delete 메서드가 호출되며 성공 상태 및 메세지가 반환된다.")
+    @WithMockUser
+    @Test
+    void deleteTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .delete();
+
+        mockMvc.perform(
+                delete(DELETE_URL.getUrl())
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(DELETE_SUCCESS.getMessage()));
+
+        verify(userService, times(1)).delete();
+    }
+
+    @DisplayName("재발급에 성공할 경우 생성 상태와 토큰 정보를 반환한다.")
+    @WithMockUser
+    @Test
+    void reissueTokensTest() throws Exception {
+        String grantType = "Bearer";
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+        String headerRefreshToken = "headerRefreshToken";
+
+        TokenInfo tokenInfo = TokenInfo.builder()
+            .grantType(grantType)
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+
+        doReturn(tokenInfo)
+            .when(userService)
+            .reissueTokens(any(String.class), any(ReissueTokensRequestDto.class));
+
+        ResultActions resultActions = mockMvc.perform(
+                post(REISSUE_TOKENS_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .header("refreshToken", headerRefreshToken)
+                    .content(gson.toJson(ReissueTokensRequestDto.builder().build()))
+            )
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("message").value(REISSUE_TOKENS_SUCCESS.getMessage()));
+
+        String tokenInfoPrefix = "data.";
+        checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
+    }
+
+    @DisplayName("수정에 성공할 경우 성공 상태 및 메세지가 반환된다.")
+    @WithMockUser
+    @Test
+    void updateTest() throws Exception {
+        doNothing()
+            .when(userService)
+            .update(any(UpdateUserRequestDto.class));
+
+        mockMvc.perform(
+                put(UPDATE_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(UpdateUserRequestDto.builder().build()))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(UPDATE_USER_SUCCESS.getMessage()));
+    }
+
+    @DisplayName("비밀번호가 일치할 경우 성공 상태 및 메세지가 반환된다.")
+    @WithMockUser
+    @Test
+    void checkPasswordTest_Same() throws Exception {
+        doNothing()
+            .when(userService)
+            .checkPassword(any(CheckPasswordRequestDto.class));
+
+        mockMvc.perform(
+            post(CHECK_PASSWORD_URL.getUrl())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(UTF_8)
+                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("message").value(CHECK_PASSWORD_SUCCESS.getMessage()));
+    }
+
+    @DisplayName("비밀번호가 일치하지 않을 경우 잘못된 요청 상태가 반환된다.")
+    @WithMockUser
+    @Test
+    void checkPasswordTest_NotSame() throws Exception {
+        doThrow(UserNotFoundException.class)
+            .when(userService)
+            .checkPassword(any(CheckPasswordRequestDto.class));
+
+        mockMvc.perform(
+            post(CHECK_PASSWORD_URL.getUrl())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(UTF_8)
+                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+        )
+            .andExpect(status().isBadRequest());
+    }
+
+    private ResultActions checkTokenInfoResponse(ResultActions resultActions, TokenInfo tokenInfo,
+        String prefix)
+        throws Exception {
+        return resultActions
+            .andExpect(jsonPath(prefix + "grantType").value(tokenInfo.getGrantType()))
+            .andExpect(jsonPath(prefix + "accessToken").value(tokenInfo.getAccessToken()))
+            .andExpect(jsonPath(prefix + "refreshToken").value(tokenInfo.getRefreshToken()));
     }
 
     private ResultActions checkUserInfoResponse(ResultActions resultActions, User user,

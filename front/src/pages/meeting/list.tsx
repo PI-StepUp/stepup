@@ -16,41 +16,26 @@ import { axiosBoard, axiosUser } from "apis/axios";
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import Pagination from "react-js-pagination"
 
 const MeetingList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [meetings, setMeetings] = useState<any[]>();
+    const [page, setPage] = useState<any>(1);
 
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
 
+    const handlePageChange = (page: any) => {
+        setPage(page);
+        console.log(page);
+    }
+
     useEffect(() => {
-
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
         axiosBoard.get('/meeting', {
             params: {
                 keyword: "",
-            },
-            headers:{
-                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
             if(data.data.message === "정모 목록 조회 완료"){
@@ -62,7 +47,7 @@ const MeetingList = () => {
         <>
             <Header/>
             <MainBanner/>
-            <SubNav/>
+            <SubNav linkNo="3"/>
             <div className="meeting-wrap">
                 <div className="block-center-wrap">
                     <div className="geography-wrap">
@@ -80,33 +65,36 @@ const MeetingList = () => {
                     <div className="meeting-content-wrap">
                         <ul>
                             {
-                                meetings?.map((meeting) => {
-                                    return(
-                                        <li>
-                                            <div className="user-wrap">
-                                                {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={meeting.profileImg} alt=""/>}
-                                                <p>{meeting.writerName}</p>
-                                            </div>
-                                            <div className="meeting-content">
-                                                <p>{meeting.content}</p>
-                                                <span><Link href={"/meeting/detail/" + meeting.boardId}>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</Link></span>
-                                            </div>
-                                        </li>
-                                    )
+                                meetings?.map((meeting, index) => {
+                                    if(index+1 <= page*10 && index+1 > page*10-10){
+                                        return(
+                                            <li>
+                                                <div className="user-wrap">
+                                                    {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={meeting.profileImg} alt=""/>}
+                                                    <p>{meeting.writerName}</p>
+                                                </div>
+                                                <div className="meeting-content">
+                                                    <p>{meeting.content}</p>
+                                                    <span><Link href={"/meeting/detail/" + meeting.boardId}>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</Link></span>
+                                                </div>
+                                            </li>
+                                        )
+                                    }
                                 })
                             }
                         </ul>
                     </div>
                     <div className="pagination">
                         <ul>
-                            <li>1</li>
-                            <li>2</li>
-                            <li>3</li>
-                            <li>4</li>
-                            <li>5</li>
-                            <li>6</li>
-                            <li>7</li>
-                            <li>8</li>
+                            <Pagination
+                                activePage={page}
+                                itemsCountPerPage={10}
+                                totalItemsCount={meetings?.length}
+                                pageRangeDisplayed={9}
+                                prevPageText={'<'}
+                                nextPageText={'>'}
+                                onChange={handlePageChange}
+                            />
                         </ul>
                     </div>
                 </div>

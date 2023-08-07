@@ -1,3 +1,5 @@
+import {useEffect, useState, useRef} from "react"
+
 import Link from "next/link"
 import Image from "next/image"
 import motionIcons from "/public/images/motion-icon.svg"
@@ -11,10 +13,58 @@ import Footer from "components/Footer"
 import LanguageButton from "components/LanguageButton";
 
 import { useRecoilState } from "recoil";
-import { LanguageState } from "states/states";
+import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState } from "states/states";
+import { useRouter } from "next/router"
 
 const Index = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
+	const [nickname, setNickname] = useRecoilState(nicknameState);
+	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+    const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+    const [rankname, setRankname] = useRecoilState(rankNameState);
+
+	const router = useRouter();
+
+	const li1 = useRef<any>();
+	const li2 = useRef<any>();
+	const [nav, setNav] = useState<any>(<ul>
+		<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
+		<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
+	</ul>);
+
+	const signout = () => {
+		alert("로그아웃 되었습니다.");
+        setAccessToken("");
+        setRefreshToken("");
+        setNickname("");
+        setId("");
+        setProfileImg("");
+        setRankname("");
+		setNav(<ul>
+			<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
+			<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
+		</ul>);
+		router.push("/");
+    }
+
+	useEffect(() => {
+		if(nickname != ""){
+			setNav(<ul>
+				<li onClick={signout}>{lang === "en" ? "SIGNOUT" : lang === "cn" ? "注销" : "로그아웃"}</li>
+				<li><Link href="/mypage">{lang === "en" ? "Mypage" : lang === "cn" ? "我的页面" : "마이페이지"}</Link></li>
+			</ul>);
+		}else if(nickname == ""){
+			setNav(
+				<ul>
+					<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
+					<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
+				</ul>
+			);
+		}
+	}, [])
+
 	return (
 		<>
 			<header className="main-header">
@@ -31,10 +81,7 @@ const Index = () => {
 						</ul>
 					</nav>
 					<div className="login-wrap">
-						<ul>
-							<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
-							<li><Link href="/mypage">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
-						</ul>
+						{nav}
 					</div>
 				</div>
 			</header>

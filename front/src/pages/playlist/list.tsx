@@ -8,49 +8,38 @@ import LanguageButton from "components/LanguageButton";
 import Image from "next/image";
 import Link from "next/link";
 import DefaultProfileImage from "/public/images/playlist-default-profile-img.svg";
+import HeartFillIcon from "/public/images/icon-heart-fill.svg";
+import HeartEmptyIcon from "/public/images/icon-heart-empty.svg";
 
 import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
-import { axiosMusic, axiosUser } from "apis/axios";
+import { axiosMusic } from "apis/axios";
+import Pagination from "react-js-pagination";
 
 const PlayList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [playlist, setPlaylist] = useState<any[]>();
+    const [page, setPage] = useState<any>(1);
 
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
 
-    useEffect(() => {
+    const handlePageChange = (page: any) => {
+        setPage(page);
+        console.log(page);
+    }
 
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+    useEffect(() => {
 
         axiosMusic.get("/apply",{
             params:{
                 keyword:"",
             },
-            headers:{
-                Authorization: `Bearer ${accessToken}`
-            }
         }).then((data) => {
+            console.log(data);
             setPlaylist(data.data.data);
         })
     }, []);
@@ -72,31 +61,44 @@ const PlayList = () => {
                 </div>
                 <div className="playlist-content-wrap">
                     <ul>
-                        {playlist?.map((playlist) => {
-                            return(
-                                <li><Link href={"/playlist/detail/" + playlist.musicApplyId}>
-                                    <span>{playlist.artist}</span>
-                                    <h4>{playlist.title}</h4>
-                                    <p>이프푸 Boom, Boom, Boom 챌린지하고 싶어요. 플레이리스트에 넣어주세요.</p>
-                                    <div className="user-wrap">
-                                        {playlist.writerProfileImg === null ? <Image src={DefaultProfileImage} alt=""></Image> : <Image src={playlist.writerProfileImg} alt=""></Image>}
-                                        <span>{playlist.writerName}</span>
-                                    </div></Link>
-                                </li>
-                            )
+                        {playlist?.map((playlist, index) => {
+                            if(index+1 <= page*10 && index+1 > page*10-10){
+                                return(
+                                    <li><Link href={"/playlist/detail/" + playlist.musicApplyId}>
+                                        <span>{playlist.artist}</span>
+                                        <h4>{playlist.title}</h4>
+                                        <p>{playlist.content}</p>
+                                        <div className="user-wrap">
+                                            <div className="flex-wrap">
+                                                {playlist.writerProfileImg === null ? <Image src={DefaultProfileImage} alt=""></Image> : <Image src={playlist.writerProfileImg} alt=""></Image>}
+                                                <span>{playlist.writerName}</span>
+                                            </div>
+                                            <div className="heart-wrap">
+                                                {
+                                                    playlist.canHeart === 1 ?
+                                                    <Image src={HeartEmptyIcon} alt=""></Image> :
+                                                    <Image src={HeartFillIcon} alt=""></Image>
+                                                }
+                                                <span>{playlist.heartCnt}</span>
+                                            </div>
+                                        </div></Link>
+                                    </li>
+                                )
+                            }
                         })}
                     </ul>
                 </div>
                 <div className="pagination">
                     <ul>
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <li>5</li>
-                        <li>6</li>
-                        <li>7</li>
-                        <li>8</li>
+                        <Pagination
+                            activePage={page}
+                            itemsCountPerPage={10}
+                            totalItemsCount={playlist?.length}
+                            pageRangeDisplayed={9}
+                            prevPageText={'<'}
+                            nextPageText={'>'}
+                            onChange={handlePageChange}
+                        />
                     </ul>
                 </div>
             </div>

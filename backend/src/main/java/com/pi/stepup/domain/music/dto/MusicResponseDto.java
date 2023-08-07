@@ -15,6 +15,7 @@ public class MusicResponseDto {
         private final String artist;
         private final String answer;
         private final String URL;
+        private final Integer playtime;
 
         @Builder
         public MusicFindResponseDto(Music music) {
@@ -23,6 +24,7 @@ public class MusicResponseDto {
             this.artist = music.getArtist();
             this.answer = music.getAnswer();
             this.URL = music.getURL();
+            this.playtime = music.getPlaytime();
         }
     }
 
@@ -76,25 +78,4 @@ public class MusicResponseDto {
             this.heartId = heartId;
         }
     }
-
-//    @Getter
-//    public static class AllMusicApplyFindResponseDto {
-//
-//        private final Long musicApplyId;
-//        private final String title;
-//        private final String artist;
-//        private final String writerName;
-//        private final String writerProfileImg;
-//        private final Integer heartCnt;
-//
-//        @Builder
-//        public AllMusicApplyFindResponseDto(MusicApply musicApply) {
-//            this.musicApplyId = musicApply.getMusicApplyId();
-//            this.title = musicApply.getTitle();
-//            this.artist = musicApply.getArtist();
-//            this.writerName = musicApply.getWriter().getNickname();
-//            this.writerProfileImg = musicApply.getWriter().getProfileImg();
-//            this.heartCnt = musicApply.getHeartCnt();
-//        }
-//    }
 }

@@ -97,7 +97,7 @@ const DetailArticle = () => {
         <>
             <Header></Header>
             <MainBanner></MainBanner>
-            <SubNav></SubNav>
+            <SubNav linkNo="3"></SubNav>
             <div className="detail-article-wrap">
                 <div className="detail-title">
                     <span>게시글</span>
@@ -121,42 +121,6 @@ const DetailArticle = () => {
                     <div className="button-wrap">
                         <button onClick={deleteArticle}>삭제하기</button>
                         <button onClick={() => router.push('/meeting/edit/' + article.boardId)}>수정하기</button>
-                    </div>
-                </div>
-                <div className="comment-wrap">
-                    <ul>
-                        <li>
-                            <div className="img-wrap">
-                                <Image src={CommentDefaultImage} alt=""/>
-                            </div>
-                            <div className="comment-main">
-                                <div className="comment-content">
-                                    <h5>Nickname</h5>
-                                    <p>댓글의 내용이 들어갈 부분이에요 이곳에 댓글의 내용이</p>
-                                </div>
-                                <div className="comment-button">
-                                    <button>댓글삭제</button>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="img-wrap">
-                                <Image src={CommentDefaultImage} alt=""/>
-                            </div>
-                            <div className="comment-main">
-                                <div className="comment-content">
-                                    <h5>Nickname</h5>
-                                    <p>댓글의 내용이 들어갈 부분이에요 이곳에 댓글의 내용이</p>
-                                </div>
-                                <div className="comment-button">
-                                    <button>댓글삭제</button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div className="comment-input">
-                        <textarea name="" id=""></textarea>
-                        <button>댓글등록</button>
                     </div>
                 </div>
             </div>
