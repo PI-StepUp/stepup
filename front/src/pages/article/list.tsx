@@ -13,11 +13,19 @@ import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 import { axiosBoard } from "apis/axios";
 
+import Pagination from "react-js-pagination";
+
 const ArticleList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
-    const [articles, setArticles] = useState<any[]>();
+    const [articles, setArticles] = useState<any>();
+    const [page, setPage] = useState<any>(1);
     const searchValue = useRef<any>();
     const router = useRouter();
+
+    const handlePageChange = (page: any) => {
+        setPage(page);
+        console.log(page);
+    }
 
     const searchArticles = async (e:any) => {
         e.preventDefault();
@@ -27,6 +35,7 @@ const ArticleList = () => {
             }
         }).then((data) => {
             setArticles(data.data.data);
+            setPage(1);
         })
     }
         
@@ -44,7 +53,7 @@ const ArticleList = () => {
         <>
             <Header/>
             <MainBanner/>
-            <SubNav/>
+            <SubNav linkNo="2"/>
             <div className="article-list-wrap">
                 <div className="article-list-title">
                     <span>{lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }</span>
@@ -76,17 +85,19 @@ const ArticleList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {articles?.map((article) => {
-                            return(
-                                <tr onClick={() => router.push({
-                                    pathname: `/article/detail/${article.boardId}`,
-                                })}>
-                                    <td>{article.boardId}</td>
-                                    <td>{article.writerName}</td>
-                                    <td>{article.title}</td>
-                                    <td>{article.commentCnt}</td>
-                                </tr>
-                            )
+                        {articles?.map((article: any , index: any) => {
+                            if(index+1 <= page*10 && index+1 > page*10-10){
+                                return(
+                                    <tr onClick={() => router.push({
+                                        pathname: `/article/detail/${article.boardId}`,
+                                    })}>
+                                        <td>{article.boardId}</td>
+                                        <td>{article.writerName}</td>
+                                        <td>{article.title}</td>
+                                        <td>{article.commentCnt}</td>
+                                    </tr>
+                                )
+                            }
                         })}
                     </tbody>
                     
@@ -97,14 +108,15 @@ const ArticleList = () => {
                 
                 <div className="pagination">
                     <ul>
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <li>5</li>
-                        <li>6</li>
-                        <li>7</li>
-                        <li>8</li>
+                        <Pagination
+                            activePage={page}
+                            itemsCountPerPage={10}
+                            totalItemsCount={articles?.length}
+                            pageRangeDisplayed={9}
+                            prevPageText={'<'}
+                            nextPageText={'>'}
+                            onChange={handlePageChange}
+                        />
                     </ul>
                 </div>
             </div>

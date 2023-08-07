@@ -18,5 +18,9 @@
                 @include font(20px, 700, #FFFFFF);
             }
         }
+        .active{
+            background-color: #FF9100;
+            @include font(20px, 700, #FFFFFF);
+        }
     }
 }

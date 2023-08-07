@@ -113,7 +113,7 @@ const MeetingEdit = () => {
         <>
             <Header/>
             <MainBanner/>
-            <SubNav/>
+            <SubNav linkNo="3"/>
             <div className="create-wrap">
                 <div className="create-title">
                     <span>게시글</span>
