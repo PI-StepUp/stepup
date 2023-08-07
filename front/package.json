@@ -13,6 +13,7 @@
     "@types/node": "20.4.2",
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
+    "@types/react-js-pagination": "^3.0.4",
     "@types/socket.io-client": "^3.0.0",
     "axios": "^1.4.0",
     "dynamic-time-warping": "^1.0.0",
