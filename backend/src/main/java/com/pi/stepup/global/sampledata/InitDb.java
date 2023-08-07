@@ -7,6 +7,7 @@ import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.domain.Country;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,8 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-@Profile("!danceRepoTest")
+@ConditionalOnProperty(name = "spring.initDb.enable", havingValue = "true")
+@Profile({"!danceRepoTest"})
 public class InitDb {
 
     private final InitService initService;
@@ -42,7 +44,7 @@ public class InitDb {
             makeMusic();
             makePoint();
             makeRank();
-            makeAdmin();
+//            makeAdmin();
             makeUser();
             makeDance();
             makeReservation();
