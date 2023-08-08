@@ -109,7 +109,7 @@ const DetailNotice = () => {
                 </div>
                 <div className="detail-content">
                     <div className="list-wrap">
-                        <button><Link href="/article/list">목록보기</Link></button>
+                        <button><Link href="/notice/list">목록보기</Link></button>
                     </div>
                     <div className="detail-main-title">
                         <span>공지사항</span>

@@ -62,23 +62,55 @@ const Index = () => {
 		router.push("/");
     }
 
+	// useEffect(() => {
+	// 	if(nickname != ""){
+	// 		setNav(<ul>
+	// 			<li onClick={signout}>{lang === "en" ? "SIGNOUT" : lang === "cn" ? "注销" : "로그아웃"}</li>
+	// 			<li><Link href="/mypage">{lang === "en" ? "Mypage" : lang === "cn" ? "我的页面" : "마이페이지"}</Link></li>
+	// 		</ul>);
+	// 	}else if(nickname == ""){
+	// 		setNav(
+	// 			<ul>
+	// 				<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
+	// 				<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
+	// 			</ul>
+	// 		);
+	// 	}
+
+	// }, [inView])
+
 	useEffect(() => {
-		if(nickname != ""){
-			setNav(<ul>
-				<li onClick={signout}>{lang === "en" ? "SIGNOUT" : lang === "cn" ? "注销" : "로그아웃"}</li>
-				<li><Link href="/mypage">{lang === "en" ? "Mypage" : lang === "cn" ? "我的页面" : "마이페이지"}</Link></li>
-			</ul>);
-		}else if(nickname == ""){
+		if (nickname !== "") {
 			setNav(
 				<ul>
-					<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
-					<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
+					<li onClick={signout}>
+						{lang === "en" ? "SIGNOUT" : lang === "cn" ? "注销" : "로그아웃"}
+					</li>
+					<li>
+						<Link href="/mypage">
+							{lang === "en" ? "Mypage" : lang === "cn" ? "我的页面" : "마이페이지"}
+						</Link>
+					</li>
+				</ul>
+			);
+		} else if (nickname === "") {
+			setNav(
+				<ul>
+					<li>
+						<Link href="/login">
+							{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}
+						</Link>
+					</li>
+					<li>
+						<Link href="/signup">
+							{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}
+						</Link>
+					</li>
 				</ul>
 			);
 		}
-
-	}, [inView])
-
+	}, [inView, lang, nickname]);
+	
 	return (
 		<>
 			<header className="main-header">
@@ -180,7 +212,7 @@ const Index = () => {
 						<p>
 							{lang === "en" ? "You can dance wherever you want, anytime A lanfle dan stage is provided according to your time." : lang === "cn" ? "无论何时何地都可以不受场所限制跳自己喜欢的舞蹈 根据您的时间，提供随机跳舞的舞台。" : "언제, 어디서든 장소에 구애받지 않고 원하는 춤을 출 수 있어요 당신의 시간에 맞게 랜플댄 무대가 제공됩니다."}
 						</p>
-						<span><Link href="/">{lang === "en" ? "Participating in Random Play Dance" : lang === "cn" ? "参与随机舞蹈" : "랜덤플레이댄스 참여하기"}</Link></span>
+						<span><Link href="./randomplay/list">{lang === "en" ? "Participating in Random Play Dance" : lang === "cn" ? "参与随机舞蹈" : "랜덤플레이댄스 참여하기"}</Link></span>
 					</div>
 				</div>
 				<div className="ad-randomplay-img">
@@ -242,8 +274,8 @@ const Index = () => {
                     </h3>
                 </div>
                 <div className="ad-banner-button-wrap">
-                    <button><Link href="/">{lang==="en" ? "Use after registering as a member" : lang==="cn" ? "注册会员后使用" : "회원가입 후 이용하기" }</Link></button>
-                    <button><Link href="/">{lang==="en" ? "Participating in LANPLE DANCING room" : lang==="cn" ? "参与随机舞蹈的房间" : "랜플댄 방 참여하기" }</Link></button>
+                    <button><Link href="./signup">{lang==="en" ? "Use after registering as a member" : lang==="cn" ? "注册会员后使用" : "회원가입 후 이용하기" }</Link></button>
+                    <button><Link href="./randomplay/list">{lang==="en" ? "Participating in LANPLE DANCING room" : lang==="cn" ? "参与随机舞蹈的房间" : "랜플댄 방 참여하기" }</Link></button>
                 </div>
             </div>
             <Footer/>
