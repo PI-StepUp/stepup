@@ -25,6 +25,7 @@ import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter"
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const pc_config = {
 	iceServers: [
@@ -48,6 +49,10 @@ const EMBED_URL: any = {
     17: "https://www.youtube.com/embed/hcaAQCyXurg",
 }
 
+let poseLandmarker: PoseLandmarker;
+let saveMotion: Boolean = false;
+let danceRecord: any[] = [];
+
 const DanceRoom = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const socketRef = useRef<any>();
@@ -70,10 +75,21 @@ const DanceRoom = () => {
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
     const [end, setEnd] = useState(false);
+    const modal = useRef<any>();
     const router = useRouter();
     const roomId = router.query.roomId;
-
-    let danceRecord: any[] = [];
+    const roomTitle = router.query.title;
+    const roomContent = router.query.content;
+    const roomStartAt : any = router.query.startAt;
+    const myName = router.query.myName;
+    const startDate = roomStartAt?.split("T")[1];
+    const startTime = startDate.split(":")[0];
+    const startMinute = startDate.split(":")[1];
+    const roomEndAt : any = router.query.endAt;
+    const endDate = roomEndAt?.split("T")[1];
+    const endTime = endDate.split(":")[0];
+    const endMinute = endDate.split(":")[1];
+    const winnerValue = useRef<any>();
 
     // 컨트롤러 hover 시 변경
     const [reflect, setReflect] = useState(false);
@@ -153,11 +169,12 @@ const DanceRoom = () => {
                 localVideoRef.current.srcObject = localStream;
                 localVideoRef.current.play();
                 console.log("video 실행");
-                localVideoRef.current.addEventListener("loadeddata", predictWebcam);
+                localVideoRef.current.addEventListener("loadeddata", makePoseLandmarker);
             }
 			if (!socketRef.current) return;
 			socketRef.current.emit('join_room', {
 				room: roomId,
+                name: myName,
 				email: 'sample@naver.com',
 			});
 		} catch (e) {
@@ -213,43 +230,82 @@ const DanceRoom = () => {
 		}
 	}, []);
 
-    let poseLandmarker: PoseLandmarker;
-
-	useEffect(() => {
-		
-	}, []);
+     // ======= PoseLandmarker 생성 =======	
+	async function makePoseLandmarker() {	
+        await createLandmarker().then((landMarker) => {	
+            poseLandmarker = landMarker;	
+            console.log("poselandmarker 생성", poseLandmarker);	
+        });
+    }
 
 	let lastVideoTime: number | undefined = -1;
-	let frameCount = 0;
-	let saveMotion: Boolean = false;
+
+    async function startPredictAndCalcSimilarity(musicId:number) {
+        saveMotion = true;
+        danceRecord = [];
+        frameCount = 0;
+        
+        const response = await getAnswerData(musicId);
+        console.log("response 값", response);
+        
+        predictWebcam();
+
+        return setTimeout(async () => {
+            saveMotion = false;
+            console.log("측정 종료");
+            console.log("측정 기록", danceRecord);
+
+            const danceAnswer = await JSON.parse(response.data.answer);
+            console.log("danceAnswer 값", response.data);
+
+            const score = await calculateSimilarity(danceRecord, danceAnswer);
+            console.log(score);
+
+            if(score < 60){
+                setPlayResult("failure");
+                setTimeout(() => {
+                    setPlayResult("");
+                }, 5000)
+            }else{
+                setPlayResult("success");
+                setTimeout(() => {
+                    setPlayResult("");
+                }, 5000)
+            }
+
+            return score;
+        }, (response.data.playtime+2)*1000);
+    }
+
+    let frameCount = 0;
 
 	// ============ 모션 인식 =============
 	async function predictWebcam() {
 		if (!poseLandmarker) {
 			console.log("pose landmarker not loaded!");
+            await makePoseLandmarker();
+            predictWebcam();
 			return;
 		}
 
 		let startTimeMs = await performance.now();
+        
 
 
 		if (lastVideoTime !== localVideoRef.current?.currentTime) {
 			lastVideoTime = localVideoRef.current?.currentTime;
 
 			await poseLandmarker.detectForVideo(localVideoRef.current, startTimeMs, (result) => {
-				// console.log("detective 실행");
+				console.log(result);
 				frameCount += 1;
 
-				if (saveMotion) {
-					console.log(result);
-					setDance(result, danceRecord);
-				}
-
+                console.log("framecount", frameCount);
+                setDance(result, danceRecord);
 			});
 		}
 
 		// Call this function again to keep predicting when the browser is ready.
-		if (!localVideoRef.current?.paused) {
+		if (saveMotion) {
 			window.requestAnimationFrame(predictWebcam);
 		}
 	}
@@ -307,7 +363,7 @@ const DanceRoom = () => {
     }
 
 	useEffect(() => {
-		// socketRef.current = io.connect(SOCKET_SERVER_URL);
+		socketRef.current = io.connect(SOCKET_SERVER_URL);
 		getLocalStream();
 
 		socketRef.current.on('all_users', (allUsers: Array<{ id: string; email: string }>) => {
@@ -404,7 +460,8 @@ const DanceRoom = () => {
 
         socketRef.current.on("congraturation", (roomName: any, winner: any) => {
             if(roomId == roomName){
-                alert(`${winner}님 1등을 축하드립니다.`);
+                modal.current.style.display = "block";
+                winnerValue.current.value = winner;
             }
         })
 
@@ -419,37 +476,8 @@ const DanceRoom = () => {
                     setTimeout(async () => {
                         await setCount1(false);
                         setUrlNo(musicId);
-                        // 안무 유사도 측정
-                        danceRecord = [];
-                        saveMotion = true;
                         
-                        // TODO : 선택된 노래 pk 전달
-                        const response = await getAnswerData(musicId);
-                        console.log("response 값", response);
-
-                        const danceAnswer = await JSON.parse(response.data.answer);
-                        console.log("danceAnswer 값", response.data);
-                        
-                        setTimeout(async () => {
-                            saveMotion = false;
-
-                            await calculateSimilarity(danceRecord, danceAnswer).then((score) => {
-                                console.log("score", score);
-                                if(score < 60){
-                                    setPlayResult("failure");
-                                    setTimeout(() => {
-                                        setPlayResult("");
-                                    }, 5000)
-                                }else{
-                                    setPlayResult("success");
-                                    setTimeout(() => {
-                                        setPlayResult("");
-                                    }, 5000)
-                                }
-                            });
-
-                            // TODO : 선택된 노래의 playTime으로 설정
-                        }, (response.data.playtime+2)*1000);
+                        await startPredictAndCalcSimilarity(musicId);
 
                     }, 2000);
                 }, 2000);
@@ -472,18 +500,16 @@ const DanceRoom = () => {
     return(
         <>
             <div className="practiceroom-wrap">
-                <SideMenu/>
                 <div className="practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
                             <Image src={LeftArrowIcon} alt=""/>
                         </div>
                         <div className="room-title">
-                            <h3>랜덤플레이 댄스 방 제목</h3>
-                            <span>2013년 7월 3일</span>
+                            <h3>{roomTitle}</h3>
+                            <span>진행시간: {startTime}시 {startMinute}분 - {endTime}시 {endMinute}분</span>
                         </div>
                     </div>
-
                     <div className="video-content">
                         <div className="my-video" style={{ position: "relative", top: "0px", left: "0px" }}>
                             <video src="" playsInline ref={localVideoRef}></video>
@@ -531,7 +557,7 @@ const DanceRoom = () => {
                             <ul>
                                 <li className="on">
                                     <Image src={ChatDefaultImg} alt=""/>
-                                    <span>임시 이름</span>
+                                    <span>{myName}</span>
                                 </li>
                                 {
                                     users.map((data,index) => {
@@ -650,6 +676,20 @@ const DanceRoom = () => {
                 :
                 <></>
             }
+            <div className="modal-back" ref={modal}>
+                <div className="modal-main">
+                    <div className="modal-title">
+                        <h4>AWARDS</h4>
+                    </div>
+                    <div className="modal-content">
+                        <p>우승을 축하합니다!</p>
+                        <input type="text" readOnly ref={winnerValue}/>
+                    </div>
+                    <div className="modal-button-wrap">
+                        <button><Link href="">방 나가기</Link></button>
+                    </div>
+                </div>
+            </div>
         </>
     )
 }

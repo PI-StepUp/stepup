@@ -14,7 +14,7 @@ import TopIcon from "/public/images/icon-top.svg"
 import NowIcon from "/public/images/icon-now.svg"
 import SoonIcon from "/public/images/icon-soon.svg"
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
@@ -29,15 +29,14 @@ const RandomPlayList = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     useEffect(() => {
         axiosDance.get('',{
             params: {
                 progressType: "ALL",
             },
-            // headers:{
-            //     Authorization: `Bearer ${accessToken}`,
-            // }
         }).then((data) => {
+            console.log(data);
             if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
                 setRooms(data.data.data);
             }
@@ -50,7 +49,6 @@ const RandomPlayList = () => {
         }).then((data) => {
             if(data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료"){
                 setInprogress(data.data.data);
-                console.log(inprogress);
             }
         })
 
@@ -82,7 +80,16 @@ const RandomPlayList = () => {
                             {rooms?.map((room, index) => {
                                 return(
                                     <li key={index}>
-                                        <Link href={`/danceroom/${room.randomDanceId}`}>
+                                        <Link href={{
+                                            pathname: `/danceroom/${room.randomDanceId}`,
+                                            query:{
+                                                title: room.title,
+                                                content: room.content,
+                                                startAt: room.startAt,
+                                                endAt: room.endAt,
+                                                myName: nickname,
+                                            },
+                                        }}>
                                             <div className="section-content-img">
                                                 <span>{room.danceType === "SURVIVAL" ? "서바이벌" : room.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
                                                 <Image src={RandomplayThumbnail} alt=""/>
