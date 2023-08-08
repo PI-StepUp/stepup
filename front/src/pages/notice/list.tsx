@@ -50,7 +50,7 @@ const NoticeList = () => {
                         notices?.map((notice, index) => {
                             if(index+1 <= page*10 && index+1 > page*10-10){
                                 return(
-                                    <li>
+                                    <li key={index}>
                                         <span>{lang==="en" ? "NOTICE" : lang==="cn" ? "公告" : "공지사항" }</span>
                                         <div className="notice-list-content">
                                             <h4>{notice.title}</h4>
@@ -79,7 +79,7 @@ const NoticeList = () => {
                 </div>
                 <div className="pagination">
                     <ul>
-                        <Pagination
+                        {/* <Pagination
                             activePage={page}
                             itemsCountPerPage={10}
                             totalItemsCount={notices?.length}
@@ -87,7 +87,7 @@ const NoticeList = () => {
                             prevPageText={'<'}
                             nextPageText={'>'}
                             onChange={handlePageChange}
-                        />
+                        /> */}
                     </ul>
                 </div>
             </div>

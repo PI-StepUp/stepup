@@ -232,7 +232,7 @@ const MyPage = () => {
     })
 
     // 작성한 게시글 개수 합산
-    boardCnt = meetingBoard?.length + talkBoard?.length;
+    // boardCnt = meetingBoard?.length + talkBoard?.length;
 
 
 
@@ -345,10 +345,10 @@ const MyPage = () => {
             <ul className="list">
               <div>{lang === "en" ? "My Reservation" : lang === "cn" ? "我的预订" : "내 예약"}</div>
               <div>
-                {reserved?.map((reservation) => {
+                {reserved?.map((reservation, index) => {
                   const reservationId = reservation.randomDanceId;
                   return (
-                    <li className="contents">
+                    <li className="contents" key={index}>
                       <div className="img-box">
                         <Image className="img" src={reservation.thumbnail} alt="reserved"></Image>
                       </div>
@@ -371,10 +371,10 @@ const MyPage = () => {
             <ul className="list">
               <div>{lang === "en" ? "My Organized" : lang === "cn" ? "我举办的活动" : "개최한 랜플댄"}</div>
               <div>
-                {myRandomDance?.map((randomDance) => {
+                {myRandomDance?.map((randomDance,index) => {
                   const randomDanceId = randomDance.randomDanceId;
                   return (
-                    <li className="contents">
+                    <li className="contents" key={index}>
                       <div className="img-box">
                         <Image className="img" src={randomDance.thumbnail} alt="reserved"></Image>
                       </div>
@@ -414,10 +414,10 @@ const MyPage = () => {
             <ul className="list">
               <div>{lang === "en" ? "Participation History" : lang === "cn" ? "参与历史" : "참여 이력"}</div>
               <div>
-                {myRandomDanceHistory?.slice(0, visibleItems)?.map((randomDance) => {
+                {myRandomDanceHistory?.slice(0, visibleItems)?.map((randomDance, index) => {
                   const randomDanceId = randomDance.randomDanceId;
                   return (
-                    <li className="contents">
+                    <li className="contents" key={index}>
                       <div className="img-box">
                         <Image className="img" src={randomDance.thumbnail} alt="history"></Image>
                       </div>
@@ -446,10 +446,10 @@ const MyPage = () => {
             <ul className="list">
               <div>{lang === "en" ? "Written Posts - Offline Meetings" : lang === "cn" ? "撰写的帖子 - 线下聚会" : "작성한 글 - 오프라인 정모"}</div>
               <div>
-                {meetingBoard?.slice(0, visibleItems)?.map((board) => {
+                {meetingBoard?.slice(0, visibleItems)?.map((board, index) => {
                   const boardId = board.boardId;
                   return (
-                    <li className="contents">
+                    <li className="contents" key={index}>
                       <div className="img-box">
                         <Image className="img" src={img_offline} alt="history"></Image>
                       </div>
@@ -476,10 +476,10 @@ const MyPage = () => {
             <ul className="list">
               <div>{lang === "en" ? "Written Posts - Free Board" : lang === "cn" ? "撰写的帖子 - 自由留言板" : "작성한 글 - 자유게시판"}</div>
               <div>
-                {talkBoard?.slice(0, visibleItems)?.map((board) => {
+                {talkBoard?.slice(0, visibleItems)?.map((board, index) => {
                   const boardId = board.boardId;
                   return (
-                    <li className="contents">
+                    <li className="contents" key={index}>
                       <div className="img-box">
                         <Image className="img" src={img_offline} alt="history"></Image>
                       </div>

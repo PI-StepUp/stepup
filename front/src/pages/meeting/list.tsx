@@ -83,7 +83,7 @@ const MeetingList = () => {
                                 meetings?.map((meeting, index) => {
                                     if(index+1 <= page*10 && index+1 > page*10-10){
                                         return(
-                                            <li>
+                                            <li key={index}>
                                                 <div className="user-wrap">
                                                     {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={meeting.profileImg} alt=""/>}
                                                     <p>{meeting.writerName}</p>
@@ -101,7 +101,7 @@ const MeetingList = () => {
                     </div>
                     <div className="pagination">
                         <ul>
-                            <Pagination
+                            {/* <Pagination
                                 activePage={page}
                                 itemsCountPerPage={10}
                                 totalItemsCount={meetings?.length}
@@ -109,7 +109,7 @@ const MeetingList = () => {
                                 prevPageText={'<'}
                                 nextPageText={'>'}
                                 onChange={handlePageChange}
-                            />
+                            /> */}
                         </ul>
                     </div>
                 </div>

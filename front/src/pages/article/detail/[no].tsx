@@ -198,9 +198,9 @@ const DetailArticle = () => {
                 <div className="comment-wrap">
                     <ul>
                         {
-                            comments?.map((comment) => {
+                            comments?.map((comment, index) => {
                                 return(
-                                    <li>
+                                    <li key={index}>
                                         <div className="img-wrap">
                                             <Image src={CommentDefaultImage} alt=""/>
                                         </div>

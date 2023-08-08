@@ -44,7 +44,7 @@ const SignUp = () => {
         e.preventDefault();
         try{
             const duplNickname = await axiosUser.post("/dupnick", {
-                nickName : nickname,
+                nickname : nickname,
             });
             if(duplNickname.data.message === "닉네임 사용 가능"){
                 alert("사용가능한 닉네임 입니다.");
@@ -179,7 +179,7 @@ const SignUp = () => {
                             <input type="date" placeholder={lang==="en" ? "Date of birth" : lang==="cn" ? "出生年月日" : "생년월일" } className="input-birthday" onChange={(e) => setBirth(e.target.value)}/>
                             <input type="text" placeholder={lang==="en" ? "Nation" : lang==="cn" ? "国家" : "국가" } className="input-region" onChange={(e) => setRegion(e.target.value)}/>
                             <textarea name="" id="" readOnly>
-                                'STEP UP (이하 '회사'는) 고객님의 개인정보를 중요시하며, "정보통신망 이용촉진 및 정보보호"에 관한 법률을 준수하고 있습니다. 회사는 개인정보취급방침을 통하여 고객님께서 제공하시는 개인정보가 어떠한 용도와 방식으로 이용되고 있으며, 개인정보보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다. 회사는 개인정보취급방침을 개정하는 경우 웹사이트 공지사항(또는 개별공지)을 통하여 공지할 것입니다.
+                                &apos;STEP UP (이하 &apos;회사&apos;는) 고객님의 개인정보를 중요시하며, &quot;정보통신망 이용촉진 및 정보보호&quot;에 관한 법률을 준수하고 있습니다. 회사는 개인정보취급방침을 통하여 고객님께서 제공하시는 개인정보가 어떠한 용도와 방식으로 이용되고 있으며, 개인정보보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다. 회사는 개인정보취급방침을 개정하는 경우 웹사이트 공지사항(또는 개별공지)을 통하여 공지할 것입니다.
 본 방침은 : 2023 년 07 월 19 일 부터 시행됩니다.
 ■ 개인정보의 수집 및 이용목적
 회사는 수집한 개인정보를 다음의 목적을 위해 활용합니다.
