@@ -16,7 +16,6 @@ import "../styles/sidemenu.scss"
 import "../styles/practiceroom.scss"
 import "../styles/language.scss"
 import "../styles/mypage.scss"
-import "../styles/MypageBanner.scss"
 import "../styles/mypageedit.scss"
 import "../styles/responsively.scss";
 import "../styles/detail.scss";
