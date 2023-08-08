@@ -9,7 +9,6 @@ import LanguageButton from "components/LanguageButton";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
-
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 import { axiosBoard } from "apis/axios";
@@ -95,7 +94,7 @@ const ArticleList = () => {
                             <th>NO</th>
                             <th>{lang==="en" ? "Writer" : lang==="cn" ? "作者" : "작성자" }</th>
                             <th>{lang==="en" ? "Title" : lang==="cn" ? "标题" : "제목" }</th>
-                            <th>{lang==="en" ? "Date of creation" : lang==="cn" ? "制定日期" : "작성일자" }</th>
+                            <th>{lang==="en" ? "Number of Comments" : lang==="cn" ? "评论数量" : "댓글수" }</th>
                         </tr>
                     </thead>
                     <tbody>
