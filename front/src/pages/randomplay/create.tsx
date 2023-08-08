@@ -49,7 +49,7 @@ const RoomCreate = () => {
         }
 
         try{
-            await axiosDance.post("/", {
+            await axiosDance.post("", {
                 title: roomTitle.current?.value,
                 content: roomContent.current?.value,
                 startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
@@ -66,7 +66,16 @@ const RoomCreate = () => {
             }).then((data) => {
                 if(data.data.message === "랜덤 플레이 댄스 생성 완료"){
                     alert("방 생성이 완료되었습니다.");
-                    router.push(`/hostroom/${roomTitle.current?.value}`);
+                    router.push({
+                        pathname: `/hostroom/${roomTitle.current?.value}`,
+                        query: {
+                            hostId: nickname,
+                            title: roomTitle.current?.value,
+                            startAt: roomStartTime.current?.value,
+                            endAt: roomEndTime.current?.value,
+                            maxUser: Number(roomMaxNum.current?.value),
+                        }
+                    });
                 }
             })
         }catch(e){
