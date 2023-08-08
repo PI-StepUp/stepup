@@ -1,17 +1,10 @@
 import React, {useState, useEffect, useCallback, useRef} from "react";
-import SideMenu from "components/SideMenu";
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
 import ReflectIcon from "/public/images/icon-reflect.svg"
-import CameraIcon from "/public/images/icon-camera.svg"
-import MicIcon from "/public/images/icon-mic.svg"
-import MoreIcon from "/public/images/icon-more-dot.svg"
 import PlayThumbnail from "/public/images/room-playlist-thumbnail.png"
 import PlayIcon from "/public/images/icon-play.svg"
 import ReflectHoverIcon from "/public/images/icon-hover-reflect.svg"
-import MicHoverIcon from "/public/images/icon-hover-mic.svg"
-import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
-import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
@@ -43,45 +36,26 @@ let danceRecord: any[] = [];
 const PracticeRoom = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [reflect, setReflect] = useState(false);
-    const [mic, setMic] = useState(false);
-    const [camera, setCamera] = useState(false);
-    const [moredot, setMoredot] = useState(false);
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     const [musics, setMusics] = useState<any>();
-    const [end, setEnd] = useState(false);
     const [count3, setCount3] = useState(false);
     const [count2, setCount2] = useState(false);
     const [count1, setCount1] = useState(false);
     const [playResult, setPlayResult] = useState('');
     const [selectedMusic, setSelectedMusic] = useState<any>(14);
+    const [scoreCount, setScoreCount] = useState<any>(0);
     const localVideoRef = useRef<any>(null);
     const localCanvasRef = useRef<HTMLCanvasElement>(null);
 	const localStreamRef = useRef<MediaStream>();
+    const myVideoDivRef = useRef<HTMLDivElement>(null);
+
     const reflectHover = () => {
         setReflect(true);
     }
     const reflectLeave = () => {
         setReflect(false);
-    }
-    const micHover = () => {
-        setMic(true);
-    }
-    const micLeave = () => {
-        setMic(false);
-    }
-    const cameraHover = () => {
-        setCamera(true);
-    }
-    const cameraLeave = () => {
-        setCamera(false);
-    }
-    const moreDotHover = () => {
-        setMoredot(true);
-    }
-    const moreDotLeave = () => {
-        setMoredot(false);
     }
 
     const getLocalStream = useCallback(async () => {
@@ -138,10 +112,6 @@ const PracticeRoom = () => {
             }
         })
     }, [])
-
-    const youtubeChange = (e: any) => {
-        setEnd(true);
-    }
 
     const changeMusic = (musicId: any) => {
         setSelectedMusic(musicId);
@@ -308,60 +278,81 @@ const PracticeRoom = () => {
         
     }
 
+    function easeOutCirc(x: number): number {
+        return Math.sqrt(1 - Math.pow(x - 1, 2));
+    }
+
+    function useCountNum(end: number, start = 0, duration = 2000) {
+        const frameRate = 1000 / 60
+        const totalFrame = Math.round(duration / frameRate)
+        setScoreCount(0);
+      
+        useEffect(() => {
+          let currentNumber = start
+          const counter = setInterval(() => {
+            const progress = easeOutCirc(++currentNumber / totalFrame)
+            setScoreCount(Math.round(end * progress))
+      
+            if (progress === 1) {
+              clearInterval(counter)
+            }
+          }, frameRate)
+        }, [end, frameRate, start, totalFrame])
+      
+        return scoreCount;
+    }
+
+    async function reflectMyVideo() {
+        console.log("!reflect", reflect);
+
+        if (!reflect) {
+            myVideoDivRef.current?.setAttribute("class", "my-video reflect-video");
+            setReflect(true);
+        } else {
+            myVideoDivRef.current?.setAttribute("class", "my-video");
+            setReflect(false);
+        }
+    }
+
 
     return(
         <>
             <div className="practiceroom-wrap">
-                <SideMenu/>
-                <div className="practice-video-wrap">
+                {/* <SideMenu/> */}
+                <div className="remove-sidemenu practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
                             <Link href="/"><Image src={LeftArrowIcon} alt=""/></Link>
                         </div>
                         <div className="room-title">
-                            <h3>보이넥스트도어 - One and Only</h3>
-                            <span>2013년 7월 3일</span>
+                            <h3>Step Up 연습실</h3>
+                            <span>K-Pop 댄스에 도전해 높은 점수를 노려보세요!</span>
                         </div>
                     </div>
 
                     <div className="video-content">
-                        <div className="yours-video">
+                        <div className="my-video youtube-video">
                         {
                             saveMotion ?
-                            <iframe width="420" height="345" src={`${EMBED_URL[selectedMusic]}?autoplay=1`} allow="autoplay" onLoad={youtubeChange}></iframe>
+                            <iframe className="make-border" src={`${EMBED_URL[selectedMusic]}?autoplay=1`} allow="autoplay"></iframe>
                             :
-                            <iframe width="420" height="345" src={`${EMBED_URL[selectedMusic]}`} allow="autoplay" onLoad={youtubeChange}></iframe>
+                            <iframe className="make-border" src={`${EMBED_URL[selectedMusic]}`} allow="autoplay"></iframe>
                         }                            
                         </div>
 
-                        <div className="my-video" style={{ position: "relative", top: "0px", left: "0px" }}>
-                            <video src="" playsInline ref={localVideoRef}></video>
+                        <div ref={myVideoDivRef} className="my-video reflect-video" style={{ position: "relative", top: "0px", left: "0px" }}>
+                            <video className="make-border" src="" playsInline ref={localVideoRef}></video>
                             <canvas ref={localCanvasRef} style={{position:"absolute", left: "0px", top: "0px", width: "100%", height:"100%"}}></canvas>
                         </div>
                         
                         <div className="control-wrap">
                             <ul>
                                 <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave}>
-                                    <button>
+                                    <button onClick={reflectMyVideo}>
                                         {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
-                                    <button>
-                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
-                                    </button>
-                                </li>
-                                <li><button onClick={startMeasure} className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
-                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
-                                    <button>
-                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
-                                    </button>
-                                </li>
-                                <li onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
-                                    <button>
-                                        {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                <li><button onClick={startMeasure} className="exit-button">{lang==="en" ? "Try!" : lang==="cn" ? "挑战!" : "도전!" }</button></li>
                             </ul>
                         </div>
                     </div>

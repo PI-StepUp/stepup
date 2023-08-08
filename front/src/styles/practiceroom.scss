@@ -4,7 +4,7 @@
     @include flex;
     .practice-video-wrap{
         @include box-padding(20px);
-        @include setSize(68vw,100vh);
+        @include setSize(76vw,100vh);
         @include flex;
         flex-direction: column;
         background-color:#F5F5F5;
@@ -36,10 +36,21 @@
             flex:1;
             @include flex(center, center);
             margin-top:25px;
+            .reflect-video{
+                transform: rotateY(180deg);
+                -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+                -moz-transform:rotateY(180deg); /* Firefox */
+            }
+            .youtube-video{
+                @include flex(center, center);
+            }
             .my-video{
                 @include setSize(50%, 100%);
                 background-color:#CBD1D1;
                 video{
+                    @include setSize(100%, 100%);
+                } 
+                iframe{
                     @include setSize(100%, 100%);
                 }
             }
