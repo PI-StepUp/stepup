@@ -81,14 +81,7 @@ const DetailNotice = () => {
         }
 
 
-        axiosBoard.get(`/notice/${boardId}`, {
-            params:{
-                boardId: boardId,
-            },
-            headers:{
-                Authorization: `Bearer ${accessToken}`
-            }
-        }).then((data) => {
+        axiosBoard.get(`/notice/${boardId}`).then((data) => {
             if(data.data.message === "공지사항 게시글 조회 완료"){
                 setArticle(data.data.data);
             }
