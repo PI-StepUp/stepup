@@ -44,7 +44,7 @@ const SignUp = () => {
         e.preventDefault();
         try{
             const duplNickname = await axiosUser.post("/dupnick", {
-                nickName : nickname,
+                nickname : nickname,
             });
             if(duplNickname.data.message === "닉네임 사용 가능"){
                 alert("사용가능한 닉네임 입니다.");
