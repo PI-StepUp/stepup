@@ -67,6 +67,7 @@ public class TalkApiControllerTest {
     public User makeWriter() {
         writer = User.builder()
                 .id("j3beom")
+                .nickname("j3beom")
                 .role(UserRole.ROLE_USER)
                 .build();
         return writer;
@@ -80,6 +81,7 @@ public class TalkApiControllerTest {
                 .title("자유게시판 테스트 제목")
                 .content("자유게시판 테스트 내용")
                 .fileURL("https://example.com/talk_files/meeting_document.pdf")
+                .boardType("TALK")
                 .build();
     }
 
@@ -90,6 +92,7 @@ public class TalkApiControllerTest {
                 .title("자유게시판 테스트 제목")
                 .content("자유게시판 테스트 내용")
                 .fileURL("https://example.com/talk_files/meeting_document.pdf")
+                .boardType("TALK")
                 .build();
     }
 
@@ -107,6 +110,8 @@ public class TalkApiControllerTest {
                 .title("(수정)자유게시판 테스트 제목")
                 .content("(수정)자유게시판 테스트 내용")
                 .fileURL("(수정)https://example.com/talk_files/meeting_document.pdf")
+                .boardType("TALK")
+                .writerName("j3beom")
                 .build();
     }
 
