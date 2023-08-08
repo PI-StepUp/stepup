@@ -17,6 +17,7 @@ let users = {};
 let socketToRoom = {};
 
 let result = [];
+let maxNumCnt = 0;
 
 const maximum = process.env.MAXIMUM || 4;
 
@@ -28,9 +29,9 @@ io.on('connection', socket => {
                 socket.to(socket.id).emit('room_full');
                 return;
             }
-            users[data.room].push({id: socket.id, email: data.email});
+            users[data.room].push({id: socket.id, email: data.email, name: data.name});
         } else {
-            users[data.room] = [{id: socket.id, email: data.email}];
+            users[data.room] = [{id: socket.id, email: data.email, name: data.name}];
         }
         socketToRoom[socket.id] = data.room;
 
@@ -68,24 +69,33 @@ io.on('connection', socket => {
     });
 
     socket.on('close_randomplay', (nickname, correct, roomName) => {
-        console.log(nickname, correct);
         result.push({nickname, correct});
         let winner = "";
         let max = 0;
         // 같은 방 구분할 것
-        if(Object.keys(users).length == result.length){
+
+        console.log(users);
+        for(let i=0; i<Object.keys(users).length; i++){
+            if(users[roomName] != undefined){
+                maxNumCnt++;
+            }
+        }
+        if(result.length == maxNumCnt){
             for(let i=0; i<result.length; i++){
                 if(max <= result[i].correct){
                     max = result[i].correct;
                     winner = result[i].nickname;
                 }
             }
+            result = [];
+            maxNumCnt = 0;
 
             io.emit("congraturation", roomName, winner);
         }
     });
 
     socket.on('finish', (roomName) => {
+        console.log(roomName);
         io.emit('cntCorrect', roomName);
     })
 
