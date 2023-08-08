@@ -1,5 +1,5 @@
 import {FilesetResolver, PoseLandmarker} from "@mediapipe/tasks-vision";
-// import {DynamicTimeWarping} from "dynamic-time-warping";
+import {DynamicTimeWarping} from "dynamic-time-warping";
 
 var danceCompareNorm:any[] = [];
 var danceCompareVec:any[] = [];
@@ -30,6 +30,8 @@ async function calculateSimilarity(danceRecord:any[], danceAnswer:any[]) {
   console.log("dance record", danceRecord);
 
   console.log("dance answer", danceAnswer);
+  danceCompareNorm = [];
+  danceCompareVec = [];
 
   normalizeDance(danceRecord, danceCompareNorm);
   vectorizeDance(danceCompareNorm, danceCompareVec);
