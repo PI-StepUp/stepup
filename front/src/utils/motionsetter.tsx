@@ -1,6 +1,5 @@
 import {FilesetResolver, PoseLandmarker} from "@mediapipe/tasks-vision";
-import {DynamicTimeWarping} from "dynamic-time-warping";
-
+// import {DynamicTimeWarping} from "dynamic-time-warping";
 
 var danceCompareNorm:any[] = [];
 var danceCompareVec:any[] = [];
@@ -107,7 +106,7 @@ function vectorizeDance(danceNorm:any[], danceVec:any[]) {
   let oneBodyPartVec = [];
   let xVectors = [];
   let yVectors = [];
-  let vecTemp:any[] = [];
+  let vecTemp:any = [];
 
   for (let i = 0; i < 12; i++) {
     for (let frame of danceNorm) {
@@ -197,7 +196,7 @@ function isNumber(frame:any[]) {
 // lm : landmarks to compare
 function DTW(orlm:any[], lm:any[]){
 
-  let distFunc = function(a, b) {
+  let distFunc = function(a: any, b: any) {
       return Math.abs(a - b);
   }
   
