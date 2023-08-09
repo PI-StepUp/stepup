@@ -1,10 +1,10 @@
 package com.pi.stepup.domain.user.service;
 
-import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.TOKEN_NOTFOUND;
-
-import com.pi.stepup.domain.user.dao.UserRedisRepository;
+import com.pi.stepup.domain.user.dao.RefreshTokenRedisRepository;
+import com.pi.stepup.domain.user.dao.UserInfoRedisRepository;
 import com.pi.stepup.domain.user.domain.RefreshToken;
-import com.pi.stepup.global.util.jwt.exception.TokenNotFoundException;
+import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.domain.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserRedisServiceImpl implements UserRedisService {
 
-    private final UserRedisRepository userRedisRepository;
+    private final UserInfoRedisRepository userInfoRedisRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     @Value("${jwt.refresh-expired-in}")
     private long REFRESH_TOKEN_EXPIRED_IN;
+    @Value("${spring.redis.ttls.user-info}")
+    private long USER_INFO_EXPIRED_IN;
 
     @Override
     @Transactional
@@ -33,5 +36,48 @@ public class UserRedisServiceImpl implements UserRedisService {
     public RefreshToken getRefreshToken(String id) {
         return refreshTokenRedisRepository.findById(id)
             .orElse(null);
+    }
+
+    @Override
+    public void deleteRefreshToken(String id) {
+        refreshTokenRedisRepository.delete(
+            RefreshToken.builder().id(id).build()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void saveUserInfo(User user) {
+        userInfoRedisRepository.save(UserInfo.builder()
+            .id(user.getId())
+            .email(user.getEmail())
+            .emailAlert(user.getEmailAlert())
+            .countryId(user.getCountry().getCountryId())
+            .countryCode(user.getCountry().getCode())
+            .nickname(user.getNickname())
+            .birth(user.getBirth())
+            .profileImg(user.getProfileImg())
+            .point(user.getPoint())
+            .rankName(user.getRank().getName())
+            .rankImg(user.getRank().getRankImg())
+            .role(user.getRole())
+            .ttl(USER_INFO_EXPIRED_IN)
+            .build());
+    }
+
+    @Override
+    public UserInfo getUserInfo(String id) {
+        return userInfoRedisRepository.findById(id)
+            .orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserInfo(User user) {
+        userInfoRedisRepository.delete(
+            UserInfo.builder()
+                .id(user.getId())
+                .build()
+        );
     }
 }
