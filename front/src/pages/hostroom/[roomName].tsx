@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from "react";
-import SideMenu from "components/SideMenu";
 import io from 'socket.io-client';
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
@@ -56,7 +55,6 @@ const Hostroom = () => {
     const [musics, setMusics] = useState<any>();
     const router = useRouter();
     const [roomTitle, setRoomTitle] = useState(router.query.roomName);
-    const hostName = router.query.hostId;
     const title = router.query.title;
     const startAll : any = router.query.startAt;
     const startTime = startAll?.split(":")[0];
@@ -64,6 +62,7 @@ const Hostroom = () => {
     const endAll : any = router.query.endAt;
     const endTime = endAll?.split(":")[0];
     const endMinute = endAll?.split(":")[1];
+    const hostToken = router.query.token;
     const reflectHover = () => {
         setReflect(true);
     }
@@ -96,53 +95,42 @@ const Hostroom = () => {
 
     const finishRandomPlay = () => {
         socketRef.current.emit("finish", roomName);
-        alert("랜덤플레이댄스가 종료되었습니다.");
+        alert("랜덤플레이댄스가 종료되었습니다. 이용해주셔서 감사합니다.");
+        router.push('/randomplay/list');
     }
 
-    useEffect(() => {    
+    useEffect(() => {
         socketRef.current = io.connect(SOCKET_SERVER_URL);
 
-        axios.post("http://52.78.93.184:8080/api/user/login",{
-            id: "ssafy",
-            password: "ssafy"
-        }).then((data) => {
-            if(data.data.message === "로그인 완료"){
-                setAccessToken(data.data.data.tokens.accessToken);
-                setRefreshToken(data.data.data.tokens.refreshToken);
-                setId(id);
-                setNickname(data.data.data.userInfo.nickname);
-                setProfileImg(data.data.data.userInfo.profileImg);
-                setRankname(data.data.data.userInfo.rankName);
-            }
-        })
-
-        axios.get("http://52.78.93.184:8080/api/music",{
+        axios.get('http://52.78.93.184:8080/api/music',{
             params:{
                 keyword: "",
             },
             headers:{
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${hostToken}`,
             }
         }).then((data) => {
+            console.log(data);
             if(data.data.message === "노래 목록 조회 완료"){
                 setMusics(data.data.data);
             }
-        }).then(() => {
-            axiosDance.get('',{
-                params: {
-                    progressType: "ALL",
-                }
-            }).then((data) => {
-                console.log(data);
-                if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
-                    for(let i=0; i<data.data.data.length; i++) {
-                        if(data.data.data[i].title === roomTitle){
-                            setRoomName(data.data.data[i].randomDanceId);
-                        }
+        });
+
+        axiosDance.get('',{
+            params: {
+                progressType: "ALL",
+            }
+        }).then((data) => {
+            console.log(data);
+            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+                for(let i=0; i<data.data.data.length; i++) {
+                    if(data.data.data[i].title === roomTitle){
+                        setRoomName(data.data.data[i].randomDanceId);
                     }
                 }
-            })
-        })
+            }
+        });
+
     }, [])
     return(
         <>

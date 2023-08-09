@@ -73,7 +73,13 @@ const RandomPlayList = () => {
                             <Image src={ArticleIcon} alt=""/>
                             <h3>{lang==="en" ? "Popular right now" : lang==="cn" ? "现在很有人气的随机舞蹈" : "현재 인기 있는 랜덤 플레이 댄스" }</h3>
                         </div>
-                         <button><Link href="/randomplay/create">{lang==="en" ? "Holding" : lang==="cn" ? "打开" : "개최하기" }</Link></button>
+                        {
+                            nickname ?
+                            <button><Link href="/randomplay/create">{lang==="en" ? "Holding" : lang==="cn" ? "打开" : "개최하기" }</Link></button>
+                            :
+                            <></>
+
+                        }
                     </div>
                     <div className="section-content">
                         <ul>
@@ -99,7 +105,7 @@ const RandomPlayList = () => {
                                                 <span>{room.hostNickname}</span>
                                                 <div className="flex-wrap">
                                                     <button>예약하기</button>
-                                                    <span>참여 PM6시 ~ PM7시</span>
+                                                    <span>참여 {room.startAt.split("T")[1].split(":")[0]}시 {room.startAt.split("T")[1].split(":")[1]}분 ~ {room.endAt.split("T")[1].split(":")[0]}시 {room.endAt.split("T")[1].split(":")[1]}분</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -134,7 +140,7 @@ const RandomPlayList = () => {
                                                 <span>{inprogress.hostNickname}</span>
                                                 <div className="flex-wrap">
                                                     <button>예약하기</button>
-                                                    <span>참여 PM6시 ~ PM7시</span>
+                                                    <span>참여 {inprogress.startAt.split("T")[1].split(":")[0]}시 {inprogress.startAt.split("T")[1].split(":")[1]}분 ~ {inprogress.endAt.split("T")[1].split(":")[0]}시 {inprogress.endAt.split("T")[1].split(":")[1]}분</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -162,7 +168,7 @@ const RandomPlayList = () => {
                                         <li key={index}>
                                             <Link href="/danceroom">
                                                 <div className="section-content-img">
-                                                    <span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
+                                                    <span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자율모드" : "랭킹모드"}</span>
                                                     <Image src={RandomplayThumbnail} alt=""/>
                                                 </div>
                                                 <div className="section-content-info">
@@ -170,7 +176,7 @@ const RandomPlayList = () => {
                                                     <span>{scheduled.hostNickname}</span>
                                                     <div className="flex-wrap">
                                                         <button>예약하기</button>
-                                                        <span>참여 PM6시 ~ PM7시</span>
+                                                        <span>참여 {scheduled.startAt.split("T")[1].split(":")[0]}시 {scheduled.startAt.split("T")[1].split(":")[1]}분 ~ {scheduled.endAt.split("T")[1].split(":")[0]}시 {scheduled.endAt.split("T")[1].split(":")[1]}분</span>
                                                     </div>
                                                 </div>
                                             </Link>

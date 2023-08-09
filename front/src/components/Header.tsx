@@ -31,6 +31,19 @@ const Header = () => {
         router.push('/');
     }
 
+    const movePracticeRoom = () => {
+		if(nickname == ""){
+			alert("해당 서비스는 로그인 후 이용하실 수 있습니다.");
+		}else{
+			router.push({
+				pathname: "/practiceroom",
+				query:{
+					token: accessToken,
+				}
+			});
+		}
+	}
+
     useEffect(() => {
 		if(nickname != ""){
 			setNav(<ul>
@@ -59,7 +72,7 @@ const Header = () => {
                             <li><h2><Link href="/randomplay/list">{lang==="en" ? "Random play" : lang==="cn" ? "随机播放" : "랜덤플레이" }</Link></h2></li>
                             <li><h2><Link href="/notice/list">{lang==="en" ? "Community" : lang==="cn" ? "公社" : "커뮤니티" }</Link></h2></li>
                             <li><h2><Link href="/playlist/list">{lang==="en" ? "New song" : lang==="cn" ? "新歌申请" : "신곡신청" }</Link></h2></li>
-                            <li><h2><Link href="/practiceroom">{lang==="en" ? "Practice room" : lang==="cn" ? "进入练习室" : "연습실입장" }</Link></h2></li>
+                            <li onClick={movePracticeRoom}><h2>{lang==="en" ? "Practice room" : lang==="cn" ? "进入练习室" : "연습실입장" }</h2></li>
                         </ul>
                     </nav>
                     <div className="login-wrap">

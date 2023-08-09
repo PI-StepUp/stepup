@@ -17,6 +17,8 @@ import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idSt
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import { useInterval } from "usehooks-ts";
+import { axiosDance } from "apis/axios";
+import { access } from "fs"
 
 const Index = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
@@ -31,6 +33,7 @@ const Index = () => {
 	const router = useRouter();
 
 	const [mainInfo, inView] = useInView();
+	const [rooms, setRooms] = useState<any>();
 	const [nav, setNav] = useState<any>(<ul>
 		<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
 		<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
@@ -38,10 +41,8 @@ const Index = () => {
 
 	useInterval(() => {
 		if(mainBanner === 1){
-			console.log("2로 바꿉니다.");
 			setMainBanner(2);
 		}else if(mainBanner === 2){
-			console.log("1로 바꿉니다.");
 			setMainBanner(1);
 		}
 	}, 4000)
@@ -62,22 +63,31 @@ const Index = () => {
 		router.push("/");
     }
 
-	// useEffect(() => {
-	// 	if(nickname != ""){
-	// 		setNav(<ul>
-	// 			<li onClick={signout}>{lang === "en" ? "SIGNOUT" : lang === "cn" ? "注销" : "로그아웃"}</li>
-	// 			<li><Link href="/mypage">{lang === "en" ? "Mypage" : lang === "cn" ? "我的页面" : "마이페이지"}</Link></li>
-	// 		</ul>);
-	// 	}else if(nickname == ""){
-	// 		setNav(
-	// 			<ul>
-	// 				<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
-	// 				<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
-	// 			</ul>
-	// 		);
-	// 	}
+	const movePracticeRoom = () => {
+		if(nickname == ""){
+			alert("해당 서비스는 로그인 후 이용하실 수 있습니다.");
+		}else{
+			router.push({
+				pathname: "/practiceroom",
+				query:{
+					token: accessToken,
+				}
+			});
+		}
+	}
 
-	// }, [inView])
+	useEffect(() => {
+		axiosDance.get('',{
+            params: {
+                progressType: "ALL",
+            },
+        }).then((data) => {
+            console.log(data);
+            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+                setRooms(data.data.data);
+            }
+        })
+	}, [])
 
 	useEffect(() => {
 		if (nickname !== "") {
@@ -123,7 +133,7 @@ const Index = () => {
 							<li><h2><Link href="/randomplay/list">{lang === "en" ? "RANDOMPLAY" : lang === "cn" ? "随机播放" : "랜덤플레이"}</Link></h2></li>
 							<li><h2><Link href="/notice/list">{lang === "en" ? "COMMUNITY" : lang === "cn" ? "疏通" : "커뮤니티"}</Link></h2></li>
 							<li><h2><Link href="/playlist/list">{lang === "en" ? "NEW SONG" : lang === "cn" ? "新歌申请" : "신곡신청"}</Link></h2></li>
-							<li><h2><Link href="/practiceroom">{lang === "en" ? "PRACTICE ROOM" : lang === "cn" ? "舞蹈练习室" : "연습실입장"}</Link></h2></li>
+							<li onClick={movePracticeRoom}><h2>{lang === "en" ? "PRACTICE ROOM" : lang === "cn" ? "舞蹈练习室" : "연습실입장"}</h2></li>
 						</ul>
 					</nav>
 					<div className="login-wrap">
@@ -226,42 +236,30 @@ const Index = () => {
                 </div>
                 <div className="realtime-randomplay-content">
                     <ul>
-                        <li>
-                            <div className="realtime-randomplay-content-img">
-                                <Image src={realtimeRandomPlay1} alt=""/>
-                            </div>
-                            <div className="realtime-randomplay-content-info">
-                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="realtime-randomplay-content-img">
-                                <Image src={realtimeRandomPlay1} alt=""/>
-                            </div>
-                            <div className="realtime-randomplay-content-info">
-                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="realtime-randomplay-content-img">
-                                <Image src={realtimeRandomPlay1} alt=""/>
-                            </div>
-                            <div className="realtime-randomplay-content-info">
-                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
-                            </div>
-                        </li>
-                        <li>
-                            <div className="realtime-randomplay-content-img">
-                                <Image src={realtimeRandomPlay1} alt=""/>
-                            </div>
-                            <div className="realtime-randomplay-content-info">
-                                <h4>여기서요? 4세대 남돌·여돌 곡 모음</h4>
-                                <p>관심 26 | 참여 AM10시 ~ PM3시</p>
-                            </div>
-                        </li>
+						{rooms?.map((room: any, index: any) => {
+							if(index >= 0 && index < 4){
+								return(
+									<li><Link href={{
+											pathname: `/danceroom/${room.randomDanceId}`,
+											query:{
+												title: room.title,
+												content: room.content,
+												startAt: room.startAt,
+												endAt: room.endAt,
+												myName: nickname,
+											},
+										}}>
+										<div className="realtime-randomplay-content-img">
+											<Image src={realtimeRandomPlay1} alt=""/>
+										</div>
+										<div className="realtime-randomplay-content-info">
+											<h4>{room.title}</h4>
+											<p>관심 26 | 참여 AM10시 ~ PM3시</p>
+										</div></Link>
+									</li>
+								)
+							}
+						})}
                     </ul>
                 </div>
             </div>
