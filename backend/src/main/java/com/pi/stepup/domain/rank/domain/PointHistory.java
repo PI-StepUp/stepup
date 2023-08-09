@@ -2,6 +2,7 @@ package com.pi.stepup.domain.rank.domain;
 
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.global.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PointHistory {
+public class PointHistory extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "POINT_HISTORY_ID")
@@ -33,7 +35,8 @@ public class PointHistory {
     private Integer count;
 
     @Builder
-    public PointHistory(User user, PointPolicy pointPolicy, RandomDance randomDance, Integer count) {
+    public PointHistory(User user, PointPolicy pointPolicy, RandomDance randomDance,
+        Integer count) {
         this.user = user;
         this.pointPolicy = pointPolicy;
         this.randomDance = randomDance;

@@ -8,16 +8,25 @@ import LanguageButton from "components/LanguageButton";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-
+import { useInView } from "react-intersection-observer";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 import { axiosBoard } from "apis/axios";
 
+import Pagination from "react-js-pagination";
+
 const ArticleList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
-    const [articles, setArticles] = useState<any[]>();
+    const [articles, setArticles] = useState<any>();
+    const [page, setPage] = useState<any>(1);
     const searchValue = useRef<any>();
     const router = useRouter();
+    const [articleTitle, inView] = useInView();
+
+    const handlePageChange = (page: any) => {
+        setPage(page);
+        console.log(page);
+    }
 
     const searchArticles = async (e:any) => {
         e.preventDefault();
@@ -27,6 +36,7 @@ const ArticleList = () => {
             }
         }).then((data) => {
             setArticles(data.data.data);
+            setPage(1);
         })
     }
         
@@ -38,22 +48,34 @@ const ArticleList = () => {
         }).then((data) => {
             setArticles(data.data.data);
         })
-    }, [])
+    }, [inView])
 
     return (
         <>
             <Header/>
             <MainBanner/>
-            <SubNav/>
+            <SubNav linkNo="2"/>
             <div className="article-list-wrap">
-                <div className="article-list-title">
-                    <span>{lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }</span>
-                    <h3>
-                        {lang==="en" ? "All the things KPOP needs" : lang==="cn" ? "KPOP所需的所有" : "KPOP에 필요한 모든" }<br/>
-                        {lang==="en" ? "a place where we meet, step up" : lang==="cn" ? "相聚的地方，舞步舞动" : "만남이 모이는 곳, 스텝업" }<br/>
-                        {lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }
-                    </h3>
-                </div>
+                {
+                    inView ?
+                    <div className="article-list-title" style={{animationName: "left-animation"}} ref={articleTitle}>
+                        <span>{lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }</span>
+                        <h3>
+                            {lang==="en" ? "All the things KPOP needs" : lang==="cn" ? "KPOP所需的所有" : "KPOP에 필요한 모든" }<br/>
+                            {lang==="en" ? "a place where we meet, step up" : lang==="cn" ? "相聚的地方，舞步舞动" : "만남이 모이는 곳, 스텝업" }<br/>
+                            {lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }
+                        </h3>
+                    </div>
+                    :
+                    <div className="article-list-title" ref={articleTitle}>
+                        <span>{lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }</span>
+                        <h3>
+                            {lang==="en" ? "All the things KPOP needs" : lang==="cn" ? "KPOP所需的所有" : "KPOP에 필요한 모든" }<br/>
+                            {lang==="en" ? "a place where we meet, step up" : lang==="cn" ? "相聚的地方，舞步舞动" : "만남이 모이는 곳, 스텝업" }<br/>
+                            {lang==="en" ? "Article" : lang==="cn" ? "帖子" : "게시글" }
+                        </h3>
+                    </div>
+                }
                 <div className="search-wrap">
                     <form>
                         <input type="text" placeholder={lang==="en" ? "Please enter a search term" : lang==="cn" ? "请输入搜索词" : "검색어를 입력해주세요" } ref={searchValue}/>
@@ -72,21 +94,23 @@ const ArticleList = () => {
                             <th>NO</th>
                             <th>{lang==="en" ? "Writer" : lang==="cn" ? "作者" : "작성자" }</th>
                             <th>{lang==="en" ? "Title" : lang==="cn" ? "标题" : "제목" }</th>
-                            <th>{lang==="en" ? "Date of creation" : lang==="cn" ? "制定日期" : "작성일자" }</th>
+                            <th>{lang==="en" ? "Number of Comments" : lang==="cn" ? "评论数量" : "댓글수" }</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {articles?.map((article) => {
-                            return(
-                                <tr onClick={() => router.push({
-                                    pathname: `/article/detail/${article.boardId}`,
-                                })}>
-                                    <td>{article.boardId}</td>
-                                    <td>{article.writerName}</td>
-                                    <td>{article.title}</td>
-                                    <td>{article.commentCnt}</td>
-                                </tr>
-                            )
+                        {articles?.map((article: any , index: any) => {
+                            if(index+1 <= page*10 && index+1 > page*10-10){
+                                return(
+                                    <tr onClick={() => router.push({
+                                        pathname: `/article/detail/${article.boardId}`,
+                                    })} key={index}>
+                                        <td>{article.boardId}</td>
+                                        <td>{article.writerName}</td>
+                                        <td>{article.title}</td>
+                                        <td>{article.commentCnt}</td>
+                                    </tr>
+                                )
+                            }
                         })}
                     </tbody>
                     
@@ -97,14 +121,15 @@ const ArticleList = () => {
                 
                 <div className="pagination">
                     <ul>
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <li>5</li>
-                        <li>6</li>
-                        <li>7</li>
-                        <li>8</li>
+                        <Pagination
+                            activePage={page}
+                            itemsCountPerPage={10}
+                            totalItemsCount={articles?.length}
+                            pageRangeDisplayed={9}
+                            prevPageText={'<'}
+                            nextPageText={'>'}
+                            onChange={handlePageChange}
+                        />
                     </ul>
                 </div>
             </div>

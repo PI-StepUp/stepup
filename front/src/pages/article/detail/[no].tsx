@@ -169,7 +169,7 @@ const DetailArticle = () => {
         <>
             <Header></Header>
             <MainBanner></MainBanner>
-            <SubNav></SubNav>
+            <SubNav linkNo="2"></SubNav>
             <div className="detail-article-wrap">
                 <div className="detail-title">
                     <span>게시글</span>
@@ -198,9 +198,9 @@ const DetailArticle = () => {
                 <div className="comment-wrap">
                     <ul>
                         {
-                            comments?.map((comment) => {
+                            comments?.map((comment, index) => {
                                 return(
-                                    <li>
+                                    <li key={index}>
                                         <div className="img-wrap">
                                             <Image src={CommentDefaultImage} alt=""/>
                                         </div>

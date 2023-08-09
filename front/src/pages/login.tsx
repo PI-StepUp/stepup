@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react"
+    import React, {useState, useRef} from "react"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import LanguageButton from "components/LanguageButton"
@@ -77,10 +77,11 @@ const Login = () => {
                 setNickname(user.data.data.userInfo.nickname);
                 setProfileImg(user.data.data.userInfo.profileImg);
                 setRankName(user.data.data.userInfo.rankName);
+                console.log(accessToken);
                 router.push('/');
             }
         }catch(e){
-            alert("가입되지 않은 고객입니다. 회원가입 후 이용해주세요.");
+            alert("아이디 또는 비밀번호가 틀렸습니다.");
         }
     }
     return(

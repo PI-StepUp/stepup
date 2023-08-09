@@ -81,14 +81,7 @@ const DetailNotice = () => {
         }
 
 
-        axiosBoard.get(`/notice/${boardId}`, {
-            params:{
-                boardId: boardId,
-            },
-            headers:{
-                Authorization: `Bearer ${accessToken}`
-            }
-        }).then((data) => {
+        axiosBoard.get(`/notice/${boardId}`).then((data) => {
             if(data.data.message === "공지사항 게시글 조회 완료"){
                 setArticle(data.data.data);
             }
@@ -98,7 +91,7 @@ const DetailNotice = () => {
         <>
             <Header></Header>
             <MainBanner></MainBanner>
-            <SubNav></SubNav>
+            <SubNav linkNo="1"></SubNav>
             <div className="detail-article-wrap">
                 <div className="detail-title">
                     <span>게시글</span>
@@ -109,7 +102,7 @@ const DetailNotice = () => {
                 </div>
                 <div className="detail-content">
                     <div className="list-wrap">
-                        <button><Link href="/article/list">목록보기</Link></button>
+                        <button><Link href="/notice/list">목록보기</Link></button>
                     </div>
                     <div className="detail-main-title">
                         <span>공지사항</span>

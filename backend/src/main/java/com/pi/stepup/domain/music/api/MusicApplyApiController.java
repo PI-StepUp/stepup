@@ -39,6 +39,8 @@ public class MusicApplyApiController {
     @Operation(summary = "노래 신청 등록", description = "사용자가 신청하고 싶은 노래를 등록한다.")
     @ApiResponse(responseCode = "201",
         description = "노래 신청 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
     @PostMapping
     public ResponseEntity<ResponseDto<?>> createMusicApply(
         @RequestBody MusicApplySaveRequestDto musicApplySaveRequestDto) {
@@ -69,6 +71,10 @@ public class MusicApplyApiController {
         description = "현재 접속 해 있는 유저가 신청한 노래들의 상세 정보를 불러온다.")
     @ApiResponse(responseCode = "200",
         description = "나의 노래 신청 목록 조회 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
+    @ApiResponse(responseCode = "403",
+        description = "접근 권한 없음")
     @GetMapping("/my")
     public ResponseEntity<ResponseDto<?>> readAllByIdMusicApply() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -80,6 +86,8 @@ public class MusicApplyApiController {
     @Operation(summary = "노래 신청 상세 조회", description = "사용자가 신청한 노래의 상세 정보를 불러온다.")
     @ApiResponse(responseCode = "200",
         description = "노래 신청 상세 조회 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
     @GetMapping("/detail/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> readOneMusicApply(
         @PathVariable(name = "musicApplyId") Long musicApplyId) {
@@ -91,9 +99,14 @@ public class MusicApplyApiController {
 
     @Operation(summary = "노래 신청 삭제",
         description = "사용자는 자신이 작성한 신청 글을 삭제 할 수 있다.")
-    // TODO : 사용자 아이디도 가져와야 할 듯
     @ApiResponse(responseCode = "200",
         description = "노래 신청 삭제 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
+    @ApiResponse(responseCode = "403",
+        description = "접근 권한 없음")
+    @ApiResponse(responseCode = "400",
+        description = "노래 신청 조회 실패")
     @DeleteMapping("/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> deleteMusicApply(
         @PathVariable("musicApplyId") Long musicApplyId) {
@@ -107,6 +120,10 @@ public class MusicApplyApiController {
         description = "사용자의 해당하는 노래 신청 좋아요 상태가 1 이면 좋아요를 추가 할 수 있다.")
     @ApiResponse(responseCode = "201",
         description = "노래 신청 좋아요 완료")
+    @ApiResponse(responseCode = "400",
+        description = "1. 사용자 조회 실패 \t\n 2. 노래 신청 조회 실패")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
     @PostMapping("/heart")
     public ResponseEntity<ResponseDto<?>> addMusicApplyHeart(
         @RequestBody HeartSaveRequestDto heartSaveRequestDto) {
@@ -122,6 +139,10 @@ public class MusicApplyApiController {
         description = "사용자의 해당하는 노래 신청 좋아요 상태가 0 이면 좋아요를 취소 할 수 있다.")
     @ApiResponse(responseCode = "200",
         description = "좋아요 취소 완료")
+    @ApiResponse(responseCode = "400",
+        description = "좋아요 취소 실패")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
     @DeleteMapping("/heart/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> deleteMusicApplyHeart(
         @PathVariable(name = "musicApplyId") Long musicApplyId) {
@@ -136,6 +157,10 @@ public class MusicApplyApiController {
         description = "사용자의 해당하는 노래 신청 좋아요 상태를 확인 할 수 있다.")
     @ApiResponse(responseCode = "200",
         description = "노래 신청 좋아요 상태 확인 완료")
+    @ApiResponse(responseCode = "400",
+        description = "좋아요 상태 확인 실패")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
     @GetMapping("/heart/{musicApplyId}")
     public ResponseEntity<ResponseDto<?>> readMusicApplyHeartStatus(
         @PathVariable(name = "musicApplyId") Long musicApplyId) {

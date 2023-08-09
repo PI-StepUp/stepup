@@ -6,18 +6,19 @@ import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.domain.Country;
+import java.time.LocalDateTime;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@Profile("!danceRepoTest")
+@ConditionalOnProperty(name = "spring.initDb.enable", havingValue = "true")
 public class InitDb {
 
     private final InitService initService;
@@ -49,6 +50,10 @@ public class InitDb {
             makeDanceMusic();
             makePointHistory();
             makeHeart();
+            makeNotice();
+            makeTalk();
+            makeMeeting();
+            makeComment();
         }
 
         public void makeCountry() {
@@ -162,9 +167,9 @@ public class InitDb {
                 String sql =
                     "insert into users (user_id, created_at, modified_at, birth, country_id, "
                         + "  email, email_alert, id, nickname, password, point, profile_img, rank_id, refresh_token, role) "
-                        + " values (?, '2023-08-01', '2023-08-01', '1997-01-01', 1, '"
+                        + " values (?, '2023-01-01', '2023-01-01',  '1997-01-01', 1, '"
                         + id[i]
-                        + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'refresh_token', 'ROLE_ADMIN')";
+                        + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'refresh_token', 'ROLE_USER')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 2));
                 query.setParameter(2, id[i]);
@@ -211,9 +216,9 @@ public class InitDb {
             //랭킹
             for (int i = 0; i < 5; i++) {
                 String sql =
-                    "insert into random_dance (random_dance_id, content, dance_type,"
+                    "insert into random_dance (random_dance_id, created_at, modified_at, content, dance_type,"
                         + " end_at, user_id, max_user, start_at, thumbnail, title) "
-                        + " values (?, ?, 'RANKING', '2023-08-31 18:00', 4, 10,"
+                        + " values (?, '2023-01-01', '2023-01-01',  ?, 'RANKING', '2023-08-31 18:00', 4, 10,"
                         + " '2023-08-01 10:00', 'url', ?) ";
 
                 Query query = em.createNativeQuery(sql);
@@ -225,9 +230,9 @@ public class InitDb {
             //자율
             for (int i = 5; i < 10; i++) {
                 String sql =
-                    "insert into random_dance (random_dance_id, content, dance_type,"
+                    "insert into random_dance (random_dance_id, created_at, modified_at, content, dance_type,"
                         + " end_at, user_id, max_user, start_at, thumbnail, title) "
-                        + " values (?, ?, 'BASIC', '2023-08-31 18:00', 5, 15,"
+                        + " values (?, '2023-01-01', '2023-01-01', ?, 'BASIC', '2023-08-31 18:00', 5, 15,"
                         + " '2023-08-20 10:00', 'url', ?) ";
 
                 Query query = em.createNativeQuery(sql);
@@ -240,8 +245,9 @@ public class InitDb {
 
         public void makeReservation() {
             for (int i = 2; i <= 8; i++) {
-                String sql = "insert into reservation (RESERVATION_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (?, 5, " + i + ")";
+                String sql =
+                    "insert into reservation (RESERVATION_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                        + " values (?, 5, " + i + ", '2023-01-01', '2023-01-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i - 1));
                 query.executeUpdate();
@@ -251,8 +257,8 @@ public class InitDb {
         public void makeAttend() {
             for (int i = 2; i <= 8; i++) {
                 String sql =
-                    "insert into attend_history (ATTEND_HISTORY_ID, RANDOM_DANCE_ID, USER_ID) "
-                        + " values (?, 1, " + i + ")";
+                    "insert into attend_history (ATTEND_HISTORY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                        + " values (?, 1, " + i + ", '2023-01-01', '2023-01-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i - 1));
                 query.executeUpdate();
@@ -262,44 +268,44 @@ public class InitDb {
         public void makePointHistory() {
             //개최자
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (1, 1, 5, 1, 2)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (1, 1, 5, 1, 2, '2023-01-01', '2023-01-01')").executeUpdate();
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (2, 1, 5, 2, 3)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (2, 1, 5, 2, 3,'2023-01-01', '2023-01-01')").executeUpdate();
 
             //1번 랜플댄 참여 - 각 123등
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (3, 1, 1, 1, 3)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (3, 1, 1, 1, 3, '2023-01-01', '2023-01-01')").executeUpdate();
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (4, 1, 2, 1, 4)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (4, 1, 2, 1, 4, '2023-01-01', '2023-01-01')").executeUpdate();
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (5, 1, 3, 1, 5)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (5, 1, 3, 1, 5, '2023-01-01', '2023-01-01')").executeUpdate();
 
             //1번 랜플댄 참여 - 노래 성공 (참여자 6명+개최자 1명)
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (6, 3, 4, 1, 3)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (6, 3, 4, 1, 3, '2023-01-01', '2023-01-01')").executeUpdate();
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (7, 2, 4, 1, 4)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (7, 2, 4, 1, 4, '2023-01-01', '2023-01-01')").executeUpdate();
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (8, 2, 4, 1, 5)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (8, 2, 4, 1, 5,'2023-01-01', '2023-01-01')").executeUpdate();
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (9, 1, 4, 1, 6)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (9, 1, 4, 1, 6, '2023-01-01', '2023-01-01')").executeUpdate();
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (10, 1, 4, 1, 7)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (10, 1, 4, 1, 7, '2023-01-01', '2023-01-01')").executeUpdate();
 
             //연습실 참여
             em.createNativeQuery
-                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID) "
-                    + " values (11, 5, 6, null, 2)").executeUpdate();
+                ("insert into point_history (POINT_HISTORY_ID, COUNT, POINT_POLICY_ID, RANDOM_DANCE_ID, USER_ID, created_at, modified_at) "
+                    + " values (11, 5, 6, null, 2, '2023-01-01', '2023-01-01')").executeUpdate();
         }
 
         public void makeMusicApply() {
@@ -319,8 +325,8 @@ public class InitDb {
                 "Get Up", "ASAP"};
             for (int i = 0; i < 5; i++) {
                 String sql =
-                    "insert into music_apply (MUSIC_APPLY_ID, ARTIST, CONTENT, HEART_CNT, TITLE, WRITER_ID) "
-                        + " values (?, ?, ?, 1, ?, ?)";
+                    "insert into music_apply (MUSIC_APPLY_ID, ARTIST, CONTENT, HEART_CNT, TITLE, WRITER_ID, created_at, modified_at) "
+                        + " values (?, ?, ?, 1, ?, ?, '2023-01-01', '2023-01-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
                 query.setParameter(2, artist);
@@ -336,8 +342,8 @@ public class InitDb {
             for (int j = 1; j <= 10; j++) {
                 for (int i = 1; i <= 10; i++) {
                     String sql =
-                        "insert into dance_music (DANCE_MUSIC_ID, RANDOM_DANCE_ID, MUSIC_ID) "
-                            + " values (?, ?, ?)";
+                        "insert into dance_music (DANCE_MUSIC_ID, RANDOM_DANCE_ID, MUSIC_ID, created_at, modified_at) "
+                            + " values (?, ?, ?, '2023-01-01', '2023-01-01')";
                     Query query = em.createNativeQuery(sql);
                     query.setParameter(1, pk++);
                     query.setParameter(2, j);
@@ -351,11 +357,304 @@ public class InitDb {
             int pk = 1;
             for (int i = 2; i < 7; i++) {
                 String sql =
-                    "insert into heart (HEART_ID, MUSIC_APPLY_ID, USER_ID) "
-                        + " values (?, ?, " + i + ")";
+                    "insert into heart (HEART_ID, MUSIC_APPLY_ID, USER_ID, created_at, modified_at) "
+                        + " values (?, ?, " + i + ",'2023-01-01', '2023-01-01')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, pk++);
                 query.setParameter(2, (i - 1));
+                query.executeUpdate();
+            }
+        }
+
+        public void makeNotice() {
+
+            String[] title = new String[]{
+                "(2023-08-1) 제 1회 랜덤플레이댄스 온라인 대회 안내",
+                "연습실 기능 추가 안내",
+                "오프라인 랜덤 댄스 파티 개최 안내",
+                "댄스 연습 노래 신청 추가",
+                "(2023-08-20) 제 2회 랜덤 댄스 대회 참가 신청 안내"
+            };
+
+            String[] content = new String[]{
+                "8월 1일 제 1회 랜덤플레이댄스 온라인 대회가 개최됩니다! 많은 관심과 참여 부탁드립니다.",
+                "연습실 기능이 추가되었습니다. 이제 연습실에서 캠을 키고 댄스 연습을 할 수 있어요. 열심히 연습해서 멋진 댄서가 되어보세요!",
+                "오프라인 랜덤 댄스 파티가 오늘 개최됩니다. 다양한 음악과 함께 신나는 시간을 보내고 싶다면 지금 바로 참가 신청해주세요!",
+                "이제부터 원하는 댄스 연습 노래를 신청할 수 있는 기능이 추가되었습니다. 연습실에서 연습하고 여러분의 멋진 댄스 실력을 자랑해보세요.",
+                "8월 20일 제 2회 랜덤플레이댄스 온라인 대회가 개최됩니다. 다양한 춤 스타일로 경쟁하고 포인트를 받아보세요!"
+            };
+
+            String[] fileURL = new String[]{
+                "url1",
+                "url2",
+                "url3",
+                "",
+                "url5"
+            };
+
+            Long[] randomDanceId = new Long[]{
+                1L,
+                null,
+                null,
+                null,
+                5L
+            };
+
+            for (int i = 0; i < title.length; i++) {
+                String sql =
+                    "INSERT INTO board (board_id, created_at, modified_at, writer, title, content,"
+                        +
+                        " file_url, board_type) VALUES (?, '2023-08-01', '2023-08-01', 1, ?, ?, ?, 'NOTICE')";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 1));
+                query.setParameter(2, title[i]);
+                query.setParameter(3, content[i]);
+                query.setParameter(4, fileURL[i]);
+                query.executeUpdate();
+
+            }
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO notice (board_id, random_dance_id) VALUES (?, ?)";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 1));
+                query.setParameter(2, randomDanceId[i]);
+                query.executeUpdate();
+            }
+        }
+
+        public void makeTalk() {
+
+            String[] title = new String[]{
+                "내일 성수 카페 갈 사람 모여주세요!",
+                "오늘 저녁 같이 먹을 사람 구해요",
+                "여행 같이 갈 사람 ??!",
+                "영화 보러 같이 가실 분(서현 !!)",
+                "강남 운동 같이 할 친구 구해요"
+            };
+
+            String[] content = new String[]{
+                "요즘 성수 카페 새로 생긴데 많던데 같이 갈사람 댓글 남겨주세요 ~~",
+                "오늘 저녁에 같이 먹을 사람을 구해요. 같이 식사하며 이야기 나누고 싶어요!",
+                "여행 같이 떠날 친구 구합니당. 원하시는 여행지 있으면 같이 정해봐요!",
+                "영화 보러 갈 사람을 찾아요~ 같이 영화 관람하면서 즐거운 시간 보내요. 분당쪽 입니다 ",
+                "강남에서 같이 운동 하실 분?? 서로 자세도 봐주고 건강하게 함께 운동합시다 :)"
+            };
+
+            Long[] writer = new Long[]{
+                6L,
+                3L,
+                5L,
+                4L,
+                8L
+            };
+
+            String[] fileURL = new String[]{
+                "url6",
+                "",
+                "url8",
+                "url9",
+                ""
+            };
+
+            int[] comment_cnt = new int[]{
+                3,
+                1,
+                2,
+                1,
+                2
+            };
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
+                        " file_url, board_type) VALUES (?, '2023-08-02', '2023-08-02', ?, ?, ?, ?, 'TALK')";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 6));
+                query.setParameter(2, writer[i]);
+                query.setParameter(3, title[i]);
+                query.setParameter(4, content[i]);
+                query.setParameter(5, fileURL[i]);
+                query.executeUpdate();
+
+            }
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO talk (board_id, comment_cnt) VALUES (?,?)";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 6));
+                query.setParameter(2, comment_cnt[i]);
+                query.executeUpdate();
+            }
+        }
+
+        public void makeMeeting() {
+
+            String[] title = new String[]{
+                "주말 댄스 모임 참여자 모집",
+                "서울 강남역 연습실 같이 빌리실 분 구해요",
+                "같이 댄스 연습할 친구 모집합니다",
+                "오프라인 댄스 파티 참가자 모집",
+                "댄스 실력 상관없이 함께 춤출 분 찾아요!"
+            };
+
+            String[] content = new String[]{
+                "주말에 서울 강남역 근처 연습실을 같이 빌려서 댄스 연습하실 분을 찾습니다. 함께 실력을 향상시키고 즐겁게 춤춰요!",
+                "강남역 근처 연습실을 예약하려고 하는데 혼자서는 비용이 부담스럽네요 ㅠㅠ 같이 연습실 빌려서 실력을 향상시킬 댄서를 모집합니다.",
+                "춤 좋아하는 분들과 함께 정기적으로 모여서 연습하고 발전하는 모임을 만들려고 합니다. 관심 있으신 분들은 연락주세요! (오픈채팅)",
+                "오프라인 댄스 파티에 참가하실 분을 모집합니다. 음악과 함께 즐거운 시간 보내고 멋진 댄서들과 인연을 만들어요! ㅋㅋㅋ",
+                "댄스 실력에 상관없이 즐겁게 춤출 수 있는 모임을 만들어요. 댄스를 좋아하고 함께 즐길 친구들을 찾습니다!"
+            };
+
+            Long[] writer = new Long[]{
+                2L,
+                3L,
+                7L,
+                5L,
+                6L
+            };
+
+            String[] fileURL = new String[]{
+                "url11",
+                "",
+                "url13",
+                "url14",
+                ""
+            };
+
+            String[] region = new String[]{
+                "서울 강남역 근처",
+                "서울 분당역 근처",
+                "인천 연수구",
+                "대구 동성로",
+                "부산 서면"
+            };
+
+            int[] comment_cnt = new int[]{
+                0,
+                3,
+                1,
+                2,
+                1
+            };
+
+            LocalDateTime now = LocalDateTime.now();
+
+            LocalDateTime[] start_at = {
+                now.plusDays(1).plusHours(10),
+                now.plusDays(2).plusHours(14),
+                now.plusDays(3).plusHours(12),
+                now.plusDays(4).plusHours(15),
+                now.plusDays(5).plusHours(11)
+            };
+
+            LocalDateTime[] end_at = {
+                start_at[0].plusHours(3),
+                start_at[1].plusHours(2),
+                start_at[2].plusHours(4),
+                start_at[3].plusHours(3),
+                start_at[4].plusHours(2)
+            };
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO board (board_id, created_at, modified_at, writer, title, content," +
+                        " file_url, board_type) VALUES (?, '2023-08-03', '2023-08-03', ?, ?, ?, ?, 'MEETING')";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 11));
+                query.setParameter(2, writer[i]);
+                query.setParameter(3, title[i]);
+                query.setParameter(4, content[i]);
+                query.setParameter(5, fileURL[i]);
+                query.executeUpdate();
+
+            }
+
+            for (int i = 0; i < title.length; i++) {
+                String sql = "INSERT INTO meeting (board_id, region, start_at, end_at, comment_cnt) VALUES (?,?,?,?,?)";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 11));
+                query.setParameter(2, region[i]);
+                query.setParameter(3, start_at[i]);
+                query.setParameter(4, end_at[i]);
+                query.setParameter(5, comment_cnt[i]);
+                query.executeUpdate();
+            }
+        }
+
+        public void makeComment() {
+            String[] content = new String[]{
+                "저도 성수 카페에 관심 있어요! 같이 가면 좋을 것 같아요.",
+                "저도 서울 성동구에 사는데 성수 카페 같이가요 ! ㅋㅋㅋ",
+                "오늘은 시간이 안되서 아쉽네요ㅠㅠ 다음 기회에는 꼭 함께하고 싶어요!",
+                "오늘 저녁 시간이 맞으면 함께 먹고 싶은데 장소는 어디인가요?",
+                "몇 명 생각하고 계세요? 같이 가는 사람들과 같이 아이디어를 공유하면 좋을 것 같아요!",
+                "저도 여행 같이 갈 친구를 찾고 있는데 ! 혹시 어디 생각하세요 ??",
+                "영화 새로 나온거 보고싶었는데 저는 양재라 중간 위치도 괜찮으세요?",
+                "저도 강남에서 운동 다니고 있는데 같이 운동을 하면 좋을 거 같네요 ㅋㅋ",
+                "무게 몇 정도 치세요?",
+                "오 저도 비용이 부담스러웠는데 같이 연습하면 부담없고 더 재밌을거 같네용!",
+                "강남역 근처인데, 위치가 좋네요! 함께 참가하고 싶어요~",
+                "강남역 근처 연습실 좋네요. 저도 같이 할래요!!!!!",
+                "저도 춤 좋아해서 관심이 있어요. 카카오톡 아이디로 연락 주세요!",
+                "파티에 참가하고 싶어요. 어떻게 신청하면 되나요?",
+                "댄스 파티 너무 기대돼요 ㅎㅎㅎ",
+                "저도 참여하고 싶긴한데 조금 부족해도 괜찮나요?"
+            };
+
+            Long[] board_id = new Long[]{
+                6l,
+                6l,
+                6L,
+                7L,
+                8L,
+                8L,
+                9L,
+                10l,
+                10l,
+                12l,
+                12L,
+                12L,
+                13L,
+                14L,
+                14L,
+                15L
+            };
+
+            Long[] user_id = new Long[]{
+                2l,
+                7l,
+                8L,
+                2L,
+                3L,
+                4L,
+                5L,
+                6l,
+                7l,
+                8l,
+                4L,
+                5L,
+                2L,
+                4L,
+                6L,
+                7L
+            };
+
+            for (int i = 0; i < content.length; i++) {
+                String sql =
+                    "INSERT INTO comment (comment_id,  created_at, modified_at, user_id,  content, board_id) "
+                        +
+                        "VALUES (?,'2023-08-02', '2023-08-02', ?, ?,?)";
+
+                Query query = em.createNativeQuery(sql);
+                query.setParameter(1, (i + 1));
+                query.setParameter(2, user_id[i]);
+                query.setParameter(3, content[i]);
+                query.setParameter(4, board_id[i]);
                 query.executeUpdate();
             }
         }
