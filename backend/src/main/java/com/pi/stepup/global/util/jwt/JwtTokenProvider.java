@@ -2,13 +2,11 @@ package com.pi.stepup.global.util.jwt;
 
 import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.EXPIRED_TOKEN;
 import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.INVALID_TOKEN;
-import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.MALFORMED_HEADER;
 
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.global.error.exception.TokenException;
 import com.pi.stepup.global.util.jwt.exception.ExpiredTokenException;
 import com.pi.stepup.global.util.jwt.exception.InvalidTokenException;
-import com.pi.stepup.global.util.jwt.exception.MalformedHeaderException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,7 +30,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -131,20 +127,5 @@ public class JwtTokenProvider {
             throw new ExpiredTokenException(EXPIRED_TOKEN.getMessage());
         }
 
-    }
-
-    public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-
-        log.debug("bearertoken : {}", bearerToken);
-        if (StringUtils.hasText(bearerToken)) {
-            if (bearerToken.startsWith("Bearer") && bearerToken.length() > 7) {
-                int tokenStartIndex = 7;
-                return bearerToken.substring(tokenStartIndex);
-            }
-            throw new MalformedHeaderException(MALFORMED_HEADER.getMessage());
-        }
-
-        return bearerToken;
     }
 }
