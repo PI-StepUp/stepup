@@ -21,7 +21,6 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
@@ -238,13 +237,11 @@ public class UserApiController {
     })
     @PostMapping("/auth")
     public ResponseEntity<ResponseDto<?>> reissueTokens(
-        @RequestHeader("refreshToken") String refreshToken,
-        @RequestBody ReissueTokensRequestDto reissueTokensRequestDto
-    ) {
+        @RequestHeader("refreshToken") String refreshToken) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ResponseDto.create(
                 REISSUE_TOKENS_SUCCESS.getMessage(),
-                userService.reissueTokens(refreshToken, reissueTokensRequestDto)
+                userService.reissueTokens(refreshToken)
             )
         );
     }

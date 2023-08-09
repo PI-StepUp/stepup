@@ -55,7 +55,6 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
@@ -402,14 +401,13 @@ class UserApiControllerTest {
 
         doReturn(tokenInfo)
             .when(userService)
-            .reissueTokens(any(String.class), any(ReissueTokensRequestDto.class));
+            .reissueTokens(any(String.class));
 
         ResultActions resultActions = mockMvc.perform(
                 post(REISSUE_TOKENS_URL.getUrl())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .characterEncoding(UTF_8)
                     .header("refreshToken", headerRefreshToken)
-                    .content(gson.toJson(ReissueTokensRequestDto.builder().build()))
             )
             .andExpect(status().isCreated())
             .andExpect(jsonPath("message").value(REISSUE_TOKENS_SUCCESS.getMessage()));
@@ -445,11 +443,11 @@ class UserApiControllerTest {
             .checkPassword(any(CheckPasswordRequestDto.class));
 
         mockMvc.perform(
-            post(CHECK_PASSWORD_URL.getUrl())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .characterEncoding(UTF_8)
-                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
-        )
+                post(CHECK_PASSWORD_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+            )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_PASSWORD_SUCCESS.getMessage()));
     }
@@ -463,11 +461,11 @@ class UserApiControllerTest {
             .checkPassword(any(CheckPasswordRequestDto.class));
 
         mockMvc.perform(
-            post(CHECK_PASSWORD_URL.getUrl())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .characterEncoding(UTF_8)
-                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
-        )
+                post(CHECK_PASSWORD_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+            )
             .andExpect(status().isBadRequest());
     }
 
