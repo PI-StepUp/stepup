@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.user.service;
 
-import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
@@ -40,6 +39,4 @@ public interface UserService {
     void findId(FindIdRequestDto findIdRequestDto);
 
     void findPassword(FindPasswordRequestDto findPasswordRequestDto);
-
-    TokenInfo reissueTokens(String refreshToken);
 }

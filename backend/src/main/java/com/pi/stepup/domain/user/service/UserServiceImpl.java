@@ -6,7 +6,6 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICA
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
-import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.NOT_MATCHED_TOKEN;
 
 import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.dao.RankRepository;
@@ -39,7 +38,6 @@ import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
 import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
-import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -226,28 +224,6 @@ public class UserServiceImpl implements UserService {
         );
 
         user.updatePassword(passwordEncoder.encode(randomPassword));
-    }
-
-    @Override
-    @Transactional
-    public TokenInfo reissueTokens(String refreshToken) {
-        if (jwtTokenProvider.validateToken(refreshToken)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-
-            if (refreshToken.equals(
-                userRedisService.getRefreshToken(authentication.getName())
-                    .getRefreshToken())) {
-
-                TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-
-                userRedisService.saveRefreshToken(authentication.getName(),
-                    tokenInfo.getRefreshToken());
-
-                return tokenInfo;
-            }
-        }
-
-        throw new NotMatchedTokenException(NOT_MATCHED_TOKEN.getMessage());
     }
 
     private EmailMessage makeEmailMessage(
