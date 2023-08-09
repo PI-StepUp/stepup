@@ -26,7 +26,6 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
@@ -38,7 +37,6 @@ import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
-import com.pi.stepup.global.config.security.CustomUserDetails;
 import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
@@ -62,6 +60,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
+    private final UserRedisService userRedisService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -104,7 +103,7 @@ public class UserServiceImpl implements UserService {
         log.debug("login token : {}", tokenInfo);
 
         User user = userRepository.findById(loginRequestDto.getId()).get();
-        user.setRefreshToken(tokenInfo.getRefreshToken());
+        userRedisService.saveRefreshToken(user.getId(), tokenInfo.getRefreshToken());
 
         return AuthenticatedResponseDto.builder()
             .tokenInfo(tokenInfo)
@@ -135,7 +134,7 @@ public class UserServiceImpl implements UserService {
             signUpRequestDto.getPassword());
         log.debug("token : {}", tokenInfo);
 
-        user.setRefreshToken(tokenInfo.getRefreshToken());
+        userRedisService.saveRefreshToken(user.getId(), tokenInfo.getRefreshToken());
 
         return AuthenticatedResponseDto.builder()
             .tokenInfo(tokenInfo)
@@ -231,16 +230,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public TokenInfo reissueTokens(String refreshToken,
-        ReissueTokensRequestDto reissueTokensRequestDto) {
-        User user = userRepository.findById(reissueTokensRequestDto.getId())
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+    public TokenInfo reissueTokens(String refreshToken) {
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
 
-        if (jwtTokenProvider.validateToken(refreshToken) &&
-            refreshToken.equals(user.getRefreshToken())) {
-            TokenInfo tokenInfo = reissueTokensFromUser(user);
-            user.setRefreshToken(tokenInfo.getRefreshToken());
-            return tokenInfo;
+            if (refreshToken.equals(
+                userRedisService.getRefreshToken(authentication.getName())
+                    .getRefreshToken())) {
+
+                TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+
+                userRedisService.saveRefreshToken(authentication.getName(),
+                    tokenInfo.getRefreshToken());
+
+                return tokenInfo;
+            }
         }
 
         throw new NotMatchedTokenException(NOT_MATCHED_TOKEN.getMessage());
@@ -302,13 +306,6 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    private TokenInfo reissueTokensFromUser(User user) {
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-        return jwtTokenProvider.generateToken(customUserDetails.getAuthorities(),
-            customUserDetails.getUsername());
-    }
-
     private TokenInfo setFirstAuthentication(String id, String password) {
         // 1. id, pw 기반 Authentication 객체 생성, 해당 객체는 인증 여부를 확인하는 authenticated 값이 false.
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -318,8 +315,6 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = authenticationManagerBuilder.getObject()
             .authenticate(authenticationToken);
 
-//        return jwtTokenProvider.generateToken(authentication);
-        return jwtTokenProvider.generateToken(authentication.getAuthorities(),
-            authentication.getName());
+        return jwtTokenProvider.generateToken(authentication);
     }
 }

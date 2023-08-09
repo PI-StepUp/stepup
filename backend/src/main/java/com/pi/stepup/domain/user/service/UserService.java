@@ -8,7 +8,6 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
@@ -42,5 +41,5 @@ public interface UserService {
 
     void findPassword(FindPasswordRequestDto findPasswordRequestDto);
 
-    TokenInfo reissueTokens(String refreshToken, ReissueTokensRequestDto reissueTokensRequestDto);
+    TokenInfo reissueTokens(String refreshToken);
 }
