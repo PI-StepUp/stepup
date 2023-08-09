@@ -17,6 +17,7 @@ import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.EmailContent;
 import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.domain.UserInfo;
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
@@ -124,6 +125,8 @@ public class UserServiceImpl implements UserService {
         user.setRank(bronzeRank);
         user.setPointZero();
 
+        userRedisService.saveUserInfo(user);
+
         userRepository.insert(user);
 
         log.debug("user : {}", user);
@@ -142,11 +145,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoResponseDto readOne() {
-        return UserInfoResponseDto.builder()
-            .user(userRepository.findById(SecurityUtils.getLoggedInUserId())
-                .orElseThrow(() -> new UserNotFoundException(
-                    USER_NOT_FOUND.getMessage())))
-            .build();
+        UserInfo userInfo = userRedisService.getUserInfo(SecurityUtils.getLoggedInUserId());
+
+        if (userInfo != null) {
+            return new UserInfoResponseDto(userInfo);
+        }
+
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        userRedisService.saveUserInfo(user);
+
+        return UserInfoResponseDto.builder().user(user).build();
     }
 
     @Override
@@ -157,6 +167,8 @@ public class UserServiceImpl implements UserService {
 
         log.debug("[delete()] user : {}", user);
 
+        userRedisService.deleteRefreshToken(user.getId());
+        userRedisService.deleteUserInfo(user);
         userRepository.delete(user);
     }
 
@@ -187,6 +199,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.updateUserBasicInfo(updateUserRequestDto, country);
+        userRedisService.saveUserInfo(user);
     }
 
     @Override
