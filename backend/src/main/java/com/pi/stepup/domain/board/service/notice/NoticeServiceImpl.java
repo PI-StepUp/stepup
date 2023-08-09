@@ -98,6 +98,10 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional
     @Override
     public NoticeInfoResponseDto readOne(Long boardId) {
+        Notice notice = noticeRepository.findOne(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+        // 조회수 증가
+        notice.increaseViewCnt();
         return NoticeInfoResponseDto.builder()
                 .notice(noticeRepository.findOne(boardId).orElseThrow())
                 .build();
