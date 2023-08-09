@@ -40,8 +40,12 @@ import org.springframework.util.StringUtils;
 public class JwtTokenProvider {
 
     private final Key key;
-    private final long THIRTY_MINUTES = 1000 * 60 * 30;
-    private final long ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
+
+    @Value("${jwt.access-expired-in}")
+    private long ACCESS_TOKEN_EXPIRED_IN;
+
+    @Value("${jwt.refresh-expired-in}")
+    private long REFRESH_TOKEN_EXPIRED_IN;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
