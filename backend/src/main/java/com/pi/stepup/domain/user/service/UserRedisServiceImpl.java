@@ -8,9 +8,11 @@ import com.pi.stepup.global.util.jwt.exception.TokenNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserRedisServiceImpl implements UserRedisService {
 
     private final UserRedisRepository userRedisRepository;
@@ -18,8 +20,9 @@ public class UserRedisServiceImpl implements UserRedisService {
     private long REFRESH_TOKEN_EXPIRED_IN;
 
     @Override
+    @Transactional
     public void saveRefreshToken(String id, String refreshToken) {
-        userRedisRepository.save(RefreshToken.builder()
+        refreshTokenRedisRepository.save(RefreshToken.builder()
             .id(id)
             .refreshToken(refreshToken)
             .ttl(REFRESH_TOKEN_EXPIRED_IN)
@@ -28,7 +31,7 @@ public class UserRedisServiceImpl implements UserRedisService {
 
     @Override
     public RefreshToken getRefreshToken(String id) {
-        return userRedisRepository.findById(id)
-            .orElseThrow(() -> new TokenNotFoundException(TOKEN_NOTFOUND.getMessage()));
+        return refreshTokenRedisRepository.findById(id)
+            .orElse(null);
     }
 }

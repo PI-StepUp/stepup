@@ -2,10 +2,12 @@ package com.pi.stepup.global.util.jwt.filter;
 
 import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.MALFORMED_HEADER;
 import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.NOT_MATCHED_TOKEN;
+import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.TOKEN_NOTFOUND;
 import static com.pi.stepup.global.util.jwt.filter.constant.TokenType.ACCESS;
 import static com.pi.stepup.global.util.jwt.filter.constant.TokenType.REFRESH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pi.stepup.domain.user.domain.RefreshToken;
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.global.dto.ResponseDto;
@@ -13,6 +15,7 @@ import com.pi.stepup.global.error.exception.TokenException;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.exception.MalformedHeaderException;
 import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
+import com.pi.stepup.global.util.jwt.exception.TokenNotFoundException;
 import com.pi.stepup.global.util.jwt.filter.dto.Token;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -52,10 +55,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Authentication authentication = jwtTokenProvider.getAuthentication(
                         token.getToken());
 
-                    if (token.getToken().equals(
-                        userRedisService.getRefreshToken(authentication.getName())
-                            .getRefreshToken())) {
+                    RefreshToken originRefreshToken = userRedisService.getRefreshToken(
+                        authentication.getName());
 
+                    if (originRefreshToken == null) {
+                        throw new TokenNotFoundException(TOKEN_NOTFOUND.getMessage());
+                    }
+
+                    if (token.getToken().equals(originRefreshToken.getRefreshToken())) {
                         TokenInfo tokenInfo = reissueTokensAndSaveOnRedis(authentication);
 
                         makeTokenInfoResponse(response, tokenInfo);
