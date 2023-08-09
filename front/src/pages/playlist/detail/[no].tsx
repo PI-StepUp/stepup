@@ -112,10 +112,7 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        axiosMusic.get(`/apply/detail`,{
-            params:{
-                musicApplyId: musicId,
-            },
+        axiosMusic.get(`/apply/detail/${musicId}`,{
             headers:{
                 Authorization: `Bearer ${accessToken}`,
             }

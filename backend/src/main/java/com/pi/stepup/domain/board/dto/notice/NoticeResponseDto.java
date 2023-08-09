@@ -25,7 +25,11 @@ public class NoticeResponseDto {
             this.profileImg = notice.getWriter().getProfileImg();
             this.fileURL = notice.getFileURL();
             this.boardType = notice.getBoardType();
-            this.randomDanceId = notice.getRandomDance().getRandomDanceId();
+            if (notice.getRandomDance() != null) {
+                this.randomDanceId = notice.getRandomDance().getRandomDanceId();
+            } else {
+                this.randomDanceId = null;
+            }
         }
     }
 }

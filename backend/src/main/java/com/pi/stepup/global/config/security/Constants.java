@@ -6,7 +6,7 @@ public final class Constants {
         = new String[]{
         "/api/user",
         //"/api/user/auth와 checkpw를 제외한 모든 문자열"인 경우
-        "/api/user/((?!auth|checkpw).)+"
+        "/api/user/((?!auth|checkpw).)+",
     };
 
     public static final String[] GetPermitArray

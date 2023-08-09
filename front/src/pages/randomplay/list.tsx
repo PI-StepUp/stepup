@@ -14,7 +14,7 @@ import TopIcon from "/public/images/icon-top.svg"
 import NowIcon from "/public/images/icon-now.svg"
 import SoonIcon from "/public/images/icon-soon.svg"
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
@@ -29,15 +29,14 @@ const RandomPlayList = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     useEffect(() => {
         axiosDance.get('',{
             params: {
                 progressType: "ALL",
             },
-            // headers:{
-            //     Authorization: `Bearer ${accessToken}`,
-            // }
         }).then((data) => {
+            console.log(data);
             if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
                 setRooms(data.data.data);
             }
@@ -50,7 +49,6 @@ const RandomPlayList = () => {
         }).then((data) => {
             if(data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료"){
                 setInprogress(data.data.data);
-                console.log(inprogress);
             }
         })
 
@@ -75,14 +73,29 @@ const RandomPlayList = () => {
                             <Image src={ArticleIcon} alt=""/>
                             <h3>{lang==="en" ? "Popular right now" : lang==="cn" ? "现在很有人气的随机舞蹈" : "현재 인기 있는 랜덤 플레이 댄스" }</h3>
                         </div>
-                         <button><Link href="/randomplay/create">{lang==="en" ? "Holding" : lang==="cn" ? "打开" : "개최하기" }</Link></button>
+                        {
+                            nickname ?
+                            <button><Link href="/randomplay/create">{lang==="en" ? "Holding" : lang==="cn" ? "打开" : "개최하기" }</Link></button>
+                            :
+                            <></>
+
+                        }
                     </div>
                     <div className="section-content">
                         <ul>
-                            {rooms?.map((room) => {
+                            {rooms?.map((room, index) => {
                                 return(
-                                    <li>
-                                        <Link href="/danceroom">
+                                    <li key={index}>
+                                        <Link href={{
+                                            pathname: `/danceroom/${room.randomDanceId}`,
+                                            query:{
+                                                title: room.title,
+                                                content: room.content,
+                                                startAt: room.startAt,
+                                                endAt: room.endAt,
+                                                myName: nickname,
+                                            },
+                                        }}>
                                             <div className="section-content-img">
                                                 <span>{room.danceType === "SURVIVAL" ? "서바이벌" : room.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
                                                 <Image src={RandomplayThumbnail} alt=""/>
@@ -92,7 +105,7 @@ const RandomPlayList = () => {
                                                 <span>{room.hostNickname}</span>
                                                 <div className="flex-wrap">
                                                     <button>예약하기</button>
-                                                    <span>참여 PM6시 ~ PM7시</span>
+                                                    <span>참여 {room.startAt.split("T")[1].split(":")[0]}시 {room.startAt.split("T")[1].split(":")[1]}분 ~ {room.endAt.split("T")[1].split(":")[0]}시 {room.endAt.split("T")[1].split(":")[1]}분</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -114,9 +127,9 @@ const RandomPlayList = () => {
                     </div>
                     <div className="section-content">
                         <ul>
-                            {inprogress?.map((inprogress) => {
+                            {inprogress?.map((inprogress, index) => {
                                 return(
-                                    <li>
+                                    <li key={index}>
                                         <Link href="/danceroom">
                                             <div className="section-content-img">
                                                 <span>{inprogress.danceType === "SURVIVAL" ? "서바이벌" : inprogress.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
@@ -127,7 +140,7 @@ const RandomPlayList = () => {
                                                 <span>{inprogress.hostNickname}</span>
                                                 <div className="flex-wrap">
                                                     <button>예약하기</button>
-                                                    <span>참여 PM6시 ~ PM7시</span>
+                                                    <span>참여 {inprogress.startAt.split("T")[1].split(":")[0]}시 {inprogress.startAt.split("T")[1].split(":")[1]}분 ~ {inprogress.endAt.split("T")[1].split(":")[0]}시 {inprogress.endAt.split("T")[1].split(":")[1]}분</span>
                                                 </div>
                                             </div>
                                         </Link>
@@ -150,12 +163,12 @@ const RandomPlayList = () => {
                     <div className="section-content">
                         <ul>
                             {
-                                scheduled?.map((scheduled) => {
+                                scheduled?.map((scheduled, index) => {
                                     return(
-                                        <li>
+                                        <li key={index}>
                                             <Link href="/danceroom">
                                                 <div className="section-content-img">
-                                                    <span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
+                                                    <span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자율모드" : "랭킹모드"}</span>
                                                     <Image src={RandomplayThumbnail} alt=""/>
                                                 </div>
                                                 <div className="section-content-info">
@@ -163,7 +176,7 @@ const RandomPlayList = () => {
                                                     <span>{scheduled.hostNickname}</span>
                                                     <div className="flex-wrap">
                                                         <button>예약하기</button>
-                                                        <span>참여 PM6시 ~ PM7시</span>
+                                                        <span>참여 {scheduled.startAt.split("T")[1].split(":")[0]}시 {scheduled.startAt.split("T")[1].split(":")[1]}분 ~ {scheduled.endAt.split("T")[1].split(":")[0]}시 {scheduled.endAt.split("T")[1].split(":")[1]}분</span>
                                                     </div>
                                                 </div>
                                             </Link>

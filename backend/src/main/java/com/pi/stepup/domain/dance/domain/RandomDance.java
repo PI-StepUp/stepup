@@ -3,6 +3,7 @@ package com.pi.stepup.domain.dance.domain;
 import com.pi.stepup.domain.dance.constant.DanceType;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.global.entity.BaseEntity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "RANDOM_DANCE")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RandomDance {
+public class RandomDance extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

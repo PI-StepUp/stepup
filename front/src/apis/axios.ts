@@ -17,3 +17,7 @@ export const axiosMusic = axios.create({
 export const axiosDance = axios.create({
     baseURL: SERVER_URL + "/dance"
 })
+
+export const axiosRank = axios.create({
+    baseURL: SERVER_URL + "/rank"
+})

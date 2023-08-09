@@ -36,6 +36,12 @@ public class MusicApiController {
     @Operation(summary = "노래 등록", description = "관리자만 노래 등록이 가능하다.")
     @ApiResponse(responseCode = "201",
         description = "노래 등록 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
+    @ApiResponse(responseCode = "403",
+        description = "접근 권한 없음")
+    @ApiResponse(responseCode = "409",
+        description = "노래 중복")
     @PostMapping
     public ResponseEntity<ResponseDto<?>> createMusic(
         @RequestBody MusicSaveRequestDto musicSaveRequestDto) {
@@ -48,6 +54,10 @@ public class MusicApiController {
     @Operation(summary = "노래 한 곡 조회", description = "노래의 상세 정보를 조회한다.")
     @ApiResponse(responseCode = "200",
         description = "노래 조회 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
+    @ApiResponse(responseCode = "400",
+        description = "노래 조회 실패")
     @GetMapping("/{musicId}")
     public ResponseEntity<ResponseDto<?>> readOneMusic(@PathVariable("musicId") Long musicId) {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -59,6 +69,8 @@ public class MusicApiController {
     @Operation(summary = "노래 목록 조회", description = "저장되어 있는 모든 노래들의 상세 정보를 조회한다.")
     @ApiResponse(responseCode = "200",
         description = "노래 목록 조회 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
     @GetMapping(params = "keyword")
     public ResponseEntity<ResponseDto<?>> readAllMusic(
         @RequestParam(required = false, name = "keyword") String keyword) {
@@ -72,6 +84,12 @@ public class MusicApiController {
     @Operation(summary = "노래 삭제", description = "관리자만 노래 삭제가 가능하다.")
     @ApiResponse(responseCode = "200",
         description = "노래 삭제 완료")
+    @ApiResponse(responseCode = "401",
+        description = "인증 실패")
+    @ApiResponse(responseCode = "403",
+        description = "접근 권한 없음")
+    @ApiResponse(responseCode = "400",
+        description = "노래 삭제 실패")
     @DeleteMapping("/{musicId}")
     public ResponseEntity<ResponseDto<?>> deleteMusic(@PathVariable("musicId") Long musicId) {
         musicService.delete(musicId);

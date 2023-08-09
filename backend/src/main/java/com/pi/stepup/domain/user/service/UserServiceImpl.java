@@ -209,19 +209,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void findPassword(FindPasswordRequestDto findPasswordRequestDto) {
         User user = userRepository.findByIdAndEmail(findPasswordRequestDto.getId(),
                 findPasswordRequestDto.getEmail())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
+        String randomPassword = RandomPasswordGenerator.generateRandomPassword();
+
         emailService.sendFindIdMail(
             makeEmailMessage(
                 EmailGuideContent.FIND_PASSWORD_GUIDE,
                 user.getNickname(),
-                RandomPasswordGenerator.generateRandomPassword(),
+                randomPassword,
                 user.getEmail()
             )
         );
+
+        user.updatePassword(passwordEncoder.encode(randomPassword));
     }
 
     @Override
