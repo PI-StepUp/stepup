@@ -34,6 +34,7 @@ const RandomPlayList = () => {
 	const [roomsVisibleItems, setRoomsVisibleItems] = useState(3);
 	const [inprogressVisibleItems, setInprogressVisibleItems] = useState(3);
 	const [scheduledVisibleItems, setScheduledVisibleItems] = useState(3);
+	const currentDate = new Date();
 	
 	useEffect(() => {
 		axiosDance.get('', {
@@ -85,16 +86,7 @@ const RandomPlayList = () => {
 							{rooms?.slice(0, roomsVisibleItems)?.map((room, index) => {
 								return (
 									<li key={index}>
-										<Link href={{
-											pathname: `/danceroom/${room.randomDanceId}`,
-											query: {
-												title: room.title,
-												content: room.content,
-												startAt: room.startAt,
-												endAt: room.endAt,
-												myName: nickname,
-											},
-										}}>
+										
 											<div className="section-content-img">
 												<span>{room.danceType === "SURVIVAL" ? "서바이벌" : room.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
 												<Image src={RandomplayThumbnail} alt="" />
@@ -103,11 +95,28 @@ const RandomPlayList = () => {
 												<h4>{room.title}</h4>
 												<span>{room.hostNickname}</span>
 												<div className="flex-wrap">
-													<button>예약하기</button>
-													<span>참여 PM6시 ~ PM7시</span>
+													<Link href={{
+														pathname: `/danceroom/${room.randomDanceId}`,
+														query: {
+															title: room.title,
+															content: room.content,
+															startAt: room.startAt,
+															endAt: room.endAt,
+															myName: nickname,
+														},
+													}}>
+														{
+															(currentDate < new Date(room.startAt)) ? 
+															<button>예약하기</button> : 
+																(currentDate < new Date(room.endAt)) ? 
+																<button>참여하기</button> :
+																<button>마감</button>
+														}
+													</Link>
+													<span>{new Date(room.startAt).getHours()}시 ~ {new Date(room.endAt).getHours()}시</span>
 												</div>
 											</div>
-										</Link>
+										
 									</li>
 								)
 							})}
@@ -133,7 +142,7 @@ const RandomPlayList = () => {
 							{inprogress?.slice(0, inprogressVisibleItems)?.map((inprogress, index) => {
 								return (
 									<li key={index}>
-										<Link href="/danceroom">
+										
 											<div className="section-content-img">
 												<span>{inprogress.danceType === "SURVIVAL" ? "서바이벌" : inprogress.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
 												<Image src={RandomplayThumbnail} alt="" />
@@ -142,11 +151,19 @@ const RandomPlayList = () => {
 												<h4>{inprogress.title}</h4>
 												<span>{inprogress.hostNickname}</span>
 												<div className="flex-wrap">
-													<button>예약하기</button>
-													<span>참여 PM6시 ~ PM7시</span>
+													<Link href="/danceroom">
+														{
+															(currentDate < new Date(inprogress.startAt)) ? 
+																<button>예약하기</button> : 
+																	(currentDate < new Date(inprogress.endAt)) ? 
+																		<button>참여하기</button> :
+																		<button>마감</button>
+														}
+													</Link>
+													<span>{new Date(inprogress.startAt).getHours()}시 ~ {new Date(inprogress.endAt).getHours()}시</span>
 												</div>
 											</div>
-										</Link>
+										
 									</li>
 								)
 							})}
@@ -173,7 +190,6 @@ const RandomPlayList = () => {
 								scheduled?.slice(0, scheduledVisibleItems)?.map((scheduled, index) => {
 									return (
 										<li key={index}>
-											<Link href="/danceroom">
 												<div className="section-content-img">
 													<span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
 													<Image src={RandomplayThumbnail} alt="" />
@@ -182,11 +198,18 @@ const RandomPlayList = () => {
 													<h4>{scheduled.title}</h4>
 													<span>{scheduled.hostNickname}</span>
 													<div className="flex-wrap">
-														<button>예약하기</button>
-														<span>참여 PM6시 ~ PM7시</span>
+														<Link href="/danceroom">
+															{
+																(currentDate < new Date(scheduled.startAt)) ? 
+																	<button>예약하기</button> : 
+																		(currentDate < new Date(scheduled.endAt)) ? 
+																			<button>참여하기</button> :
+																			<button>마감</button>
+															}
+														</Link>
+														<span>{new Date(scheduled.startAt).getHours()}시 ~ {new Date(scheduled.endAt).getHours()}시</span>
 													</div>
 												</div>
-											</Link>
 										</li>
 									)
 								})
