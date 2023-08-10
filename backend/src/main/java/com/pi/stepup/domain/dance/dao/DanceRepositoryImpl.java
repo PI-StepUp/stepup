@@ -62,13 +62,14 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findAllDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
-            + "WHERE r.endAt >= current_timestamp "
-            + "ORDER BY r.startAt ASC";
+            + "WHERE r.endAt >= current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%')";
         }
+
+        sql += "ORDER BY r.startAt ASC ";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -76,13 +77,14 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findScheduledDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
-            + "WHERE r.startAt > current_timestamp "
-            + "ORDER BY r.startAt ASC";
+            + "WHERE r.startAt > current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%')";
         }
+
+        sql += "ORDER BY r.startAt ASC ";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -91,13 +93,14 @@ public class DanceRepositoryImpl implements DanceRepository {
     public List<RandomDance> findInProgressDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
             + "WHERE r.startAt <= current_timestamp "
-            + "AND r.endAt >= current_timestamp "
-            + "ORDER BY r.startAt ASC";
+            + "AND r.endAt >= current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%')";
         }
+
+        sql += "ORDER BY r.startAt ASC ";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
