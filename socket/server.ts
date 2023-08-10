@@ -72,14 +72,15 @@ io.on('connection', socket => {
         result.push({nickname, correct});
         let winner = "";
         let max = 0;
-        // 같은 방 구분할 것
 
-        console.log(users);
+        console.log("닫힘 결과", users);
         for(let i=0; i<Object.keys(users).length; i++){
             if(users[roomName] != undefined){
                 maxNumCnt++;
             }
         }
+
+        console.log("result",result);
         if(result.length == maxNumCnt){
             for(let i=0; i<result.length; i++){
                 if(max <= result[i].correct){
