@@ -85,7 +85,7 @@ const MeetingList = () => {
                                         return(
                                             <li key={index}>
                                                 <div className="user-wrap">
-                                                    {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={meeting.profileImg} alt=""/>}
+                                                    {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={defaultMeetingProfileImg} alt=""/>}
                                                     <p>{meeting.writerName}</p>
                                                 </div>
                                                 <div className="meeting-content">
@@ -101,7 +101,7 @@ const MeetingList = () => {
                     </div>
                     <div className="pagination">
                         <ul>
-                            {/* <Pagination
+                            <Pagination
                                 activePage={page}
                                 itemsCountPerPage={10}
                                 totalItemsCount={meetings?.length}
@@ -109,7 +109,7 @@ const MeetingList = () => {
                                 prevPageText={'<'}
                                 nextPageText={'>'}
                                 onChange={handlePageChange}
-                            /> */}
+                            />
                         </ul>
                     </div>
                 </div>

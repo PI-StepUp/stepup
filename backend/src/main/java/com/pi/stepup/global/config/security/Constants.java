@@ -14,7 +14,7 @@ public final class Constants {
         "/api/user/country",
         "/api/dance/playlist/\\d+",
         //"/api/dance?key=value"과 "/api/dance?key=value&key=value"인 경우
-        "/api/dance\\?([^&]+)&?([^&]*)$",
+        "/api/dance",
         //"/api/board/문자열"과 "/api/board/문자열?key=value"인 경우
         "/api/board/[A-Za-z]+(\\?([^&]*))?$",
         //"/api/board/notice/숫자"인 경우
