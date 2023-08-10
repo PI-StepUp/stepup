@@ -70,7 +70,7 @@ public class SecurityConfig {
             .antMatchers("/images/**").permitAll()
 
             //그외는 모두 로그인해야 접근 가능
-            .anyRequest().permitAll()
+            .anyRequest().authenticated()
 
             .and()
             .exceptionHandling()
