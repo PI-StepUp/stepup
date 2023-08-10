@@ -68,6 +68,24 @@ const RandomPlayList = () => {
 			}
 		})
 	}, []);
+
+	async function reserveRandomDance(randomDanceId:number) {
+		try {
+			await axiosDance.post(`/${randomDanceId}`,{
+				headers:{
+					Authentication:{accessToken}
+				}
+			})
+			.then((data) => {
+				if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+					alert("예약을 완료했습니다.");
+				}
+			})
+		} catch (e) {
+			
+		}
+	}
+
 	return (
 		<>
 			<Header />
@@ -95,24 +113,25 @@ const RandomPlayList = () => {
 												<h4>{room.title}</h4>
 												<span>{room.hostNickname}</span>
 												<div className="flex-wrap">
-													<Link href={{
-														pathname: `/danceroom/${room.randomDanceId}`,
-														query: {
-															title: room.title,
-															content: room.content,
-															startAt: room.startAt,
-															endAt: room.endAt,
-															myName: nickname,
-														},
-													}}>
-														{
-															(currentDate < new Date(room.startAt)) ? 
+													{
+														(currentDate < new Date(room.startAt)) ? 
 															<button>예약하기</button> : 
-																(currentDate < new Date(room.endAt)) ? 
-																<button>참여하기</button> :
+															(currentDate < new Date(room.endAt)) ? 
+																<Link href={{
+																	pathname: `/danceroom/${room.randomDanceId}`,
+																	query: {
+																		title: room.title,
+																		content: room.content,
+																		startAt: room.startAt,
+																		endAt: room.endAt,
+																		myName: nickname,
+																	},
+																}}>
+																	<button>참여하기</button> 
+																</Link>
+																:
 																<button>마감</button>
-														}
-													</Link>
+													}
 													<span>{new Date(room.startAt).getHours()}시 ~ {new Date(room.endAt).getHours()}시</span>
 												</div>
 											</div>
@@ -151,15 +170,25 @@ const RandomPlayList = () => {
 												<h4>{inprogress.title}</h4>
 												<span>{inprogress.hostNickname}</span>
 												<div className="flex-wrap">
-													<Link href="/danceroom">
 														{
 															(currentDate < new Date(inprogress.startAt)) ? 
 																<button>예약하기</button> : 
 																	(currentDate < new Date(inprogress.endAt)) ? 
-																		<button>참여하기</button> :
-																		<button>마감</button>
+																	<Link href={{
+																		pathname: `/danceroom/${inprogress.randomDanceId}`,
+																		query: {
+																			title: inprogress.title,
+																			content: inprogress.content,
+																			startAt: inprogress.startAt,
+																			endAt: inprogress.endAt,
+																			myName: nickname,
+																		},
+																	}}>
+																		<button>참여하기</button>
+																	</Link>
+																	:
+																	<button>마감</button>
 														}
-													</Link>
 													<span>{new Date(inprogress.startAt).getHours()}시 ~ {new Date(inprogress.endAt).getHours()}시</span>
 												</div>
 											</div>
