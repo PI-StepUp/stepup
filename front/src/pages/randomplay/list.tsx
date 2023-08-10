@@ -37,10 +37,33 @@ const RandomPlayList = () => {
 	const currentDate = new Date();
 	
 	useEffect(() => {
+		if (accessToken) {
+			try {
+				axiosUser.post('/auth', {
+					id: id,
+				}, {
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						refreshToken: refreshToken,
+					}
+				}).then((data) => {
+					if (data.data.message === "토큰 재발급 완료") {
+						setAccessToken(data.data.data.accessToken);
+						setRefreshToken(data.data.data.refreshToken);
+					}
+				})
+			} catch (e) {
+				alert('시스템 에러, 관리자에게 문의하세요.');
+			}
+		}
+		
 		axiosDance.get('', {
 			params: {
 				progressType: "ALL",
 			},
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
 		}).then((data) => {
 			console.log(data);
 			if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
@@ -51,6 +74,9 @@ const RandomPlayList = () => {
 		axiosDance.get('', {
 			params: {
 				progressType: "IN_PROGRESS",
+			},
+			headers: {
+				Authorization: `Bearer ${accessToken}`
 			}
 		}).then((data) => {
 			if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
@@ -61,6 +87,9 @@ const RandomPlayList = () => {
 		axiosDance.get('', {
 			params: {
 				progressType: "SCHEDULED",
+			},
+			headers: {
+				Authorization: `Bearer ${accessToken}`
 			}
 		}).then((data) => {
 			if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
@@ -69,21 +98,64 @@ const RandomPlayList = () => {
 		})
 	}, []);
 
-	async function reserveRandomDance(randomDanceId:number) {
-		try {
-			await axiosDance.post(`/${randomDanceId}`,{
-				headers:{
-					Authentication:{accessToken}
-				}
-			})
-			.then((data) => {
-				if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
-					alert("예약을 완료했습니다.");
-				}
-			})
-		} catch (e) {
-			
+	async function reserveRandomDance(randomDanceId: number) {
+		if (!accessToken) {
+			alert("해당 서비스는 로그인 후 이용하실 수 있습니다.");
+			return;
 		}
+
+		try {
+			await axiosDance.post(`/reserve/${randomDanceId}`, {}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			})
+				.then((data) => {
+					if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+						alert("예약을 완료했습니다.");
+					}
+				});
+			location.reload();
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	async function cancelReservation(randomDanceId: number) {
+		const confirmCancel = confirm("예약을 취소하시겠습니까?");
+		if (confirmCancel) {
+			try {
+				await axiosDance.delete(`/my/reserve/${randomDanceId}`, {
+					headers: {
+						Authorization: `Bearer ${accessToken}`
+					}
+				})
+					.then((data) => {
+						if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+							alert("예약을 완료했습니다.");
+						}
+					});
+				location.reload();
+			} catch (e) {
+				console.log(e);
+			}
+		}
+	}
+
+	function month(date: any) {
+		return ("0" + new Date(date).getMonth()).slice(-2);
+	}
+
+	function day(date: any) {
+		return ("0" + new Date(date).getDay()).slice(-2);
+	}
+
+	function hour(date: any) {
+		return ("0" + new Date(date).getHours()).slice(-2);
+	}
+
+	function minute(date: any) {
+		return ("0" + new Date(date).getMinutes()).slice(-2);
 	}
 
 	return (
@@ -106,7 +178,13 @@ const RandomPlayList = () => {
 									<li key={index}>
 										
 											<div className="section-content-img">
-												<span>{room.danceType === "SURVIVAL" ? "서바이벌" : room.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
+											<span>{(room.danceType === "SURVIVAL") ?
+												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
+												:
+												(room.danceType === "BASIC") ?
+													(lang === "en" ? "BASIC" : lang === "cn" ? "默认模式" : "자유모드")
+													:
+													(lang === "en" ? "RANKING" : lang === "cn" ? "排名模式" : "랭킹모드")}</span>
 												<Image src={RandomplayThumbnail} alt="" />
 											</div>
 											<div className="section-content-info">
@@ -115,8 +193,17 @@ const RandomPlayList = () => {
 												<div className="flex-wrap">
 													{
 														(currentDate < new Date(room.startAt)) ? 
-															<button>예약하기</button> : 
-															(currentDate < new Date(room.endAt)) ? 
+															(room.reserveStatus === 0) ?
+															<button onClick={async () => await reserveRandomDance(room.randomDanceId)}>
+																{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
+															</button>
+															: 
+															<button onClick={async () => await cancelReservation(room.randomDanceId)}>
+																{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
+															</button>
+														:
+														(currentDate < new Date(room.endAt)) ? 
+															(accessToken) ? 
 																<Link href={{
 																	pathname: `/danceroom/${room.randomDanceId}`,
 																	query: {
@@ -127,12 +214,16 @@ const RandomPlayList = () => {
 																		myName: nickname,
 																	},
 																}}>
-																	<button>참여하기</button> 
+																	<button>{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
 																</Link>
 																:
-																<button>마감</button>
+																<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")}>
+																	{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
+																</button> 
+																:
+																<button>{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 													}
-													<span>{new Date(room.startAt).getHours()}시 ~ {new Date(room.endAt).getHours()}시</span>
+												<span>{month(room.startAt)}/{day(room.startAt)} {hour(room.startAt)}:{minute(room.startAt)} ~ {month(room.endAt)}/{day(room.endAt)} {hour(room.endAt)}:{minute(room.endAt)}</span>
 												</div>
 											</div>
 										
@@ -163,7 +254,13 @@ const RandomPlayList = () => {
 									<li key={index}>
 										
 											<div className="section-content-img">
-												<span>{inprogress.danceType === "SURVIVAL" ? "서바이벌" : inprogress.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
+												<span>{(inprogress.danceType === "SURVIVAL") ?
+												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
+												:
+												(inprogress.danceType === "BASIC") ?
+													(lang === "en" ? "BASIC" : lang === "cn" ? "默认模式" : "자유모드")
+													:
+													(lang === "en" ? "RANKING" : lang === "cn" ? "排名模式" : "랭킹모드")}</span>
 												<Image src={RandomplayThumbnail} alt="" />
 											</div>
 											<div className="section-content-info">
@@ -172,8 +269,18 @@ const RandomPlayList = () => {
 												<div className="flex-wrap">
 														{
 															(currentDate < new Date(inprogress.startAt)) ? 
-																<button>예약하기</button> : 
+															(inprogress.reserveStatus === 0) ?
+																<button onClick={async () => await reserveRandomDance(inprogress.randomDanceId)}>
+																{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
+																</button>
+																: 
+																<button onClick={async () => await cancelReservation(inprogress.randomDanceId)}>
+																{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
+																</button>
+														
+														: 
 																	(currentDate < new Date(inprogress.endAt)) ? 
+																	(accessToken) ? 
 																	<Link href={{
 																		pathname: `/danceroom/${inprogress.randomDanceId}`,
 																		query: {
@@ -184,12 +291,16 @@ const RandomPlayList = () => {
 																			myName: nickname,
 																		},
 																	}}>
-																		<button>참여하기</button>
+																		<button>{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
 																	</Link>
 																	:
-																	<button>마감</button>
+																	<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")}>
+																	{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
+																	</button> 
+																	:
+																	<button>{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 														}
-													<span>{new Date(inprogress.startAt).getHours()}시 ~ {new Date(inprogress.endAt).getHours()}시</span>
+													<span>{month(inprogress.startAt)}/{day(inprogress.startAt)} {hour(inprogress.startAt)}:{minute(inprogress.startAt)} ~ {month(inprogress.endAt)}/{day(inprogress.endAt)} {hour(inprogress.endAt)}:{minute(inprogress.endAt)}</span>
 												</div>
 											</div>
 										
@@ -220,23 +331,58 @@ const RandomPlayList = () => {
 									return (
 										<li key={index}>
 												<div className="section-content-img">
-													<span>{scheduled.danceType === "SURVIVAL" ? "서바이벌" : scheduled.danceType === "BASIC" ? "자유모드" : "랜플댄모드"}</span>
+													<span>{(scheduled.danceType === "SURVIVAL") ?
+												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
+												:
+												(scheduled.danceType === "BASIC") ?
+													(lang === "en" ? "BASIC" : lang === "cn" ? "默认模式" : "자유모드")
+													:
+													(lang === "en" ? "RANKING" : lang === "cn" ? "排名模式" : "랭킹모드")}</span>
 													<Image src={RandomplayThumbnail} alt="" />
 												</div>
 												<div className="section-content-info">
 													<h4>{scheduled.title}</h4>
 													<span>{scheduled.hostNickname}</span>
 													<div className="flex-wrap">
-														<Link href="/danceroom">
 															{
 																(currentDate < new Date(scheduled.startAt)) ? 
-																	<button>예약하기</button> : 
+																	(
+																		(scheduled.reserveStatus === 0) ?
+																		<button onClick={async () => await reserveRandomDance(scheduled.randomDanceId)}>
+																		{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
+																		</button>
+																		: 
+																		<button onClick={async () => await cancelReservation(scheduled.randomDanceId)}>
+																		{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
+																		</button>
+																	)
+																: 
+																	(
 																		(currentDate < new Date(scheduled.endAt)) ? 
-																			<button>참여하기</button> :
-																			<button>마감</button>
+																			(
+																				(accessToken) ? 
+																				<Link href={{
+																					pathname: `/danceroom/${scheduled.randomDanceId}`,
+																					query: {
+																						title: scheduled.title,
+																						content: scheduled.content,
+																						startAt: scheduled.startAt,
+																						endAt: scheduled.endAt,
+																						myName: nickname,
+																					},
+																				}}>
+																					<button>{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
+																				</Link>
+																				:
+																				<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")}>
+																				{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
+																				</button>
+																			)
+																		:
+																		<button>{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+																	)
 															}
-														</Link>
-														<span>{new Date(scheduled.startAt).getHours()}시 ~ {new Date(scheduled.endAt).getHours()}시</span>
+														<span>{month(scheduled.startAt)}/{day(scheduled.startAt)} {hour(scheduled.startAt)}:{minute(scheduled.startAt)} ~ {month(scheduled.endAt)}/{day(scheduled.endAt)} {hour(scheduled.endAt)}:{minute(scheduled.endAt)}</span>
 													</div>
 												</div>
 										</li>
