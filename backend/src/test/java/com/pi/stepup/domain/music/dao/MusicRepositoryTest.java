@@ -1,37 +1,29 @@
 package com.pi.stepup.domain.music.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.pi.stepup.domain.music.domain.Music;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @Transactional
 class MusicRepositoryTest {
+
     @PersistenceContext
     private EntityManager em;
 
     @Autowired
     private MusicRepository musicRepository;
     private Music music;
-
-    @Test
-    @BeforeEach
-    public void init() {
-        makeOneMusic();
-    }
-
 
     @Test
     @DisplayName("MusicRepository가 null이 아님을 테스트")
@@ -42,14 +34,17 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 추가 테스트")
     public void insertMusicRepoTest() {
+        makeOneMusic();
+
         Music result = musicRepository.insert(music);
+
         assertThat(music).isEqualTo(result);
     }
 
     @Test
     @DisplayName("노래 한 곡 조회 테스트")
     public void findOneMusicRepoTest() {
-        em.persist(music);
+        makeOneMusic();
 
         Long musicId = music.getMusicId();
         Optional<Music> result = musicRepository.findOne(musicId);
@@ -63,9 +58,11 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 전체 목록 조회 테스트")
     public void findAllMusicRepoTest() {
+        insertMusic();
+
         String keyword = "";
         List<Music> musics = musicRepository.findAll(keyword);
-        assertThat(musics.size()).isEqualTo(10);
+        assertThat(musics.size()).isEqualTo(5);
     }
 
     @Test
@@ -81,9 +78,9 @@ class MusicRepositoryTest {
     @Test
     @DisplayName("노래 삭제 테스트")
     public void deleteMusicRepoTest() {
-        insertMusic();
+        makeOneMusic();
 
-        Long musicId = 1L;
+        Long musicId = music.getMusicId();
         musicRepository.delete(musicId);
 
         // 아래 방법 사용 안하고 테스트 어떻게..??
@@ -113,5 +110,6 @@ class MusicRepositoryTest {
             .answer("")
             .URL("url")
             .build();
+        em.persist(music);
     }
 }
