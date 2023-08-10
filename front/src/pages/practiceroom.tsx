@@ -138,7 +138,7 @@ const PracticeRoom = () => {
         //     alert('시스템 에러, 관리자에게 문의하세요.');
         // }
 
-        axios.get("http://52.78.93.184:8080/api/music",{
+        axios.get("https://stepup-pi.com:8080/api/music",{
             params:{
                 keyword: "",
             },
