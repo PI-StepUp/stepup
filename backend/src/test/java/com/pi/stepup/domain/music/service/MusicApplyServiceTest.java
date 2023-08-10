@@ -144,7 +144,7 @@ class MusicApplyServiceTest {
         List<MusicApply> madeMusicApply = makeMusicApplies();
 
         doReturn(madeMusicApply)
-            .when(musicApplyRepository).findAll(user.getId());
+            .when(musicApplyRepository).findAll(keyword);
 
         List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
             keyword);
@@ -228,7 +228,7 @@ class MusicApplyServiceTest {
 
             assertThatThrownBy(() -> musicApplyService.delete(musicApply.getMusicApplyId()))
                 .isInstanceOf(MusicApplyNotFoundException.class)
-                .hasMessageContaining(MUSIC_APPLY_DELETE_FAIL.getMessage());
+                .hasMessageContaining(MUSIC_APPLY_NOT_FOUND.getMessage());
         }
     }
 
