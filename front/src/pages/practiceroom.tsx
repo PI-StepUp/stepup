@@ -60,6 +60,7 @@ const EMBED_URL: any = {
     37: "https://www.youtube.com/embed/yln8wDZ-i4E",
     38: "https://www.youtube.com/embed/96gMuaVE-Bo",
     39: "https://www.youtube.com/embed/pxNSGBU82GY",
+    40: "https://www.youtube.com/embed/Q7b8CWtISXc",
 }
 
 let poseLandmarker: PoseLandmarker;
@@ -119,23 +120,23 @@ const PracticeRoom = () => {
 
     useEffect(() => {
         getLocalStream();
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+        // try{
+        //     axiosUser.post('/auth',{
+        //         id: id,
+        //     },{
+        //         headers:{
+        //             Authorization: `Bearer ${accessToken}`,
+        //             refreshToken: refreshToken,
+        //         }
+        //     }).then((data) => {
+        //         if(data.data.message === "토큰 재발급 완료"){
+        //             setAccessToken(data.data.data.accessToken);
+        //             setRefreshToken(data.data.data.refreshToken);
+        //         }
+        //     })
+        // }catch(e){
+        //     alert('시스템 에러, 관리자에게 문의하세요.');
+        // }
 
         axios.get("http://52.78.93.184:8080/api/music",{
             params:{
