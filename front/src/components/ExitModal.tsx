@@ -11,13 +11,13 @@ interface props {
 }
 
 const Modal = (props: props): ReactElement => {
-  const [lang, setLang] = useRecoilState(LanguageState);
-  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-  const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-  const [id, setId] = useRecoilState(idState);
+	const [lang, setLang] = useRecoilState(LanguageState);
+	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+	const [id, setId] = useRecoilState(idState);
 	const [nickname, setNickname] = useRecoilState(nicknameState);
 	const [profileImg, setProfileImg] = useRecoilState(profileImgState);
-  const [rankname, setRankname] = useRecoilState(rankNameState);
+	const [rankname, setRankname] = useRecoilState(rankNameState);
 
 	const { open, close } = props;
 
@@ -36,10 +36,10 @@ const Modal = (props: props): ReactElement => {
 				setProfileImg("");
 				setRankname("");
 				console.log("탈퇴 완료");
-				alert("탈퇴되었습니다. 이용해주셔서 감사합니다.");
+				{lang === "en" ? alert("You have been withdrawn. Thank you for using our service.") : lang === "cn" ? alert("您已经退出。感谢您使用我们的服务。") : alert("탈퇴되었습니다. 이용해주셔서 감사합니다.")}
 				router.push('/');
 			} else {
-				alert("회원 탈퇴에 실패하셨습니다. 다시 한 번 시도해주세요.");
+				{lang === "en" ? alert("Failed to withdraw from membership. Please try again.") : lang === "cn" ? alert("会员退出失败，请再试一次。") : alert("회원 탈퇴에 실패하셨습니다. 다시 한 번 시도해주세요.")}
 			}
 		})
 	}
