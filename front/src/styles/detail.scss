@@ -65,6 +65,7 @@
         .detail-main-content{
             margin-top:90px;
             @include font(22px, 400, #AAA499);
+            line-height:36px;
         }
         .button-wrap{
             @include flex(flex-end, center);

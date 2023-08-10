@@ -31,7 +31,7 @@ const RoomCreate = () => {
         e.preventDefault();
 
         try{
-            axiosUser.post('/auth',{
+            await axiosUser.post('/auth',{
                 id: id,
             },{
                 headers:{
@@ -44,11 +44,7 @@ const RoomCreate = () => {
                     setRefreshToken(data.data.data.refreshToken);
                 }
             })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
 
-        try{
             await axiosDance.post("", {
                 title: roomTitle.current?.value,
                 content: roomContent.current?.value,
@@ -74,14 +70,17 @@ const RoomCreate = () => {
                             startAt: roomStartTime.current?.value,
                             endAt: roomEndTime.current?.value,
                             maxUser: Number(roomMaxNum.current?.value),
+                            token: accessToken,
                         }
                     });
                 }
             })
+
         }catch(e){
-            console.error(e);
-            alert("방 생성에 실패했습니다. 관리자에게 문의해주세요.");
+            console.log(e);
+            alert('시스템 에러, 방 생성에 실패하였습니다. 관리자에게 문의하세요.');
         }
+
     }
     return(
         <>
