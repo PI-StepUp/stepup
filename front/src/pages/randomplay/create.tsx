@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
@@ -11,75 +11,75 @@ import { accessTokenState, refreshTokenState, idState, nicknameState } from "sta
 import { useRecoilState } from "recoil";
 
 const RoomCreate = () => {
-    const roomTitle = useRef<any>();
-    const roomContent = useRef<any>();
-    const roomStartDate = useRef<any>();
-    const roomStartTime = useRef<any>();
-    const roomEndTime = useRef<any>();
-    const roomMaxNum = useRef<any>();
-    const roomFile = useRef<any>();
-    const [danceType, setDanceType] = useState('RANKING');
+	const roomTitle = useRef<any>();
+	const roomContent = useRef<any>();
+	const roomStartDate = useRef<any>();
+	const roomStartTime = useRef<any>();
+	const roomEndTime = useRef<any>();
+	const roomMaxNum = useRef<any>();
+	const roomFile = useRef<any>();
+	const [danceType, setDanceType] = useState('RANKING');
 
-    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-    const [id, setId] = useRecoilState(idState);
-    const [nickname, setNickname] = useRecoilState(nicknameState);
+	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+	const [id, setId] = useRecoilState(idState);
+	const [nickname, setNickname] = useRecoilState(nicknameState);
 
-    const router = useRouter();
+	const router = useRouter();
 
-    const createRoom = async (e: any) => {
-        e.preventDefault();
+	const createRoom = async (e: any) => {
+		e.preventDefault();
 
-        try{
-            await axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
+		try {
+			await axiosUser.post('/auth', {
+				id: id,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					refreshToken: refreshToken,
+				}
+			}).then((data) => {
+				if (data.data.message === "토큰 재발급 완료") {
+					setAccessToken(data.data.data.accessToken);
+					setRefreshToken(data.data.data.refreshToken);
+				}
+			})
 
-            await axiosDance.post("", {
-                title: roomTitle.current?.value,
-                content: roomContent.current?.value,
-                startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
-                endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
-                danceType: danceType,
-                maxUser: Number(roomMaxNum.current?.value),
-                thumbnail: "",
-                hostId: nickname,
-                danceMusicIdList: [1,2,3,4,5,6,7,8,9,10],
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                }
-            }).then((data) => {
-                if(data.data.message === "랜덤 플레이 댄스 생성 완료"){
-                    alert("방 생성이 완료되었습니다.");
-                    router.push({
-                        pathname: `/hostroom/${roomTitle.current?.value}`,
-                        query: {
-                            hostId: nickname,
-                            title: roomTitle.current?.value,
-                            startAt: roomStartTime.current?.value,
-                            endAt: roomEndTime.current?.value,
-                            maxUser: Number(roomMaxNum.current?.value),
-                            token: accessToken,
-                        }
-                    });
-                }
-            })
+			await axiosDance.post("", {
+				title: roomTitle.current?.value,
+				content: roomContent.current?.value,
+				startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
+				endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
+				danceType: danceType,
+				maxUser: Number(roomMaxNum.current?.value),
+				thumbnail: "",
+				hostId: nickname,
+				danceMusicIdList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				}
+			}).then((data) => {
+				if (data.data.message === "랜덤 플레이 댄스 생성 완료") {
+					alert("방 생성이 완료되었습니다.");
+					router.push({
+						pathname: `/hostroom/${roomTitle.current?.value}`,
+						query: {
+							hostId: nickname,
+							title: roomTitle.current?.value,
+							startAt: roomStartTime.current?.value,
+							endAt: roomEndTime.current?.value,
+							maxUser: Number(roomMaxNum.current?.value),
+							token: accessToken,
+						}
+					});
+				}
+			})
 
-        }catch(e){
-            console.log(e);
-            alert('시스템 에러, 방 생성에 실패하였습니다. 관리자에게 문의하세요.');
-        }
+		} catch (e) {
+			console.log(e);
+			alert('시스템 에러, 방 생성에 실패하였습니다. 관리자에게 문의하세요.');
+		}
 
     }
     return(

@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import Header from "../components/Header"
 import Banner from "components/MypageBanner";
+import Modal from "../components/UpdateRPDModal"
 import Footer from "../components/Footer"
 import Image from "next/image"
 import img_profile from "/public/images/profile-default.png"
@@ -17,10 +18,9 @@ import img_vector from "/public/images/icon-vector.png"
 import { useRecoilState } from "recoil";
 import { useRouter } from "next/router";
 import { LanguageState } from "states/states";
-import { accessTokenState, refreshTokenState, idState, rankNameState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState, canEditInfoState } from "states/states";
 
 import { axiosUser, axiosDance, axiosBoard, axiosRank } from "apis/axios";
-import { type } from "os";
 
 const MyPage = () => {
   interface Boards {
@@ -39,28 +39,39 @@ const MyPage = () => {
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
   const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
   const [id, setId] = useRecoilState(idState);
-
-  const [loginUser, setLoginUser] = useState<any>();
-  const [loginUserNickname, setLoginUserNickname] = useState<string>();
+  const [loginUserNickname, setLoginUserNickname] = useRecoilState(nicknameState);
+  const [profileImg, setProfileImg] = useRecoilState(profileImgState);
   const [rankName, setRankName] = useRecoilState(rankNameState);
+	const [canEditInfo, setCanEditInfo] = useRecoilState(canEditInfoState);
+  
+  const [loginUser, setLoginUser] = useState<any>();
   const [goalRankPoint, setGoalRankPoint] = useState<number>(0);
-  const [profileImg, setProfileImg] = useState<string>("");
   const [point, setPoint] = useState<number>(0);
   const [pointLeft, setPointLeft] = useState<number>();
   const [pointHistory, setPointHistory] = useState<any[]>();
   const [reserved, setReserved] = useState<any[]>();
-  const [reservedThumbnail, setReservedThumbnail] = useState<string[]>();
-  const [randomDanceId, setRandomDanceId] = useState<any[]>();
   const [myRandomDance, setMyRandomDance] = useState<any[]>();
   const [myRandomDanceHistory, setMyRandomDanceHistory] = useState<any[]>();
   const [visibleItems, setVisibleItems] = useState(3);
-  const [selectedRandomDance, setSelectedRandomDance] = useState<any>();
   const [meetingBoard, setMeetingBoard] = useState<Boards[] | null>(null);
   const [talkBoard, setTalkBoard] = useState<Boards[] | null>(null);
   const [boardCnt, setBoardCnt] = useState<number>();
   const [readyData, setReadyData] = useState<boolean>(false);
   const [equalPw, setEqualPw] = useState<boolean>(true);
   const [checkPassword, setCheckPassword] = useState<any>();
+
+  // 로그인한 유저가 개최한 랜플댄 정보 수정
+	const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [editId, setEditId] = useState<number>(0);
+  const [editTitle, setEditTitle] = useState<string>('');
+  const [editContent, setEditContent] = useState<string>('');
+  const [editStartAt, setEditStartAt] = useState<any>();
+  const [editEndAt, setEditEndAt] = useState<any>();
+  const [editDanceType, setEditDanceType] = useState<string>('');
+  const [editMaxUser, setEditMaxUser] = useState<number>();
+  const [editThumbnail, setEditThumbnail] = useState<string>('');
+  const [editHostId, setEditHostId] = useState<string>(id);
+  const [editDanceMusicIdList, SetEditDanceMusicIdList] = useState<any>();
 
   const router = useRouter();
   const pwValue = useRef<HTMLInputElement>();
@@ -78,6 +89,11 @@ const MyPage = () => {
     list.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // 개최한 랜플댄 정보 수정시 스크롤 이동
+  const scrollToEditRPD = () => {
+    window.scrollTo({top:0, behavior: "smooth"});
+  };
+
   // 예약된 랜플댄 개수
   let reservedRandomDanceCnt: number = 0;
 
@@ -89,202 +105,191 @@ const MyPage = () => {
 
   // rank 관련 변수
   let rankBtnColor: string = "#A77044";
-  // let rankGoalPoint: number = 0;
 
-  // let cancelRandomDance: (arg0: any) => void;
-  // let deleteMyRandomDance: (arg0: any) => void;
-  // let checkPw;
   useEffect(() => {
-    // 접근 권한(로그인 여부) 확인
-    try {
-      axiosUser.post('/auth', {
-        id: id,
-      }, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          refreshToken: refreshToken,
-        }
-      }).then((data) => {
-        console.log(data);
-        if (data.data.message === "토큰 재발급 완료") {
-          setAccessToken(data.data.data.accessToken);
-          setRefreshToken(data.data.data.refreshToken);
-        }
-      })
-    } catch (e) {
-      alert('시스템 에러, 관리자에게 문의하세요.');
+    console.log("아이디 잇나?", id);
+    if (id === '' || accessToken === '' || refreshToken === '') {
+      alert("로그인을 먼저 진행해주세요.");
+      router.push('/login');
+    }else {
+      // 접근 권한(로그인 여부) 확인
+      try {
+        axiosUser.post('/auth', {
+          id: id,
+        }, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            refreshToken: refreshToken,
+          }
+        }).then((data) => {
+          console.log(data);
+          console.log(data.data.message)
+          if (data.data.message === "토큰 재발급 완료") {
+            setAccessToken(data.data.data.accessToken);
+            setRefreshToken(data.data.data.refreshToken);
+          } else if (data.data.message === "잘못된 형식의 헤더") {
+            console.log("로그인 먼저")
+          }
+        }).catch((e) => {
+          console.log("여긴가?", e);
+          if (e.response.data.message === "잘못된 형식의 헤더") {
+            console.log("여기다")
+            alert("로그인을 먼저 진행해주세요.");
+            router.push('/login');
+          }
+        })
+      } catch (e) {
+        console.log("로그인 안했는데 진입?", e);
+        alert('시스템 에러, 관리자에게 문의하세요.');
+      }
     }
   }, []);
 
   useEffect(() => {
-    const setup = async () => {
-      // 로그인 유저 정보 조회
-      await axiosUser.get("", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }).then(async (data) => {
-        // console.log("로그인 유저 정보 조회", data);
-        if (data.data.message === "회원정보 조회 완료") {
-          await setLoginUser(data.data.data);
-          await setLoginUserNickname(data.data.data.nickname);
-          await setRankName(data.data.data.rankName);
-          // console.log("rankName >> ", rankName);
-
-          await setRankName(rankName);
-          switch (rankName) {
-            case "BRONZE":
-              rankBtnColor = "#A77044";
-              setGoalRankPoint(100);
-              // console.log("유저 정보 확인 - 포인트", goalRankPoint);
-              break;
-            case "SILVER":
-              rankBtnColor = "#A7A7AD";
-              setGoalRankPoint(300);
-              break;
-            case "GOLD":
-              rankBtnColor = "#FFB028";
-              setGoalRankPoint(1000);
-              break;
-            case "PLATINUM":
-              rankBtnColor = "#86f989";
-              setGoalRankPoint(10000);
-              break;
-            default:
-              rankBtnColor = "#A77044";
-              setGoalRankPoint(100);
-              break;
+    if(id !== '' && accessToken !== '' && refreshToken !== ''){
+      const setup = async () => {
+        // 로그인 유저 정보 조회
+        await axiosUser.get("", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
           }
-
-          await setProfileImg(data.data.data.profileImg);
-
-          const getpoint = () => {
-            if (typeof data.data.data.point === 'number') {
-              setPoint(data.data.data.point);
+        }).then(async (data) => {
+          // console.log("로그인 유저 정보 조회", data);
+          if (data.data.message === "회원정보 조회 완료") {
+            await setLoginUser(data.data.data);
+            await setLoginUserNickname(data.data.data.nickname);
+            await setRankName(data.data.data.rankName);
+            // console.log("rankName >> ", rankName);
+  
+            await setRankName(rankName);
+            switch (rankName) {
+              case "BRONZE":
+                rankBtnColor = "#A77044";
+                setGoalRankPoint(100);
+                // console.log("유저 정보 확인 - 포인트", goalRankPoint);
+                break;
+              case "SILVER":
+                rankBtnColor = "#A7A7AD";
+                setGoalRankPoint(300);
+                break;
+              case "GOLD":
+                rankBtnColor = "#FFB028";
+                setGoalRankPoint(1000);
+                break;
+              case "PLATINUM":
+                rankBtnColor = "#86f989";
+                setGoalRankPoint(10000);
+                break;
+              default:
+                rankBtnColor = "#A77044";
+                setGoalRankPoint(100);
+                break;
             }
+  
+            await setProfileImg(data.data.data.profileImg);
+  
+            const getpoint = () => {
+              if (typeof data.data.data.point === 'number') {
+                setPoint(data.data.data.point);
+              }
+            }
+            await getpoint();
+            await setPointLeft(goalRankPoint - point);
+  
+            // await console.log("남은 포인트", pointLeft);
+            // await console.log("다음 랭크의 포인트", goalRankPoint);
+            // await console.log("로그인 유저 정보", loginUser);
           }
-          await getpoint();
-          await setPointLeft(goalRankPoint - point);
-
-          // await console.log("남은 포인트", pointLeft);
-          // await console.log("다음 랭크의 포인트", goalRankPoint);
-          // await console.log("로그인 유저 정보", loginUser);
-        }
-      })
-
-      // 로그인 유저의 포인트 적립 내역 조회
-      await axiosRank.get("/my/history", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }).then((data) => {
-        // console.log("로그인 유저의 포인트 적립 내역 조회", data);
-        if (data.data.message === "포인트 적립 내역 조회 완료") {
-          setPointHistory(data.data.data);
-          // console.log("포인트 적립 내역", pointHistory);
-        }
-      })
-
-      // 로그인 유저가 작성한 정모 게시글 조회
-      await axiosBoard.get(`/meeting/my?id=${id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }).then((data) => {
-        // console.log("로그인 유저가 작성한 정모 게시글 조회", data);
-        // console.log("조회하자마자 바로 len 계산 >>", data.data.data.length);
-        if (data.data.message === "내가 작성한 정모 목록 조회") {
-          setMeetingBoard(data.data.data as Boards[]);
-          meetingCnt = data.data.data.length!;
-          // console.log("정모 작성 목록", meetingBoard);
-          // console.log("정모게시글 개수 ", meetingCnt);
-        }
-      })
-
-      // 로그인 유저가 작성한 자유게시판 게시글 조회
-      await axiosBoard.get(`/talk/my?id=${id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }).then((data) => {
-        // console.log("로그인 유저가 작성한 자유게시판 게시글 조회", data);
-        if (data.data.message === "내가 작성한 자유게시판 목록 조회") {
-          setTalkBoard(data.data.data as Boards[]);
-          talkCnt = data.data.data.length!;
-          // console.log("자유게시판 작성 목록", talkBoard);
-          // console.log("자유게시판 개수 ", talkCnt);
-          setBoardCnt(talkCnt + meetingCnt);
-        }
-      })
-
-      // 로그인 유저의 랜플댄 예약 목록 조회
-      await axiosDance.get("/my/reserve", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
-        // console.log("로그인 유저 랜플댄 예약 목록 조회", data);
-        if (data.data.message === "내가 예약한 랜덤 플레이 댄스 목록 조회 완료") {
-          setReserved(data.data.data);
-          reservedRandomDanceCnt = reserved?.length!;
-          // setReservedThumbnail(data.data.data.thumbnail);
-          // console.log("내 예약 목록", reserved);
-        }
-      })
-
-      // 로그인 유저가 개최한 랜플댄 목록 조회
-      await axiosDance.get("/my/open", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
-        // console.log("로그인 유저가 개최한 랜플댄 목록", data);
-        if (data.data.message === "내가 개최한 랜덤 플레이 댄스 목록 조회 완료") {
-          setMyRandomDance(data.data.data);
-          // console.log("내 예약 목록", myRandomDance);
-        }
-      })
-
-      // 로그인 유저가 개최한 랜플댄 수정
-      // await const editMyRandomDance = async () => {
-      //   await axiosDance.put("/my", {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`
-      //     },
-      //     randomDanceId: myRandomDanceIdValue.current.value,
-      //     title: myRandomDanceTitleValue.current.value,
-      //     content: myRandomDanceContentValue.current.value,
-      //     startAt: myRandomDanceStartAtValue.current.value,
-      //     endAt: myRandomDanceEndAtValue.current.value,
-      //     danceType: myRandomDanceTypeValue.current.value,
-      //     maxUser: myRandomDanceMaxUserValue.current.value,
-      //     thumbnail: myRandomDanceThumbnailValue.current.value,
-      //     playlist: myRandomDancePlayListValue.current.value,
-      //   }).then((data) => {
-      //     if (data.data.message === "랜덤 플레이 댄스 수정 완료") {
-      //       alert("랜덤 플레이 댄스 정보를 수정했습니다.");
-      //     } else {
-      //       alert("수정을 완료하지 못했습니다. 다시 한 번 시도해주세요.");
-      //     }
-      //   })
-      // }
-      // 랜플댄 아이디로 정보 조회 (API 존재 X)
-
-      // 로그인 유저가 참여한 랜플댄 목록 조회
-      await axiosDance.get("/my/attend/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        },
-      }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
-        if (data.data.message === "내가 참여한 랜덤 플레이 댄스 목록 조회 완료") {
-          setMyRandomDanceHistory(data.data.data);
-          // console.log("로그인 유저가 참여한 랜플댄 목록 조회", myRandomDanceHistory);
-        }
-      })
-      await setReadyData(true);
+        })
+  
+        // 로그인 유저의 포인트 적립 내역 조회
+        await axiosRank.get("/my/history", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }).then((data) => {
+          // console.log("로그인 유저의 포인트 적립 내역 조회", data);
+          if (data.data.message === "포인트 적립 내역 조회 완료") {
+            setPointHistory(data.data.data);
+            // console.log("포인트 적립 내역", pointHistory);
+          }
+        })
+  
+        // 로그인 유저가 작성한 정모 게시글 조회
+        await axiosBoard.get(`/meeting/my`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }).then((data) => {
+          // console.log("로그인 유저가 작성한 정모 게시글 조회", data);
+          // console.log("조회하자마자 바로 len 계산 >>", data.data.data.length);
+          if (data.data.message === "내가 작성한 정모 목록 조회") {
+            setMeetingBoard(data.data.data as Boards[]);
+            meetingCnt = data.data.data.length!;
+            // console.log("정모 작성 목록", meetingBoard);
+            // console.log("정모게시글 개수 ", meetingCnt);
+          }
+        })
+  
+        // 로그인 유저가 작성한 자유게시판 게시글 조회
+        await axiosBoard.get(`/talk/my`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }).then((data) => {
+          // console.log("로그인 유저가 작성한 자유게시판 게시글 조회", data);
+          if (data.data.message === "내가 작성한 자유게시판 목록 조회") {
+            setTalkBoard(data.data.data as Boards[]);
+            talkCnt = data.data.data.length!;
+            // console.log("자유게시판 작성 목록", talkBoard);
+            // console.log("자유게시판 개수 ", talkCnt);
+            setBoardCnt(talkCnt + meetingCnt);
+          }
+        })
+  
+        // 로그인 유저의 랜플댄 예약 목록 조회
+        await axiosDance.get("/my/reserve", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
+          // console.log("로그인 유저 랜플댄 예약 목록 조회", data);
+          if (data.data.message === "내가 예약한 랜덤 플레이 댄스 목록 조회 완료") {
+            setReserved(data.data.data);
+            reservedRandomDanceCnt = reserved?.length!;
+            // setReservedThumbnail(data.data.data.thumbnail);
+            // console.log("내 예약 목록", reserved);
+          }
+        })
+  
+        // 로그인 유저가 개최한 랜플댄 목록 조회
+        await axiosDance.get("/my/open", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
+          // console.log("로그인 유저가 개최한 랜플댄 목록", data);
+          if (data.data.message === "내가 개최한 랜덤 플레이 댄스 목록 조회 완료") {
+            setMyRandomDance(data.data.data);
+            // console.log("내 예약 목록", myRandomDance);
+          }
+        })
+  
+        // 로그인 유저가 참여한 랜플댄 목록 조회
+        await axiosDance.get("/my/attend/", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          },
+        }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
+          if (data.data.message === "내가 참여한 랜덤 플레이 댄스 목록 조회 완료") {
+            setMyRandomDanceHistory(data.data.data);
+            // console.log("로그인 유저가 참여한 랜플댄 목록 조회", myRandomDanceHistory);
+          }
+        })
+        await setReadyData(true);
+      }
+      setup();
     }
-    setup();
-
   })
 
   // 로그인 유저의 랜플댄 예약 취소
@@ -336,6 +341,7 @@ const MyPage = () => {
         console.log("비밀번호 일치 여부 결과", data);
         if (data.data.message === "비밀번호 일치") {
           setEqualPw(true);
+          setCanEditInfo(true);
           console.log("비밀번호 일치");
           router.push('/mypageedit');
         } else {
@@ -349,6 +355,26 @@ const MyPage = () => {
     } catch (e) {
     }
   }
+
+  // 랜플댄 수정 모달창
+	const leaveModalOpen = async (randomDance: any) => {
+    setEditId(randomDance.randomDanceId);
+    setEditTitle(randomDance.title);
+    setEditContent(randomDance.content);
+    setEditStartAt(randomDance.startAt);
+    setEditEndAt(randomDance.endAt);
+    setEditDanceType(randomDance.danceType);
+    setEditMaxUser(randomDance.maxUser);
+    setEditThumbnail(randomDance.thumbnail);
+    setEditHostId(randomDance.hostId);
+    SetEditDanceMusicIdList(randomDance.danceMusicIdList);
+		scrollToEditRPD();
+    setModalOpen(true);
+	}
+
+	const leaveModalClose = async () => {
+		setModalOpen(false);
+	}
 
   return (
     <>
@@ -442,7 +468,7 @@ const MyPage = () => {
                         <div className="learner">{randomDance.danceType}</div>
                       </div>
                       <div className="btn-contents">
-                        <a>{lang === "en" ? "Edit" : lang === "cn" ? "更改信息" : "방 정보 수정"}</a>
+                        <a onClick={() => leaveModalOpen(randomDance)}>{lang === "en" ? "Edit" : lang === "cn" ? "更改信息" : "방 정보 수정"}</a>
                         <a onClick={() => deleteMyRandomDance({ rpdId })}>{lang === "en" ? "Host - Cancel" : lang === "cn" ? "取消活动" : "방 생성 취소"}</a>
                       </div>
                     </li>
@@ -466,7 +492,7 @@ const MyPage = () => {
                   {lang === "en" ? "Enter" : lang === "cn" ? "输入" : "입력"}
                 </div>
               </div>
-              {equalPw ? (<p></p>) : (<p className="notequal">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</p>)}
+              {equalPw ? (<p> </p>) : (<p className="notequal">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</p>)}
             </details>
           </div>
           {/* end - settings */}
@@ -576,6 +602,9 @@ const MyPage = () => {
         </div>
         {/* end - advertisement */}
       </div>
+      {modalOpen &&
+				<Modal open={modalOpen} close={leaveModalClose} randomDanceId={editId} title={editTitle} content={editContent} startAt={editStartAt} endAt={editEndAt} danceType={editDanceType} maxUser={Number(editMaxUser)} thumbnail={editThumbnail} hostId={editHostId} danceMusicIdList={editDanceMusicIdList}></Modal>
+			}
       <Footer />
     </>
   )
