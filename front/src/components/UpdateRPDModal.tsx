@@ -23,11 +23,11 @@ interface props {
 const Modal = (props: props): ReactElement => {
 	const roomTitle = useRef<any>(props.title);
 	const roomContent = useRef<any>(props.content);
-	const startDateString = (props.startAt||'').split(' ')[0];
+	const startDateString = (props.startAt||'').split('T')[0];
 	const startDate = new Date(startDateString);
 	const formattedStartDate = startDate.toISOString().split("T")[0];
 	const roomStartDate = useRef<any>(formattedStartDate);
-	const startTimeString = (props.startAt||'').split(' ')[1];
+	const startTimeString = (props.startAt||'').split('T')[1];
 	const [startH, startM] = (startTimeString||'').split(":");
 	const formattedStartTime = `${startH}:${startM}`;
 	const roomStartTime = useRef<any>(formattedStartTime);
