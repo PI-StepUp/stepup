@@ -3,31 +3,31 @@ const app = express();
 const http = require('http').Server(app);
 const cors = require('cors');
 
-const https = require('https');
-const fs = require('fs');
+// const https = require('https');
+// const fs = require('fs');
 
-const options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/stepup-pi.com/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/stepup-pi.com/cert.pem')
-}
+// const options = {
+//     key: fs.readFileSync('/etc/letsencrypt/live/stepup-pi.com/privkey.pem'),
+//     cert: fs.readFileSync('/etc/letsencrypt/live/stepup-pi.com/cert.pem')
+// }
 
 
 app.use(cors());
-// const io = require('socket.io')(http, {
-//   cors:{
-//     origin: "*",
-//     methods:["GET", "POST"]
-//   }
-// });
+const io = require('socket.io')(http, {
+  cors:{
+    origin: "*",
+    methods:["GET", "POST"]
+  }
+});
 
-const httpsServer = https.createServer(options, app);
+// const httpsServer = https.createServer(options, app);
 
-const io = require('socket.io')(httpsServer, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
-    }
-  });
+// const io = require('socket.io')(httpsServer, {
+//     cors: {
+//       origin: "*",
+//       methods: ["GET", "POST"]
+//     }
+//   });
 
 
 const PORT = process.env.PORT || 4002;
@@ -41,9 +41,9 @@ let maxNumCnt = 0;
 
 const maximum = process.env.MAXIMUM || 4;
 
-httpsServer.listen(PORT, () => {
-    console.log(`HTTPS server running on ${PORT}`);
-  });
+// httpsServer.listen(PORT, () => {
+//     console.log(`HTTPS server running on ${PORT}`);
+//   });
 
 io.on('connection', socket => {
     socket.on('join_room', data => {
