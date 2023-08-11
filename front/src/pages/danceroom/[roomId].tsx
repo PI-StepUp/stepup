@@ -36,7 +36,7 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002/socket.io';
+const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
 
 const EMBED_URL: any = {
     1: "https://www.youtube.com/embed/g4vaGXR7fUY",
