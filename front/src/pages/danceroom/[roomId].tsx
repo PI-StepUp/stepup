@@ -105,6 +105,7 @@ const DanceRoom = () => {
     const [playResult, setPlayResult] = useState('');
     const [urlNo, setUrlNo] = useState<any>(0);
     const [audioEnabled, setAudioEnabled] = useState(true);
+    const [videoEnabled, setVideoEnabled] = useState(true);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
     const modal = useRef<any>();
@@ -152,6 +153,16 @@ const DanceRoom = () => {
             if(audioTrack){
                 audioTrack.enabled = !audioEnabled;
                 setAudioEnabled(!audioEnabled);
+            }
+        }
+    }
+
+    const toggleVideo = () => {
+        if(localStreamRef.current){
+            const videoTrack = localStreamRef.current.getVideoTracks()[0];
+            if(videoTrack){
+                videoTrack.enabled = !videoEnabled;
+                setVideoEnabled(!videoEnabled);
             }
         }
     }
@@ -569,17 +580,35 @@ const DanceRoom = () => {
                                     {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
-                                    <button onClick={toggleAudio}>
-                                    {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                {
+                                    audioEnabled ?
+                                    <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                        <button onClick={toggleAudio} className="audio-enabled">
+                                        {mic ? <Image src={MicIcon} alt=""/> : <Image src={MicHoverIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                    :
+                                    <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                        <button onClick={toggleAudio} className="audio-disabled">
+                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                }
                                 <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
-                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
-                                    <button>
-                                    {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                {
+                                    videoEnabled ?
+                                    <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                        <button onClick={toggleVideo} className="video-enabled">
+                                        {camera ? <Image src={CameraIcon} alt=""/> : <Image src={CameraHoverIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                    :
+                                    <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                        <button onClick={toggleVideo} className="video-disabled">
+                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                }
                             </ul>
                         </div>
                     </div>
