@@ -49,6 +49,12 @@ export const rankNameState = atom({
     effects_UNSTABLE: [persistAtom]
 })
 
+export const canEditInfoState = atom({
+    key: 'canEditInfoState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})
+
 export const roleState = atom({
     key: 'roleState',
     default: '',
