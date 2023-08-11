@@ -56,7 +56,7 @@ const DetailArticle = () => {
         }).then((data) => {
             if(data.data.message === "댓글 삭제 완료"){
                 alert("댓글이 삭제되었습니다.");
-                router.push(`/article/detail/${boardId}`);
+                router.push(`/article/list`);
             }
         })
     }
@@ -93,7 +93,7 @@ const DetailArticle = () => {
         }).then((data) => {
             if(data.data.message === "댓글 등록 완료"){
                 alert("댓글이 추가되었습니다.");
-                router.push(`/article/detail/${boardId}`);
+                router.push('/article/list');
             }
         })
     }
