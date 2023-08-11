@@ -374,7 +374,7 @@ const DanceRoom = () => {
 			if (17 <= i && i <= 22) continue;
 
 			if (typeof result.landmarks[0] != "undefined") {
-				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y];
+				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
 			}
 			oneFrame.push(coordinate);
 		}
