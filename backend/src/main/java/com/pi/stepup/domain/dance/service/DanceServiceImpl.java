@@ -218,7 +218,7 @@ public class DanceServiceImpl implements DanceService {
                 = DanceSearchResponseDto.builder()
                 .randomDance(randomDance)
                 .progressType(danceSearchRequestDto.getProgressType())
-                .reserveStatus(1)
+                .reserveStatus(0)
                 .build();
 
             if (isLogin) {
