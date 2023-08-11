@@ -78,6 +78,7 @@ const EMBED_URL: any = {
     37: "https://www.youtube.com/embed/yln8wDZ-i4E",
     38: "https://www.youtube.com/embed/96gMuaVE-Bo",
     39: "https://www.youtube.com/embed/pxNSGBU82GY",
+    40: "https://www.youtube.com/embed/Q7b8CWtISXc",
 }
 
 let poseLandmarker: PoseLandmarker;
@@ -409,7 +410,7 @@ const DanceRoom = () => {
 
     async function getAnswerData(musicId:number) {
         try{
-            await axios.post('http://52.78.93.184:8080/api/user/login', {
+            await axios.post('https://stepup-pi.com/api/user/login', {
                 id: "ssafy",
                 password: "ssafy",
             }).then((data) => {
@@ -419,7 +420,7 @@ const DanceRoom = () => {
             console.error(e);
         }
         try {
-            const response = await axios.get(`http://52.78.93.184:8080/api/music/${musicId}`, {
+            const response = await axios.get(`https://stepup-pi.com/api/music/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
