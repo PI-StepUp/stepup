@@ -7,6 +7,7 @@ import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NO
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
+import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicUpdateRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicDuplicatedException;
 import com.pi.stepup.domain.music.exception.MusicNotFoundException;
@@ -35,6 +36,15 @@ public class MusicServiceImpl implements MusicService {
         }
 
         return musicRepository.insert(music);
+    }
+
+    @Override
+    @Transactional
+    public void update(MusicUpdateRequestDto musicUpdateRequestDto) {
+        Music music = musicRepository.findOne(musicUpdateRequestDto.getMusicId())
+            .orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
+
+        music.updateMusicInfo(musicUpdateRequestDto.toEntity());
     }
 
     @Override
