@@ -269,19 +269,19 @@ const PracticeRoom = () => {
 	// ========== 안무 좌표 저장 ============
 
 	async function setDance(result: any, dance: any[]) {
-		let coordinate: any[] = [];
-		let oneFrame = [];
+		let coordinate;
+        let oneFrame = [];
 
-		for (let i = 11; i < 29; i++) {
-			if (17 <= i && i <= 22) continue;
+        for(let i = 11; i < 29; i++){
+        if (17 <= i && i <= 22) continue;
+        
+        if (typeof result.landmarks[0] !== "undefined") {
+            coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
+        }
+            oneFrame.push(coordinate); 
+        }
 
-			if (typeof result.landmarks[0] != "undefined") {
-				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y];
-			}
-			oneFrame.push(coordinate);
-		}
-
-		dance.push(oneFrame);
+        dance.push(oneFrame);
 	}
 
 	// =====================================
