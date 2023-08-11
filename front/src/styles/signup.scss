@@ -74,6 +74,22 @@
                         cursor:pointer;
                     }
                 }
+                select{
+                    @include setSize(600px, 60px);
+                    display: block;
+                    margin:0 auto;
+                    background-color: #FFF;
+                    border-radius: 10px;
+                    border: none;
+                    margin-top:10px;
+                    @include font(16px, 700, #536BF6);
+                    padding:20px;
+                    option{
+                        @include setSize(100%, 100%);
+                        @include box-padding(25px);
+                        padding-left:25px;
+                    }
+                }
                 input[type="submit"]{
                     background-color:#97A8FF;
                     @include font(24px, 700, #FFFFFF);
