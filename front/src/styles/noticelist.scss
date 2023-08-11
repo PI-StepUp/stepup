@@ -11,6 +11,7 @@
             background-color:#FFF;
             @include box-padding(80px);
             margin-top:32px;
+            cursor:pointer;
             &:first-child{
                 margin-top:0px;
             }

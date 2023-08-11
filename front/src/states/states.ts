@@ -54,3 +54,9 @@ export const canEditInfoState = atom({
     default: '',
     effects_UNSTABLE: [persistAtom]
 })
+
+export const roleState = atom({
+    key: 'roleState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})

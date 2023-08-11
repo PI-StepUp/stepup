@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 import Link from "next/link"
 
 import { useRecoilState } from "recoil";
-import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState } from "states/states";
+import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState, roleState } from "states/states";
 import { useRouter } from "next/router";
 
 const Header = () => {
@@ -13,6 +13,7 @@ const Header = () => {
     const [id, setId] = useRecoilState(idState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankname, setRankname] = useRecoilState(rankNameState);
+    const [role, setRole] = useRecoilState(roleState);
     const [nav, setNav] = useState<any>(<ul>
 		<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
 		<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
@@ -28,6 +29,7 @@ const Header = () => {
         setId("");
         setProfileImg("");
         setRankname("");
+        setRole("");
         router.push('/');
     }
 

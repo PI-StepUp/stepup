@@ -60,6 +60,7 @@ const EMBED_URL: any = {
     37: "https://www.youtube.com/embed/yln8wDZ-i4E",
     38: "https://www.youtube.com/embed/96gMuaVE-Bo",
     39: "https://www.youtube.com/embed/pxNSGBU82GY",
+    40: "https://www.youtube.com/embed/Q7b8CWtISXc",
 }
 
 let poseLandmarker: PoseLandmarker;
@@ -119,25 +120,25 @@ const PracticeRoom = () => {
 
     useEffect(() => {
         getLocalStream();
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+        // try{
+        //     axiosUser.post('/auth',{
+        //         id: id,
+        //     },{
+        //         headers:{
+        //             Authorization: `Bearer ${accessToken}`,
+        //             refreshToken: refreshToken,
+        //         }
+        //     }).then((data) => {
+        //         if(data.data.message === "토큰 재발급 완료"){
+        //             setAccessToken(data.data.data.accessToken);
+        //             setRefreshToken(data.data.data.refreshToken);
+        //         }
+        //     })
+        // }catch(e){
+        //     alert('시스템 에러, 관리자에게 문의하세요.');
+        // }
 
-        axios.get("http://52.78.93.184:8080/api/music",{
+        axios.get("https://stepup-pi.com:8080/api/music",{
             params:{
                 keyword: "",
             },
@@ -268,19 +269,19 @@ const PracticeRoom = () => {
 	// ========== 안무 좌표 저장 ============
 
 	async function setDance(result: any, dance: any[]) {
-		let coordinate: any[] = [];
-		let oneFrame = [];
+		let coordinate;
+        let oneFrame = [];
 
-		for (let i = 11; i < 29; i++) {
-			if (17 <= i && i <= 22) continue;
+        for(let i = 11; i < 29; i++){
+        if (17 <= i && i <= 22) continue;
+        
+        if (typeof result.landmarks[0] !== "undefined") {
+            coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
+        }
+            oneFrame.push(coordinate); 
+        }
 
-			if (typeof result.landmarks[0] != "undefined") {
-				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y];
-			}
-			oneFrame.push(coordinate);
-		}
-
-		dance.push(oneFrame);
+        dance.push(oneFrame);
 	}
 
 	// =====================================
@@ -289,7 +290,7 @@ const PracticeRoom = () => {
 
     async function getAnswerData(musicId:number) {
         try {
-            const response = await axios.get(`http://52.78.93.184:8080/api/music/${musicId}`, {
+            const response = await axios.get(`https://stepup-pi.com:8080/api/music/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },

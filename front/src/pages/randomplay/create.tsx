@@ -81,78 +81,76 @@ const RoomCreate = () => {
 			alert('시스템 에러, 방 생성에 실패하였습니다. 관리자에게 문의하세요.');
 		}
 
-	}
-	return (
-		<>
-			<Header />
-			<MainBanner />
-			<SubNav />
-			<div className="create-wrap">
-				<div className="create-title">
-					<span>게시글</span>
-					<div className="flex-wrap">
-						<h3>글 작성</h3>
-						<div className="horizontal-line"></div>
-					</div>
-				</div>
-				<div className="create-content">
-					<form action="">
-						<table>
-							<tr>
-								<td>방 제목</td>
-								<td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={roomTitle} /></td>
-							</tr>
-							<tr>
-								<td>방 소개</td>
-								<td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={roomContent}></textarea></td>
-							</tr>
-							<tr>
-								<td>방 유형</td>
-								<td>
-									<select name="" id="" onChange={(e) => setDanceType(e.target.value)}>
-										<option value="RANKING">랜덤플레이</option>
-										<option value="SURVIVAL">서바이벌</option>
-										<option value="BASIC">자율모드</option>
-									</select>
-								</td>
-							</tr>
-							<tr>
-								<td>개최 날짜</td>
-								<td><input type="date" placeholder="시간을 입력해주세요." className="input-date" ref={roomStartDate} /></td>
-							</tr>
-							<tr>
-								<td>개최 시간</td>
-								<td>
-									<input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={roomStartTime} /> -
-									<input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={roomEndTime} />
-								</td>
-							</tr>
-							<tr>
-								<td>최대 참여자 수</td>
-								<td><input type="number" className="input-max" ref={roomMaxNum} /></td>
-							</tr>
-							<tr>
-								<td>대표이미지</td>
-								<td><input type="file" ref={roomFile} /></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>
-									<div className="create-button-wrap">
-										<ul>
-											<li><button>취소하기</button></li>
-											<li><button onClick={createRoom}>작성하기</button></li>
-										</ul>
-									</div>
-								</td>
-							</tr>
-						</table>
-					</form>
-				</div>
-			</div>
-			<Footer />
-		</>
-	)
+    }
+    return(
+        <>
+            <Header/>
+            <MainBanner/>
+            <div className="create-wrap">
+                <div className="create-title">
+                    <span>RANDOM PLAY</span>
+                    <div className="flex-wrap">
+                        <h3>새로운 방 생성</h3>
+                        <div className="horizontal-line"></div>
+                    </div>
+                </div>
+                <div className="create-content">
+                    <form action="">
+                        <table>
+                            <tr>
+                                <td>방 제목</td>
+                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={roomTitle}/></td>
+                            </tr>
+                            <tr>
+                                <td>방 소개</td>
+                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={roomContent}></textarea></td>
+                            </tr>
+                            <tr>
+                                <td>방 유형</td>
+                                <td>
+                                    <select name="" id="" onChange={(e) => setDanceType(e.target.value)}>
+                                        <option value="RANKING">랜덤플레이</option>
+                                        <option value="BASIC">자율모드</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>개최 날짜</td>
+                                <td><input type="date" placeholder="시간을 입력해주세요." className="input-date" ref={roomStartDate}/></td>
+                            </tr>
+                            <tr>
+                                <td>개최 시간</td>
+                                <td>
+                                    <input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={roomStartTime}/> - 
+                                    <input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={roomEndTime}/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>최대 참여자 수</td>
+                                <td><input type="number" className="input-max" ref={roomMaxNum}/></td>
+                            </tr>
+                            <tr>
+                                <td>대표이미지</td>
+                                <td><input type="file" ref={roomFile}/></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <div className="create-button-wrap">
+                                        <ul>
+                                            <li><button>취소하기</button></li>
+                                            <li><button onClick={createRoom}>작성하기</button></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <Footer/>
+        </>
+    )
 }
 
 export default RoomCreate;
