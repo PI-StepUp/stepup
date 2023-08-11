@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, roleState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailNotice = () => {
@@ -20,6 +20,7 @@ const DetailNotice = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [role, setRole] = useRecoilState(roleState);
 
     const deleteArticle = async () => {
 
@@ -113,8 +114,15 @@ const DetailNotice = () => {
                         <p>{article?.content}</p>
                     </div>
                     <div className="button-wrap">
-                        <button onClick={deleteArticle}>삭제하기</button>
-                        <button onClick={() => router.push('/notice/edit/' + article.boardId)}>수정하기</button>
+                    {
+                        role === "ROLE_ADMIN" ?
+                        <>
+                            <button onClick={deleteArticle}>삭제하기</button>
+                            <button onClick={() => router.push('/notice/edit/' + article.boardId)}>수정하기</button>
+                        </>
+                        :
+                        <></>
+                    }
                     </div>
                 </div>
             </div>

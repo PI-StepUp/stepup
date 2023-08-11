@@ -13,12 +13,11 @@ import Footer from "components/Footer"
 import LanguageButton from "components/LanguageButton";
 
 import { useRecoilState } from "recoil";
-import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState } from "states/states";
+import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState, roleState } from "states/states";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import { useInterval } from "usehooks-ts";
 import { axiosDance } from "apis/axios";
-import { access } from "fs"
 
 const Index = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
@@ -28,6 +27,7 @@ const Index = () => {
     const [id, setId] = useRecoilState(idState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankname, setRankname] = useRecoilState(rankNameState);
+	const [role, setRole] = useRecoilState(roleState);
 	const [mainBanner, setMainBanner] = useState<any>(1);
 
 	const router = useRouter();
@@ -56,6 +56,7 @@ const Index = () => {
         setId("");
         setProfileImg("");
         setRankname("");
+		setRole("");
 		setNav(<ul>
 			<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
 			<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>

@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import ModalCloseIcon from "/public/images/icon-modal-close.svg";
 
-import { LanguageState, accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState } from "states/states";
+import { LanguageState, accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState, roleState } from "states/states";
 
 const Login = () => {
     const [id, setId] = useState('');
@@ -21,6 +21,7 @@ const Login = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankName, setRankName] = useRecoilState(rankNameState);
+    const [role, setRole] = useRecoilState(roleState);
     const emailValue = useRef<any>();
     const dateValue = useRef<any>();
     const modal = useRef<any>();
@@ -77,7 +78,7 @@ const Login = () => {
                 setNickname(user.data.data.userInfo.nickname);
                 setProfileImg(user.data.data.userInfo.profileImg);
                 setRankName(user.data.data.userInfo.rankName);
-                console.log(accessToken);
+                setRole(user.data.data.userInfo.role);
                 router.push('/');
             }
         }catch(e){
