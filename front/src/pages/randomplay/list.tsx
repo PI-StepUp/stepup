@@ -176,7 +176,6 @@ const RandomPlayList = () => {
 							{rooms?.slice(0, roomsVisibleItems)?.map((room, index) => {
 								return (
 									<li key={index}>
-										
 											<div className="section-content-img">
 											<span>{(room.danceType === "SURVIVAL") ?
 												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
@@ -203,7 +202,22 @@ const RandomPlayList = () => {
 															</button>
 														:
 														(currentDate < new Date(room.endAt)) ? 
-															(accessToken) ? 
+															(accessToken) ?
+																(nickname === room.hostNickname) ?
+																<Link href={{
+																	pathname: `/hostroom/${room.title}`,
+																	query: {
+																		hostId: nickname,
+																		title: room.title,
+																		startAt: room.startAt,
+																		endAt: room.endAt,
+																		maxUser: Number(room.maxUser),
+																		token: accessToken,
+																	},
+																}}>
+																	<button>{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
+																</Link>
+																:
 																<Link href={{
 																	pathname: `/danceroom/${room.randomDanceId}`,
 																	query: {
@@ -226,7 +240,6 @@ const RandomPlayList = () => {
 												<span>{month(room.startAt)}/{day(room.startAt)} {hour(room.startAt)}:{minute(room.startAt)} ~ {month(room.endAt)}/{day(room.endAt)} {hour(room.endAt)}:{minute(room.endAt)}</span>
 												</div>
 											</div>
-										
 									</li>
 								)
 							})}
