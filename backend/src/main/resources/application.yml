@@ -10,4 +10,4 @@ spring:
         - mail
         - springdoc
     # release(prod) / develop(dev) 중에 선택
-    active: release
+    active: develop
