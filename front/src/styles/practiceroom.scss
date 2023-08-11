@@ -4,7 +4,7 @@
     @include flex;
     .practice-video-wrap{
         @include box-padding(20px);
-        @include setSize(68vw,100vh);
+        @include setSize(76vw,100vh);
         @include flex;
         flex-direction: column;
         background-color:#F5F5F5;
@@ -36,10 +36,21 @@
             flex:1;
             @include flex(center, center);
             margin-top:25px;
+            .reflect-video{
+                transform: rotateY(180deg);
+                -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+                -moz-transform:rotateY(180deg); /* Firefox */
+            }
+            .youtube-video{
+                @include flex(center, center);
+            }
             .my-video{
                 @include setSize(50%, 100%);
                 background-color:#CBD1D1;
                 video{
+                    @include setSize(100%, 100%);
+                } 
+                iframe{
                     @include setSize(100%, 100%);
                 }
             }
@@ -499,4 +510,78 @@
     @include flex(center, center);
     animation-name:logoLetter;
     animation-duration: 5s;
+}
+
+.modal-back{
+    @include setSize(100%, 100%);
+    position:fixed;
+    top:0px;
+    left:0px;
+    background-color:rgba(0,0,0,0.6);
+    display:none;
+    .modal-main{
+        @include setSize(800px, 500px);
+        background-color:#FFF;
+        border-radius:10px;
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform: translate(-50%, -50%);
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        padding:60px;
+        .modal-title{
+            @include flex(space-between, center);
+            h4{
+                @include font(48px, 700, #151517);
+            }
+        }
+        .modal-content{
+            p{
+                @include font(24px, 400, #000000);
+                margin-top:42px;
+                margin-bottom:36px;
+            }
+            input[type="text"]{
+                @include setSize(100%, 60px);
+                @include font(26px, 600, #000000);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-bottom:14px;
+                box-sizing: border-box;
+                padding:10px;
+            }
+            input[type="email"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                box-sizing: border-box;
+                padding:10px;
+            }
+            input[type="date"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-top:14px;
+                box-sizing: border-box;
+                padding: 10px;
+            }
+        }
+        .modal-button-wrap{
+            button{
+                @include setSize(100%, 58px);
+                background-color:#3182F8;
+                border-radius:4px;
+                border:none;
+                margin-top:14px;
+                @include font(20px, 700, #FFFFFF);
+                cursor:pointer;
+            }
+        }
+    }
 }

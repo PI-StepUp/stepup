@@ -71,17 +71,14 @@ const Login = () => {
                 password: password,
             })
             if(user.data.message === "로그인 완료"){
-                console.log(user.data);
                 setAccessToken(user.data.data.tokens.accessToken);
                 setRefreshToken(user.data.data.tokens.refreshToken);
                 setIdStat(id);
                 setNickname(user.data.data.userInfo.nickname);
                 setProfileImg(user.data.data.userInfo.profileImg);
                 setRankName(user.data.data.userInfo.rankName);
-                console.log("로그인 완료");
                 console.log(accessToken);
                 router.push('/');
-                
             }
         }catch(e){
             alert("아이디 또는 비밀번호가 틀렸습니다.");

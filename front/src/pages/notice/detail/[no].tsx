@@ -62,33 +62,26 @@ const DetailNotice = () => {
 
     useEffect(() => {
 
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+        // try{
+        //     axiosUser.post('/auth',{
+        //         id: id,
+        //     },{
+        //         headers:{
+        //             Authorization: `Bearer ${accessToken}`,
+        //             refreshToken: refreshToken,
+        //         }
+        //     }).then((data) => {
+        //         if(data.data.message === "토큰 재발급 완료"){
+        //             setAccessToken(data.data.data.accessToken);
+        //             setRefreshToken(data.data.data.refreshToken);
+        //         }
+        //     })
+        // }catch(e){
+        //     alert('시스템 에러, 관리자에게 문의하세요.');
+        // }
 
 
-        axiosBoard.get(`/notice/${boardId}`, {
-            params:{
-                boardId: boardId,
-            },
-            headers:{
-                Authorization: `Bearer ${accessToken}`
-            }
-        }).then((data) => {
+        axiosBoard.get(`/notice/${boardId}`).then((data) => {
             if(data.data.message === "공지사항 게시글 조회 완료"){
                 setArticle(data.data.data);
             }
@@ -109,7 +102,7 @@ const DetailNotice = () => {
                 </div>
                 <div className="detail-content">
                     <div className="list-wrap">
-                        <button><Link href="/article/list">목록보기</Link></button>
+                        <button><Link href="/notice/list">목록보기</Link></button>
                     </div>
                     <div className="detail-main-title">
                         <span>공지사항</span>

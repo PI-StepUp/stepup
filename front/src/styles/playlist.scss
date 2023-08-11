@@ -47,6 +47,7 @@
                 margin-top:38px;
                 margin-left:15px;
                 @include box-padding(34px);
+                cursor:pointer;
                 &:nth-child(3n+1){
                     margin-left:0px;
                 }

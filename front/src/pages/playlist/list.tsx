@@ -11,28 +11,39 @@ import DefaultProfileImage from "/public/images/playlist-default-profile-img.svg
 import HeartFillIcon from "/public/images/icon-heart-fill.svg";
 import HeartEmptyIcon from "/public/images/icon-heart-empty.svg";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
 import { axiosMusic } from "apis/axios";
 import Pagination from "react-js-pagination";
 import { useInView } from "react-intersection-observer";
+import { useRouter } from "next/router";
 
 const PlayList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [playlist, setPlaylist] = useState<any[]>();
     const [page, setPage] = useState<any>(1);
+    const router = useRouter();
 
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     const [playlistTitle, inView] = useInView();
 
     const handlePageChange = (page: any) => {
         setPage(page);
         console.log(page);
     }
+
+    const movePlaylistDetail = (musicId: number) => {
+        if(nickname == ""){
+            alert("해당 서비스는 로그인 후 이용하실 수 있습니다.");
+        }else{
+            router.push(`/playlist/detail/${musicId}`);
+        }
+    } 
 
     useEffect(() => {
 
@@ -43,7 +54,8 @@ const PlayList = () => {
         }).then((data) => {
             console.log(data);
             setPlaylist(data.data.data);
-        })
+        });
+
     }, [inView]);
     
     return (
@@ -78,13 +90,13 @@ const PlayList = () => {
                         {playlist?.map((playlist, index) => {
                             if(index+1 <= page*10 && index+1 > page*10-10){
                                 return(
-                                    <li key={index}><Link href={"/playlist/detail/" + playlist.musicApplyId}>
+                                    <li key={index} onClick={() => movePlaylistDetail(playlist.musicApplyId)}>
                                         <span>{playlist.artist}</span>
                                         <h4>{playlist.title}</h4>
                                         <p>{playlist.content}</p>
                                         <div className="user-wrap">
                                             <div className="flex-wrap">
-                                                {playlist.writerProfileImg === null ? <Image src={DefaultProfileImage} alt=""></Image> : <Image src={playlist.writerProfileImg} alt=""></Image>}
+                                                {playlist.writerProfileImg === null ? <Image src={DefaultProfileImage} alt=""></Image> : <Image src={DefaultProfileImage} alt=""></Image>}
                                                 <span>{playlist.writerName}</span>
                                             </div>
                                             <div className="heart-wrap">
@@ -95,7 +107,7 @@ const PlayList = () => {
                                                 }
                                                 <span>{playlist.heartCnt}</span>
                                             </div>
-                                        </div></Link>
+                                        </div>
                                     </li>
                                 )
                             }
@@ -104,7 +116,7 @@ const PlayList = () => {
                 </div>
                 <div className="pagination">
                     <ul>
-                        {/* <Pagination
+                        <Pagination
                             activePage={page}
                             itemsCountPerPage={10}
                             totalItemsCount={playlist?.length}
@@ -112,7 +124,7 @@ const PlayList = () => {
                             prevPageText={'<'}
                             nextPageText={'>'}
                             onChange={handlePageChange}
-                        /> */}
+                        />
                     </ul>
                 </div>
             </div>

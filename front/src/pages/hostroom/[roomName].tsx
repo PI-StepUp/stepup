@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from "react";
-import SideMenu from "components/SideMenu";
 import io from 'socket.io-client';
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
@@ -7,7 +6,7 @@ import ReflectIcon from "/public/images/icon-reflect.svg"
 import CameraIcon from "/public/images/icon-camera.svg"
 import MicIcon from "/public/images/icon-mic.svg"
 import MoreIcon from "/public/images/icon-more-dot.svg"
-import PlayThumbnail from "/public/images/room-playlist-thumbnail.png"
+import PlayThumbnail from "/public/images/room-playlist-thumbnail.jpg"
 import PlayIcon from "/public/images/icon-play.svg"
 import ReflectHoverIcon from "/public/images/icon-hover-reflect.svg"
 import MicHoverIcon from "/public/images/icon-hover-mic.svg"
@@ -56,6 +55,14 @@ const Hostroom = () => {
     const [musics, setMusics] = useState<any>();
     const router = useRouter();
     const [roomTitle, setRoomTitle] = useState(router.query.roomName);
+    const title = router.query.title;
+    const startAll : any = router.query.startAt;
+    const startTime = startAll?.split(":")[0];
+    const startMinute = startAll?.split(":")[1];
+    const endAll : any = router.query.endAt;
+    const endTime = endAll?.split(":")[0];
+    const endMinute = endAll?.split(":")[1];
+    const hostToken = router.query.token;
     const reflectHover = () => {
         setReflect(true);
     }
@@ -88,66 +95,54 @@ const Hostroom = () => {
 
     const finishRandomPlay = () => {
         socketRef.current.emit("finish", roomName);
-        alert("랜덤플레이댄스가 종료되었습니다.");
+        alert("랜덤플레이댄스가 종료되었습니다. 이용해주셔서 감사합니다.");
+        router.push('/randomplay/list');
     }
 
-    useEffect(() => {    
-        // socketRef.current = io.connect(SOCKET_SERVER_URL);
+    useEffect(() => {
+        socketRef.current = io.connect(SOCKET_SERVER_URL);
 
-        axios.post("http://52.78.93.184:8080/api/user/login",{
-            id: "ssafy",
-            password: "ssafy"
-        }).then((data) => {
-            if(data.data.message === "로그인 완료"){
-                setAccessToken(data.data.data.tokens.accessToken);
-                setRefreshToken(data.data.data.tokens.refreshToken);
-                setId(id);
-                setNickname(data.data.data.userInfo.nickname);
-                setProfileImg(data.data.data.userInfo.profileImg);
-                setRankname(data.data.data.userInfo.rankName);
-            }
-        })
-
-        axios.get("http://52.78.93.184:8080/api/music",{
+        axios.get('http://52.78.93.184:8080/api/music',{
             params:{
                 keyword: "",
             },
             headers:{
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${hostToken}`,
             }
         }).then((data) => {
+            console.log(data);
             if(data.data.message === "노래 목록 조회 완료"){
                 setMusics(data.data.data);
             }
-        }).then(() => {
-            axiosDance.get('',{
-                params: {
-                    progressType: "ALL",
-                }
-            }).then((data) => {
-                console.log(data);
-                if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
-                    for(let i=0; i<data.data.data.length; i++) {
-                        if(data.data.data[i].title === roomTitle){
-                            setRoomName(data.data.data[i].randomDanceId);
-                        }
+        });
+
+        axiosDance.get('',{
+            params: {
+                progressType: "ALL",
+            }
+        }).then((data) => {
+            console.log(data);
+            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
+                for(let i=0; i<data.data.data.length; i++) {
+                    if(data.data.data[i].title === roomTitle){
+                        setRoomName(data.data.data[i].randomDanceId);
                     }
                 }
-            })
-        })
+            }
+        });
+
     }, [])
     return(
         <>
             <div className="practiceroom-wrap">
-                <SideMenu/>
                 <div className="practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
                             <Link href="/"><Image src={LeftArrowIcon} alt=""/></Link>
                         </div>
                         <div className="room-title">
-                            <h3>보이넥스트도어 - One and Only</h3>
-                            <span>2013년 7월 3일</span>
+                            <h3>{title}</h3>
+                            <span>진행시간: {startTime}시 {startMinute}분 - {endTime}시 {endMinute}분</span>
                         </div>
                     </div>
 
@@ -201,7 +196,7 @@ const Hostroom = () => {
                 </div>
                 <div className="musiclist">
                     <div className="musiclist-title">
-                        <h3>{lang==="en" ? "List of practice rooms" : lang==="cn" ? "练习室列表" : "연습실 목록" }</h3>
+                        <h3>{lang==="en" ? "Playlist" : lang==="cn" ? "播放列表" : "스플리" }</h3>
                         <span>{musics?.length}</span>
                     </div>
                     <div className="musiclist-content">
