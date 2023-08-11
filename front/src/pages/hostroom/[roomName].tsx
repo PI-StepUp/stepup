@@ -102,7 +102,7 @@ const Hostroom = () => {
     useEffect(() => {
         socketRef.current = io.connect(SOCKET_SERVER_URL);
 
-        axios.get('https://stepup-pi.com/api/music',{
+        axios.get('http://localhost:8080/api/music',{
             params:{
                 keyword: "",
             },

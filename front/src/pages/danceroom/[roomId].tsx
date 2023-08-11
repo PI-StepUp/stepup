@@ -410,7 +410,7 @@ const DanceRoom = () => {
 
     async function getAnswerData(musicId:number) {
         try{
-            await axios.post('https://stepup-pi.com/api/user/login', {
+            await axios.post('http://localhost:8080/api/user/login', {
                 id: "ssafy",
                 password: "ssafy",
             }).then((data) => {
@@ -420,7 +420,7 @@ const DanceRoom = () => {
             console.error(e);
         }
         try {
-            const response = await axios.get(`https://stepup-pi.com/api/music/${musicId}`, {
+            const response = await axios.get(`http://localhost:8080/api/music/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },

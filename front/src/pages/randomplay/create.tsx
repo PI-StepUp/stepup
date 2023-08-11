@@ -86,12 +86,11 @@ const RoomCreate = () => {
         <>
             <Header/>
             <MainBanner/>
-            <SubNav/>
             <div className="create-wrap">
                 <div className="create-title">
-                    <span>게시글</span>
+                    <span>RANDOM PLAY</span>
                     <div className="flex-wrap">
-                        <h3>글 작성</h3>
+                        <h3>새로운 방 생성</h3>
                         <div className="horizontal-line"></div>
                     </div>
                 </div>
@@ -111,7 +110,6 @@ const RoomCreate = () => {
                                 <td>
                                     <select name="" id="" onChange={(e) => setDanceType(e.target.value)}>
                                         <option value="RANKING">랜덤플레이</option>
-                                        <option value="SURVIVAL">서바이벌</option>
                                         <option value="BASIC">자율모드</option>
                                     </select>
                                 </td>

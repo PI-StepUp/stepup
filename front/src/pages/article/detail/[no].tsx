@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -24,6 +24,7 @@ const DetailArticle = () => {
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     const [comments, setComments] = useState<any[]>();
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const deleteComment = async (commentId: any) => {
         try{
@@ -210,7 +211,12 @@ const DetailArticle = () => {
                                                 <p>{comment.content}</p>
                                             </div>
                                             <div className="comment-button">
-                                                <button onClick={() => {deleteComment(comment.commentId)}}>댓글삭제</button>
+                                                {
+                                                    comment.writerName === nickname ?
+                                                    <button onClick={() => {deleteComment(comment.commentId)}}>댓글삭제</button>
+                                                    :
+                                                    <></>
+                                                }
                                             </div>
                                         </div>
                                     </li>
