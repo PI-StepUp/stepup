@@ -11,7 +11,7 @@ import img_leave from "/public/images/icon-leave.svg"
 import { useRecoilState } from "recoil";
 import { useRouter } from "next/router";
 import { LanguageState } from "states/states";
-import { accessTokenState, refreshTokenState, idState, rankNameState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, rankNameState, canEditInfoState } from "states/states";
 
 import { axiosUser } from "apis/axios";
 
@@ -20,6 +20,7 @@ const MyPageEdit = () => {
 	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
 	const [rankname, setRankname] = useRecoilState(rankNameState);
+	const [canEditInfo, setCanEditInfo] = useRecoilState(canEditInfoState);
 
 	const [loginUser, setLoginUser] = useState<any>();
 	const [id, setId] = useRecoilState(idState);
@@ -47,7 +48,6 @@ const MyPageEdit = () => {
 	const emailValue = useRef<any>();
 	const pw1Value = useRef<any>();
 	const pw2Value = useRef<any>();
-	const fileInput = useRef<HTMLInputElement>(null);
 
 	const router = useRouter();
 
@@ -95,64 +95,75 @@ const MyPageEdit = () => {
 	}
 
 	useEffect(() => {
-		// 접근 권한(로그인 여부) 확인
-		try {
-			axiosUser.post('/auth', {
-				id: id,
-			}, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					refreshToken: refreshToken,
-				}
-			}).then((data) => {
-				console.log(data);
-				if (data.data.message === "토큰 재발급 완료") {
-					setAccessToken(data.data.data.accessToken);
-					setRefreshToken(data.data.data.refreshToken);
-				}
-			})
-		} catch (e) {
-			alert('시스템 에러, 관리자에게 문의하세요.');
+		if (id === '' || accessToken === '' || refreshToken === '') {
+			alert("로그인을 먼저 진행해주세요.");
+			router.push('/login');
+		} else if (canEditInfo === '') {
+			alert("회원 정보 수정 란의 비밀번호를 먼저 입력해주세요.");
+			router.push('/mypage');
+		} else {
+			// 접근 권한(로그인 여부) 확인
+			setCanEditInfo('');
+			try {
+				axiosUser.post('/auth', {
+					id: id,
+				}, {
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						refreshToken: refreshToken,
+					}
+				}).then((data) => {
+					console.log(data);
+					if (data.data.message === "토큰 재발급 완료") {
+						setAccessToken(data.data.data.accessToken);
+						setRefreshToken(data.data.data.refreshToken);
+					}
+				})
+			} catch (e) {
+				alert('시스템 에러, 관리자에게 문의하세요.');
+			}
 		}
 	}, []);
 
 	useEffect(() => {
-		const setup = async () => {
-			// 로그인 유저 정보 조회
-			await axiosUser.get("", {
-				headers: {
-					Authorization: `Bearer ${accessToken}`
-				}
-			}).then(async (data) => {
-				// console.log("로그인 유저 정보 조회", data);
-				if (data.data.message === "회원정보 조회 완료") {
-					await setLoginUser(data.data.data);
-					console.log("유저 정보", data.data.data);
-					const setprofile = async () => {
-						await setProfileImg(data.data.data.profileImg);
-						if (profileImg === null) {
-							setProfileImg("profileImg_default.png");
+		if(id !== '' && accessToken !== '' && refreshToken !== ''){
+			const setup = async () => {
+				// 로그인 유저 정보 조회
+				await axiosUser.get("", {
+					headers: {
+						Authorization: `Bearer ${accessToken}`
+					}
+				}).then(async (data) => {
+					// console.log("로그인 유저 정보 조회", data);
+					if (data.data.message === "회원정보 조회 완료") {
+						await setLoginUser(data.data.data);
+						console.log("유저 정보", data.data.data);
+						const setprofile = async () => {
+							await setProfileImg(data.data.data.profileImg);
+							if (profileImg === null) {
+								setProfileImg("profileImg_default.png");
+							}
 						}
+						await setprofile();
+						await setPassword(data.data.data.password);
+						await setEmail(data.data.data.email);
+						await setEmailAlert(data.data.data.emailAlert);
+						await setcountryId(data.data.data.countryId);
+						await setcountryCode(data.data.data.countryCode);
+						await setNickname(data.data.data.nickname);
+						await setBirth(data.data.data.birth);
+						await setProfileImg(data.data.data.profileImg);
+						if (data.data.data.profileImg === null) {
+							setProfileImgExist(false);
+						}
+						await setPoint(data.data.data.point);
+						await setRankname(data.data.data.rankName);
+						await setRankImg(data.data.data.rankImg);
 					}
-					await setprofile();
-					await setPassword(data.data.data.password);
-					await setEmail(data.data.data.email);
-					await setEmailAlert(data.data.data.emailAlert);
-					await setcountryId(data.data.data.countryId);
-					await setcountryCode(data.data.data.countryCode);
-					await setNickname(data.data.data.nickname);
-					await setBirth(data.data.data.birth);
-					await setProfileImg(data.data.data.profileImg);
-					if (data.data.data.profileImg === null) {
-						setProfileImgExist(false);
-					}
-					await setPoint(data.data.data.point);
-					await setRankname(data.data.data.rankName);
-					await setRankImg(data.data.data.rankImg);
-				}
-			})
+				})
+			}
+			setup();
 		}
-		setup();
 	}, []);
 
 	// 닉네임 중복 여부 체크
@@ -309,7 +320,7 @@ const MyPageEdit = () => {
 				alert("비밀번호 수정에 실패했습니다. 다시 한 번 시도해주세요.");
 			}
 		})
-	}	
+	}
 
 	// 회원 탈퇴 재질문
 	const leaveModalOpen = async () => {
@@ -326,13 +337,6 @@ const MyPageEdit = () => {
 			setPwFlag(true);
 		} else {
 			setPwFlag(false);
-		}
-	}
-
-	// 프로필 사진 변경 - 파일 업로더
-	const onclickImg = async () => {
-		if (fileInput.current) {
-			fileInput.current.click();
 		}
 	}
 
@@ -367,7 +371,6 @@ const MyPageEdit = () => {
 					<div>
 						<ul className="myinfo mb-30">
 							<li>
-								{/* 프로필 이미지 업로드 기능 추가 필요 */}
 								<div className="list-title mt-70">{lang === "en" ? "PROFILE IMAGE" : lang === "cn" ? "个人资料图片" : "프로필 이미지"}</div>
 								<div className="profile">
 									<div className="img-box">
@@ -376,7 +379,7 @@ const MyPageEdit = () => {
 									<div className="upload">
 										<div>
 											<label htmlFor="input-file" className="btn btn-profile">{lang === "en" ? "CHANGE" : lang === "cn" ? "改变" : "변경"}</label>
-											<input type="file" id="input-file" accept="image/jpg, image/png" ref={fileInput} onChange={onChangeImage} />
+											<input type="file" id="input-file" accept="image/jpg, image/png" onChange={onChangeImage} />
 											<span className="btn btn-profile btn-profile-remove" onClick={onDeleteImage}>{lang === "en" ? "DELETE" : lang === "cn" ? "删除" : "삭제"}</span>
 										</div>
 										<p className="warning">{lang === "en" ? "Only jpg and png files within 5 MB can be registered" : lang === "cn" ? "只能注册 5 MB 以内的 jpg 和 png 文件" : "이미지는 5MB 이내의 jpg, png 파일만 등록 가능합니다"}</p>

@@ -31,7 +31,7 @@ const RandomPlayList = () => {
 	const [id, setId] = useRecoilState(idState);
 	const [nickname, setNickname] = useRecoilState(nicknameState);
 	
-	const [roomsVisibleItems, setRoomsVisibleItems] = useState(3);
+	const [roomsVisibleItems, setRoomsVisibleItems] = useState(6);
 	const [inprogressVisibleItems, setInprogressVisibleItems] = useState(3);
 	const [scheduledVisibleItems, setScheduledVisibleItems] = useState(3);
 	
@@ -115,7 +115,7 @@ const RandomPlayList = () => {
 					</div>
 					{rooms && roomsVisibleItems < rooms.length && (
 						<div className="more-button-wrap">
-							<button onClick={() => setRoomsVisibleItems(roomsVisibleItems + 3)}>
+							<button onClick={() => setRoomsVisibleItems(roomsVisibleItems + 6)}>
 								{lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
 							</button>
 						</div>
@@ -154,7 +154,7 @@ const RandomPlayList = () => {
 					</div>
 					{inprogress && inprogressVisibleItems < inprogress.length && (
 						<div className="more-button-wrap">
-							<button onClick={() => setInprogressVisibleItems(inprogressVisibleItems + 3)}>
+							<button onClick={() => setInprogressVisibleItems(inprogressVisibleItems + 6)}>
 								{lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
 							</button>
 						</div>
@@ -195,7 +195,7 @@ const RandomPlayList = () => {
 					</div>
 					{scheduled && scheduledVisibleItems < scheduled.length && (
 						<div className="more-button-wrap">
-							<button onClick={() => setScheduledVisibleItems(scheduledVisibleItems + 3)}>
+							<button onClick={() => setScheduledVisibleItems(scheduledVisibleItems + 6)}>
 								{lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
 							</button>
 						</div>
