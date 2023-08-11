@@ -25,10 +25,10 @@ public final class Constants {
 
     //POST, PUT, DELETE
     public static final String[] AdminPermitArray
-            = new String[]{
-            //"/api/music"와 "/api/music/숫자"인 경우
-            "/api/music(\\/\\d+)?$",
-            //"/api/board/notice"와 "/api/board/notice/숫자"인 경우
-            "/api/board/notice(\\/\\d+)?$"
+        = new String[]{
+        //"/api/music"와 "/api/music/숫자"인 경우
+        "/api/music(\\/\\d+)?$",
+        //"/api/board/notice"와 "/api/board/notice/숫자"인 경우
+        "/api/board/notice(\\/\\d+)?$"
     };
 }
