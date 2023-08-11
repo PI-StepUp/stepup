@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -20,6 +20,7 @@ const DetailArticle = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const deleteArticle = async () => {
 
@@ -100,7 +101,7 @@ const DetailArticle = () => {
             <SubNav linkNo="3"></SubNav>
             <div className="detail-article-wrap">
                 <div className="detail-title">
-                    <span>게시글</span>
+                    <span>오프라인 정모</span>
                     <div className="flex-wrap">
                         <h3>글 상세보기</h3>
                         <div className="vertical-line"></div>
@@ -108,10 +109,10 @@ const DetailArticle = () => {
                 </div>
                 <div className="detail-content">
                     <div className="list-wrap">
-                        <button><Link href="/article/list">목록보기</Link></button>
+                        <button><Link href="/meeting/list">목록보기</Link></button>
                     </div>
                     <div className="detail-main-title">
-                        <span>공지사항</span>
+                        <span>오프라인 정모</span>
                         <h4>{article?.title}</h4>
                         <p>2023년 07월 15일 AM 10시</p>
                     </div>
@@ -119,8 +120,17 @@ const DetailArticle = () => {
                         <p>{article?.content}</p>
                     </div>
                     <div className="button-wrap">
-                        <button onClick={deleteArticle}>삭제하기</button>
-                        <button onClick={() => router.push('/meeting/edit/' + article.boardId)}>수정하기</button>
+                        {
+                            nickname === article?.writerName ?
+                            <>
+                                <button onClick={deleteArticle}>삭제하기</button>
+                                <button onClick={() => router.push('/meeting/edit/' + article.boardId)}>수정하기</button>
+                            </>
+                            :
+                            <></>
+
+                        }
+                        
                     </div>
                 </div>
             </div>
