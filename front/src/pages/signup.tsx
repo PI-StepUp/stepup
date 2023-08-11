@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import Header from "components/Header";
 import Footer from "components/Footer";
 import LanguageButton from "components/LanguageButton";
@@ -20,10 +20,9 @@ const SignUp = () => {
     const [password, setPassword] = useState('');
     const [checkPassword, setCheckPassword] = useState('');
     const [birth, setBirth] = useState('');
-    const [region, setRegion] = useState('');
     const privacyAgree = useRef<any>();
-    const marketingAgree = useRef<any>();
     const [lang, setLang] = useRecoilState(LanguageState);
+    const [countries, setCountries] = useState<any[]>();
 
     const checkDuplId = async (e: any) => {
         e.preventDefault();
@@ -78,11 +77,6 @@ const SignUp = () => {
             return;
         }
 
-        if(!marketingAgree.current.checked){
-            alert("이메일 수신 여부 동의에 체크해주세요.");
-            return;
-        }
-
         if(id === ""){
             alert("id를 입력해주세요.");
             return;
@@ -103,18 +97,13 @@ const SignUp = () => {
             return;
         }
 
-        if("^([0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$)".match(email)){
+        if("^([0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$)".match(email)){
             alert("이메일을 형식에 맞춰서 작성해주세요.");
             return;
         }
 
         if(birth < "1900-01-01"){
             alert("생년월일을 입력해주세요.");
-            return;
-        }
-
-        if(region === ""){
-            alert("국가를 입력해주세요.");
             return;
         }
 
@@ -151,6 +140,12 @@ const SignUp = () => {
             router.push('signup');
         }
     }
+
+    useEffect(() => {
+        axiosUser.get('/country').then((data) => {
+            setCountries(data.data.data);
+        })
+    }, [])
     
     return(
         <>
@@ -177,7 +172,15 @@ const SignUp = () => {
                             <input type="password" placeholder={lang==="en" ? "Password" : lang==="cn" ? "密码" : "비밀번호" } className="input-password" onChange={(e) => setPassword(e.target.value)}/>
                             <input type="password" placeholder={lang==="en" ? "Password verification" : lang==="cn" ? "密码确认" : "비밀번호확인" } className="input-password-check" onChange={(e) => setCheckPassword(e.target.value)}/>
                             <input type="date" placeholder={lang==="en" ? "Date of birth" : lang==="cn" ? "出生年月日" : "생년월일" } className="input-birthday" onChange={(e) => setBirth(e.target.value)}/>
-                            <input type="text" placeholder={lang==="en" ? "Nation" : lang==="cn" ? "国家" : "국가" } className="input-region" onChange={(e) => setRegion(e.target.value)}/>
+                            <select>
+                                {
+                                    countries?.map((country: any, index: any) => {
+                                        return (
+                                            <option value={country.countryCode}>{country.countryCode}</option>
+                                        )
+                                    })
+                                }
+                            </select>
                             <textarea name="" id="" readOnly>
                                 &apos;STEP UP (이하 &apos;회사&apos;는) 고객님의 개인정보를 중요시하며, &quot;정보통신망 이용촉진 및 정보보호&quot;에 관한 법률을 준수하고 있습니다. 회사는 개인정보취급방침을 통하여 고객님께서 제공하시는 개인정보가 어떠한 용도와 방식으로 이용되고 있으며, 개인정보보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다. 회사는 개인정보취급방침을 개정하는 경우 웹사이트 공지사항(또는 개별공지)을 통하여 공지할 것입니다.
 본 방침은 : 2023 년 07 월 19 일 부터 시행됩니다.
@@ -257,7 +260,7 @@ const SignUp = () => {
                             </textarea>
                             <div className="agree-check-wrap">
                                 <p>{lang==="en" ? "Do you agree to receive an email?" : lang==="cn" ? "你是否同意接收电子邮件?" : "이메일 수신 여부에 동의하십니까?" }</p>
-                                <input type="checkbox" ref={marketingAgree}/>
+                                <input type="checkbox"/>
                             </div>
                             <input type="submit" value={lang==="en" ? "JOIN MEMBERSHIP" : lang==="cn" ? "注册会员" : "회원가입" } onClick={submitSignUp}/>
                         </form>

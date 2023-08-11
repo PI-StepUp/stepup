@@ -129,7 +129,7 @@ const DetailArticle = () => {
             <SubNav></SubNav>
             <div className="detail-article-wrap">
                 <div className="detail-title">
-                    <span>게시글</span>
+                    <span>신곡신청</span>
                     <div className="flex-wrap">
                         <h3>글 상세보기</h3>
                         <div className="vertical-line"></div>
