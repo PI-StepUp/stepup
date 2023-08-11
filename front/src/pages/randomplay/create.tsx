@@ -27,8 +27,13 @@ const RoomCreate = () => {
 
 	const router = useRouter();
 
-	const createRoom = async (e: any) => {
-		e.preventDefault();
+    const cancelCreate = (e: any) => {
+        e.preventDefault();
+        router.push('/randomplay/list');
+    }
+
+    const createRoom = async (e: any) => {
+        e.preventDefault();
 
 		try {
 			await axiosUser.post('/auth', {
@@ -95,7 +100,7 @@ const RoomCreate = () => {
                     </div>
                 </div>
                 <div className="create-content">
-                    <form action="">
+                    <form>
                         <table>
                             <tr>
                                 <td>방 제목</td>
@@ -138,7 +143,7 @@ const RoomCreate = () => {
                                 <td>
                                     <div className="create-button-wrap">
                                         <ul>
-                                            <li><button>취소하기</button></li>
+                                            <li><button onClick={cancelCreate}>취소하기</button></li>
                                             <li><button onClick={createRoom}>작성하기</button></li>
                                         </ul>
                                     </div>

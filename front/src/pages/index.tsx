@@ -232,7 +232,7 @@ const Index = () => {
             </div>
             <div className="realtime-randomplay">
                 <div className="realtime-randomplay-title">
-                    <h3>{lang==="en" ? "Real-time popular LANPLE DAN" : lang==="cn" ? "实时人气随机舞蹈" : "실시간 인기 랜플댄" }</h3>
+                    <h3>{lang==="en" ? "Real-time popular RANDOM PLAY DANCE" : lang==="cn" ? "实时人气随机舞蹈" : "실시간 인기 랜플댄" }</h3>
                     <p>{lang==="en" ? "join the most popular random play dance room right now." : lang==="cn" ? "请参加目前最有人气的随机跳舞房吧" : "현재 가장 인기가 많은 랜덤플레이댄스방에 참여해보세요." }</p>
                 </div>
                 <div className="realtime-randomplay-content">

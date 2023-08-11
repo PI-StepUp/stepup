@@ -114,15 +114,6 @@
                 margin-top:42px;
                 margin-bottom:36px;
             }
-            input[type="text"]{
-                @include setSize(100%, 48px);
-                background-color:#E6EEFB;
-                border-radius:4px;
-                border:none;
-                margin-bottom:14px;
-                box-sizing: border-box;
-                padding:10px;
-            }
             input[type="email"]{
                 @include setSize(100%, 48px);
                 background-color:#E6EEFB;
@@ -130,6 +121,7 @@
                 border:none;
                 box-sizing: border-box;
                 padding:10px;
+                @include font(12px, 400, #151517);
             }
             input[type="date"]{
                 @include setSize(100%, 48px);
@@ -139,6 +131,27 @@
                 margin-top:14px;
                 box-sizing: border-box;
                 padding: 10px;
+                @include font(12px, 400, #151517);
+            }
+            input[type="text"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-bottom:14px;
+                box-sizing: border-box;
+                padding:10px;
+                @include font(12px, 400, #151517);
+            }
+            #pwId{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-bottom:14px;
+                box-sizing: border-box;
+                padding:10px;
+                @include font(12px, 400, #151517);
             }
         }
         .modal-button-wrap{
