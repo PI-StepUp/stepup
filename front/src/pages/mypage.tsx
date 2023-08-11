@@ -89,6 +89,11 @@ const MyPage = () => {
     list.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // 개최한 랜플댄 정보 수정시 스크롤 이동
+  const scrollToEditRPD = () => {
+    window.scrollTo({top:0, behavior: "smooth"});
+  };
+
   // 예약된 랜플댄 개수
   let reservedRandomDanceCnt: number = 0;
 
@@ -353,7 +358,6 @@ const MyPage = () => {
 
   // 랜플댄 수정 모달창
 	const leaveModalOpen = async (randomDance: any) => {
-		setModalOpen(true);
     setEditId(randomDance.randomDanceId);
     setEditTitle(randomDance.title);
     setEditContent(randomDance.content);
@@ -364,6 +368,8 @@ const MyPage = () => {
     setEditThumbnail(randomDance.thumbnail);
     setEditHostId(randomDance.hostId);
     SetEditDanceMusicIdList(randomDance.danceMusicIdList);
+		scrollToEditRPD();
+    setModalOpen(true);
 	}
 
 	const leaveModalClose = async () => {
@@ -486,7 +492,7 @@ const MyPage = () => {
                   {lang === "en" ? "Enter" : lang === "cn" ? "输入" : "입력"}
                 </div>
               </div>
-              {equalPw ? (<p></p>) : (<p className="notequal">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</p>)}
+              {equalPw ? (<p> </p>) : (<p className="notequal">비밀번호가 일치하지 않습니다. 다시 입력해주세요.</p>)}
             </details>
           </div>
           {/* end - settings */}

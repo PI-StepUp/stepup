@@ -1,6 +1,5 @@
 import React, { ReactElement, useRef, useState } from 'react';
-import { LanguageState } from "states/states";
-import { accessTokenState } from "states/states";
+import { LanguageState, accessTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import { axiosDance } from "apis/axios";
 import Image from "next/image"
@@ -24,17 +23,41 @@ interface props {
 const Modal = (props: props): ReactElement => {
 	const roomTitle = useRef<any>(props.title);
 	const roomContent = useRef<any>(props.content);
-	const roomStartDate = useRef<any>(props.startAt.split(' ')[0]);
-	const roomStartTime = useRef<any>(props.startAt.split(' ')[1]);
-	const roomEndTime = useRef<any>(props.endAt);
+	const startDateString = (props.startAt||'').split(' ')[0];
+	const startDate = new Date(startDateString);
+	const formattedStartDate = startDate.toISOString().split("T")[0];
+	const roomStartDate = useRef<any>(formattedStartDate);
+	const startTimeString = (props.startAt||'').split(' ')[1];
+	const [startH, startM] = (startTimeString||'').split(":");
+	const formattedStartTime = `${startH}:${startM}`;
+	const roomStartTime = useRef<any>(formattedStartTime);
+	const endTimeString = props.endAt;
+	const [endH, endM] = endTimeString.split(":");
+	const formattedEndTime = `${endH}:${endM}`;
+	const roomEndTime = useRef<any>(formattedEndTime);
 	const roomMaxNum = useRef<any>(props.maxUser);
 	const [roomImg, setRoomImg] = useState<string | ArrayBuffer | null>(props.thumbnail);
 	const [danceType, setDanceType] = useState(props.danceType);
 	const [lang, setLang] = useRecoilState(LanguageState);
 	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+	const [id, setId] = useRecoilState(idState);
+	const { open, close } = props;
 
 	// 랜플댄 수정
 	const updateRPD = async () => {
+		// console.log(props.randomDanceId);
+		// console.log(roomTitle.current?.value);
+		// console.log(roomContent.current?.value);
+		// console.log(roomStartDate.current?.value + " " + roomStartTime.current?.value);
+		// console.log(roomStartDate.current?.value + " " + roomEndTime.current?.value);
+		// console.log(danceType);
+		// console.log(Number(roomMaxNum.current?.value));
+		// console.log(roomImg);
+		// console.log(props.hostId);
+		// console.log(props.danceMusicIdList);
+		// console.log(accessToken)
+
+		// 랜플댄 정보 수정
 		await axiosDance.put("/my", {
 			randomDanceId: props.randomDanceId,
 			title: roomTitle.current?.value,
@@ -44,8 +67,8 @@ const Modal = (props: props): ReactElement => {
 			danceType: danceType,
 			maxUser: Number(roomMaxNum.current?.value),
 			thumbnail: roomImg,
-			hostId: props.hostId,
-			danceMusicIdList: props.danceMusicIdList,
+			hostId: id,
+			danceMusicIdList: [1, 2, 3],
 		}, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`
@@ -82,21 +105,22 @@ const Modal = (props: props): ReactElement => {
 				<div className="modal-container-modify">
 					<h2>{lang === "en" ? "Update Information" : lang === "cn" ? "信息已更新。" : "정보 수정"}</h2>
 
-					<div className="create-content">
+
+					<div className="modify-content">
 						<form action="">
 							<table>
 								<tr>
-									<td>방 제목</td>
-									<td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={roomTitle} /></td>
+									<td className="modify-title">방 제목</td>
+									<td><input type="text" className="input-title" ref={roomTitle} defaultValue={props.title}/></td>
 								</tr>
 								<tr>
-									<td>방 소개</td>
-									<td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={roomContent}></textarea></td>
+									<td className="modify-title">방 소개</td>
+									<td><textarea className="input-content" placeholder={props.content} ref={roomContent} defaultValue={props.content}></textarea></td>
 								</tr>
 								<tr>
-									<td>방 유형</td>
+									<td className="modify-title">방 유형</td>
 									<td>
-										<select name="" id="" onChange={(e) => setDanceType(e.target.value)}>
+										<select name="" id="" defaultValue={props.danceType} onChange={(e) => setDanceType(e.target.value)}>
 											<option value="RANKING">랜덤플레이</option>
 											<option value="SURVIVAL">서바이벌</option>
 											<option value="BASIC">자율모드</option>
@@ -104,23 +128,24 @@ const Modal = (props: props): ReactElement => {
 									</td>
 								</tr>
 								<tr>
-									<td>개최 날짜</td>
-									<td><input type="date" placeholder="시간을 입력해주세요." className="input-date" ref={roomStartDate} /></td>
+									<td className="modify-title">개최 날짜</td>
+									<td><input type="date" className="input-date" ref={roomStartDate} defaultValue={formattedStartDate}/></td>
 								</tr>
 								<tr>
-									<td>개최 시간</td>
-									<td>
-										<input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={roomStartTime} /> -
-										<input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={roomEndTime} />
+									<td className="modify-title">개최 시간</td>
+									<td className="modify-time">
+										<input type="time" className="input-time" ref={roomStartTime} defaultValue={formattedStartTime}/>
+										<p> - </p>
+										<input type="time" className="input-time" ref={roomEndTime} defaultValue={formattedEndTime}/>
 									</td>
 								</tr>
 								<tr>
-									<td>최대 참여자 수</td>
-									<td><input type="number" className="input-max" ref={roomMaxNum} /></td>
+									<td className="modify-title">최대 참여자 수</td>
+									<td><input type="number" className="input-max" ref={roomMaxNum} defaultValue={props.maxUser}/></td>
 								</tr>
 								<tr>
-									<td>대표이미지</td>
-									<Image className="img" src={roomImg?.toString()} alt="thumbnail" width={100} height={100}></Image>
+									<td className="modify-title">대표이미지</td>
+									<Image className="img" src={String(roomImg?.toString())} alt="thumbnail" width={100} height={100}></Image>
 									<td><input type="file" accept="image/jpg, image/png" onChange={onChangeImage} /></td>
 								</tr>
 							</table>
