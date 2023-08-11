@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const SERVER_URL = "https://stepup-pi.com:8080/api"
+const SERVER_URL = "https://stepup-pi.com/api"
 
-export const axiosUser = axios.create({
+export const axiosUser = axios.create({s
     baseURL: SERVER_URL + "/user"
 })
 
