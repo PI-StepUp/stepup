@@ -213,16 +213,17 @@ public class InitDb {
                     "음악과 춤이 만들어내는 하모니를 느껴보세요. 서로 다른 춤 스타일을 통해 연결되는 랜덤 댄스의 매력을 느껴보며, 우리의 다양성과 개성이 어떻게 아름다운 하모니를 이루는지 함께 탐색해보세요."
                 };
             String[] time = new String[]
-                        {"2023-08-01 10:00", "2023-08-01 11:00", "2023-08-01 12:00", "2023-08-01 13:00", "2023-08-01 14:00",
-                            "2023-08-20 10:00", "2023-08-20 11:00", "2023-08-20 12:00", "2023-08-20 13:00", "2023-08-20 14:00"};
+                {"2023-08-01 10:00", "2023-08-01 11:00", "2023-08-01 12:00", "2023-08-01 13:00", "2023-08-01 14:00",
+                    "2023-08-20 10:00", "2023-08-20 11:00", "2023-08-20 12:00", "2023-08-20 13:00", "2023-08-20 14:00"};
+
 
             //랭킹
             for (int i = 0; i < 5; i++) {
                 String sql =
                     "insert into random_dance (random_dance_id, created_at, modified_at, content, dance_type,"
                         + " end_at, user_id, max_user, start_at, thumbnail, title) "
-                        + " values (?, sysdate(), sysdate(), ?, 'RANKING', '2023-08-31 18:00', 4, 10,"
-                        + " ?, 'url', ?) ";
+                        + " values (?, '2023-08-01', '2023-08-01', ?, 'RANKING', '2023-08-31 18:00', 4, 10,"
+                                 + " ?, 'url', ?) ";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
@@ -231,13 +232,14 @@ public class InitDb {
                 query.setParameter(4, title[i]);
                 query.executeUpdate();
             }
+            
             //자율
             for (int i = 5; i < 10; i++) {
                 String sql =
                     "insert into random_dance (random_dance_id, created_at, modified_at, content, dance_type,"
                         + " end_at, user_id, max_user, start_at, thumbnail, title) "
-                        + " values (?, sysdate(), sysdate(), ?, 'BASIC', '2023-08-31 18:00', 5, 15,"
-                        + " ?, 'url', ?) ";
+                        + " values (?, '2023-08-10', '2023-08-10', ?, 'BASIC', '2023-08-31 18:00', 5, 15,"
+                       + " ?, 'url', ?) ";
 
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 1));
