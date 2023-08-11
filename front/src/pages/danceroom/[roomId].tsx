@@ -104,6 +104,7 @@ const DanceRoom = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [playResult, setPlayResult] = useState('');
     const [urlNo, setUrlNo] = useState<any>(0);
+    const [audioEnabled, setAudioEnabled] = useState(true);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
     const modal = useRef<any>();
@@ -143,6 +144,16 @@ const DanceRoom = () => {
     }
     const cameraLeave = () => {
         setCamera(false);
+    }
+
+    const toggleAudio = () => {
+        if(localStreamRef.current){
+            const audioTrack = localStreamRef.current.getAudioTracks()[0];
+            if(audioTrack){
+                audioTrack.enabled = !audioEnabled;
+                setAudioEnabled(!audioEnabled);
+            }
+        }
     }
 
     const reflectMyVideo = () => {
@@ -242,6 +253,7 @@ const DanceRoom = () => {
 							stream: e.streams[0],
 						}),
 				);
+                console.log(users);
 			};
 
 			if (localStreamRef.current) {
@@ -558,7 +570,7 @@ const DanceRoom = () => {
                                     </button>
                                 </li>
                                 <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
-                                    <button>
+                                    <button onClick={toggleAudio}>
                                     {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
@@ -698,7 +710,7 @@ const DanceRoom = () => {
             }
             {
                 urlNo ?
-                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"onChange={youtubeChange}></iframe>
+                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"></iframe>
                 :
                 <></>
             }
