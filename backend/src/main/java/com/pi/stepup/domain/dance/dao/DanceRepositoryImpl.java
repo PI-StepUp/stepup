@@ -53,7 +53,8 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findAllMyOpenDance(String id) {
         return em.createQuery("SELECT r FROM RandomDance r "
-                + "WHERE r.host.id = :id", RandomDance.class)
+                + "WHERE r.host.id = :id "
+                + "ORDER BY r.startAt DESC", RandomDance.class)
             .setParameter("id", id)
             .getResultList();
     }
@@ -68,6 +69,8 @@ public class DanceRepositoryImpl implements DanceRepository {
                 "r.content LIKE '%" + keyword + "%')";
         }
 
+        sql += "ORDER BY r.startAt ASC ";
+
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
 
@@ -80,6 +83,8 @@ public class DanceRepositoryImpl implements DanceRepository {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%')";
         }
+
+        sql += "ORDER BY r.startAt ASC ";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -94,6 +99,8 @@ public class DanceRepositoryImpl implements DanceRepository {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%')";
         }
+
+        sql += "ORDER BY r.startAt ASC ";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -153,7 +160,8 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<Reservation> findAllMyReservation(Long userId) {
         return em.createQuery("SELECT r FROM Reservation r "
-                + "WHERE r.user.userId = :userId", Reservation.class)
+                + "WHERE r.user.userId = :userId "
+                + "ORDER BY r.createdAt DESC", Reservation.class)
             .setParameter("userId", userId)
             .getResultList();
     }
@@ -185,7 +193,8 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<AttendHistory> findAllMyAttend(Long userId) {
         return em.createQuery("SELECT a FROM AttendHistory a "
-                + "WHERE a.user.userId = :userId", AttendHistory.class)
+                + "WHERE a.user.userId = :userId "
+                + "ORDER BY a.createdAt DESC", AttendHistory.class)
             .setParameter("userId", userId)
             .getResultList();
     }
