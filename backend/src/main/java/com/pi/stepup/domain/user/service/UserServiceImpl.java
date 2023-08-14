@@ -6,7 +6,6 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.ID_DUPLICA
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_DUPLICATED;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
-import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.NOT_MATCHED_TOKEN;
 
 import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.dao.RankRepository;
@@ -18,6 +17,7 @@ import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.EmailContent;
 import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.domain.UserInfo;
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
@@ -26,7 +26,6 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
@@ -38,10 +37,8 @@ import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
-import com.pi.stepup.global.config.security.CustomUserDetails;
 import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
-import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +59,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
+    private final UserRedisService userRedisService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -104,7 +102,7 @@ public class UserServiceImpl implements UserService {
         log.debug("login token : {}", tokenInfo);
 
         User user = userRepository.findById(loginRequestDto.getId()).get();
-        user.setRefreshToken(tokenInfo.getRefreshToken());
+        userRedisService.saveRefreshToken(user.getId(), tokenInfo.getRefreshToken());
 
         return AuthenticatedResponseDto.builder()
             .tokenInfo(tokenInfo)
@@ -127,6 +125,8 @@ public class UserServiceImpl implements UserService {
         user.setRank(bronzeRank);
         user.setPointZero();
 
+        userRedisService.saveUserInfo(user);
+
         userRepository.insert(user);
 
         log.debug("user : {}", user);
@@ -135,7 +135,7 @@ public class UserServiceImpl implements UserService {
             signUpRequestDto.getPassword());
         log.debug("token : {}", tokenInfo);
 
-        user.setRefreshToken(tokenInfo.getRefreshToken());
+        userRedisService.saveRefreshToken(user.getId(), tokenInfo.getRefreshToken());
 
         return AuthenticatedResponseDto.builder()
             .tokenInfo(tokenInfo)
@@ -145,11 +145,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfoResponseDto readOne() {
-        return UserInfoResponseDto.builder()
-            .user(userRepository.findById(SecurityUtils.getLoggedInUserId())
-                .orElseThrow(() -> new UserNotFoundException(
-                    USER_NOT_FOUND.getMessage())))
-            .build();
+        UserInfo userInfo = userRedisService.getUserInfo(SecurityUtils.getLoggedInUserId());
+
+        if (userInfo != null) {
+            return new UserInfoResponseDto(userInfo);
+        }
+
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        userRedisService.saveUserInfo(user);
+
+        return UserInfoResponseDto.builder().user(user).build();
     }
 
     @Override
@@ -160,6 +167,8 @@ public class UserServiceImpl implements UserService {
 
         log.debug("[delete()] user : {}", user);
 
+        userRedisService.deleteRefreshToken(user.getId());
+        userRedisService.deleteUserInfo(user);
         userRepository.delete(user);
     }
 
@@ -190,6 +199,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.updateUserBasicInfo(updateUserRequestDto, country);
+        userRedisService.saveUserInfo(user);
     }
 
     @Override
@@ -227,23 +237,6 @@ public class UserServiceImpl implements UserService {
         );
 
         user.updatePassword(passwordEncoder.encode(randomPassword));
-    }
-
-    @Override
-    @Transactional
-    public TokenInfo reissueTokens(String refreshToken,
-        ReissueTokensRequestDto reissueTokensRequestDto) {
-        User user = userRepository.findById(reissueTokensRequestDto.getId())
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-
-        if (jwtTokenProvider.validateToken(refreshToken) &&
-            refreshToken.equals(user.getRefreshToken())) {
-            TokenInfo tokenInfo = reissueTokensFromUser(user);
-            user.setRefreshToken(tokenInfo.getRefreshToken());
-            return tokenInfo;
-        }
-
-        throw new NotMatchedTokenException(NOT_MATCHED_TOKEN.getMessage());
     }
 
     private EmailMessage makeEmailMessage(
@@ -302,13 +295,6 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    private TokenInfo reissueTokensFromUser(User user) {
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-        return jwtTokenProvider.generateToken(customUserDetails.getAuthorities(),
-            customUserDetails.getUsername());
-    }
-
     private TokenInfo setFirstAuthentication(String id, String password) {
         // 1. id, pw 기반 Authentication 객체 생성, 해당 객체는 인증 여부를 확인하는 authenticated 값이 false.
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -318,8 +304,6 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = authenticationManagerBuilder.getObject()
             .authenticate(authenticationToken);
 
-//        return jwtTokenProvider.generateToken(authentication);
-        return jwtTokenProvider.generateToken(authentication.getAuthorities(),
-            authentication.getName());
+        return jwtTokenProvider.generateToken(authentication);
     }
 }

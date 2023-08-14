@@ -151,9 +151,9 @@ public class InitDb {
             String password = passwordEncoder.encode("admin");
             String sql = "insert into users (user_id, created_at, modified_at, birth, country_id,"
                 + " email, email_alert, id, nickname, password, point, profile_img, rank_id,"
-                + " refresh_token, role) "
-                + " values (1, '2023-07-01', '2023-07-01', '1997-01-01', 1, 'admin@naver.com',"
-                + " 1, 'admin', 'admin', ?, 0, 'url', 4, 'refresh_token', 'ROLE_ADMIN')";
+                + "  role) "
+                + " values (1, sysdate(), sysdate(), '1997-01-01', 1, 'admin@naver.com',"
+                + " 1, 'admin', 'admin', ?, 0, 'url', 4, 'ROLE_ADMIN')";
             Query query = em.createNativeQuery(sql);
             query.setParameter(1, password);
             query.executeUpdate();
@@ -167,10 +167,10 @@ public class InitDb {
             for (int i = 0; i < 7; i++) {
                 String sql =
                     "insert into users (user_id, created_at, modified_at, birth, country_id, "
-                        + "  email, email_alert, id, nickname, password, point, profile_img, rank_id, refresh_token, role) "
-                        + " values (?, '2023-08-01', '2023-08-01', '1997-01-01', 1, '"
+                        + "  email, email_alert, id, nickname, password, point, profile_img, rank_id, role) "
+                        + " values (?, sysdate(), sysdate(), '1997-01-01', 1, '"
                         + id[i]
-                        + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'refresh_token', 'ROLE_USER')";
+                        + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'ROLE_USER')";
                 Query query = em.createNativeQuery(sql);
                 query.setParameter(1, (i + 2));
                 query.setParameter(2, id[i]);

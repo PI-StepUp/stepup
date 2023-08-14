@@ -16,6 +16,7 @@ import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.service.MusicService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,9 @@ class MusicApiControllerTest {
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider; // jwtTokenProvider 주입받기 실패했다고 떠서 추가
+
+    @MockBean
+    private UserRedisService userRedisService;
 
     private Gson gson;
     private MusicSaveRequestDto musicSaveRequestDto;
