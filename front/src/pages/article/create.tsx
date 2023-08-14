@@ -76,29 +76,31 @@ const ArticleCreate = () => {
                 <div className="create-content">
                     <form action="">
                         <table>
-                            <tr>
-                                <td>제목</td>
-                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={title}/></td>
-                            </tr>
-                            <tr>
-                                <td>내용</td>
-                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={content}></textarea></td>
-                            </tr>
-                            <tr>
-                                <td>첨부파일</td>
-                                <td><input type="file" accept="image/*" id="file-upload" ref={file}/></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <div className="create-button-wrap">
-                                        <ul>
-                                            <li><button>취소하기</button></li>
-                                            <li><button onClick={createArticle}>작성하기</button></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>제목</td>
+                                    <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={title}/></td>
+                                </tr>
+                                <tr>
+                                    <td>내용</td>
+                                    <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={content}></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>첨부파일</td>
+                                    <td><input type="file" accept="image/*" id="file-upload" ref={file}/></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div className="create-button-wrap">
+                                            <ul>
+                                                <li><button>취소하기</button></li>
+                                                <li><button onClick={createArticle}>작성하기</button></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>
