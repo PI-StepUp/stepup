@@ -22,6 +22,7 @@ import { accessTokenState, refreshTokenState, idState, nicknameState, profileImg
 
 import { axiosUser, axiosDance, axiosBoard, axiosRank } from "apis/axios";
 
+
 const MyPage = () => {
   interface Boards {
     boardId: number,
@@ -400,7 +401,7 @@ const MyPage = () => {
                       <div className="img-profile">
                         {profileImg === null || profileImg === 'url'
                           ? (<Image className="img" src={img_profile} alt="profile_default" width={100} height={100}></Image>)
-                          : (<Image className="img" src={profileImg.toString} alt="profile" width={100} height={100}></Image>)}
+                          : (<Image className="img" src={profileImg.toString()} alt="profile" width={100} height={100}></Image>)}
                       </div>
                       <div>
                         <progress value={point} max={goalRankPoint}></progress>
@@ -461,7 +462,7 @@ const MyPage = () => {
                   <div>
                     {myRandomDance?.map((randomDance, index) => {
                       const rpdId: number = randomDance.randomDanceId;
-                      console.log("목록 출력 중 >> ", rpdId);
+                      // console.log("목록 출력 중 >> ", rpdId);
                       return (
                         <li className="contents" key={index}>
                           <div className="img-box">

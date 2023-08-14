@@ -65,19 +65,30 @@ const RoomCreate = () => {
 					Authorization: `Bearer ${accessToken}`,
 				}
 			}).then((data) => {
+                console.log(data);
 				if (data.data.message === "랜덤 플레이 댄스 생성 완료") {
 					alert("방 생성이 완료되었습니다.");
-					router.push({
-						pathname: `/hostroom/${roomTitle.current?.value}`,
-						query: {
-							hostId: nickname,
-							title: roomTitle.current?.value,
-							startAt: roomStartTime.current?.value,
-							endAt: roomEndTime.current?.value,
-							maxUser: Number(roomMaxNum.current?.value),
-							token: accessToken,
-						}
-					});
+
+                    if(roomStartDate.current?.value.split("-")[1] >= new Date().getMonth()){
+                        if(roomStartDate.current?.value.split("-")[2] >= new Date().getDay()){
+                            if(roomStartTime.current?.value.split(":")[0] > new Date().getHours() || (roomStartTime.current?.value.split(":")[0] == new Date().getHours() && roomStartTime.current?.value.split(":")[1] >= new Date().getMinutes())){
+                                router.push('/randomplay/list');
+                                return;
+                            }
+                        }
+                    }
+                    
+                    router.push({
+                        pathname: `/hostroom/${roomTitle.current?.value}`,
+                        query: {
+                            hostId: nickname,
+                            title: roomTitle.current?.value,
+                            startAt: roomStartTime.current?.value,
+                            endAt: roomEndTime.current?.value,
+                            maxUser: Number(roomMaxNum.current?.value),
+                            token: accessToken,
+                        }
+                    });
 				}
 			})
 

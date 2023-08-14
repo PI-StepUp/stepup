@@ -16,24 +16,7 @@
             @include flex(space-between, center);
         }
         h1{
-            a{
-                @include flex(flex-start, center);
-                img{
-                    @include mobile{
-                        @include setSize(30px, 30px);
-                    }
-                }
-                .logo-info{
-                    margin-left:2px;
-                    span{
-                        @include font(24px, 700, #BD5278);
-                    }
-                    p{
-                        @include font(10px, 500, #BD5278);
-                        margin-top:2px;
-                    }
-                }
-            }
+            @include font(22px, 700, #E2EFFF);
         }
         .hamburger-menu{
             display:none;
