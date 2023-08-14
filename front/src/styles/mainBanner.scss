@@ -1,10 +1,16 @@
 @import "function.scss";
+@import "./responsively.scss";
 
 .main-banner-bg{
     @include setSize(100%, 400px);
     background-image: url("/images/main-banner-bgimg.png");
     background-position: center;
     background-size: cover;
+    @include mobile{
+        @include setSize(100%, 240px);
+        background-image: url("/images/main-banner-bg-mo.png");
+        @include flex(center, center);
+    }
     h3{
         @include block-center(1200px);
         @include font(50px, 700, #FFFFFF);
@@ -12,5 +18,11 @@
         padding-left:180px;
         line-height:64px;
         letter-spacing: 1px;
+        @include mobile{
+            @include setSize(100vw, auto);
+            padding:20px;
+            font-size:36px;
+            line-height:42px;
+        }
     }
 }

@@ -97,8 +97,8 @@ const ArticleList = () => {
                     <colgroup>
                         <col width="10%"/>
                         <col width="10%"/>
-                        <col width="70%"/>
-                        <col width="10%"/>
+                        <col width="65%"/>
+                        <col width="15%"/>
                     </colgroup>
                     <thead>
                         <tr>
@@ -126,10 +126,10 @@ const ArticleList = () => {
                 </table>
                 <div className="button-wrap">
                     {
-                        nickname ?
-                        <button><Link href="/article/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
-                        :
+                        nickname === ""?
                         <></>
+                        :
+                        <button><Link href="/article/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
                     }
                 </div>
                 

@@ -1,28 +1,51 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 .detail-article-wrap{
     @include block-center(1200px);
     padding-bottom:67px;
+    @include mobile{
+        @include setSize(100vw);
+        padding-bottom: 44px;
+    }
     .detail-title{
         margin-top:74px;
+        @include mobile{
+            margin-top:50px;
+            margin-left:4vw;
+        }
         > span{
             @include font(28px, 700, #6BBDA7);
+            @include mobile{
+                font-size:20px;
+            }
         }
         .flex-wrap{
             @include flex(flex-start, center);
             margin-top:6px;
             h3{
                 @include font(50px, 700, #1D1D1D);
+                @include mobile{
+                    font-size:34px;
+                }
             }
             .vertical-line{
                 @include setSize(200px, 2px);
                 background-color:#1D1D1D;
                 margin-right:46px;
+                @include mobile{
+                    @include setSize(80px, 2px);
+                    margin-left:12px;
+                }
             }
         }
     }
     .detail-content{
         margin-top:66px;
+        @include mobile{
+            margin-top:40px;
+            padding:4vw;
+        }
         .list-wrap{
             button{
                 @include setSize(108px, 44px);
@@ -30,23 +53,39 @@
                 border:none;
                 @include font(16px, 400, #343434);
                 cursor:pointer;
+                @include mobile{
+                    @include setSize(100px, 34px);
+                    font-size: 14px;
+                }
             }
         }
         .detail-main-title{
             margin-top:24px;
             border-top: 2px solid #E1E1E1;
+            @include mobile{
+                margin-top:18px;
+            }
             > span{
                 @include font(18px, 500, #A7A5A8);
                 display: inline-block;
                 margin-top:10px;
+                @include mobile{
+                    font-size:14px;
+                }
             }
             h4{
                 @include font(34px, 700, #4A4A4B);
                 margin-top:10px;
+                @include font(26px);
+                margin-top:6px;
             }
             p{
                 @include font(18px, 400, #A7A5A8);
                 margin-top:20px;
+                @include mobile{
+                    font-size:14px;
+                    margin-top:14px;
+                }
             }
             .like-wrap{
                 margin-top:20px;
@@ -66,22 +105,39 @@
             margin-top:90px;
             @include font(22px, 400, #AAA499);
             line-height:36px;
+            @include mobile{
+                margin-top:56px;
+                font-size:18px;
+                line-height:28px;
+            }
         }
         .button-wrap{
             @include flex(flex-end, center);
             margin-top:250px;
+            @include mobile{
+                margin-top:134px;
+            }
             button{
                 @include setSize(108px, 44px);
                 border:none;
                 cursor:pointer;
+                @include mobile{
+                    @include setSize(80px, 32px);
+                }
                 &:nth-child(1){
                     background-color:#EDEDED;
                     @include font(16px, 400, #343434);
+                    @include mobile{
+                        font-size:12px;
+                    }
                 }
                 &:nth-child(2){
                     background-color:#343434;
                     @include font(16px, 400, #FFFFFF);
                     margin-left:10px;
+                    @include mobile{
+                        font-size:12px;
+                    }
                 }
             }
         }
