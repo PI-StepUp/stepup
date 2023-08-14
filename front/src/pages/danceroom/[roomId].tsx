@@ -36,7 +36,7 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
+const SOCKET_SERVER_URL = 'http://localhost:4002';
 
 const EMBED_URL: any = {
     1: "https://www.youtube.com/embed/g4vaGXR7fUY",
@@ -178,13 +178,7 @@ const DanceRoom = () => {
     }
 
     const sendMessage = () => {
-        socketRef.current.emit("send_message", inputChat.current?.value, roomId);
-        socketRef.current.on('message', (data:any) => {
-            setMsgList([...msgList, data]);
-        })
-        if(inputChat.current != null){
-            inputChat.current.value = "";
-        }
+        socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
         scrollToBottom();
     }
 
@@ -196,14 +190,7 @@ const DanceRoom = () => {
 
     const handleKeyPress = (e: any) => {
         if (e.key === 'Enter') {
-            socketRef.current.emit("send_message", inputChat.current?.value, roomId);
-            socketRef.current.on('message', (data:any) => {
-                setMsgList([...msgList, data]);
-            })
-            if(inputChat.current != null){
-                inputChat.current.value = "";
-            }
-            scrollToBottom();
+            socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
         }
     };
 
@@ -506,6 +493,13 @@ const DanceRoom = () => {
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
 		});
 
+        socketRef.current.on('message', (data:any) => {
+            setMsgList([...msgList, data]);
+            if(inputChat.current != null){
+                inputChat.current.value = "";
+            }
+        })
+        
         socketRef.current.on('cntCorrect', (roomName: any) => {
             if(roomId == roomName){
                 socketRef.current.emit('close_randomplay', nickname, correct, roomName);
@@ -655,8 +649,8 @@ const DanceRoom = () => {
                                                         <Image src={ChatDefaultImg} alt=""/>
                                                     </div>
                                                     <div className="chat-user-msg">
-                                                        <span>{myName}</span>
-                                                        <p>{data}</p>
+                                                        <span>{data.nickname}</span>
+                                                        <p>{data.content}</p>
                                                     </div>
                                                 </li>
                                             </>

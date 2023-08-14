@@ -36,7 +36,6 @@ const ArticleList = () => {
 
     const handlePageChange = (page: any) => {
         setPage(page);
-        console.log(page);
     }
 
     const searchArticles = async (e:any) => {
@@ -113,7 +112,7 @@ const ArticleList = () => {
                             if(index+1 <= page*10 && index+1 > page*10-10){
                                 return(
                                     <tr onClick={() => moveArticleDetail(article.boardId)} key={index}>
-                                        <td>{article.boardId}</td>
+                                        <td>{articles.length - index}</td>
                                         <td>{article.writerName}</td>
                                         <td>{article.title}</td>
                                         <td>{article.commentCnt}</td>
@@ -126,7 +125,7 @@ const ArticleList = () => {
                 </table>
                 <div className="button-wrap">
                     {
-                        nickname === ""?
+                        nickname === "" ?
                         <></>
                         :
                         <button><Link href="/article/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
