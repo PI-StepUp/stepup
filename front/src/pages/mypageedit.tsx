@@ -38,7 +38,6 @@ const MyPageEdit = () => {
 	const [nicknameFlag, setNicknameFlag] = useState<boolean>(true);
 	const [emailFlag, setEmailFlag] = useState<boolean>(true);
 	const [pwFlag, setPwFlag] = useState<boolean>(true);
-	const [profileImgExist, setProfileImgExist] = useState<boolean>(true);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
 	const [open, setOpen] = useState({ display: 'none' });
@@ -126,7 +125,7 @@ const MyPageEdit = () => {
 	}, []);
 
 	useEffect(() => {
-		if(id !== '' && accessToken !== '' && refreshToken !== ''){
+		if (id !== '' && accessToken !== '' && refreshToken !== '') {
 			const setup = async () => {
 				// 로그인 유저 정보 조회
 				await axiosUser.get("", {
@@ -153,9 +152,6 @@ const MyPageEdit = () => {
 						await setNickname(data.data.data.nickname);
 						await setBirth(data.data.data.birth);
 						await setProfileImg(data.data.data.profileImg);
-						if (data.data.data.profileImg === null) {
-							setProfileImgExist(false);
-						}
 						await setPoint(data.data.data.point);
 						await setRankname(data.data.data.rankName);
 						await setRankImg(data.data.data.rankImg);
@@ -350,7 +346,6 @@ const MyPageEdit = () => {
 			reader.onload = () => {
 				setProfileImg(reader.result);
 				console.log("url >>", reader.result);
-				setProfileImgExist(true);
 			}
 			console.log("프사 변경 url >> ", profileImg);
 		}
@@ -359,7 +354,6 @@ const MyPageEdit = () => {
 	// 프로필 사진 삭제
 	const onDeleteImage = async () => {
 		setProfileImg('');
-		setProfileImgExist(false);
 	}
 
 	return (
@@ -374,7 +368,9 @@ const MyPageEdit = () => {
 								<div className="list-title mt-70">{lang === "en" ? "PROFILE IMAGE" : lang === "cn" ? "个人资料图片" : "프로필 이미지"}</div>
 								<div className="profile">
 									<div className="img-box">
-										<Image className="img" src={profileImgExist ? profileImg?.toString() : img_profile} alt="profile" width={100} height={100}></Image>
+										{profileImg === ''|| profileImg === null || profileImg === "url"
+										? (<Image className="img" src={img_profile} alt="profile" width={100} height={100}></Image>)
+										: (<Image className="img" src={profileImg.toString()} alt="profile" width={100} height={100}></Image>)}
 									</div>
 									<div className="upload">
 										<div>

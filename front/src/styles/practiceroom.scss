@@ -80,10 +80,18 @@
                         }
                         button{
                             @include setSize(60px, 60px);
-                            background-color:#FFF;
                             border:none;
                             border-radius:50px;
                             cursor:pointer;
+                        }
+                        .audio-enabled,.video-enabled{
+                            background-color:#F95A3A;
+                            &:hover{
+                                background-color:#FFF;
+                            }
+                        }
+                        .audio-disabled,.video-disabled{
+                            background-color:#FFF;
                             &:hover{
                                 background-color:#F95A3A;
                             }
@@ -584,4 +592,8 @@
             }
         }
     }
+}
+
+iframe{
+    opacity:1;
 }

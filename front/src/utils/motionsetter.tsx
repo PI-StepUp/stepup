@@ -51,10 +51,18 @@ async function calculateSimilarity(danceRecord:any[], danceAnswer:any[]) {
 
   console.log("similarity", similaritySum);
 
-  similaritySum -= 1;
-  similaritySum *= 15;
+  // similaritySum -= 1;
+  // similaritySum *= 15;
 
-  return (100 - Math.floor(similaritySum));
+  return (100 - Math.floor(transformScore(similaritySum) * 100));
+}
+
+function transformScore(score:number) {
+ if (score >= 1) {
+   return 1;
+ } else {
+   return score;
+ }
 }
 
 
@@ -69,56 +77,61 @@ function normalizeDance(dance:any[], danceNorm:any[]) {
   let maxZ = Number.MIN_VALUE;
   
   for (let frame of dance) {
-      for (let bodyPart of frame) {
-          if (typeof bodyPart[0] === "number") {
-              if (minX > bodyPart[0]) {
-                  minX = bodyPart[0];
-              }
-  
-              if (maxX < bodyPart[0]) {
-                  maxX = bodyPart[0];
-              }
+    for (let bodyPart of frame) {
+      if (bodyPart) {
+        if (typeof bodyPart[0] === "number") {
+          if (minX > bodyPart[0]) {
+            minX = bodyPart[0];
           }
   
-          if (typeof bodyPart[1] === "number") {
-              if (minY > bodyPart[1]) {
-                  minY = bodyPart[1];
-              }
-  
-              if (maxY < bodyPart[1]) {
-                  maxY = bodyPart[1];
-              }
+          if (maxX < bodyPart[0]) {
+            maxX = bodyPart[0];
           }
+        }
+  
+        if (typeof bodyPart[1] === "number") {
+          if (minY > bodyPart[1]) {
+            minY = bodyPart[1];
+          }
+  
+          if (maxY < bodyPart[1]) {
+            maxY = bodyPart[1];
+          }
+        }
           
-          if (typeof bodyPart[2] === "number") {
-              if (minZ > bodyPart[2]) {
-                  minZ = bodyPart[2];
-              }
-  
-              if (maxZ < bodyPart[2]) {
-                  maxZ = bodyPart[2];
-              }
+        if (typeof bodyPart[2] === "number") {
+          if (minZ > bodyPart[2]) {
+            minZ = bodyPart[2];
           }
+  
+          if (maxZ < bodyPart[2]) {
+            maxZ = bodyPart[2];
+          }
+        }
       }
+    }
   }
   
   console.log(`minX : ${minX}, maxX : ${maxX}, minY : ${minY}, maxY : ${maxY}, minZ : ${minZ}, maxZ : ${maxZ}`);
   
   let normFrame = [];
   for (let frame of dance) {
-      for (let bodyPart of frame) {
-          if (typeof bodyPart[0] === "number" && typeof bodyPart[1] === "number" && typeof bodyPart[2] === "number") {
-              // 3차원 좌표의 정규화 로직
-              normFrame.push([
-                  (bodyPart[0] - minX) / (maxX - minX),
-                  (bodyPart[1] - minY) / (maxY - minY),
-                  (bodyPart[2] - minZ) / (maxZ - minZ)
-              ]);
-          }
+    for (let bodyPart of frame) {
+      if (bodyPart) {
+        if (typeof bodyPart[0] === "number" && typeof bodyPart[1] === "number" && typeof bodyPart[2] === "number") {
+          // 3차원 좌표의 정규화 로직
+          normFrame.push([
+            (bodyPart[0] - minX) / (maxX - minX),
+            (bodyPart[1] - minY) / (maxY - minY),
+            (bodyPart[2] - minZ) / (maxZ - minZ)
+          ]);
+        }
       }
-      danceNorm.push(normFrame);
+    }
+    danceNorm.push(normFrame);
+    normFrame = [];
   }
-  }
+}
   // ========== 부위 별 벡터 자료구조 생성 ============
   function vectorizeDance(danceNorm:any[], danceVec:any[]) {
     for (let i = 0; i < 12; i++) {
@@ -126,96 +139,134 @@ function normalizeDance(dance:any[], danceNorm:any[]) {
       let xVectors = [];
       let yVectors = [];
       let zVectors = [];
+
+      let vecTemp: any[] = [];
   
       for (let frame of danceNorm) {
-        let vecTemp:any[] = makeBodyPartVector(frame, i)!;
+        vecTemp = makeBodyPartVector(frame, i)!;
         // 3차원 좌표의 벡터화 로직
-        xVectors.push(Math.round(vecTemp[0] * 10000) / 100);
-        yVectors.push(Math.round(vecTemp[1] * 10000) / 100);
-        zVectors.push(Math.round(vecTemp[2] * 10000) / 100);
+        if (vecTemp) {
+          if ((typeof vecTemp[0] === "number") &&
+            (typeof vecTemp[1] === "number") &&
+            (typeof vecTemp[2] === "number")) {
+            xVectors.push(Math.round(vecTemp[0] * 10000) / 100);
+            yVectors.push(Math.round(vecTemp[1] * 10000) / 100);
+            zVectors.push(Math.round(vecTemp[2] * 10000) / 100);
+          }
+        }
       }
   
       oneBodyPartVec.push(xVectors);
       oneBodyPartVec.push(yVectors);
       oneBodyPartVec.push(zVectors);
       danceVec.push(oneBodyPartVec);
+
+      xVectors = [];
+      yVectors = [];
+      oneBodyPartVec = [];
     }
   }
   
   function makeBodyPartVector(frame:any[], partIndex:number) {
     if (partIndex === 0) {
-      return [
-        frame[5][0] - frame[3][0],
-        frame[5][1] - frame[3][1],
-        frame[5][2] - frame[3][2]
-      ];
+      if (isNumber(frame[5]) && isNumber(frame[3])) {
+        return [
+          frame[5][0] - frame[3][0],
+          frame[5][1] - frame[3][1],
+          frame[5][2] - frame[3][2]
+        ];
+      }
     } else if (partIndex === 1) {
-      return [
-        frame[3][0] - frame[1][0],
-        frame[3][1] - frame[1][1],
-        frame[3][2] - frame[1][2]
-      ];
+      if (isNumber(frame[3]) && isNumber(frame[1])) {
+        return [
+          frame[3][0] - frame[1][0],
+          frame[3][1] - frame[1][1],
+          frame[3][2] - frame[1][2]
+        ];
+      }
     } else if (partIndex === 2) {
-      return [
-        frame[1][0] - frame[0][0],
-        frame[1][1] - frame[0][1],
-        frame[1][2] - frame[0][2]
-      ];
+      if (isNumber(frame[1]) && isNumber(frame[0])) {
+        return [
+          frame[1][0] - frame[0][0],
+          frame[1][1] - frame[0][1],
+          frame[1][2] - frame[0][2]
+        ];
+      }
     } else if (partIndex === 3) {
-      return [
-        frame[2][0] - frame[0][0],
-        frame[2][1] - frame[0][1],
-        frame[2][2] - frame[0][2]
-      ];
+      if (isNumber(frame[2]) && isNumber(frame[0])) {
+        return [
+          frame[2][0] - frame[0][0],
+          frame[2][1] - frame[0][1],
+          frame[2][2] - frame[0][2]
+        ];
+      }
     } else if (partIndex === 4) {
-      return [
-        frame[4][0] - frame[2][0],
-        frame[4][1] - frame[2][1],
-        frame[4][2] - frame[2][2]
-      ];
+      if (isNumber(frame[4]) && isNumber(frame[2])) {
+        return [
+          frame[4][0] - frame[2][0],
+          frame[4][1] - frame[2][1],
+          frame[4][2] - frame[2][2]
+        ];
+      }
     } else if (partIndex === 5) {
-      return [
-        frame[7][0] - frame[1][0],
-        frame[7][1] - frame[1][1],
-        frame[7][2] - frame[1][2]
-      ];
+      if (isNumber(frame[7]) && isNumber(frame[1])) {
+        return [
+          frame[7][0] - frame[1][0],
+          frame[7][1] - frame[1][1],
+          frame[7][2] - frame[1][2]
+        ];
+      }
     } else if (partIndex === 6) {
-      return [
-        frame[6][0] - frame[0][0],
-        frame[6][1] - frame[0][1],
-        frame[6][2] - frame[0][2]
-      ];
+      if (isNumber(frame[6]) && isNumber(frame[0])) {
+        return [
+          frame[6][0] - frame[0][0],
+          frame[6][1] - frame[0][1],
+          frame[6][2] - frame[0][2]
+        ];
+      }
     } else if (partIndex === 7) {
-      return [
-        frame[7][0] - frame[6][0],
-        frame[7][1] - frame[6][1],
-        frame[7][2] - frame[6][2]
-      ];
+      if (isNumber(frame[7]) && isNumber(frame[6])) {
+        return [
+          frame[7][0] - frame[6][0],
+          frame[7][1] - frame[6][1],
+          frame[7][2] - frame[6][2]
+        ];
+      }
     } else if (partIndex === 8) {
-      return [
-        frame[9][0] - frame[7][0],
-        frame[9][1] - frame[7][1],
-        frame[9][2] - frame[7][2]
-      ];
+      if (isNumber(frame[9]) && isNumber(frame[7])) {
+        return [
+          frame[9][0] - frame[7][0],
+          frame[9][1] - frame[7][1],
+          frame[9][2] - frame[7][2]
+        ];
+      }
     } else if (partIndex === 9) {
-      return [
-        frame[8][0] - frame[6][0],
-        frame[8][1] - frame[6][1],
-        frame[8][2] - frame[6][2]
-      ];
+      if (isNumber(frame[8]) && isNumber(frame[6])) {
+        return [
+          frame[8][0] - frame[6][0],
+          frame[8][1] - frame[6][1],
+          frame[8][2] - frame[6][2]
+        ];
+      }
     } else if (partIndex === 10) {
-      return [
-        frame[11][0] - frame[9][0],
-        frame[11][1] - frame[9][1],
-        frame[11][2] - frame[9][2]
-      ];
+      if (isNumber(frame[11]) && isNumber(frame[9])) {
+        return [
+          frame[11][0] - frame[9][0],
+          frame[11][1] - frame[9][1],
+          frame[11][2] - frame[9][2]
+        ];
+      }
     } else if (partIndex === 11) {
-      return [
-        frame[10][0] - frame[8][0],
-        frame[10][1] - frame[8][1],
-        frame[10][2] - frame[8][2]
-      ];
+      if (isNumber(frame[10]) && isNumber(frame[8])) {
+        return [
+          frame[10][0] - frame[8][0],
+          frame[10][1] - frame[8][1],
+          frame[10][2] - frame[8][2]
+        ];
+      }
     }
+
+    return null;
   }
   
   
@@ -255,5 +306,15 @@ function normalizeDance(dance:any[], danceNorm:any[]) {
   
     return dtwMatrix[n - 1][m - 1];
   }
+
+  function isNumber(frame:any[]) {
+    if (typeof frame !== "undefined") {
+      return ((typeof frame[0] === "number") &&
+        (typeof frame[1] === "number") &&
+        (typeof frame[2] === "number"));
+    }
+    return false;
+  }
+
 
 export {createLandmarker, calculateSimilarity}

@@ -25,24 +25,24 @@ import axios from "axios";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState } from "states/states";
 
 const Hostroom = () => {
-	const pc_config = {
-		iceServers: [
-			// {
-			//   urls: 'stun:[STUN_IP]:[PORT]',
-			//   'credentials': '[YOR CREDENTIALS]',
-			//   'username': '[USERNAME]'
-			// },
-			{
-				urls: 'stun:stun.l.google.com:19302',
-			},
-		],
-	};
-	const SOCKET_SERVER_URL = 'http://localhost:4002';
-	const socketRef = useRef<any>();
-	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-	const [id, setId] = useRecoilState(idState);
-	const [roomName, setRoomName] = useState<any>();
+    const pc_config = {
+        iceServers: [
+            // {
+            //   urls: 'stun:[STUN_IP]:[PORT]',
+            //   'credentials': '[YOR CREDENTIALS]',
+            //   'username': '[USERNAME]'
+            // },
+            {
+                urls: 'stun:stun.l.google.com:19302',
+            },
+        ],
+    };
+    const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
+    const socketRef = useRef<any>();
+    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+    const [id, setId] = useRecoilState(idState);
+    const [roomName, setRoomName] = useState<any>();
 
 	const [lang, setLang] = useRecoilState(LanguageState);
 	const [reflect, setReflect] = useState(false);
