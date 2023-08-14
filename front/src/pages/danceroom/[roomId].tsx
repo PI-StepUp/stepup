@@ -504,7 +504,7 @@ const DanceRoom = () => {
 		socketRef.current.on('user_exit', (data: { id: string }) => {
 			if (!pcsRef.current[data.id]) return;
 			// 성공한 노래 개수에 따른 포인트 지급
-			axiosRank.post(`/point`, {
+			axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
 				id: id,
 				pointPolicyId: 4,
 				randomDanceId: roomId,

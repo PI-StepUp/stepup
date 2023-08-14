@@ -225,7 +225,7 @@ const PracticeRoom = () => {
 
 			// 연습실 이용에 따른 포인트 지급
 			console.log("토큰 검사", accessToken);
-			axiosRank.post(`/point`, {
+			axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
 				id: id,
 				pointPolicyId: 6,
 				randomDanceId: null,

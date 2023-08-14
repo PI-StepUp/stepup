@@ -21,6 +21,7 @@ import { LanguageState } from "states/states";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState, canEditInfoState } from "states/states";
 
 import { axiosUser, axiosDance, axiosBoard, axiosRank } from "apis/axios";
+import axios from "axios";
 
 const MyPage = () => {
   interface Boards {
@@ -114,7 +115,7 @@ const MyPage = () => {
     } else {
       // 접근 권한(로그인 여부) 확인
       try {
-        axiosUser.post('/auth', {
+        axios.post('https://stepup-pi.com:8080/api/user/auth', {
           id: id,
         }, {
           headers: {
@@ -148,7 +149,7 @@ const MyPage = () => {
     if (id !== '' && accessToken !== '' && refreshToken !== '') {
       const setup = async () => {
         // 로그인 유저 정보 조회
-        await axiosUser.get("", {
+        await axios.get("https://stepup-pi.com:8080/api/user", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -202,7 +203,7 @@ const MyPage = () => {
         })
 
         // // 로그인 유저의 포인트 적립 내역 조회
-        // await axiosRank.get("/my/history", {
+        // await axios.get("https://stepup-pi.com:8080/api/rank/my/history", {
         //   headers: {
         //     Authorization: `Bearer ${accessToken}`
         //   }
@@ -215,7 +216,7 @@ const MyPage = () => {
         // })
 
         // 로그인 유저가 작성한 정모 게시글 조회
-        await axiosBoard.get(`/meeting/my`, {
+        await axios.get(`https://stepup-pi.com:8080/api/board/meeting/my`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -231,7 +232,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저가 작성한 자유게시판 게시글 조회
-        await axiosBoard.get(`/talk/my`, {
+        await axios.get(`https://stepup-pi.com:8080/api/board/talk/my`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -247,7 +248,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저의 랜플댄 예약 목록 조회
-        await axiosDance.get("/my/reserve", {
+        await axios.get("https://stepup-pi.com:8080/api/dance/my/reserve", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -262,7 +263,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저가 개최한 랜플댄 목록 조회
-        await axiosDance.get("/my/open", {
+        await axios.get("https://stepup-pi.com:8080/api/dance/my/open", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -275,7 +276,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저가 참여한 랜플댄 목록 조회
-        await axiosDance.get("/my/attend/", {
+        await axios.get("https://stepup-pi.com:8080/api/dance/my/attend/", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           },
@@ -293,11 +294,11 @@ const MyPage = () => {
 
   // 로그인 유저의 랜플댄 예약 취소
   const cancelRandomDance = async (selectedId: any) => {
-    await axiosDance.delete(`/my/reserve/${selectedId}`, {
+    await axios.delete(`https://stepup-pi.com:8080/api/dance/my/reserve/${selectedId.reservationId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
-    }).then((data: { data: { message: string; }; }) => {
+    }).then((data) => {
       if (data.data.message === "랜덤 플레이 댄스 예약 취소 완료") {
         alert("예약을 취소하셨습니다.")
       } else {
@@ -308,8 +309,7 @@ const MyPage = () => {
 
   // 로그인 유저가 개최한 랜플댄 삭제
   const deleteMyRandomDance = async (roomid: any) => {
-    console.log("삭제 함수 >> ", roomid.rpdId);
-    await axiosDance.delete(`/my/${roomid.rpdId}`, {
+    await axios.delete(`https://stepup-pi.com:8080/api/dance/my/${roomid.rpdId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
@@ -329,7 +329,7 @@ const MyPage = () => {
     console.log(accessToken);
 
     try {
-      axiosUser.post("/checkpw", {
+      axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
         id: id,
         password: pwValue.current!.value,
       }, {
