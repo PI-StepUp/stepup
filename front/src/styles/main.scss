@@ -176,24 +176,28 @@
     background-color: #EFF3FF;
     @include flex();
     @include mobile{
-        height:auto;
+        @include setSize(100vw, auto);
     }
     .ad-randomplay-info{
         @include setSize(100%, 500px);
         @include flex(flex-end, center);
         padding-right:140px;
         @include mobile{
-            height:auto;
+            @include setSize(100vw, auto);
             @include flex(center, center);
             padding:70px 30px;
             box-sizing: border-box;
         }
         .ad-randomplay-info-wrap{
+            @include mobile{
+                @include setSize(100vw, auto);
+            }
             h3{
                 width:403px;
                 @include font(40px, 700, #3F4253);
                 line-height:54px;
                 @include mobile{
+                    width:auto;
                     font-size:22px;
                     line-height:30px;
                 }
@@ -204,6 +208,7 @@
                 line-height:28px;
                 margin-top:13px;
                 @include mobile{
+                    width:auto;
                     font-size:11px;
                     line-height:16px;
                 }
@@ -234,29 +239,58 @@
 .realtime-randomplay{
     @include setSize(100%, 520px);
     background-color:#7B95FE;
+    @include mobile{
+        @include setSize(100vw, 476px);
+    }
     .realtime-randomplay-title{
         text-align:center;
         padding-top:70px;
+        @include mobile{
+            padding-top:54px;
+        }
         h3{
             @include font(40px, 700, #FFFFFF);
+            @include mobile{
+                font-size:26px;
+            }
         }
         p{
             @include font(20px, 400, #FFFFFF);
             margin-top:14px;
+            @include mobile{
+                font-size:14px;
+                line-height:18px;
+            }
         }
     }
     .realtime-randomplay-content{
         @include block-center(1200px);
         margin-top:44px;
+        @include mobile{
+            width:100vw;
+            margin-top: 37px;
+            overflow-x: scroll;
+        }
         ul{
             @include flex(center);
+            @include mobile{
+                flex-wrap: nowrap;
+                overflow-x:auto;
+            }
             li{
                 @include setSize(200px, 250px);
                 border-radius:30px;
                 background-color:#FFF;
                 margin-left:16px;
+                @include mobile{
+                    @include setSize(50vw, auto);
+                    flex: 0 0 auto;
+                }
                 &:first-child{
                     margin-left:0px;
+                    @include mobile{
+                        margin-left:auto;
+                    }
                 }
                 .realtime-randomplay-content-img{
                     @include setSize(100%, 151px);
@@ -286,6 +320,9 @@
     background: linear-gradient(to right,#677CF9, #4A64F5);
     @include flex(center, center);
     flex-direction: column;
+    @include mobile{
+        display: none;
+    }
     .ad-banner-title-wrap{
         @include block-center(1200px);
         text-align: center;

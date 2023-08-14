@@ -1,16 +1,29 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 .notice-list-wrap{
     padding-top:108px;
     background-color: #EEEEEE;
+    @include mobile{
+        padding-top:38px;
+    }
     > ul{
         @include block-center(1200px);
+        @include mobile{
+            @include setSize(100vw, auto);
+        }
         > li{
             @include setSize(1100px);
             margin:0 auto;
             background-color:#FFF;
             @include box-padding(80px);
             margin-top:32px;
+            cursor:pointer;
+            @include mobile{
+                @include setSize(100%);
+                padding:34px 47px;
+                margin-top:28px;
+            }
             &:first-child{
                 margin-top:0px;
             }
@@ -20,17 +33,29 @@
                 @include flex(center, center);
                 background-color:#6077F8;
                 @include font(20px, 400, #FFFFFF);
+                @include mobile{
+                    @include setSize(80px, 20px);
+                    font-size:12px;
+                }
             }
             .notice-list-content{
                 margin-top:17px;
                 h4{
                     @include font(34px, 700, #4C4C4C);
                     line-height:42px;
+                    @include mobile{
+                        font-size:18px;
+                        line-height:26px;
+                    }
                 }
                 p{
                     @include font(18px, 400, #686868);
                     margin-top:17px;
                     line-height:28px;
+                    @include mobile{
+                        font-size:10px;
+                        line-height:18px;
+                    }
                 }
             }
             .flex-wrap{
@@ -40,12 +65,18 @@
                     @include flex(center, center);
                     img{
                         margin-left:4px;
+                        @include mobile{
+                            width:30px;
+                        }
                     }
                     span{
                         @include font(18px, 400, #686868);
                         margin-left:11px;
                         border-bottom:1px solid #686868;
                         padding-bottom:6px;
+                        @include mobile{
+                            font-size:10px;
+                        }
                     }
                 }
                 .edit-button-wrap{
@@ -57,6 +88,10 @@
                             padding-bottom: 6px;
                             margin-left:13px;
                             cursor:pointer;
+                            @include mobile{
+                                font-size:10px;
+                                margin-left:6px;
+                            }
                             &:first-child{
                                 margin-left:0px;
                             }

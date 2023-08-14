@@ -63,7 +63,6 @@ const PlayListCreate = () => {
         <>
             <Header/>
             <MainBanner/>
-            <SubNav/>
             <div className="create-wrap">
                 <div className="create-title">
                     <span>게시글</span>

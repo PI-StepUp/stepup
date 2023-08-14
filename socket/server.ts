@@ -3,6 +3,15 @@ const app = express();
 const http = require('http').Server(app);
 const cors = require('cors');
 
+// const https = require('https');
+// const fs = require('fs');
+
+// const options = {
+//     key: fs.readFileSync('/etc/letsencrypt/live/stepup-pi.com/privkey.pem'),
+//     cert: fs.readFileSync('/etc/letsencrypt/live/stepup-pi.com/cert.pem')
+// }
+
+
 app.use(cors());
 const io = require('socket.io')(http, {
   cors:{
@@ -10,6 +19,17 @@ const io = require('socket.io')(http, {
     methods:["GET", "POST"]
   }
 });
+
+// const httpsServer = https.createServer(options, app);
+
+// const io = require('socket.io')(httpsServer, {
+//     cors: {
+//       origin: "*",
+//       methods: ["GET", "POST"]
+//     }
+//   });
+
+
 const PORT = process.env.PORT || 4002;
 
 let users = {};
@@ -20,6 +40,10 @@ let result = [];
 let maxNumCnt = 0;
 
 const maximum = process.env.MAXIMUM || 4;
+
+// httpsServer.listen(PORT, () => {
+//     console.log(`HTTPS server running on ${PORT}`);
+//   });
 
 io.on('connection', socket => {
     socket.on('join_room', data => {
@@ -72,14 +96,15 @@ io.on('connection', socket => {
         result.push({nickname, correct});
         let winner = "";
         let max = 0;
-        // 같은 방 구분할 것
 
-        console.log(users);
+        console.log("닫힘 결과", users);
         for(let i=0; i<Object.keys(users).length; i++){
             if(users[roomName] != undefined){
                 maxNumCnt++;
             }
         }
+
+        console.log("result",result);
         if(result.length == maxNumCnt){
             for(let i=0; i<result.length; i++){
                 if(max <= result[i].correct){

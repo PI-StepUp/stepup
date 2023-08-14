@@ -18,13 +18,49 @@ import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../utils/motionsetter";
 import { PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const EMBED_URL: any = {
-    13: "",
-    14: "https://www.youtube.com/embed/gV4j4oKnA7s",
-    15: "https://www.youtube.com/embed/xCb9V33T-D8",
-    16: "https://www.youtube.com/embed/GMSLYWc_UX4",
-    17: "https://www.youtube.com/embed/hcaAQCyXurg",
+    1: "https://www.youtube.com/embed/g4vaGXR7fUY",
+    2: "https://www.youtube.com/embed/VyQ40mNYx3Q",
+    3: "https://www.youtube.com/embed/2U7QXp9ItqM",
+    4: "https://www.youtube.com/embed/WhPr4rC-bAU",
+    5: "https://www.youtube.com/embed/bGa1g4jg-MA",
+    6: "https://www.youtube.com/embed/klNlrKzcQbc",
+    7: "https://www.youtube.com/embed/quT7eRenhxw",
+    8: "https://www.youtube.com/embed/Y063oeFDIGA",
+    9: "https://www.youtube.com/embed/w-TfkfN6vrw",
+    10: "https://www.youtube.com/embed/V9SmaLFFPqM",
+    11: "https://www.youtube.com/embed/PYWxkQzp1oY",
+    12: "https://www.youtube.com/embed/3we9E99GK2A",
+    13: "https://www.youtube.com/embed/rHwdB-J49Ks",
+    14: "https://www.youtube.com/embed/mB0tL-7M6VQ",
+    15: "https://www.youtube.com/embed/yGJ-1LkaRho",
+    16: "https://www.youtube.com/embed/HZb7CWKUaOw",
+    17: "https://www.youtube.com/embed/39Y8PkJRZTw",
+    18: "https://www.youtube.com/embed/9pIGXdUgCmE",
+    19: "https://www.youtube.com/embed/r4jiLONU8R8",
+    20: "https://www.youtube.com/embed/n4I0dwD6u1k",
+    21: "https://www.youtube.com/embed/I_GEa-Dud6A",
+    22: "https://www.youtube.com/embed/4cxU3TJV-CQ",
+    23: "https://www.youtube.com/embed/FUxKgi_BDVI",
+    24: "https://www.youtube.com/embed/wWJU-nYV-no",
+    25: "https://www.youtube.com/embed/QVyaGJRsaVI",
+    26: "https://www.youtube.com/embed/CMCKkVbzGfU",
+    27: "https://www.youtube.com/embed/FbY8w-eVuz0",
+    28: "https://www.youtube.com/embed/VuEh-4UKfqs",
+    29: "https://www.youtube.com/embed/B9mgikpIl98",
+    30: "https://www.youtube.com/embed/RcojjcsBkUo",
+    31: "https://www.youtube.com/embed/yIX33lK7vpo",
+    32: "https://www.youtube.com/embed/TtRBMl-K9Xs",
+    33: "https://www.youtube.com/embed/pgCyvRoDpB0",
+    34: "https://www.youtube.com/embed/1E5Q1AdAxMg",
+    35: "https://www.youtube.com/embed/JteGnlZC8K4",
+    36: "https://www.youtube.com/embed/RdjCtKJWNVY",
+    37: "https://www.youtube.com/embed/yln8wDZ-i4E",
+    38: "https://www.youtube.com/embed/96gMuaVE-Bo",
+    39: "https://www.youtube.com/embed/pxNSGBU82GY",
+    40: "https://www.youtube.com/embed/XknszxBeP7Y",
 }
 
 let poseLandmarker: PoseLandmarker;
@@ -44,12 +80,15 @@ const PracticeRoom = () => {
     const [count2, setCount2] = useState(false);
     const [count1, setCount1] = useState(false);
     const [playResult, setPlayResult] = useState('');
+    const [resultScore, setResultScore] = useState<number>();
     const [selectedMusic, setSelectedMusic] = useState<any>(14);
     const [scoreCount, setScoreCount] = useState<any>(0);
     const localVideoRef = useRef<any>(null);
     const localCanvasRef = useRef<HTMLCanvasElement>(null);
 	const localStreamRef = useRef<MediaStream>();
     const myVideoDivRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const hostToken = router.query.token;
 
     const reflectHover = () => {
         setReflect(true);
@@ -81,25 +120,25 @@ const PracticeRoom = () => {
 
     useEffect(() => {
         getLocalStream();
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+        // try{
+        //     axiosUser.post('/auth',{
+        //         id: id,
+        //     },{
+        //         headers:{
+        //             Authorization: `Bearer ${accessToken}`,
+        //             refreshToken: refreshToken,
+        //         }
+        //     }).then((data) => {
+        //         if(data.data.message === "토큰 재발급 완료"){
+        //             setAccessToken(data.data.data.accessToken);
+        //             setRefreshToken(data.data.data.refreshToken);
+        //         }
+        //     })
+        // }catch(e){
+        //     alert('시스템 에러, 관리자에게 문의하세요.');
+        // }
 
-        axios.get("http://52.78.93.184:8080/api/music",{
+        axios.get("https://stepup-pi.com:8080/api/music",{
             params:{
                 keyword: "",
             },
@@ -169,6 +208,7 @@ const PracticeRoom = () => {
 
             const score = await calculateSimilarity(danceRecord, danceAnswer);
             console.log(score);
+            setResultScore(score);
 
             if(score < 60){
                 setPlayResult("failure");
@@ -183,7 +223,7 @@ const PracticeRoom = () => {
             }
 
             return score;
-        }, (response.data.playtime + 1)*1000);
+        }, (response.data.playtime + 2)*1000);
     }
 
     let frameCount = 0;
@@ -229,19 +269,19 @@ const PracticeRoom = () => {
 	// ========== 안무 좌표 저장 ============
 
 	async function setDance(result: any, dance: any[]) {
-		let coordinate: any[] = [];
-		let oneFrame = [];
+		let coordinate;
+        let oneFrame = [];
 
-		for (let i = 11; i < 29; i++) {
-			if (17 <= i && i <= 22) continue;
+        for(let i = 11; i < 29; i++){
+        if (17 <= i && i <= 22) continue;
+        
+        if (typeof result.landmarks[0] !== "undefined") {
+            coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
+        }
+            oneFrame.push(coordinate); 
+        }
 
-			if (typeof result.landmarks[0] != "undefined") {
-				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y];
-			}
-			oneFrame.push(coordinate);
-		}
-
-		dance.push(oneFrame);
+        dance.push(oneFrame);
 	}
 
 	// =====================================
@@ -249,23 +289,13 @@ const PracticeRoom = () => {
 	// ==============정답 데이터 get=====================
 
     async function getAnswerData(musicId:number) {
-        try{
-            await axios.post('http://52.78.93.184:8080/api/user/login', {
-                id: "ssafy",
-                password: "ssafy",
-            }).then((data) => {
-                setAccessToken(data.data.data.tokens.accessToken);
-            })
-        }catch(e){
-            console.error(e);
-        }
         try {
-            const response = await axios.get(`http://52.78.93.184:8080/api/music/${musicId}`, {
+            const response = await axios.get(`https://stepup-pi.com:8080/api/music/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
                 headers: {
-                    Authorization: `Bearer ${accessToken}` 
+                    Authorization: `Bearer ${hostToken}`, 
                 },
             });
             const responseData = await response.data;
@@ -314,7 +344,6 @@ const PracticeRoom = () => {
         }
     }
 
-
     return(
         <>
             <div className="practiceroom-wrap">
@@ -352,7 +381,7 @@ const PracticeRoom = () => {
                                         {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li><button onClick={startMeasure} className="exit-button">{lang==="en" ? "Try!" : lang==="cn" ? "挑战!" : "도전!" }</button></li>
+                                <li><button onClick={startMeasure} className="exit-button">{lang==="en" ? "Perfect Score" : lang==="cn" ? "满分" : "퍼펙트 스코어" }</button></li>
                             </ul>
                         </div>
                     </div>

@@ -1,7 +1,6 @@
 import React, {useState, useRef, useEffect, useCallback} from "react";
 import io from 'socket.io-client';
 
-import SideMenu from "components/SideMenu";
 import Video from "components/Video";
 
 import Image from "next/image";
@@ -10,13 +9,11 @@ import GroupIcon from "/public/images/icon-group.svg"
 import ReflectIcon from "/public/images/icon-reflect.svg"
 import CameraIcon from "/public/images/icon-camera.svg"
 import MicIcon from "/public/images/icon-mic.svg"
-import MoreIcon from "/public/images/icon-more-dot.svg"
 import ChatDefaultImg from "/public/images/chat-default-profile-img.svg"
 import sendImg from "/public/images/send-img.svg"
 import ReflectHoverIcon from "/public/images/icon-hover-reflect.svg"
 import MicHoverIcon from "/public/images/icon-hover-mic.svg"
 import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
-import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
 import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
@@ -39,14 +36,49 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'http://localhost:4002';
+const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
 
 const EMBED_URL: any = {
-    13: "",
-    14: "https://www.youtube.com/embed/gV4j4oKnA7s",
-    15: "https://www.youtube.com/embed/xCb9V33T-D8",
-    16: "https://www.youtube.com/embed/GMSLYWc_UX4",
-    17: "https://www.youtube.com/embed/hcaAQCyXurg",
+    1: "https://www.youtube.com/embed/g4vaGXR7fUY",
+    2: "https://www.youtube.com/embed/VyQ40mNYx3Q",
+    3: "https://www.youtube.com/embed/2U7QXp9ItqM",
+    4: "https://www.youtube.com/embed/WhPr4rC-bAU",
+    5: "https://www.youtube.com/embed/bGa1g4jg-MA",
+    6: "https://www.youtube.com/embed/klNlrKzcQbc",
+    7: "https://www.youtube.com/embed/quT7eRenhxw",
+    8: "https://www.youtube.com/embed/Y063oeFDIGA",
+    9: "https://www.youtube.com/embed/w-TfkfN6vrw",
+    10: "https://www.youtube.com/embed/V9SmaLFFPqM",
+    11: "https://www.youtube.com/embed/PYWxkQzp1oY",
+    12: "https://www.youtube.com/embed/3we9E99GK2A",
+    13: "https://www.youtube.com/embed/rHwdB-J49Ks",
+    14: "https://www.youtube.com/embed/mB0tL-7M6VQ",
+    15: "https://www.youtube.com/embed/yGJ-1LkaRho",
+    16: "https://www.youtube.com/embed/HZb7CWKUaOw",
+    17: "https://www.youtube.com/embed/39Y8PkJRZTw",
+    18: "https://www.youtube.com/embed/9pIGXdUgCmE",
+    19: "https://www.youtube.com/embed/r4jiLONU8R8",
+    20: "https://www.youtube.com/embed/n4I0dwD6u1k",
+    21: "https://www.youtube.com/embed/I_GEa-Dud6A",
+    22: "https://www.youtube.com/embed/4cxU3TJV-CQ",
+    23: "https://www.youtube.com/embed/FUxKgi_BDVI",
+    24: "https://www.youtube.com/embed/wWJU-nYV-no",
+    25: "https://www.youtube.com/embed/QVyaGJRsaVI",
+    26: "https://www.youtube.com/embed/CMCKkVbzGfU",
+    27: "https://www.youtube.com/embed/FbY8w-eVuz0",
+    28: "https://www.youtube.com/embed/VuEh-4UKfqs",
+    29: "https://www.youtube.com/embed/B9mgikpIl98",
+    30: "https://www.youtube.com/embed/RcojjcsBkUo",
+    31: "https://www.youtube.com/embed/yIX33lK7vpo",
+    32: "https://www.youtube.com/embed/TtRBMl-K9Xs",
+    33: "https://www.youtube.com/embed/pgCyvRoDpB0",
+    34: "https://www.youtube.com/embed/1E5Q1AdAxMg",
+    35: "https://www.youtube.com/embed/JteGnlZC8K4",
+    36: "https://www.youtube.com/embed/RdjCtKJWNVY",
+    37: "https://www.youtube.com/embed/yln8wDZ-i4E",
+    38: "https://www.youtube.com/embed/96gMuaVE-Bo",
+    39: "https://www.youtube.com/embed/pxNSGBU82GY",
+    40: "https://www.youtube.com/embed/XknszxBeP7Y",
 }
 
 let poseLandmarker: PoseLandmarker;
@@ -72,30 +104,30 @@ const DanceRoom = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [playResult, setPlayResult] = useState('');
     const [urlNo, setUrlNo] = useState<any>(0);
+    const [audioEnabled, setAudioEnabled] = useState(true);
+    const [videoEnabled, setVideoEnabled] = useState(true);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
-    const [end, setEnd] = useState(false);
     const modal = useRef<any>();
     const router = useRouter();
     const roomId = router.query.roomId;
     const roomTitle = router.query.title;
-    const roomContent = router.query.content;
     const roomStartAt : any = router.query.startAt;
     const myName = router.query.myName;
     const startDate = roomStartAt?.split("T")[1];
-    const startTime = startDate.split(":")[0];
-    const startMinute = startDate.split(":")[1];
+    const startTime = startDate?.split(":")[0];
+    const startMinute = startDate?.split(":")[1];
     const roomEndAt : any = router.query.endAt;
     const endDate = roomEndAt?.split("T")[1];
-    const endTime = endDate.split(":")[0];
-    const endMinute = endDate.split(":")[1];
+    const endTime = endDate?.split(":")[0];
+    const endMinute = endDate?.split(":")[1];
     const winnerValue = useRef<any>();
 
     // 컨트롤러 hover 시 변경
     const [reflect, setReflect] = useState(false);
     const [mic, setMic] = useState(false);
     const [camera, setCamera] = useState(false);
-    const [moredot, setMoredot] = useState(false);
+    const [reflectRunning, setReflectRunning] = useState(false);
     const reflectHover = () => {
         setReflect(true);
     }
@@ -114,15 +146,35 @@ const DanceRoom = () => {
     const cameraLeave = () => {
         setCamera(false);
     }
-    const moreDotHover = () => {
-        setMoredot(true);
-    }
-    const moreDotLeave = () => {
-        setMoredot(false);
+
+    const toggleAudio = () => {
+        if(localStreamRef.current){
+            const audioTrack = localStreamRef.current.getAudioTracks()[0];
+            if(audioTrack){
+                audioTrack.enabled = !audioEnabled;
+                setAudioEnabled(!audioEnabled);
+            }
+        }
     }
 
-    const youtubeChange = (e: any) => {
-        setEnd(true);
+    const toggleVideo = () => {
+        if(localStreamRef.current){
+            const videoTrack = localStreamRef.current.getVideoTracks()[0];
+            if(videoTrack){
+                videoTrack.enabled = !videoEnabled;
+                setVideoEnabled(!videoEnabled);
+            }
+        }
+    }
+
+    const reflectMyVideo = () => {
+        if (!reflectRunning) {
+            localVideoRef.current?.setAttribute("class", "my-video reflect-video");
+            setReflectRunning(true);
+        } else {
+            localVideoRef.current?.setAttribute("class", "my-video");
+            setReflectRunning(false);
+        }
     }
 
     const sendMessage = () => {
@@ -175,7 +227,7 @@ const DanceRoom = () => {
 			socketRef.current.emit('join_room', {
 				room: roomId,
                 name: myName,
-				email: 'sample@naver.com',
+				email: nickname,
 			});
 		} catch (e) {
 			console.log(`getUserMedia error: ${e}`);
@@ -207,10 +259,12 @@ const DanceRoom = () => {
 						.filter((user) => user.id !== socketID)
 						.concat({
 							id: socketID,
+                            name,
 							email,
 							stream: e.streams[0],
 						}),
 				);
+                console.log(users);
 			};
 
 			if (localStreamRef.current) {
@@ -320,7 +374,7 @@ const DanceRoom = () => {
 			if (17 <= i && i <= 22) continue;
 
 			if (typeof result.landmarks[0] != "undefined") {
-				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y];
+				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
 			}
 			oneFrame.push(coordinate);
 		}
@@ -334,7 +388,7 @@ const DanceRoom = () => {
 
     async function getAnswerData(musicId:number) {
         try{
-            await axios.post('http://52.78.93.184:8080/api/user/login', {
+            await axios.post('https://stepup-pi.com:8080/api/user/login', {
                 id: "ssafy",
                 password: "ssafy",
             }).then((data) => {
@@ -344,7 +398,7 @@ const DanceRoom = () => {
             console.error(e);
         }
         try {
-            const response = await axios.get(`http://52.78.93.184:8080/api/music/${musicId}`, {
+            const response = await axios.get(`https://stepup-pi.com:8080/api/music/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
@@ -382,7 +436,7 @@ const DanceRoom = () => {
 					socketRef.current.emit('offer', {
 						sdp: localSdp,
 						offerSendID: socketRef.current.id,
-						offerSendEmail: 'offerSendSample@sample.com',
+						offerSendEmail: nickname,
 						offerReceiveID: user.id,
 					});
 				} catch (e) {
@@ -503,7 +557,7 @@ const DanceRoom = () => {
                 <div className="practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
-                            <Image src={LeftArrowIcon} alt=""/>
+                            <Link href="/randomplay/list"><Image src={LeftArrowIcon} alt=""/></Link>
                         </div>
                         <div className="room-title">
                             <h3>{roomTitle}</h3>
@@ -521,27 +575,40 @@ const DanceRoom = () => {
                         </div>
                         <div className="control-wrap">
                             <ul>
-                                <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave}>
+                                <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave} onClick={reflectMyVideo}>
                                     <button>
                                     {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
-                                    <button>
-                                    {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                {
+                                    audioEnabled ?
+                                    <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                        <button onClick={toggleAudio} className="audio-enabled">
+                                        {mic ? <Image src={MicIcon} alt=""/> : <Image src={MicHoverIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                    :
+                                    <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                        <button onClick={toggleAudio} className="audio-disabled">
+                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                }
                                 <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
-                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
-                                    <button>
-                                    {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
-                                    </button>
-                                </li>
-                                <li >
-                                    <button onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
-                                    {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                {
+                                    videoEnabled ?
+                                    <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                        <button onClick={toggleVideo} className="video-enabled">
+                                        {camera ? <Image src={CameraIcon} alt=""/> : <Image src={CameraHoverIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                    :
+                                    <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                        <button onClick={toggleVideo} className="video-disabled">
+                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                }
                             </ul>
                         </div>
                     </div>
@@ -564,7 +631,7 @@ const DanceRoom = () => {
                                         return(
                                             <li key={index}>
                                                 <Image src={ChatDefaultImg} alt=""/>
-                                                <span>{data.id}</span>
+                                                <span>{data.email}</span>
                                             </li>
                                         )
                                     })
@@ -588,7 +655,7 @@ const DanceRoom = () => {
                                                         <Image src={ChatDefaultImg} alt=""/>
                                                     </div>
                                                     <div className="chat-user-msg">
-                                                        <span>김싸피</span>
+                                                        <span>{myName}</span>
                                                         <p>{data}</p>
                                                     </div>
                                                 </li>
@@ -672,7 +739,7 @@ const DanceRoom = () => {
             }
             {
                 urlNo ?
-                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay" onLoad={youtubeChange}></iframe>
+                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"></iframe>
                 :
                 <></>
             }
@@ -686,7 +753,7 @@ const DanceRoom = () => {
                         <input type="text" readOnly ref={winnerValue}/>
                     </div>
                     <div className="modal-button-wrap">
-                        <button><Link href="">방 나가기</Link></button>
+                        <button><Link href="/randomplay/list">방 나가기</Link></button>
                     </div>
                 </div>
             </div>

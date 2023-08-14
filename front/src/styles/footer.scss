@@ -1,10 +1,19 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 footer {
     @include block-center(1200px);
     padding:92px 0px;
+    @include mobile{
+        @include setSize(100vw, auto);
+        padding:20px;
+        padding-top:34px;
+    }
     .footer-top{
         @include flex(space-between, center);
+        @include mobile{
+            flex-wrap: wrap;
+        }
         .footer-logo{
             h5{
                 @include font(38px, 700, #7E7E7E);
@@ -13,9 +22,17 @@ footer {
         .footer-nav{
             ul{
                 @include flex(null, center);
+                @include mobile{
+                    @include setSize(100vw, auto);
+                    flex-wrap: wrap;
+                }
                 li{
                     @include font(18px, 700, #999999);
                     margin-left:26px;
+                    @include mobile{
+                        font-size: 12px;
+                        margin-top:40px;
+                    }
                     &:first-child{
                         margin-left:0px;
                     }
@@ -26,17 +43,31 @@ footer {
     .footer-bottom{
         @include flex(space-between, flex-end);
         margin-top:26px;
+        @include mobile{
+            @include setSize(100vw, auto);
+            margin-top:30px;
+            flex-wrap: wrap;
+        }
         .footer-info{
             p{
                 width: 390px;
                 @include font(20px, 300, #ADADAD);
                 line-height:29px;
+                @include mobile{
+                    width:100vw;
+                    font-size:14px;
+                    line-height:22px;
+                }
             }
         }
         .copyright{
             padding-bottom:6px;
             p{
                 @include font(20px, 300, #ABABAB);
+                @include mobile{
+                    font-size: 12px;
+                    margin-top:42px;
+                }
             }
         }
     }

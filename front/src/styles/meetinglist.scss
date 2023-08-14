@@ -1,4 +1,5 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 @keyframes slide-up-animation{
     0%{
@@ -29,11 +30,19 @@
     .block-center-wrap{
         @include block-center(1200px);
         padding-top:113px;
+        @include mobile{
+            @include setSize(100vw, auto);
+            padding-top:37px;
+        }
         .geography-wrap{
             height:600px;
             margin-bottom: 144px;
             @include background("/images/geography.png");
             @include flex(flex-start, center);
+            @include mobile{
+                height:300px;
+                margin-bottom:56px;
+            }
             .geography-title{
                 padding-left:63px;
                 h3{
@@ -42,6 +51,10 @@
                     position:relative;
                     top:0px;
                     animation-duration: 2s;
+                    @include mobile{
+                        font-size: 16px;
+                        line-height: 30px;
+                    }
                 }
                 span{
                     background-color:#29B5D6;
@@ -54,6 +67,8 @@
                     position:relative;
                     top:0px;
                     animation-duration: 2s;
+                    @include mobile{}
+                    font-size:10px;
                 }
             }
         }
@@ -65,6 +80,10 @@
                 border:none;
                 @include font(16px, 500, #FFFFFF);
                 cursor:pointer;
+                @include mobile{
+                    @include setSize(90px, 34px);
+                    font-size:12px;
+                }
             }
         }
         .meeting-content-wrap{
@@ -79,17 +98,25 @@
                     margin-left:15px;
                     box-sizing: border-box;
                     padding: 47px;
+                    @include mobile{
+                        @include setSize(100vw, auto);
+                        margin-left:0px;
+                        padding:22px;
+                    }
                     &:nth-child(3n+1){
                         margin-left:0px;
                     }
                     .user-wrap{
                         @include flex(null, center);
                         img{
-
+                            @include setSize(34px, 34px);
                         }
                         p{
                             @include font(24px, 700, #4A4A4A);
                             margin-left:22px;
+                            @include mobile{
+                                font-size:20px;
+                            }
                         }
                     }
                     .meeting-content{
@@ -97,6 +124,10 @@
                         p{
                             @include font(20px, 400, #A5A5A5);
                             line-height:26px;
+                            @include mobile{
+                                font-size:12px;
+                                line-height:20px;
+                            }
                         }
                         span{
                             display:inline-block;
@@ -104,6 +135,9 @@
                             @include font(18px, 400, #89CAE8);
                             border-bottom: 1px solid;
                             cursor:pointer;
+                            @include mobile{
+                                font-size:12px;
+                            }
                         }
                     }
                 }
