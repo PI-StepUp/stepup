@@ -382,7 +382,7 @@ const RandomPlayList = () => {
 																	)
 															}
 														<span>{scheduled.startAt.split("T")[0].split("-")[1]}월 {scheduled.startAt.split("T")[0].split("-")[2]}일 {scheduled.startAt.split("T")[1].split(":")[0]}시 {scheduled.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
-												{scheduled.endAt.split("T")[0].split("-")[1]}월 {scheduled.endAt.split("T")[0].split("-")[2]}일 {scheduled.endAt.split("T")[1].split(":")[0]}시 {scheduled.endAt.split("T")[1].split(":")[1]}분</span>
+														{scheduled.endAt.split("T")[0].split("-")[1]}월 {scheduled.endAt.split("T")[0].split("-")[2]}일 {scheduled.endAt.split("T")[1].split(":")[0]}시 {scheduled.endAt.split("T")[1].split(":")[1]}분</span>
 													</div>
 												</div>
 										</li>
