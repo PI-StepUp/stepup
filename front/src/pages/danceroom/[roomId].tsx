@@ -21,6 +21,7 @@ import { LanguageState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter";
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
+import { axiosRank } from "apis/axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -322,6 +323,7 @@ const DanceRoom = () => {
                 }, 5000)
             }else{
                 setPlayResult("success");
+								setCorrect(correct + 1);
                 setTimeout(() => {
                     setPlayResult("");
                 }, 5000)
@@ -501,6 +503,25 @@ const DanceRoom = () => {
 
 		socketRef.current.on('user_exit', (data: { id: string }) => {
 			if (!pcsRef.current[data.id]) return;
+			// 성공한 노래 개수에 따른 포인트 지급
+			axiosRank.post(`/point`, {
+				id: id,
+				pointPolicyId: 4,
+				randomDanceId: roomId,
+				count: correct,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			}).then((data) => {
+				if (data.data.message === "포인트 적립 완료") {
+					alert("성공 포인트가 적립되었습니다!");
+				}
+			}).catch((e) => {
+				console.log("포인트 지급 에러 발생", e);
+				alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+			})
+
 			pcsRef.current[data.id].close();
 			delete pcsRef.current[data.id];
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
@@ -517,6 +538,27 @@ const DanceRoom = () => {
                 modal.current.style.display = "block";
                 winnerValue.current.value = winner;
             }
+
+						// 1등 포인트 적립
+						if(winner == id){
+							axiosRank.post(`/point`, {
+								id: id,
+								pointPolicyId: 1,
+								randomDanceId: roomId,
+								count: 1,
+							}, {
+								headers: {
+									Authorization: `Bearer ${accessToken}`
+								}
+							}).then((data) => {
+								if (data.data.message === "포인트 적립 완료") {
+									alert("수상 포인트가 적립되었습니다! 축하드립니다!");
+								}
+							}).catch((e) => {
+								console.log("포인트 지급 에러 발생", e);
+								alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+							})
+						}
         })
 
         socketRef.current.on("startRandomplay", async (musicId: number) => {
