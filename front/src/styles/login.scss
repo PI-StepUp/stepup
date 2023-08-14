@@ -1,0 +1,169 @@
+@import "./function.scss";
+
+.login-page-wrap{
+    width:100%;
+    @include background("/images/login-bg-img.png");
+    padding-top:109px;
+    padding-bottom: 184px;
+    .login-block-center{
+        @include block-center(600px);
+        text-align:center;
+        .login-title{
+            h3{
+                @include font(48px, 700, #FFFFFF);
+            }
+        }
+        .login-content{
+            form{
+                @include flex;
+                flex-direction: column;
+                >input{
+                    @include setSize(600px, 80px);
+                    margin:0 auto;
+                    border-radius:10px;
+                    background-color:#FFFFFF;
+                    border: none;
+                    box-sizing: border-box;
+                    padding:30px;
+                    @include font(24px, 700, #536BF6);
+                }
+                input[type="text"]{
+                    margin-top:38px;
+                }
+                input[type="password"]{
+                    margin-top:11px;
+                }
+                .flex-box{
+                    @include flex(space-between, center);
+                    margin-top: 28px;
+                    label{
+                        @include flex(null, center);
+                        @include font(20px, 400, #FFFFFF);
+                        input[type="checkbox"]{
+                            @include setSize(40px, 40px);
+                            cursor:pointer;
+                            margin-right:17px;
+                        }
+                    }
+                    ul{
+                        @include flex(null, center);
+                        li{
+                            @include font(20px, 400, #FFFFFF);
+                            padding-bottom:10px;
+                            cursor:pointer;
+                            &:hover{
+                                
+                                border-bottom: 2px solid #FFF;
+                            }
+                        }
+                        .separate-vertical-line{
+                            @include setSize(2px, 30px);
+                            background-color:#FFF;
+                            margin: -10px 12px;
+                        }
+                    }
+                }
+            }
+            > button{
+                @include setSize(600px, 80px);
+                background-color:#97A8FF;
+                border:none;
+                border-radius:10px;
+                cursor:pointer;
+                @include font(30px, 700, #FFFFFF);
+                margin-top:38px;
+            }
+        }
+    }
+}
+
+.modal-back{
+    @include setSize(100%, 100%);
+    position:fixed;
+    top:0px;
+    left:0px;
+    background-color:rgba(0,0,0,0.6);
+    display:none;
+    .modal-main{
+        @include setSize(800px, 500px);
+        background-color:#FFF;
+        border-radius:10px;
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform: translate(-50%, -50%);
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        padding:60px;
+        .modal-title{
+            @include flex(space-between, center);
+            h4{
+                @include font(48px, 700, #151517);
+            }
+            img{
+                @include setSize(30px, 30px);
+                cursor:pointer;
+            }
+        }
+        .modal-content{
+            span{
+                @include font(24px, 400, #000000);
+                display:inline-block;
+                margin-top:42px;
+                margin-bottom:36px;
+            }
+            input[type="email"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                box-sizing: border-box;
+                padding:10px;
+                @include font(12px, 400, #151517);
+            }
+            input[type="date"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-top:14px;
+                box-sizing: border-box;
+                padding: 10px;
+                @include font(12px, 400, #151517);
+            }
+            input[type="text"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-bottom:14px;
+                box-sizing: border-box;
+                padding:10px;
+                @include font(12px, 400, #151517);
+            }
+            #pwId{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-bottom:14px;
+                box-sizing: border-box;
+                padding:10px;
+                @include font(12px, 400, #151517);
+            }
+        }
+        .modal-button-wrap{
+            button{
+                @include setSize(100%, 58px);
+                background-color:#3182F8;
+                border-radius:4px;
+                border:none;
+                margin-top:14px;
+                @include font(20px, 700, #FFFFFF);
+                cursor:pointer;
+            }
+        }
+    }
+}

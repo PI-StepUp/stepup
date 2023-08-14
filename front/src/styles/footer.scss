@@ -1,0 +1,43 @@
+@import "./function.scss";
+
+footer {
+    @include block-center(1200px);
+    padding:92px 0px;
+    .footer-top{
+        @include flex(space-between, center);
+        .footer-logo{
+            h5{
+                @include font(38px, 700, #7E7E7E);
+            }
+        }
+        .footer-nav{
+            ul{
+                @include flex(null, center);
+                li{
+                    @include font(18px, 700, #999999);
+                    margin-left:26px;
+                    &:first-child{
+                        margin-left:0px;
+                    }
+                }
+            }
+        }
+    }
+    .footer-bottom{
+        @include flex(space-between, flex-end);
+        margin-top:26px;
+        .footer-info{
+            p{
+                width: 390px;
+                @include font(20px, 300, #ADADAD);
+                line-height:29px;
+            }
+        }
+        .copyright{
+            padding-bottom:6px;
+            p{
+                @include font(20px, 300, #ABABAB);
+            }
+        }
+    }
+}

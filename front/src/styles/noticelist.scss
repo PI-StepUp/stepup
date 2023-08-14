@@ -1,0 +1,106 @@
+@import "./function.scss";
+
+.notice-list-wrap{
+    padding-top:108px;
+    background-color: #EEEEEE;
+    > ul{
+        @include block-center(1200px);
+        > li{
+            @include setSize(1100px);
+            margin:0 auto;
+            background-color:#FFF;
+            @include box-padding(80px);
+            margin-top:32px;
+            cursor:pointer;
+            &:first-child{
+                margin-top:0px;
+            }
+            > span{
+                @include setSize(160px, 40px);
+                display:inline-block;
+                @include flex(center, center);
+                background-color:#6077F8;
+                @include font(20px, 400, #FFFFFF);
+            }
+            .notice-list-content{
+                margin-top:17px;
+                h4{
+                    @include font(34px, 700, #4C4C4C);
+                    line-height:42px;
+                }
+                p{
+                    @include font(18px, 400, #686868);
+                    margin-top:17px;
+                    line-height:28px;
+                }
+            }
+            .flex-wrap{
+                @include flex(space-between, center);
+                margin-top:28px;
+                .entrance-wrap{
+                    @include flex(center, center);
+                    img{
+                        margin-left:4px;
+                    }
+                    span{
+                        @include font(18px, 400, #686868);
+                        margin-left:11px;
+                        border-bottom:1px solid #686868;
+                        padding-bottom:6px;
+                    }
+                }
+                .edit-button-wrap{
+                    ul{
+                        @include flex(flex-start, center);
+                        li{
+                            @include font(18px, 400, #686868);
+                            border-bottom: 1px solid #686868;
+                            padding-bottom: 6px;
+                            margin-left:13px;
+                            cursor:pointer;
+                            &:first-child{
+                                margin-left:0px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .notice-create-button{
+        @include block-center(1100px);
+        @include flex(flex-end, center);
+        margin-top:20px;
+        button{
+            @include setSize(160px, 45px);
+            background-color: #6077F8;
+            border:none;
+            @include font(20px, 500, #FFFFFF);
+        }
+    }
+    .pagination{
+        text-align:center;
+        margin-top:43px;
+        padding-bottom:66px;
+        ul{
+            @include flex(center, center);
+            @include font(14px, 400, #C0C0C0);
+            li{
+                margin-left:9px;
+                cursor: pointer;
+                &:first-child{
+                    display:none;
+                }
+                &:nth-child(2){
+                    margin-left:0px;
+                }
+                &:last-child{
+                    display:none;
+                }
+            }
+            .active{
+                @include font(14px, 400, #585858);
+            }
+        }
+    }
+}

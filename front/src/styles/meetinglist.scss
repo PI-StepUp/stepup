@@ -1,0 +1,136 @@
+@import "./function.scss";
+
+@keyframes slide-up-animation{
+    0%{
+        top:90px;
+        opacity:0%;
+    }
+    100%{
+        top:0px;
+        opacity:100%;
+    }
+}
+
+@keyframes slide-down-animation{
+    0%{
+        top:-90px;
+        opacity:0%;
+    }
+    100%{
+        top:0px;
+        opacity:100%;
+    }
+}
+
+.meeting-wrap{
+    @include setSize(100%);
+    background-color: #EFF0F2;
+    padding-bottom:66px;
+    .block-center-wrap{
+        @include block-center(1200px);
+        padding-top:113px;
+        .geography-wrap{
+            height:600px;
+            margin-bottom: 144px;
+            @include background("/images/geography.png");
+            @include flex(flex-start, center);
+            .geography-title{
+                padding-left:63px;
+                h3{
+                    @include font(48px, 700, #353638);
+                    line-height:60px;
+                    position:relative;
+                    top:0px;
+                    animation-duration: 2s;
+                }
+                span{
+                    background-color:#29B5D6;
+                    @include font(24px, 700, #FFFFFF);
+                    @include flex(center, center);
+                    display:inline-block;
+                    padding:10px 30px;
+                    border-radius:50px;
+                    margin-top:19px;
+                    position:relative;
+                    top:0px;
+                    animation-duration: 2s;
+                }
+            }
+        }
+        .button-wrap{
+            @include flex(flex-end, center);
+            button{
+                @include setSize(120px, 44px);
+                background-color:#343434;
+                border:none;
+                @include font(16px, 500, #FFFFFF);
+                cursor:pointer;
+            }
+        }
+        .meeting-content-wrap{
+            ul{
+                @include flex(center, center);
+                flex-wrap: wrap;
+                li{
+                    @include setSize(390px);
+                    background-color:#FFF;
+                    float:left;
+                    margin-top:20px;
+                    margin-left:15px;
+                    box-sizing: border-box;
+                    padding: 47px;
+                    &:nth-child(3n+1){
+                        margin-left:0px;
+                    }
+                    .user-wrap{
+                        @include flex(null, center);
+                        img{
+
+                        }
+                        p{
+                            @include font(24px, 700, #4A4A4A);
+                            margin-left:22px;
+                        }
+                    }
+                    .meeting-content{
+                        margin-top:25px;
+                        p{
+                            @include font(20px, 400, #A5A5A5);
+                            line-height:26px;
+                        }
+                        span{
+                            display:inline-block;
+                            margin-top:41px;
+                            @include font(18px, 400, #89CAE8);
+                            border-bottom: 1px solid;
+                            cursor:pointer;
+                        }
+                    }
+                }
+            }
+        }
+        .pagination{
+            padding-top:41px;
+            ul{
+                @include flex(center,center);
+                li{
+                    @include font(14px, 400, #C0C0C0);
+                    margin-left:9px;
+                    cursor:pointer;
+                    &:first-child{
+                        display:none;
+                    }
+                    &:nth-child(2){
+                        margin-left:0px;
+                    }
+                    &:last-child{
+                        display:none;
+                    }
+                }
+                .active{
+                    @include font(14px, 400, #585858);
+                }
+            }
+        }
+    }
+}
