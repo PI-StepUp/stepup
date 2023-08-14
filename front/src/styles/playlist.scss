@@ -1,4 +1,5 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 @keyframes left-animation{
     0%{
@@ -15,17 +16,31 @@
     @include block-center(1200px);
     padding-top:154px;
     padding-bottom:120px;
+    @include mobile{
+        @include setSize(100vw, auto);
+        padding-top:47px;
+    }
     .playlist-title{
         position:relative;
         left:0px;
         animation-duration: 3s;
+        @include mobile{
+            margin-left:4vw;
+        }
         span{
             @include font(28px, 700, #6BBDA7);
+            @include mobile{
+                font-size:12px;
+            }
         }
         h3{
             @include font(50px, 700, #0B0B0B);
             line-height:64px;
             margin-top:2px;
+            @include mobile{
+                font-size:18px;
+                line-height:24px;
+            }
         }
     }
     .playlist-create-button-wrap{
@@ -35,10 +50,18 @@
             background-color:#343434;
             @include font(16px, 400, #FFFFFF);
             cursor:pointer;
+            @include mobile{
+                @include setSize(98px, 26px);
+                font-size:10px;
+                margin-right:4vw;
+            }
         }
     }
     .playlist-content-wrap{
         margin-top:58px;
+        @include mobile{
+            margin-top:13px;
+        }
         ul{
             @include flex;
             flex-wrap: wrap;
@@ -48,37 +71,69 @@
                 margin-left:15px;
                 @include box-padding(34px);
                 cursor:pointer;
+                @include mobile{
+                    @include setSize(100vw, auto);
+                    margin-left:0px;
+                    margin-top:12px;
+                    padding:4vw;
+                }
                 &:nth-child(3n+1){
                     margin-left:0px;
                 }
                 > span{
                     @include font(14px, 700, #6BBDA7);
+                    @include mobile{
+                        font-size:16px;
+                    }
                 }
                 h4{
                     @include font(26px, 700, #000000);
                     line-height:34px;
                     margin-top:7px;
+                    @include mobile{
+                        font-size:24px;
+                    }
                 }
                 p{
                     @include font(22px, 400, #BEBEBE);
                     line-height:32px;
                     margin-top:26px;
+                    @include mobile{
+                        font-size:16px;
+                        line-height:24px;
+                    }
                 }
                 .user-wrap{
                     margin-top:53px;
                     @include flex(space-between, center);
                     .flex-wrap{
                         @include flex(flex-start, center);
+                        img{
+                            @include mobile{
+                                @include setSize(22px, 22px);
+                            }
+                        }
                         span{
                             @include font(20px, 700, #6BBDA7);
                             margin-left:17px;
+                            @include mobile{
+                                font-size:14px;
+                            }
                         }
                     }
                     .heart-wrap{
                         @include flex(center, center);
+                        img{
+                            @include mobile{
+                                @include setSize(18px,18px);
+                            }
+                        }
                         span{
                             @include font(20px, 700, #6BBDA7);
                             margin-left:10px;
+                            @include mobile{
+                                font-size:18px;
+                            }
                         }
                     }
                 }

@@ -1,8 +1,13 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 .sub-nav-wrap{
     @include block-center(1200px);
     height:80px;
+    @include mobile{
+        @include setSize(100vw, auto);
+        padding:2vh 4vw;
+    }
     ul{
         height:100%;
         @include flex(flex-start, center);
@@ -13,14 +18,24 @@
             margin-left:4px;
             cursor:pointer;
             @include font(20px, 500, #8F8F8F);
+            @include mobile{
+                font-size:12px;
+                padding: 5px 10px;
+            }
             &:hover{
                 background-color: #FF9100;
                 @include font(20px, 700, #FFFFFF);
+                @include mobile{
+                    font-size:12px;
+                }
             }
         }
         .active{
             background-color: #FF9100;
             @include font(20px, 700, #FFFFFF);
+            @include mobile{
+                font-size:12px;
+            }
         }
     }
 }

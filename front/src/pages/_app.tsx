@@ -22,6 +22,7 @@ import "../styles/mypageeditBanner.scss"
 import "../styles/exitModal.scss"
 import "../styles/responsively.scss";
 import "../styles/detail.scss";
+import "../styles/admin.scss";
 
 import type {AppProps} from 'next/app';
 import Head from "next/head";
