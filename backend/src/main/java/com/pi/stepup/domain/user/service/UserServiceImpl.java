@@ -31,6 +31,7 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
+import com.pi.stepup.domain.user.dto.statistics.UserCountryStatisticsDto;
 import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
@@ -71,6 +72,11 @@ public class UserServiceImpl implements UserService {
             .stream()
             .map(c -> CountryResponseDto.builder().country(c).build())
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserCountryStatisticsDto> readStatisticsOfUserCountry() {
+        return userRepository.findStatisticsOfUserCountry();
     }
 
     @Override
