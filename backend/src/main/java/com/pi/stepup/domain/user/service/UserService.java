@@ -12,11 +12,14 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
+import com.pi.stepup.domain.user.dto.statistics.UserCountryStatisticsDto;
 import java.util.List;
 
 public interface UserService {
 
     List<CountryResponseDto> readAllCountries();
+
+    List<UserCountryStatisticsDto> readStatisticsOfUserCountry();
 
     void checkEmailDuplicated(CheckEmailRequestDto checkEmailRequestDto);
 

@@ -2,6 +2,7 @@ package com.pi.stepup.domain.user.dao;
 
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.dto.statistics.UserCountryStatisticsDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,8 @@ import java.util.Optional;
 public interface UserRepository {
 
     List<Country> findAllCountries();
+
+    List<UserCountryStatisticsDto> findStatisticsOfUserCountry();
 
     Country findOneCountry(Long countryId);
 

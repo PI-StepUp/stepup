@@ -55,12 +55,8 @@ public class SecurityConfig {
             .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
 
             //관리자 권한
-            .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
+            .regexMatchers(Constants.AdminPermitArray)
             .hasAuthority(UserRole.ROLE_ADMIN.name())
-            .regexMatchers(HttpMethod.DELETE, Constants.AdminPermitArray)
-            .hasAuthority(UserRole.ROLE_ADMIN.name())
-            .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
-            .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
 
             //문서 관련도 로그인하지 않아도 접근 가능
             .antMatchers("/swagger-ui/**").permitAll()
