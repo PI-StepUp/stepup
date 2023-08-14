@@ -36,7 +36,7 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'http://localhost:4002';
+const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
 
 const EMBED_URL: any = {
     1: "https://www.youtube.com/embed/g4vaGXR7fUY",
@@ -403,6 +403,13 @@ const DanceRoom = () => {
         
     }
 
+    const stopMediaTracks = (stream: any) => {
+        if (!stream) return;
+        stream.getTracks().forEach((track: any) => {
+          track.stop();
+        });
+      };
+
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
 		getLocalStream();
@@ -533,6 +540,12 @@ const DanceRoom = () => {
         });
 
 		return () => {
+            if (localStreamRef.current) {
+                const videoTrack = localStreamRef.current.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.stop();
+                }
+            }
 			if (socketRef.current) {
 				socketRef.current.disconnect();
 			}
@@ -541,6 +554,10 @@ const DanceRoom = () => {
 				pcsRef.current[user.id].close();
 				delete pcsRef.current[user.id];
 			});
+
+            stopMediaTracks(localStreamRef.current);
+
+            localVideoRef.current = null;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [createPeerConnection, getLocalStream]);
@@ -551,7 +568,9 @@ const DanceRoom = () => {
                 <div className="practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
-                            <Link href="/randomplay/list"><Image src={LeftArrowIcon} alt=""/></Link>
+                            <Link href="/randomplay/list">
+                                <Image src={LeftArrowIcon} alt=""/>
+                            </Link>
                         </div>
                         <div className="room-title">
                             <h3>{roomTitle}</h3>
