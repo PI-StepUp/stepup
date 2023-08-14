@@ -17,6 +17,23 @@ footer {
         .footer-logo{
             h5{
                 @include font(38px, 700, #7E7E7E);
+                a{
+                    @include flex(flex-start, center);
+                    img{
+                        @include setSize(60px, 60px);
+                    }
+                    .logo-info{
+                        margin-left:10px;
+                        
+                        p{
+                            @include font(14px, 500, #BD5278);
+                            margin-bottom:-3px;
+                        }
+                        span{
+                            @include font(32px, 700, #BD5278);
+                        }
+                    }
+                }
             }
         }
         .footer-nav{

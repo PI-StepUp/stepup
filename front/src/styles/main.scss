@@ -24,6 +24,7 @@
 
 .main-header{
     @include setSize(100%, 100px);
+    background-color: rgba(255,255,255,0.9);
     .block-margin{
         height:100px;
         @include block-center(1200px);
@@ -34,10 +35,39 @@
     }
     .logo{
         @include mobile{
+            @include setSize(100vw, auto);
             margin-left:6vw;
+            @include flex(space-between, center);
         }
         h1{
-            @include font(22px, 700, #E2EFFF);
+            a{
+                @include flex(flex-start, center);
+                img{
+                    @include mobile{
+                        @include setSize(30px, 30px);
+                    }
+                }
+                .logo-info{
+                    margin-left:2px;
+                    span{
+                        @include font(24px, 700, #BD5278);
+                    }
+                    p{
+                        @include font(10px, 500, #BD5278);
+                        margin-top:2px;
+                    }
+                }
+            }
+        }
+        .hamburger-menu{
+            display:none;
+            @include mobile{
+                display:block;
+                margin-right:4vw;
+                img{
+                    @include setSize(26px, 26px);
+                }
+            }
         }
     }
     nav{
@@ -49,7 +79,7 @@
             height:100px;
             @include flex(null, center);
             li{
-                @include font(18px, 700, #E2EFFF);
+                @include font(18px, 700, #626987);
                 margin-right:16px;
                 cursor:pointer;
                 &:first-child{
@@ -65,7 +95,7 @@
         ul{
             @include flex();
             li{
-                @include font(18px, 700, #E2EFFF);
+                @include font(18px, 700, #626987);
                 margin-left:16px;
                 cursor:pointer;
             }
@@ -349,6 +379,25 @@
             &:nth-child(2){
                 background-color:#97A8FF;
                 color: #FFFFFF;
+            }
+        }
+    }
+}
+
+.main-side-menu-wrap{
+    display:none;
+    @include mobile{
+        @include setSize(40vw, 100vh);
+        background-color:rgba(255,255,255,0.8);
+        position:fixed;
+        top:0;
+        left:0;
+        @include flex(center, center);
+        flex-direction: column;
+        ul{
+            li{
+                @include font(16px, 600, #6E6987);
+                margin-top:10vh;
             }
         }
     }

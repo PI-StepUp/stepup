@@ -1,9 +1,15 @@
 import React, {useEffect, useState} from "react"
 import Link from "next/link"
+import Image from "next/image"
 
 import { useRecoilState } from "recoil";
 import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState, roleState } from "states/states";
 import { useRouter } from "next/router";
+
+import logo from "/public/images/stepup-logo.svg";
+import hamburgerMenu from "/public/images/hamburger-menu.svg"
+
+import MainSideMenu from "./MainSideMenu";
 
 const Header = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
@@ -14,12 +20,24 @@ const Header = () => {
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankname, setRankname] = useRecoilState(rankNameState);
     const [role, setRole] = useRecoilState(roleState);
+	const [sideMenu, setSideMenu] = useState<Boolean>(false);
     const [nav, setNav] = useState<any>(<ul>
 		<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
 		<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
 	</ul>);
 
     const router = useRouter();
+
+    const openSideMenu = () => {
+		switch(sideMenu){
+			case true:
+				setSideMenu(false);
+				break;
+			case false:
+				setSideMenu(true);
+				break;
+		}
+	}
 
     const signout = () => {
         alert("로그아웃 되었습니다.");
@@ -67,7 +85,18 @@ const Header = () => {
             <header className="header">
                 <div className="block-margin">
                     <div className="logo">
-                        <h1><Link href="/">STEP UP</Link></h1>
+                        <h1>
+							<Link href="/">
+								<Image src={logo} alt=""></Image>
+								<div className="logo-info">
+									<span>STEP UP</span>
+									<p>RANDOM PLAY DANCE</p>
+								</div>
+							</Link>
+						</h1>
+						<div className="hamburger-menu" onClick={openSideMenu}>
+							<Image src={hamburgerMenu} alt=""/>
+						</div>
                     </div>
                     <nav>
                         <ul>
@@ -82,7 +111,12 @@ const Header = () => {
                     </div>
                 </div>
             </header>
-
+            {
+				sideMenu ?
+				<MainSideMenu state="block"/>
+				:
+				<MainSideMenu state="none"/>
+			}
         </>
     )
 }
