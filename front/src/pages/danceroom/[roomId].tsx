@@ -36,7 +36,7 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
+const SOCKET_SERVER_URL = 'http://localhost:4002';
 
 const EMBED_URL: any = {
     1: "https://www.youtube.com/embed/g4vaGXR7fUY",
@@ -104,12 +104,10 @@ const DanceRoom = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [playResult, setPlayResult] = useState('');
     const [urlNo, setUrlNo] = useState<any>(0);
+    const [audioEnabled, setAudioEnabled] = useState(true);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
-    const [end, setEnd] = useState(false);
     const modal = useRef<any>();
-    const [webcamRunning, setWebcamRunning] = useState<Boolean>(true);
-    const [micRunning, setMicRunning] = useState<Boolean>(true);
     const router = useRouter();
     const roomId = router.query.roomId;
     const roomTitle = router.query.title;
@@ -148,6 +146,16 @@ const DanceRoom = () => {
         setCamera(false);
     }
 
+    const toggleAudio = () => {
+        if(localStreamRef.current){
+            const audioTrack = localStreamRef.current.getAudioTracks()[0];
+            if(audioTrack){
+                audioTrack.enabled = !audioEnabled;
+                setAudioEnabled(!audioEnabled);
+            }
+        }
+    }
+
     const reflectMyVideo = () => {
         if (!reflectRunning) {
             localVideoRef.current?.setAttribute("class", "my-video reflect-video");
@@ -156,48 +164,6 @@ const DanceRoom = () => {
             localVideoRef.current?.setAttribute("class", "my-video");
             setReflectRunning(false);
         }
-    } 
-
-    const enableCam = (e: any) => {
-        const enableConstraints = {
-            video: true,
-        }
-
-        if(webcamRunning){
-            navigator.mediaDevices.getUserMedia(enableConstraints).then((stream) => {
-                localVideoRef.current.srcObject = stream;
-                localVideoRef.current.addEventListener("loadeddata", predictWebcam);
-            });
-            setWebcamRunning(false);
-            setCamera(false);
-
-        }else if(!webcamRunning){
-            getLocalStream();
-            setWebcamRunning(true);
-        }
-    } 
-
-    const enableMic = (e: any) => {
-        const enableConstraints = {
-            audio: true,
-        }
-
-        if(micRunning){
-            navigator.mediaDevices.getUserMedia(enableConstraints).then((stream) => {
-                localVideoRef.current.srcObject = stream;
-                localVideoRef.current.addEventListener("loadeddata", predictWebcam);
-            });
-            setMicRunning(false);
-            setMic(false);
-
-        }else if(!webcamRunning){
-            getLocalStream();
-            setMicRunning(true);
-        }
-    }
-
-    const youtubeChange = () => {
-        console.log("변화");
     }
 
     const sendMessage = () => {
@@ -287,6 +253,7 @@ const DanceRoom = () => {
 							stream: e.streams[0],
 						}),
 				);
+                console.log(users);
 			};
 
 			if (localStreamRef.current) {
@@ -603,13 +570,13 @@ const DanceRoom = () => {
                                     </button>
                                 </li>
                                 <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
-                                    <button onClick={enableMic}>
+                                    <button onClick={toggleAudio}>
                                     {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
                                 <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
                                 <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
-                                    <button onClick={enableCam}>
+                                    <button>
                                     {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
                                     </button>
                                 </li>
@@ -743,7 +710,7 @@ const DanceRoom = () => {
             }
             {
                 urlNo ?
-                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"onChange={youtubeChange}></iframe>
+                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"></iframe>
                 :
                 <></>
             }

@@ -97,8 +97,10 @@ const SignUp = () => {
             return;
         }
 
-        if("^([0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$)".match(email)){
-            alert("이메일을 형식에 맞춰서 작성해주세요.");
+        let emailRegex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}.[a-z]{2,3}');
+
+        if(!emailRegex.test(email)){
+            alert("이메일 형식에 맞춰서 작성해주세요.");
             return;
         }
 
