@@ -206,7 +206,7 @@ const Hostroom = () => {
                                     <li key={index}>
                                         <div className="flex-wrap">
                                             <div className="musiclist-content-thumbnail">
-                                                <Image src={PlayThumbnail} alt=""/>
+                                                <Image src={music.url} alt="" width={40} height={40}/>
                                             </div>
                                             <div className="musiclist-content-info">
                                                 <h4>{music.title}</h4>
