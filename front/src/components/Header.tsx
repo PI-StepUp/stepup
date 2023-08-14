@@ -6,7 +6,7 @@ import { useRecoilState } from "recoil";
 import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState, roleState } from "states/states";
 import { useRouter } from "next/router";
 
-import hamburgerMenu from "/public/images/hamburger-menu.svg"
+import hamburgerMenu from "/public/images/hamburger-menu-white.svg"
 
 import MainSideMenu from "./MainSideMenu";
 

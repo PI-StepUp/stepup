@@ -113,6 +113,7 @@ const RoomCreate = () => {
                 <div className="create-content">
                     <form>
                         <table>
+                            <tbody>
                             <tr>
                                 <td>방 제목</td>
                                 <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={roomTitle}/></td>
@@ -160,6 +161,7 @@ const RoomCreate = () => {
                                     </div>
                                 </td>
                             </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>
