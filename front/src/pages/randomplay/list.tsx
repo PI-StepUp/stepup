@@ -47,6 +47,7 @@ const RandomPlayList = () => {
 						refreshToken: refreshToken,
 					}
 				}).then((data) => {
+					console.log(data);
 					if (data.data.message === "토큰 재발급 완료") {
 						setAccessToken(data.data.data.accessToken);
 						setRefreshToken(data.data.data.refreshToken);
@@ -141,23 +142,6 @@ const RandomPlayList = () => {
 			}
 		}
 	}
-
-	function month(date: any) {
-		return ("0" + new Date(date).getMonth()).slice(-2);
-	}
-
-	function day(date: any) {
-		return ("0" + new Date(date).getDay()).slice(-2);
-	}
-
-	function hour(date: any) {
-		return ("0" + new Date(date).getHours()).slice(-2);
-	}
-
-	function minute(date: any) {
-		return ("0" + new Date(date).getMinutes()).slice(-2);
-	}
-
 	return (
 		<>
 			<Header />
@@ -237,7 +221,8 @@ const RandomPlayList = () => {
 																:
 																<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 													}
-												<span>{month(room.startAt)}/{day(room.startAt)} {hour(room.startAt)}:{minute(room.startAt)} ~ {month(room.endAt)}/{day(room.endAt)} {hour(room.endAt)}:{minute(room.endAt)}</span>
+												<span>{room.startAt.split("T")[0].split("-")[1]}월 {room.startAt.split("T")[0].split("-")[2]}일 {room.startAt.split("T")[1].split(":")[0]}시 {room.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+												{room.endAt.split("T")[0].split("-")[1]}월 {room.endAt.split("T")[0].split("-")[2]}일 {room.endAt.split("T")[1].split(":")[0]}시 {room.endAt.split("T")[1].split(":")[1]}분</span>
 												</div>
 											</div>
 									</li>
@@ -313,7 +298,8 @@ const RandomPlayList = () => {
 																	:
 																	<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 														}
-													<span>{month(inprogress.startAt)}/{day(inprogress.startAt)} {hour(inprogress.startAt)}:{minute(inprogress.startAt)} ~ {month(inprogress.endAt)}/{day(inprogress.endAt)} {hour(inprogress.endAt)}:{minute(inprogress.endAt)}</span>
+													<span>{inprogress.startAt.split("T")[0].split("-")[1]}월 {inprogress.startAt.split("T")[0].split("-")[2]}일 {inprogress.startAt.split("T")[1].split(":")[0]}시 {inprogress.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+												{inprogress.endAt.split("T")[0].split("-")[1]}월 {inprogress.endAt.split("T")[0].split("-")[2]}일 {inprogress.endAt.split("T")[1].split(":")[0]}시 {inprogress.endAt.split("T")[1].split(":")[1]}분</span>
 												</div>
 											</div>
 										
@@ -395,7 +381,8 @@ const RandomPlayList = () => {
 																		<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 																	)
 															}
-														<span>{month(scheduled.startAt)}/{day(scheduled.startAt)} {hour(scheduled.startAt)}:{minute(scheduled.startAt)} ~ {month(scheduled.endAt)}/{day(scheduled.endAt)} {hour(scheduled.endAt)}:{minute(scheduled.endAt)}</span>
+														<span>{scheduled.startAt.split("T")[0].split("-")[1]}월 {scheduled.startAt.split("T")[0].split("-")[2]}일 {scheduled.startAt.split("T")[1].split(":")[0]}시 {scheduled.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+												{scheduled.endAt.split("T")[0].split("-")[1]}월 {scheduled.endAt.split("T")[0].split("-")[2]}일 {scheduled.endAt.split("T")[1].split(":")[0]}시 {scheduled.endAt.split("T")[1].split(":")[1]}분</span>
 													</div>
 												</div>
 										</li>

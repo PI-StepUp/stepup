@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react"
+import {useEffect, useState, useRef} from "react"
 
 import Link from "next/link"
 import Image from "next/image"
@@ -8,6 +8,8 @@ import shareScreen from "/public/images/sharescreen-icon.svg"
 import rankIcon from "/public/images/rank-icon.svg"
 import musicNoteIcon from "/public/images/musicnote-icon.svg"
 import realtimeRandomPlay1 from "/public/images/realtimeRandomplayImg1.png"
+import logo from "/public/images/stepup-logo.svg"
+import hamburgerMenu from "/public/images/hamburger-menu.svg"
 
 import Footer from "components/Footer"
 import LanguageButton from "components/LanguageButton";
@@ -18,6 +20,7 @@ import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import { useInterval } from "usehooks-ts";
 import { axiosDance } from "apis/axios";
+import MainSideMenu from "components/MainSideMenu"
 
 const Index = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
@@ -29,6 +32,7 @@ const Index = () => {
     const [rankname, setRankname] = useRecoilState(rankNameState);
 	const [role, setRole] = useRecoilState(roleState);
 	const [mainBanner, setMainBanner] = useState<any>(1);
+	const mainSideMenu = useRef<any>();
 
 	const router = useRouter();
 
@@ -38,6 +42,7 @@ const Index = () => {
 		<li><Link href="/login">{lang === "en" ? "LOGIN" : lang === "cn" ? "登陆" : "로그인"}</Link></li>
 		<li><Link href="/signup">{lang === "en" ? "SIGNUP" : lang === "cn" ? "注册会员" : "회원가입"}</Link></li>
 	</ul>);
+	const [sideMenu, setSideMenu] = useState<Boolean>(false);
 
 	useInterval(() => {
 		if(mainBanner === 1){
@@ -47,6 +52,16 @@ const Index = () => {
 		}
 	}, 4000)
 
+	const openSideMenu = () => {
+		switch(sideMenu){
+			case true:
+				setSideMenu(false);
+				break;
+			case false:
+				setSideMenu(true);
+				break;
+		}
+	}
 
 	const signout = () => {
 		alert("로그아웃 되었습니다.");
@@ -127,7 +142,18 @@ const Index = () => {
 			<header className="main-header">
 				<div className="block-margin">
 					<div className="logo">
-						<h1><Link href="/">STEP UP</Link></h1>
+						<h1>
+							<Link href="/">
+								<Image src={logo} alt=""></Image>
+								<div className="logo-info">
+									<span>STEP UP</span>
+									<p>RANDOM PLAY DANCE</p>
+								</div>
+							</Link>
+						</h1>
+						<div className="hamburger-menu" onClick={openSideMenu}>
+							<Image src={hamburgerMenu} alt=""/>
+						</div>
 					</div>
 					<nav>
 						<ul>
@@ -279,6 +305,12 @@ const Index = () => {
             </div>
             <Footer/>
             <LanguageButton/>
+			{
+				sideMenu ?
+				<MainSideMenu state="block"/>
+				:
+				<MainSideMenu state="none"/>
+			}
         </>
     )
 }
