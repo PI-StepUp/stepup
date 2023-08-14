@@ -47,8 +47,14 @@ public class PointHistoryServiceImpl implements PointHistoryService {
         PointPolicy pointPolicy = pointPolicyRepository.findOne(
             pointUpdateRequestDto.getPointPolicyId()).orElseThrow(
             () -> new PointPolicyNotFoundException(POINT_POLICY_NOT_FOUND.getMessage()));
-        RandomDance randomDance = danceRepository.findOne(pointUpdateRequestDto.getRandomDanceId())
-            .orElseThrow(() -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+
+        RandomDance randomDance = null;
+        if (pointUpdateRequestDto.getRandomDanceId() != null) {
+            randomDance = danceRepository.findOne(
+                    pointUpdateRequestDto.getRandomDanceId())
+                .orElseThrow(() -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+        }
+
         Integer point = pointUpdateRequestDto.getCount() * pointPolicy.getPoint();
 
         user.updatePoint(point);
