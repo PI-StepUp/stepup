@@ -6,6 +6,7 @@ import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.rank.domain.PointPolicy;
 import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.user.domain.Country;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,21 +59,41 @@ public class InitDb {
         }
 
         public void makeCountry() {
-            Country country1 = Country.builder().code("KO").build();
-            Country country2 = Country.builder().code("US").build();
-            Country country3 = Country.builder().code("CN").build();
-            Country country4 = Country.builder().code("JP").build();
-            Country country5 = Country.builder().code("DE").build();
-            Country country6 = Country.builder().code("GB").build();
-            Country country7 = Country.builder().code("FR").build();
+            String[] countries = new String[] {
+                "Asia/Seoul",
+                "Asia/Tokyo",
+                "Europe/London",
+                "America/New_York",
+                "Europe/Paris",
+                "America/Los_Angeles",
+                "Asia/Shanghai",
+                "Australia/Sydney",
+                "America/Chicago",
+                "Europe/Berlin",
+                "America/Sao_Paulo",
+                "Asia/Dubai",
+                "Asia/Hong_Kong",
+                "Africa/Johannesburg",
+                "Asia/Kolkata",
+                "America/Toronto",
+                "Europe/Rome",
+                "Asia/Istanbul",
+                "America/Mexico_City",
+                "Asia/Bangkok",
+                "America/Phoenix",
+                "Asia/Jakarta",
+                "America/Denver",
+                "Europe/Madrid",
+                "Asia/Kuala_Lumpur",
+                "Pacific/Auckland",
+                "America/New_York",
+                "Asia/Taipei",
+                "Africa/Cairo",
+                "Asia/Shanghai"
+            };
 
-            em.persist(country1);
-            em.persist(country2);
-            em.persist(country3);
-            em.persist(country4);
-            em.persist(country5);
-            em.persist(country6);
-            em.persist(country7);
+            Arrays.stream(countries)
+                .forEach(c -> em.persist(Country.builder().code(c).build()));
         }
 
         public void makeMusic() {
