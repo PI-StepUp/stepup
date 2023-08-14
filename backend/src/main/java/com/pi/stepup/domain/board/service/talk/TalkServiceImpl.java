@@ -91,6 +91,10 @@ public class TalkServiceImpl implements TalkService {
     @Transactional
     @Override
     public Optional<TalkInfoResponseDto> readOne(Long boardId) {
+        Talk talk = talkRepository.findOne(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+        // 조회수 증가
+        talk.increaseViewCnt();
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return Optional.ofNullable(TalkInfoResponseDto.builder()
                 .talk(talkRepository.findOne(boardId).orElseThrow())
