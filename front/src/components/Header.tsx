@@ -6,7 +6,6 @@ import { useRecoilState } from "recoil";
 import { LanguageState, nicknameState, accessTokenState, refreshTokenState, idState, profileImgState, rankNameState, roleState } from "states/states";
 import { useRouter } from "next/router";
 
-import logo from "/public/images/stepup-logo.svg";
 import hamburgerMenu from "/public/images/hamburger-menu.svg"
 
 import MainSideMenu from "./MainSideMenu";
@@ -86,13 +85,7 @@ const Header = () => {
                 <div className="block-margin">
                     <div className="logo">
                         <h1>
-							<Link href="/">
-								<Image src={logo} alt=""></Image>
-								<div className="logo-info">
-									<span>STEP UP</span>
-									<p>RANDOM PLAY DANCE</p>
-								</div>
-							</Link>
+							<Link href="/">STEP UP</Link>
 						</h1>
 						<div className="hamburger-menu" onClick={openSideMenu}>
 							<Image src={hamburgerMenu} alt=""/>
