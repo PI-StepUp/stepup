@@ -1,0 +1,318 @@
+@import "function.scss";
+@import "./responsively.scss";
+
+@keyframes top-animation{
+    0%{
+        top:180px;
+        opacity:0%;
+    }
+    100%{
+        top:0px;
+        opacity:100%;
+    }
+}
+@keyframes down-animation{
+    0%{
+        top:0px;
+        opacity:100%;
+    }
+    100%{
+        top:120px;
+        opacity:0%;
+    }
+}
+
+.main-header{
+    @include setSize(100%, 100px);
+    .block-margin{
+        height:100px;
+        @include block-center(1200px);
+        @include flex(null, center);
+        @include mobile{
+            width:100%;
+        }
+    }
+    .logo{
+        @include mobile{
+            margin-left:6vw;
+        }
+        h1{
+            @include font(22px, 700, #E2EFFF);
+        }
+    }
+    nav{
+        margin-right:auto;
+        @include mobile{
+            display: none;
+        }
+        ul{
+            height:100px;
+            @include flex(null, center);
+            li{
+                @include font(18px, 700, #E2EFFF);
+                margin-right:16px;
+                cursor:pointer;
+                &:first-child{
+                    margin-left:38px;
+                }
+            }
+        }
+    }
+    .login-wrap{
+        @include mobile{
+            display: none;
+        }
+        ul{
+            @include flex();
+            li{
+                @include font(18px, 700, #E2EFFF);
+                margin-left:16px;
+                cursor:pointer;
+            }
+        }
+    }
+}
+.main-banner1{
+    background-image: url("/images/main-mainbanner.png");
+}
+.main-banner2{
+    background-image: url("/images/main-mainbanner2.jpg");
+}
+
+.main-banner{
+    @include setSize(100%, 700px);
+    background-position: center;
+    background-size:cover;
+    position:relative;
+    top:-100px;
+    z-index:-1;
+    animation-duration: 2s;
+    @include mobile{
+        @include setSize(100%, 575px);
+    }
+}
+.main-info{
+    @include block-center(1200px);
+    padding-bottom:132px;
+    @include mobile{
+        width:100%;
+        @include box-padding(40px);
+        margin-top:-100px;
+        padding-bottom: auto;
+    }
+    .flex-wrap{
+        @include flex(space-between);
+        position:relative;
+        top:0px;
+        animation-duration: 2s;
+        h3{
+            @include font(48px, 900, #414149);
+            line-height:64px;
+            
+            @include mobile{
+                @include font(22px, 900, #414149);
+                line-height:32px;
+            }
+        }
+        .main-info-text{
+            @include mobile{
+                display: none;
+            }
+            p{
+                @include font(20px, 400, #BEBEBE);
+                line-height:30px;
+                text-align:right;
+                &:nth-child(1){
+                    margin-top:18px;
+                }
+                &:nth-child(2){
+                    margin-top:19px;
+                }
+            }
+        }
+    }
+    .main-info-icon-wrap{
+        margin-top:94px;
+        @include mobile{
+            margin-top:40px;
+        }
+        ul{
+            @include flex();
+            @include mobile{
+                @include setSize(100%, null);
+                @include flex(center, center);
+            }
+            li{
+                @include flex(center, center);
+                flex-direction: column;
+                margin-left:70px;
+                @include mobile{
+                    @include flex(space-around, center);
+                    margin-left:auto;
+                }
+                &:nth-child(1){
+                    margin-left:0px;
+                }
+                img{
+                    @include setSize(50px, 50px);
+                    @include mobile{
+                        @include setSize(30px, 30px);
+                    }
+                }
+                span{
+                    margin-top:22px;
+                    @include font(20px, 400, #858391);
+                    @include mobile{
+                        @include font(8px, 400, #858391);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.ad-randomplay-wrap{
+    @include setSize(100%, 500px);
+    background-color: #EFF3FF;
+    @include flex();
+    @include mobile{
+        height:auto;
+    }
+    .ad-randomplay-info{
+        @include setSize(100%, 500px);
+        @include flex(flex-end, center);
+        padding-right:140px;
+        @include mobile{
+            height:auto;
+            @include flex(center, center);
+            padding:70px 30px;
+            box-sizing: border-box;
+        }
+        .ad-randomplay-info-wrap{
+            h3{
+                width:403px;
+                @include font(40px, 700, #3F4253);
+                line-height:54px;
+                @include mobile{
+                    font-size:22px;
+                    line-height:30px;
+                }
+            }
+            p{
+                width:456px;
+                @include font(18px, 400, #92969F);
+                line-height:28px;
+                margin-top:13px;
+                @include mobile{
+                    font-size:11px;
+                    line-height:16px;
+                }
+            }
+            span{
+                @include font(20px, 300, #506DF9);
+                display:inline-block;
+                margin-top:22px;
+                padding-bottom:8px;
+                border-bottom: 1px solid #506DF9;
+                @include mobile{
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+    .ad-randomplay-img{
+        width:100%;
+        background-image: url("/images/randomplay-ad-img.png");
+        background-position: center;
+        background-size: cover;
+        @include mobile{
+            display:none;
+        }
+    }
+}
+
+.realtime-randomplay{
+    @include setSize(100%, 520px);
+    background-color:#7B95FE;
+    .realtime-randomplay-title{
+        text-align:center;
+        padding-top:70px;
+        h3{
+            @include font(40px, 700, #FFFFFF);
+        }
+        p{
+            @include font(20px, 400, #FFFFFF);
+            margin-top:14px;
+        }
+    }
+    .realtime-randomplay-content{
+        @include block-center(1200px);
+        margin-top:44px;
+        ul{
+            @include flex(center);
+            li{
+                @include setSize(200px, 250px);
+                border-radius:30px;
+                background-color:#FFF;
+                margin-left:16px;
+                &:first-child{
+                    margin-left:0px;
+                }
+                .realtime-randomplay-content-img{
+                    @include setSize(100%, 151px);
+                    img{
+                        @include setSize(100%, 100%);
+                        border-radius: 30px 30px 0px 0px;
+                    }
+                }
+                .realtime-randomplay-content-info{
+                    padding:18px;
+                    h4{
+                        @include font(12px, 700, #0C0C0C);
+                        line-height:16px;
+                    }
+                    p{
+                        @include font(10px, 400, #868686);
+                        margin-top:8px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.ad-banner-wrap{
+    @include setSize(100%, 250px);
+    background: linear-gradient(to right,#677CF9, #4A64F5);
+    @include flex(center, center);
+    flex-direction: column;
+    .ad-banner-title-wrap{
+        @include block-center(1200px);
+        text-align: center;
+        h3{
+            @include font(38px, 400, #F0FCFF);
+            .bold{
+                font-weight:700;
+            }
+        }
+    }
+    .ad-banner-button-wrap{
+        margin-top:20px;
+        @include flex();
+        button{
+            height:52px;
+            padding: 0px 40px;
+            border-radius:14px;
+            border:none;
+            background-color:#FFFFFF;
+            @include font(20px, 700, #677DFA);
+            &:first-child{
+                margin-right:16px;
+            }
+            &:nth-child(2){
+                background-color:#97A8FF;
+                color: #FFFFFF;
+            }
+        }
+    }
+}

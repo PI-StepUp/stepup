@@ -1,0 +1,103 @@
+@import "./function.scss";
+
+.signup-wrap{
+    padding-top:109px;
+    padding-bottom: 237px;
+    @include background("/images/signup-bg-img.png");
+    .signup-block-center{
+        @include block-center(1200px);
+        text-align:center;
+        .signup-title{
+            @include font(48px, 700, #FFFFFF);
+        }
+        .signup-content{
+            margin-top:34px;
+            form{
+                .flex-wrap{
+                    margin-top:10px;
+                    input{
+                        @include setSize(472px, 60px);
+                        border: none;
+                        border-radius: 10px;
+                        background-color:#FFF;
+                        @include box-padding(25px);
+                        @include font(16px, 700, #536BF6);
+                    }
+                    button{
+                        @include setSize(120px, 60px);
+                        background-color: #FFFFFF;
+                        border-radius:10px;
+                        border:none;
+                        margin-left:8px;
+                        @include font(16px, 700, #536BF6);
+                        cursor:pointer;
+                        &:hover{
+                            background-color:#FF9100;
+                            @include font(16px, 700, #FFFFFF);
+                        }
+                    }
+                }
+                > input{
+                    @include setSize(600px, 60px);
+                    display: block;
+                    margin:0 auto;
+                    background-color: #FFF;
+                    border-radius: 10px;
+                    border: none;
+                    margin-top:10px;
+                    @include font(16px, 700, #536BF6);
+                    @include box-padding(25px);
+                }
+                textarea{
+                    @include setSize(600px, 180px);
+                    border-radius: 10px;
+                    overflow-y: scroll;
+                    background-color:#FFF;
+                    @include box-padding(30px);
+                    @include font(11px, 400, #536BF6);
+                    line-height: 18px;
+                    margin-top:10px;
+                    margin-left:0px;
+                }
+                .agree-check-wrap{
+                    @include block-center(600px);
+                    @include flex(flex-end, center);
+                    padding: 6px 0px;
+                    p{
+                        @include font(12px, 400, #FFFFFF);
+                    }
+                    input[type="checkbox"]{
+                        @include setSize(16px, 16px);
+                        border-radius: 4px;
+                        background-color:#FFF;
+                        border:none;
+                        cursor:pointer;
+                    }
+                }
+                select{
+                    @include setSize(600px, 60px);
+                    display: block;
+                    margin:0 auto;
+                    background-color: #FFF;
+                    border-radius: 10px;
+                    border: none;
+                    margin-top:10px;
+                    @include font(16px, 700, #536BF6);
+                    padding:20px;
+                    option{
+                        @include setSize(100%, 100%);
+                        @include box-padding(25px);
+                        padding-left:25px;
+                    }
+                }
+                input[type="submit"]{
+                    background-color:#97A8FF;
+                    @include font(24px, 700, #FFFFFF);
+                    @include flex(center, center);
+                    padding:0px;
+                    cursor:pointer;
+                }
+            }
+        }
+    }
+}
