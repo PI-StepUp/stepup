@@ -10,6 +10,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWO
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_STATISTICS_OF_USER_COUNTRY_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 
@@ -60,6 +61,16 @@ public class UserApiController {
             ResponseDto.create(
                 READ_ALL_COUNTRIES_SUCCESS.getMessage(),
                 userService.readAllCountries()
+            )
+        );
+    }
+
+    @GetMapping("/statistics/country")
+    public ResponseEntity<ResponseDto<?>> readStatisticsOfUserCountry() {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                READ_STATISTICS_OF_USER_COUNTRY_SUCCESS.getMessage(),
+                userService.readStatisticsOfUserCountry()
             )
         );
     }
