@@ -58,6 +58,9 @@ class UserServiceImplTest {
     @Spy
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private UserRedisService userRedisService;
+
     private final String TEST_EMAIL = "test@test.com";
     private final String TEST_ID = "testId";
     private final String TEST_NICKNAME = "testNickname";
