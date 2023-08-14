@@ -34,8 +34,9 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public List<Notice> findAll(String keyword) {
-            String jpql = "SELECT n FROM Notice n WHERE n.title LIKE :keyword OR n.content LIKE :keyword";
-            return em.createQuery(jpql, Notice.class).setParameter("keyword", "%" + keyword + "%").getResultList();
+        String jpql = "SELECT n FROM Notice n WHERE n.title LIKE :keyword OR n.content LIKE :keyword ORDER BY n.boardId desc";
+        return em.createQuery(jpql, Notice.class).setParameter("keyword", "%" + keyword + "%")
+            .getResultList();
     }
 
     @Override
