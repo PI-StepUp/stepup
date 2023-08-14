@@ -85,8 +85,6 @@ io.on('connection', socket => {
     });
 
     socket.on('send_message', (data, roomName) => {
-        console.log("data", data);
-        console.log("roomName", roomName);
         io.emit('message', data);
     });
 

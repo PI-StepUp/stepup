@@ -37,7 +37,7 @@ const Hostroom = () => {
             },
         ],
     };
-    const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
+    const SOCKET_SERVER_URL = 'http://localhost:4002';
     const socketRef = useRef<any>();
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
