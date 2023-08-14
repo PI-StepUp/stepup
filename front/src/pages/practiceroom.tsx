@@ -2,7 +2,7 @@ import React, {useState, useEffect, useCallback, useRef} from "react";
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
 import ReflectIcon from "/public/images/icon-reflect.svg"
-import PlayThumbnail from "/public/images/room-playlist-thumbnail.png"
+import PlayThumbnail from "/public/images/room-playlist-thumbnail.jpg"
 import PlayIcon from "/public/images/icon-play.svg"
 import ReflectHoverIcon from "/public/images/icon-hover-reflect.svg"
 
@@ -120,23 +120,6 @@ const PracticeRoom = () => {
 
     useEffect(() => {
         getLocalStream();
-        // try{
-        //     axiosUser.post('/auth',{
-        //         id: id,
-        //     },{
-        //         headers:{
-        //             Authorization: `Bearer ${accessToken}`,
-        //             refreshToken: refreshToken,
-        //         }
-        //     }).then((data) => {
-        //         if(data.data.message === "토큰 재발급 완료"){
-        //             setAccessToken(data.data.data.accessToken);
-        //             setRefreshToken(data.data.data.refreshToken);
-        //         }
-        //     })
-        // }catch(e){
-        //     alert('시스템 에러, 관리자에게 문의하세요.');
-        // }
 
         axios.get("https://stepup-pi.com:8080/api/music",{
             params:{
@@ -344,6 +327,28 @@ const PracticeRoom = () => {
         }
     }
 
+    const stopMediaTracks = (stream: any) => {
+        if (!stream) return;
+        stream.getTracks().forEach((track: any) => {
+          track.stop();
+        });
+    };
+
+    useEffect(() => {
+        return () => {
+            if (localStreamRef.current) {
+                const videoTrack = localStreamRef.current.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.stop();
+                }
+            }
+
+            stopMediaTracks(localStreamRef.current);
+
+            localVideoRef.current = null;
+        }
+    }, [])
+
     return(
         <>
             <div className="practiceroom-wrap">
@@ -396,7 +401,7 @@ const PracticeRoom = () => {
                         <ul>
                             {musics?.map((music:any, index: any) => {
                                 return(
-                                    <li key={index}>
+                                    <li key={index} onClick={() => changeMusic(music.musicId)}>
                                         <div className="flex-wrap">
                                             <div className="musiclist-content-thumbnail">
                                                 <Image src={PlayThumbnail} alt=""/>
@@ -407,7 +412,7 @@ const PracticeRoom = () => {
                                             </div>
                                         </div>
                                         <div className="musiclist-content-control-icon">
-                                            <span><Image onClick={() => changeMusic(music.musicId)} src={PlayIcon} alt=""/></span>
+                                            <span><Image src={PlayIcon} alt=""/></span>
                                         </div>
                                     </li>
                                 )

@@ -1,11 +1,15 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import ApexChart from "apexcharts"
 import dynamic from "next/dynamic"
 const Chart = dynamic(() => import('react-apexcharts'), {ssr:false})
 
 import { axiosDance, axiosMusic } from "apis/axios"
+import { useRecoilState } from "recoil"
+import { roleState } from "states/states"
 
 const Admin = () => {
+    const [role, setRole] = useRecoilState(roleState);
+    const [showPage, setShowPage] = useState<Boolean>(false);
 
     const openTimeOptions = {
         chart: {
@@ -90,49 +94,60 @@ const Admin = () => {
     const musicSeries = [0];
     
     useEffect(() => {
-        axiosDance.get("",{
-            params:{
-                progressType: "ALL",
-            }
-        }).then((data) => {
-            let todayMonth = new Date().getMonth() + 1;
-            // let todayDay = new Date().getDate();
-            let todayDay = 1;
-            let dataDate = data.data.data;
-            for(let i=0; i<dataDate.length; i++){
-                if(Number(dataDate[i].startAt.split("T")[0].split("-")[1]) === todayMonth && Number(dataDate[i].startAt.split("T")[0].split("-")[2]) === todayDay){
-                    if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) < 12){
-                        openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] = openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] + 1;
-                    }else if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) >= 12){
-                        openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]] = openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]] + 1;
+            axiosDance.get("",{
+                params:{
+                    progressType: "ALL",
+                }
+            }).then((data) => {
+                let todayMonth = new Date().getMonth() + 1;
+                let todayDay = new Date().getDate();
+                let dataDate = data.data.data;
+                for(let i=0; i<dataDate.length; i++){
+                    if(Number(dataDate[i].startAt.split("T")[0].split("-")[1]) === todayMonth && Number(dataDate[i].startAt.split("T")[0].split("-")[2]) === todayDay){
+                        if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) < 12){
+                            openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] = openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] + 1;
+                        }else if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) >= 12){
+                            openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]] = openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]] + 1;
+                        }
                     }
                 }
-            }
-        })
-
-        axiosMusic.get("/apply",{
-            params:{
-                keyword: "",
-            }
-        }).then((data) => {
-            let dataMusic = data.data.data;
-            let dataMap = new Map();
-            for(let i=0; i<dataMusic.length; i++){
-                if(dataMap.get(dataMusic[i].artist) === undefined){
-                    dataMap.set(dataMusic[i].artist, 1);
-                }else{
-                    dataMap.set(dataMusic[i].artist, dataMap.get(dataMusic[i].artist) + 1);
-                }
-            }
-            console.log(dataMap);
-            dataMap.forEach((value, key, mapObject) => {
-                musicOptions.labels.push(key);
-                musicSeries.push(value);
             })
-        })
+    
+            axiosMusic.get("/apply",{
+                params:{
+                    keyword: "",
+                }
+            }).then((data) => {
+                let dataMusic = data.data.data;
+                let dataMap = new Map();
+                for(let i=0; i<dataMusic.length; i++){
+                    if(dataMap.get(dataMusic[i].artist) === undefined){
+                        dataMap.set(dataMusic[i].artist, 1);
+                    }else{
+                        dataMap.set(dataMusic[i].artist, dataMap.get(dataMusic[i].artist) + 1);
+                    }
+                }
+                console.log(dataMap);
+                dataMap.forEach((value, key, mapObject) => {
+                    musicOptions.labels.push(key);
+                    musicSeries.push(value);
+                })
+            })
     }, []);
+
+    useEffect(() => {
+        if (role === "ROLE_ADMIN") {
+            setShowPage(true);
+        } else {
+            setShowPage(false);
+        }
+    }, [role]);
+
+    
     return (
         <>
+        {
+            showPage ?
             <div className="admin-wrap">
                 <div className="admin-header">
                     <div className="admin-header-center-block">
@@ -168,6 +183,9 @@ const Admin = () => {
                     </div>
                 </div>
             </div>
+            :
+            <div>접근권한이 없습니다.</div>
+        }
         </>
     )
 }
