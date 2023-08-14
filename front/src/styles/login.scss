@@ -1,16 +1,26 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 .login-page-wrap{
     width:100%;
     @include background("/images/login-bg-img.png");
     padding-top:109px;
     padding-bottom: 184px;
+    @include mobile{
+        padding-top:58px;
+    }
     .login-block-center{
         @include block-center(600px);
         text-align:center;
+        @include mobile{
+            @include setSize(100vw, auto);
+        }
         .login-title{
             h3{
                 @include font(48px, 700, #FFFFFF);
+                @include mobile{
+                    font-size:32px;
+                }
             }
         }
         .login-content{
@@ -26,6 +36,10 @@
                     box-sizing: border-box;
                     padding:30px;
                     @include font(24px, 700, #536BF6);
+                    @include mobile{
+                        @include setSize(90vw, 50px);
+                        font-size: 18px;
+                    }
                 }
                 input[type="text"]{
                     margin-top:38px;
@@ -36,13 +50,24 @@
                 .flex-box{
                     @include flex(space-between, center);
                     margin-top: 28px;
+                    @include mobile{
+                        @include setSize(90vw, auto);
+                        margin: 0 auto;
+                        margin-top:20px;
+                    }
                     label{
                         @include flex(null, center);
                         @include font(20px, 400, #FFFFFF);
+                        @include mobile{
+                            font-size:12px;
+                        }
                         input[type="checkbox"]{
                             @include setSize(40px, 40px);
                             cursor:pointer;
                             margin-right:17px;
+                            @include mobile{
+                                @include setSize(20px, 20px);
+                            }
                         }
                     }
                     ul{
@@ -51,8 +76,10 @@
                             @include font(20px, 400, #FFFFFF);
                             padding-bottom:10px;
                             cursor:pointer;
+                            @include mobile{
+                                font-size:12px;
+                            }
                             &:hover{
-                                
                                 border-bottom: 2px solid #FFF;
                             }
                         }
@@ -60,6 +87,9 @@
                             @include setSize(2px, 30px);
                             background-color:#FFF;
                             margin: -10px 12px;
+                            @include mobile{
+                                @include setSize(2px, 17px);
+                            }
                         }
                     }
                 }
@@ -72,6 +102,12 @@
                 cursor:pointer;
                 @include font(30px, 700, #FFFFFF);
                 margin-top:38px;
+                @include mobile{
+                    @include setSize(90vw, 50px);
+                    margin:0 auto;
+                    margin-top:20px;
+                    font-size:18px;
+                }
             }
         }
     }
@@ -114,15 +150,6 @@
                 margin-top:42px;
                 margin-bottom:36px;
             }
-            input[type="text"]{
-                @include setSize(100%, 48px);
-                background-color:#E6EEFB;
-                border-radius:4px;
-                border:none;
-                margin-bottom:14px;
-                box-sizing: border-box;
-                padding:10px;
-            }
             input[type="email"]{
                 @include setSize(100%, 48px);
                 background-color:#E6EEFB;
@@ -130,6 +157,7 @@
                 border:none;
                 box-sizing: border-box;
                 padding:10px;
+                @include font(12px, 400, #151517);
             }
             input[type="date"]{
                 @include setSize(100%, 48px);
@@ -139,6 +167,27 @@
                 margin-top:14px;
                 box-sizing: border-box;
                 padding: 10px;
+                @include font(12px, 400, #151517);
+            }
+            input[type="text"]{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-bottom:14px;
+                box-sizing: border-box;
+                padding:10px;
+                @include font(12px, 400, #151517);
+            }
+            #pwId{
+                @include setSize(100%, 48px);
+                background-color:#E6EEFB;
+                border-radius:4px;
+                border:none;
+                margin-bottom:14px;
+                box-sizing: border-box;
+                padding:10px;
+                @include font(12px, 400, #151517);
             }
         }
         .modal-button-wrap{

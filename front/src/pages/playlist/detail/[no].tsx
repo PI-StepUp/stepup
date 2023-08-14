@@ -11,7 +11,7 @@ import Link from "next/link";
 import HeartFillIcon from "/public/images/icon-heart-fill.svg";
 import HeartEmptyIcon from "/public/images/icon-heart-empty.svg";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -22,6 +22,7 @@ const DetailArticle = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const addHeart = async () => {
         try{
@@ -112,10 +113,7 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        axiosMusic.get(`/apply/detail`,{
-            params:{
-                musicApplyId: musicId,
-            },
+        axiosMusic.get(`/apply/detail/${musicId}`,{
             headers:{
                 Authorization: `Bearer ${accessToken}`,
             }
@@ -132,7 +130,7 @@ const DetailArticle = () => {
             <SubNav></SubNav>
             <div className="detail-article-wrap">
                 <div className="detail-title">
-                    <span>게시글</span>
+                    <span>신곡신청</span>
                     <div className="flex-wrap">
                         <h3>글 상세보기</h3>
                         <div className="vertical-line"></div>
@@ -159,7 +157,12 @@ const DetailArticle = () => {
                         <p>{article?.content}</p>
                     </div>
                     <div className="button-wrap">
-                        <button onClick={deleteArticle}>삭제하기</button>
+                        {
+                            nickname === article?.writerName ?
+                            <button onClick={deleteArticle}>삭제하기</button>
+                            :
+                            <></>
+                        }
                     </div>
                 </div>
             </div>

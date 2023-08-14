@@ -10,7 +10,7 @@ import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg
 
 import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
-import { LanguageState } from "states/states";
+import { LanguageState, nicknameState } from "states/states";
 import { axiosBoard, axiosUser } from "apis/axios";
 
 import Image from "next/image"
@@ -27,6 +27,7 @@ const MeetingList = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     const [meetingTitle, inView] = useInView();
 
     const handlePageChange = (page: any) => {
@@ -75,7 +76,12 @@ const MeetingList = () => {
                         </div>
                     }
                     <div className="button-wrap">
-                        <button><Link href="/meeting/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                        {
+                            nickname === "" ?
+                            <></>
+                            :
+                            <button><Link href="/meeting/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                        }
                     </div>
                     <div className="meeting-content-wrap">
                         <ul>
@@ -85,7 +91,7 @@ const MeetingList = () => {
                                         return(
                                             <li key={index}>
                                                 <div className="user-wrap">
-                                                    {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={meeting.profileImg} alt=""/>}
+                                                    {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={defaultMeetingProfileImg} alt=""/>}
                                                     <p>{meeting.writerName}</p>
                                                 </div>
                                                 <div className="meeting-content">
@@ -101,7 +107,7 @@ const MeetingList = () => {
                     </div>
                     <div className="pagination">
                         <ul>
-                            {/* <Pagination
+                            <Pagination
                                 activePage={page}
                                 itemsCountPerPage={10}
                                 totalItemsCount={meetings?.length}
@@ -109,7 +115,7 @@ const MeetingList = () => {
                                 prevPageText={'<'}
                                 nextPageText={'>'}
                                 onChange={handlePageChange}
-                            /> */}
+                            />
                         </ul>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import SubNav from "components/subNav";
@@ -11,84 +11,96 @@ import { accessTokenState, refreshTokenState, idState, nicknameState } from "sta
 import { useRecoilState } from "recoil";
 
 const RoomCreate = () => {
-    const roomTitle = useRef<any>();
-    const roomContent = useRef<any>();
-    const roomStartDate = useRef<any>();
-    const roomStartTime = useRef<any>();
-    const roomEndTime = useRef<any>();
-    const roomMaxNum = useRef<any>();
-    const roomFile = useRef<any>();
-    const [danceType, setDanceType] = useState('RANKING');
+	const roomTitle = useRef<any>();
+	const roomContent = useRef<any>();
+	const roomStartDate = useRef<any>();
+	const roomStartTime = useRef<any>();
+	const roomEndTime = useRef<any>();
+	const roomMaxNum = useRef<any>();
+	const roomFile = useRef<any>();
+	const [danceType, setDanceType] = useState('RANKING');
 
-    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-    const [id, setId] = useRecoilState(idState);
-    const [nickname, setNickname] = useRecoilState(nicknameState);
+	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+	const [id, setId] = useRecoilState(idState);
+	const [nickname, setNickname] = useRecoilState(nicknameState);
 
-    const router = useRouter();
+	const router = useRouter();
+
+    const cancelCreate = (e: any) => {
+        e.preventDefault();
+        router.push('/randomplay/list');
+    }
 
     const createRoom = async (e: any) => {
         e.preventDefault();
 
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+		try {
+			await axiosUser.post('/auth', {
+				id: id,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+					refreshToken: refreshToken,
+				}
+			}).then((data) => {
+				if (data.data.message === "토큰 재발급 완료") {
+					setAccessToken(data.data.data.accessToken);
+					setRefreshToken(data.data.data.refreshToken);
+				}
+			})
 
-        try{
-            await axiosDance.post("/", {
-                title: roomTitle.current?.value,
-                content: roomContent.current?.value,
-                startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
-                endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
-                danceType: danceType,
-                maxUser: Number(roomMaxNum.current?.value),
-                thumbnail: "",
-                hostId: nickname,
-                danceMusicIdList: [1,2,3,4,5,6,7,8,9,10],
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                }
-            }).then((data) => {
-                if(data.data.message === "랜덤 플레이 댄스 생성 완료"){
-                    alert("방 생성이 완료되었습니다.");
-                    router.push(`/hostroom/${roomTitle.current?.value}`);
-                }
-            })
-        }catch(e){
-            console.error(e);
-            alert("방 생성에 실패했습니다. 관리자에게 문의해주세요.");
-        }
+			await axiosDance.post("", {
+				title: roomTitle.current?.value,
+				content: roomContent.current?.value,
+				startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
+				endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
+				danceType: danceType,
+				maxUser: Number(roomMaxNum.current?.value),
+				thumbnail: "",
+				hostId: nickname,
+				danceMusicIdList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				}
+			}).then((data) => {
+				if (data.data.message === "랜덤 플레이 댄스 생성 완료") {
+					alert("방 생성이 완료되었습니다.");
+					router.push({
+						pathname: `/hostroom/${roomTitle.current?.value}`,
+						query: {
+							hostId: nickname,
+							title: roomTitle.current?.value,
+							startAt: roomStartTime.current?.value,
+							endAt: roomEndTime.current?.value,
+							maxUser: Number(roomMaxNum.current?.value),
+							token: accessToken,
+						}
+					});
+				}
+			})
+
+		} catch (e) {
+			console.log(e);
+			alert('시스템 에러, 방 생성에 실패하였습니다. 관리자에게 문의하세요.');
+		}
+
     }
     return(
         <>
             <Header/>
             <MainBanner/>
-            <SubNav/>
             <div className="create-wrap">
                 <div className="create-title">
-                    <span>게시글</span>
+                    <span>RANDOM PLAY</span>
                     <div className="flex-wrap">
-                        <h3>글 작성</h3>
+                        <h3>새로운 방 생성</h3>
                         <div className="horizontal-line"></div>
                     </div>
                 </div>
                 <div className="create-content">
-                    <form action="">
+                    <form>
                         <table>
                             <tr>
                                 <td>방 제목</td>
@@ -103,7 +115,6 @@ const RoomCreate = () => {
                                 <td>
                                     <select name="" id="" onChange={(e) => setDanceType(e.target.value)}>
                                         <option value="RANKING">랜덤플레이</option>
-                                        <option value="SURVIVAL">서바이벌</option>
                                         <option value="BASIC">자율모드</option>
                                     </select>
                                 </td>
@@ -132,7 +143,7 @@ const RoomCreate = () => {
                                 <td>
                                     <div className="create-button-wrap">
                                         <ul>
-                                            <li><button>취소하기</button></li>
+                                            <li><button onClick={cancelCreate}>취소하기</button></li>
                                             <li><button onClick={createRoom}>작성하기</button></li>
                                         </ul>
                                     </div>

@@ -1,0 +1,56 @@
+@import "./function.scss";
+
+.admin-wrap{
+    .admin-header{
+        @include setSize(100%, 80px);
+        background-color:#231574;
+        .admin-header-center-block{
+            height:100%;
+            @include block-center(1200px);
+            @include flex(center, flex-start);
+            flex-direction: column;
+            span{
+                @include font(12px, 500, #FEFAFF);
+            }
+            h1{
+                @include font(22px, 700, #D4CBFF);
+                margin-top:2px;
+            }
+        }
+    }
+    nav{
+        @include setSize(100%, 60px);
+        background-color:#FFFFFD;
+        @include flex(flex-start, center);
+        ul{
+            height:100%;
+            @include block-center(1200px);
+            @include flex(flex-start, center);
+            li{
+                @include font(14px, 600, #8A8A88);
+                cursor: pointer;
+                border-bottom: 2px solid #9088ED;
+                padding-bottom:6px;
+            }
+        }
+    }
+    .chart-bg{
+        @include setSize(100%, auto);
+        background-color:#F6F5F8;
+        padding-bottom:70px;
+        .chart-main{
+            @include setSize(800px, auto);
+            margin:0 auto;
+            padding-top:42px;
+            section{
+                margin-top:40px;
+                &:first-child{
+                    margin-top:0px;
+                }
+                h3{
+                    @include font(26px, 700, #777);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,260 @@
+.ce-modal {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+
+	.modal-wrap {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.modal-bg {
+		background-color: rgba(0, 0, 0, 0.4);
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		z-index: 1 !important;
+	}
+
+	.modal-container {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		border-radius: 2rem;
+		padding: 50px;
+		border: 1px solid white;
+		background-color: white;
+		position: absolute;
+		left: 50%;
+		top: 2420px;
+		width: 50%;
+		height: 300px;
+		transform: translate(-50%, -50%);
+		z-index: 2 !important;
+	}
+
+	.modal-container-modify {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		border-radius: 2rem;
+		padding: 50px;
+		border: 1px solid white;
+		background-color: white;
+		position: absolute;
+		left: 50%;
+		top: 800px;
+		width: 1000px;
+		transform: translate(-50%, -50%);
+		z-index: 2 !important;
+	}
+
+	table {
+		width: 900px;
+		table-layout: fixed;
+		word-break: break-all;
+	}
+
+	.modify-title {
+		color:#848484;
+		font-size: 25px;
+		font-weight: bold;
+		width: 240px;
+		height: 70px;
+		line-height: 70px;
+		vertical-align: top;
+	}
+
+	.input-title {
+		width: 600px;
+		height: 50px;
+		background-color: #F2F5FE;
+		border: none;
+		border-radius: 10px;
+		padding: 5px;
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		letter-spacing: 3px;
+		padding: 0px 10px 0px;
+	}
+
+	.input-title::placeholder {
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		letter-spacing: 3px;
+	}
+
+	.input-content {
+    border: none;
+    border-radius: 10px;
+    resize: none;
+    width: 620px;
+    height: 230px;
+    box-sizing: border-box;
+    background-color: #F2F5FE;
+		font-size: 25px;
+		font-weight: bold;
+		letter-spacing: 3px;
+    color: #A1A0A5;
+    padding: 15px 10px 15px;
+    line-height: 25px;
+		margin-bottom: 20px;
+	}
+
+	.input-content::placeholder{
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		letter-spacing: 3px;
+	}
+
+	select {
+		background-color: #F2F5FE;
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		width: 620px;
+		height: 50px;
+		border: none;
+		border-radius: 10px;
+		padding: 5px 10px 5px;
+	}
+
+	.input-date {
+		background-color: #F2F5FE;
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		width: 600px;
+		height: 50px;
+		border: none;
+		border-radius: 10px;
+		padding: 5px 10px 5px;
+	}
+
+	.modify-time {
+		display: flex;
+		flex-direction: row;
+		width: 620px;
+	}
+
+	.modify-time > p {
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		height: 50px;
+		line-height: 50px;
+		margin: 0px 20px 0px;
+	}
+
+	.input-time {
+		background-color: #F2F5FE;
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		height: 50px;
+		border: none;
+		border-radius: 10px;
+		padding: 5px 10px 5px;
+		margin: 0px;
+	}
+
+	.input-max {
+		background-color: #F2F5FE;
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		width: 120px;
+		height: 50px;
+		border: none;
+		border-radius: 10px;
+		padding: 5px 10px 5px;
+	}
+
+	option {
+		font-size: 25px;
+		font-weight: bold;
+		color: #A1A0A5;
+		border: none;
+	}
+
+	h2 {
+		color: #848484;
+		font-size: 40px;
+		font-weight: bold;
+		margin-bottom: 50px;
+	}
+
+	h4 {
+		color: #536BF6;
+		font-size: 20px;
+		font-weight: bold;
+		margin-bottom: 100px;
+	}
+
+	.btn-box {
+		display: flex;
+		flex-direction: row;
+	}
+
+	.cancel {
+		background-color: #C1C0CE;
+		color: #FFFFFF;
+		font-size: 24px;
+		font-weight: bold;
+		border-radius: 10px;
+		width: 200px;
+		height: 50px;
+		line-height: 10px;
+		border: none;
+		cursor: pointer;
+	}
+
+	.cancel:hover {
+		color: #A1A0A5;
+	}
+
+	.leave {
+		background-color: #FF9100;
+		color: #FFFFFF;
+		font-size: 24px;
+		font-weight: bold;
+		border-radius: 10px;
+		width: 200px;
+		height: 50px;
+		line-height: 10px;
+		padding: 20px;
+		border: none;
+		cursor: pointer;
+		margin-left: 60px;
+	}
+
+	.leave:hover {
+		color: #FFC982;
+	}
+
+	.update {
+		background-color: #536BF6;
+		color: #FFFFFF;
+		font-size: 24px;
+		font-weight: bold;
+		border-radius: 10px;
+		width: 200px;
+		height: 50px;
+		line-height: 10px;
+		padding: 20px;
+		border: none;
+		cursor: pointer;
+		margin-left: 60px;
+	}
+}

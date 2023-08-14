@@ -9,9 +9,8 @@ import LanguageButton from "components/LanguageButton";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
-
 import { useRecoilState } from "recoil";
-import { LanguageState } from "states/states";
+import { LanguageState, nicknameState } from "states/states";
 import { axiosBoard } from "apis/axios";
 
 import Pagination from "react-js-pagination";
@@ -20,9 +19,20 @@ const ArticleList = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [articles, setArticles] = useState<any>();
     const [page, setPage] = useState<any>(1);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     const searchValue = useRef<any>();
     const router = useRouter();
     const [articleTitle, inView] = useInView();
+
+    const moveArticleDetail = (boardId : any) => {
+        if(nickname === ""){
+            alert("해당 서비스는 로그인 후 이용 가능합니다.");
+            return;
+        }
+        router.push({
+            pathname: `/article/detail/${boardId}`,
+        })
+    }
 
     const handlePageChange = (page: any) => {
         setPage(page);
@@ -87,24 +97,22 @@ const ArticleList = () => {
                     <colgroup>
                         <col width="10%"/>
                         <col width="10%"/>
-                        <col width="70%"/>
-                        <col width="10%"/>
+                        <col width="65%"/>
+                        <col width="15%"/>
                     </colgroup>
                     <thead>
                         <tr>
                             <th>NO</th>
                             <th>{lang==="en" ? "Writer" : lang==="cn" ? "作者" : "작성자" }</th>
                             <th>{lang==="en" ? "Title" : lang==="cn" ? "标题" : "제목" }</th>
-                            <th>{lang==="en" ? "Date of creation" : lang==="cn" ? "制定日期" : "작성일자" }</th>
+                            <th>{lang==="en" ? "Number of Comments" : lang==="cn" ? "评论数量" : "댓글수" }</th>
                         </tr>
                     </thead>
                     <tbody>
                         {articles?.map((article: any , index: any) => {
                             if(index+1 <= page*10 && index+1 > page*10-10){
                                 return(
-                                    <tr onClick={() => router.push({
-                                        pathname: `/article/detail/${article.boardId}`,
-                                    })} key={index}>
+                                    <tr onClick={() => moveArticleDetail(article.boardId)} key={index}>
                                         <td>{article.boardId}</td>
                                         <td>{article.writerName}</td>
                                         <td>{article.title}</td>
@@ -117,7 +125,12 @@ const ArticleList = () => {
                     
                 </table>
                 <div className="button-wrap">
-                    <button><Link href="/article/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                    {
+                        nickname === ""?
+                        <></>
+                        :
+                        <button><Link href="/article/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                    }
                 </div>
                 
                 <div className="pagination">

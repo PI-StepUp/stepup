@@ -1,4 +1,4 @@
-    import React, {useState, useRef} from "react"
+import React, {useState, useRef} from "react"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import LanguageButton from "components/LanguageButton"
@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import ModalCloseIcon from "/public/images/icon-modal-close.svg";
 
-import { LanguageState, accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState } from "states/states";
+import { LanguageState, accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState, roleState } from "states/states";
 
 const Login = () => {
     const [id, setId] = useState('');
@@ -21,7 +21,9 @@ const Login = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [rankName, setRankName] = useRecoilState(rankNameState);
-    const emailValue = useRef<any>();
+    const [role, setRole] = useRecoilState(roleState);
+    const idEmailValue = useRef<any>();
+    const pwEmailValue = useRef<any>();
     const dateValue = useRef<any>();
     const modal = useRef<any>();
     const idValue = useRef<any>();
@@ -38,14 +40,19 @@ const Login = () => {
     }
 
     const findPw = async () => {
-        await axiosUser.post('/findpw',{
-            id: idValue.current.value,
-            email: emailValue.current.value,
-        }).then((data) => {
-            if(data.data.message === "임시 비밀번호 전송 완료"){
-                alert('임시 비밀번호를 메일로 발송해드렸습니다.');
-            }
-        })
+        console.log("pw찾기", pwEmailValue);
+        try{
+            await axiosUser.post('/findpw',{
+                id: idValue.current.value,
+                email: pwEmailValue.current.value,
+            }).then((data) => {
+                if(data.data.message === "임시 비밀번호 전송 완료"){
+                    alert('임시 비밀번호를 메일로 발송해드렸습니다.');
+                }
+            })
+        }catch(e){
+            alert("찾으시는 회원정보가 없습니다.");
+        }
     }
 
     const modalClose = () => {
@@ -54,14 +61,19 @@ const Login = () => {
     }
 
     const findId = async () => {
-        await axiosUser.post('/findid',{
-            email: emailValue.current.value,
-            birth: dateValue.current.value,
-        }).then((data) => {
-            if(data.data.message === "아이디 전송 완료"){
-                alert('아이디 정보를 보내드렸습니다. 이메일을 확인해주세요.');
-            }
-        })
+        console.log("id찾기", idEmailValue.current.value);
+        try{
+            await axiosUser.post('/findid',{
+                email: idEmailValue.current.value,
+                birth: dateValue.current.value,
+            }).then((data) => {
+                if(data.data.message === "아이디 전송 완료"){
+                    alert('아이디 정보를 보내드렸습니다. 이메일을 확인해주세요.');
+                }
+            })
+        }catch(e){
+            alert("찾으시는 회원정보가 없습니다.");
+        }
     }
 
     const login = async () => {
@@ -71,17 +83,14 @@ const Login = () => {
                 password: password,
             })
             if(user.data.message === "로그인 완료"){
-                console.log(user.data);
                 setAccessToken(user.data.data.tokens.accessToken);
                 setRefreshToken(user.data.data.tokens.refreshToken);
                 setIdStat(id);
                 setNickname(user.data.data.userInfo.nickname);
                 setProfileImg(user.data.data.userInfo.profileImg);
                 setRankName(user.data.data.userInfo.rankName);
-                console.log("로그인 완료");
-                console.log(accessToken);
+                setRole(user.data.data.userInfo.role);
                 router.push('/');
-                
             }
         }catch(e){
             alert("아이디 또는 비밀번호가 틀렸습니다.");
@@ -123,7 +132,7 @@ const Login = () => {
                     </div>
                     <div className="modal-content">
                         <span>이메일로 찾기</span>
-                        <input type="email" placeholder="이메일을 입력해주세요." ref={emailValue} />
+                        <input type="email" placeholder="이메일을 입력해주세요." ref={idEmailValue} />
                         <input type="date" placeholder="생년월일을 입력해주세요." ref={dateValue} />
                     </div>
                     <div className="modal-button-wrap">
@@ -139,8 +148,8 @@ const Login = () => {
                     </div>
                     <div className="modal-content">
                         <span>아이디 & 이메일로 찾기</span>
-                        <input type="text" placeholder="아이디를 입력해주세요." ref={idValue}/>
-                        <input type="email" placeholder="이메일을 입력해주세요." ref={emailValue} />
+                        <input type="text" placeholder="아이디를 입력해주세요." ref={idValue} id="pwId"/>
+                        <input type="email" placeholder="이메일을 입력해주세요." ref={pwEmailValue} />
                     </div>
                     <div className="modal-button-wrap">
                         <button onClick={findPw}>비밀번호 찾기</button>

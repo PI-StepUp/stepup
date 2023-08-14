@@ -1,17 +1,10 @@
 import React, {useState, useEffect, useCallback, useRef} from "react";
-import SideMenu from "components/SideMenu";
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
 import ReflectIcon from "/public/images/icon-reflect.svg"
-import CameraIcon from "/public/images/icon-camera.svg"
-import MicIcon from "/public/images/icon-mic.svg"
-import MoreIcon from "/public/images/icon-more-dot.svg"
 import PlayThumbnail from "/public/images/room-playlist-thumbnail.png"
 import PlayIcon from "/public/images/icon-play.svg"
 import ReflectHoverIcon from "/public/images/icon-hover-reflect.svg"
-import MicHoverIcon from "/public/images/icon-hover-mic.svg"
-import CameraHoverIcon from "/public/images/icon-hover-camera.svg"
-import MoreDotHoverIcon from "/public/images/icon-hover-more-dot.svg"
 
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
@@ -25,13 +18,49 @@ import { accessTokenState, refreshTokenState, idState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../utils/motionsetter";
 import { PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const EMBED_URL: any = {
-    13: "",
-    14: "https://www.youtube.com/embed/gV4j4oKnA7s",
-    15: "https://www.youtube.com/embed/xCb9V33T-D8",
-    16: "https://www.youtube.com/embed/GMSLYWc_UX4",
-    17: "https://www.youtube.com/embed/hcaAQCyXurg",
+    1: "https://www.youtube.com/embed/g4vaGXR7fUY",
+    2: "https://www.youtube.com/embed/VyQ40mNYx3Q",
+    3: "https://www.youtube.com/embed/2U7QXp9ItqM",
+    4: "https://www.youtube.com/embed/WhPr4rC-bAU",
+    5: "https://www.youtube.com/embed/bGa1g4jg-MA",
+    6: "https://www.youtube.com/embed/klNlrKzcQbc",
+    7: "https://www.youtube.com/embed/quT7eRenhxw",
+    8: "https://www.youtube.com/embed/Y063oeFDIGA",
+    9: "https://www.youtube.com/embed/w-TfkfN6vrw",
+    10: "https://www.youtube.com/embed/V9SmaLFFPqM",
+    11: "https://www.youtube.com/embed/PYWxkQzp1oY",
+    12: "https://www.youtube.com/embed/3we9E99GK2A",
+    13: "https://www.youtube.com/embed/rHwdB-J49Ks",
+    14: "https://www.youtube.com/embed/mB0tL-7M6VQ",
+    15: "https://www.youtube.com/embed/yGJ-1LkaRho",
+    16: "https://www.youtube.com/embed/HZb7CWKUaOw",
+    17: "https://www.youtube.com/embed/39Y8PkJRZTw",
+    18: "https://www.youtube.com/embed/9pIGXdUgCmE",
+    19: "https://www.youtube.com/embed/r4jiLONU8R8",
+    20: "https://www.youtube.com/embed/n4I0dwD6u1k",
+    21: "https://www.youtube.com/embed/I_GEa-Dud6A",
+    22: "https://www.youtube.com/embed/4cxU3TJV-CQ",
+    23: "https://www.youtube.com/embed/FUxKgi_BDVI",
+    24: "https://www.youtube.com/embed/wWJU-nYV-no",
+    25: "https://www.youtube.com/embed/QVyaGJRsaVI",
+    26: "https://www.youtube.com/embed/CMCKkVbzGfU",
+    27: "https://www.youtube.com/embed/FbY8w-eVuz0",
+    28: "https://www.youtube.com/embed/VuEh-4UKfqs",
+    29: "https://www.youtube.com/embed/B9mgikpIl98",
+    30: "https://www.youtube.com/embed/RcojjcsBkUo",
+    31: "https://www.youtube.com/embed/yIX33lK7vpo",
+    32: "https://www.youtube.com/embed/TtRBMl-K9Xs",
+    33: "https://www.youtube.com/embed/pgCyvRoDpB0",
+    34: "https://www.youtube.com/embed/1E5Q1AdAxMg",
+    35: "https://www.youtube.com/embed/JteGnlZC8K4",
+    36: "https://www.youtube.com/embed/RdjCtKJWNVY",
+    37: "https://www.youtube.com/embed/yln8wDZ-i4E",
+    38: "https://www.youtube.com/embed/96gMuaVE-Bo",
+    39: "https://www.youtube.com/embed/pxNSGBU82GY",
+    40: "https://www.youtube.com/embed/XknszxBeP7Y",
 }
 
 let poseLandmarker: PoseLandmarker;
@@ -43,45 +72,29 @@ let danceRecord: any[] = [];
 const PracticeRoom = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     const [reflect, setReflect] = useState(false);
-    const [mic, setMic] = useState(false);
-    const [camera, setCamera] = useState(false);
-    const [moredot, setMoredot] = useState(false);
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     const [musics, setMusics] = useState<any>();
-    const [end, setEnd] = useState(false);
     const [count3, setCount3] = useState(false);
     const [count2, setCount2] = useState(false);
     const [count1, setCount1] = useState(false);
     const [playResult, setPlayResult] = useState('');
+    const [resultScore, setResultScore] = useState<number>();
     const [selectedMusic, setSelectedMusic] = useState<any>(14);
+    const [scoreCount, setScoreCount] = useState<any>(0);
     const localVideoRef = useRef<any>(null);
     const localCanvasRef = useRef<HTMLCanvasElement>(null);
 	const localStreamRef = useRef<MediaStream>();
+    const myVideoDivRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const hostToken = router.query.token;
+
     const reflectHover = () => {
         setReflect(true);
     }
     const reflectLeave = () => {
         setReflect(false);
-    }
-    const micHover = () => {
-        setMic(true);
-    }
-    const micLeave = () => {
-        setMic(false);
-    }
-    const cameraHover = () => {
-        setCamera(true);
-    }
-    const cameraLeave = () => {
-        setCamera(false);
-    }
-    const moreDotHover = () => {
-        setMoredot(true);
-    }
-    const moreDotLeave = () => {
-        setMoredot(false);
     }
 
     const getLocalStream = useCallback(async () => {
@@ -107,25 +120,25 @@ const PracticeRoom = () => {
 
     useEffect(() => {
         getLocalStream();
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+        // try{
+        //     axiosUser.post('/auth',{
+        //         id: id,
+        //     },{
+        //         headers:{
+        //             Authorization: `Bearer ${accessToken}`,
+        //             refreshToken: refreshToken,
+        //         }
+        //     }).then((data) => {
+        //         if(data.data.message === "토큰 재발급 완료"){
+        //             setAccessToken(data.data.data.accessToken);
+        //             setRefreshToken(data.data.data.refreshToken);
+        //         }
+        //     })
+        // }catch(e){
+        //     alert('시스템 에러, 관리자에게 문의하세요.');
+        // }
 
-        axios.get("http://52.78.93.184:8080/api/music",{
+        axios.get("https://stepup-pi.com:8080/api/music",{
             params:{
                 keyword: "",
             },
@@ -138,10 +151,6 @@ const PracticeRoom = () => {
             }
         })
     }, [])
-
-    const youtubeChange = (e: any) => {
-        setEnd(true);
-    }
 
     const changeMusic = (musicId: any) => {
         setSelectedMusic(musicId);
@@ -199,6 +208,7 @@ const PracticeRoom = () => {
 
             const score = await calculateSimilarity(danceRecord, danceAnswer);
             console.log(score);
+            setResultScore(score);
 
             if(score < 60){
                 setPlayResult("failure");
@@ -213,7 +223,7 @@ const PracticeRoom = () => {
             }
 
             return score;
-        }, (response.data.playtime + 1)*1000);
+        }, (response.data.playtime + 2)*1000);
     }
 
     let frameCount = 0;
@@ -259,19 +269,19 @@ const PracticeRoom = () => {
 	// ========== 안무 좌표 저장 ============
 
 	async function setDance(result: any, dance: any[]) {
-		let coordinate: any[] = [];
-		let oneFrame = [];
+		let coordinate;
+        let oneFrame = [];
 
-		for (let i = 11; i < 29; i++) {
-			if (17 <= i && i <= 22) continue;
+        for(let i = 11; i < 29; i++){
+        if (17 <= i && i <= 22) continue;
+        
+        if (typeof result.landmarks[0] !== "undefined") {
+            coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
+        }
+            oneFrame.push(coordinate); 
+        }
 
-			if (typeof result.landmarks[0] != "undefined") {
-				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y];
-			}
-			oneFrame.push(coordinate);
-		}
-
-		dance.push(oneFrame);
+        dance.push(oneFrame);
 	}
 
 	// =====================================
@@ -279,23 +289,13 @@ const PracticeRoom = () => {
 	// ==============정답 데이터 get=====================
 
     async function getAnswerData(musicId:number) {
-        try{
-            await axios.post('http://52.78.93.184:8080/api/user/login', {
-                id: "ssafy",
-                password: "ssafy",
-            }).then((data) => {
-                setAccessToken(data.data.data.tokens.accessToken);
-            })
-        }catch(e){
-            console.error(e);
-        }
         try {
-            const response = await axios.get(`http://52.78.93.184:8080/api/music/${musicId}`, {
+            const response = await axios.get(`https://stepup-pi.com:8080/api/music/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
                 headers: {
-                    Authorization: `Bearer ${accessToken}` 
+                    Authorization: `Bearer ${hostToken}`, 
                 },
             });
             const responseData = await response.data;
@@ -308,60 +308,80 @@ const PracticeRoom = () => {
         
     }
 
+    function easeOutCirc(x: number): number {
+        return Math.sqrt(1 - Math.pow(x - 1, 2));
+    }
+
+    function useCountNum(end: number, start = 0, duration = 2000) {
+        const frameRate = 1000 / 60
+        const totalFrame = Math.round(duration / frameRate)
+        setScoreCount(0);
+      
+        useEffect(() => {
+          let currentNumber = start
+          const counter = setInterval(() => {
+            const progress = easeOutCirc(++currentNumber / totalFrame)
+            setScoreCount(Math.round(end * progress))
+      
+            if (progress === 1) {
+              clearInterval(counter)
+            }
+          }, frameRate)
+        }, [end, frameRate, start, totalFrame])
+      
+        return scoreCount;
+    }
+
+    async function reflectMyVideo() {
+        console.log("!reflect", reflect);
+
+        if (!reflect) {
+            myVideoDivRef.current?.setAttribute("class", "my-video reflect-video");
+            setReflect(true);
+        } else {
+            myVideoDivRef.current?.setAttribute("class", "my-video");
+            setReflect(false);
+        }
+    }
 
     return(
         <>
             <div className="practiceroom-wrap">
-                <SideMenu/>
-                <div className="practice-video-wrap">
+                {/* <SideMenu/> */}
+                <div className="remove-sidemenu practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
                             <Link href="/"><Image src={LeftArrowIcon} alt=""/></Link>
                         </div>
                         <div className="room-title">
-                            <h3>보이넥스트도어 - One and Only</h3>
-                            <span>2013년 7월 3일</span>
+                            <h3>Step Up 연습실</h3>
+                            <span>K-Pop 댄스에 도전해 높은 점수를 노려보세요!</span>
                         </div>
                     </div>
 
                     <div className="video-content">
-                        <div className="yours-video">
+                        <div className="my-video youtube-video">
                         {
                             saveMotion ?
-                            <iframe width="420" height="345" src={`${EMBED_URL[selectedMusic]}?autoplay=1`} allow="autoplay" onLoad={youtubeChange}></iframe>
+                            <iframe className="make-border" src={`${EMBED_URL[selectedMusic]}?autoplay=1`} allow="autoplay"></iframe>
                             :
-                            <iframe width="420" height="345" src={`${EMBED_URL[selectedMusic]}`} allow="autoplay" onLoad={youtubeChange}></iframe>
+                            <iframe className="make-border" src={`${EMBED_URL[selectedMusic]}`} allow="autoplay"></iframe>
                         }                            
                         </div>
 
-                        <div className="my-video" style={{ position: "relative", top: "0px", left: "0px" }}>
-                            <video src="" playsInline ref={localVideoRef}></video>
+                        <div ref={myVideoDivRef} className="my-video reflect-video" style={{ position: "relative", top: "0px", left: "0px" }}>
+                            <video className="make-border" src="" playsInline ref={localVideoRef}></video>
                             <canvas ref={localCanvasRef} style={{position:"absolute", left: "0px", top: "0px", width: "100%", height:"100%"}}></canvas>
                         </div>
                         
                         <div className="control-wrap">
                             <ul>
                                 <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave}>
-                                    <button>
+                                    <button onClick={reflectMyVideo}>
                                         {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
-                                    <button>
-                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
-                                    </button>
-                                </li>
-                                <li><button onClick={startMeasure} className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
-                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
-                                    <button>
-                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
-                                    </button>
-                                </li>
-                                <li onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
-                                    <button>
-                                        {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                <li><button onClick={startMeasure} className="exit-button">{lang==="en" ? "Perfect Score" : lang==="cn" ? "满分" : "퍼펙트 스코어" }</button></li>
                             </ul>
                         </div>
                     </div>

@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -23,7 +23,9 @@ const DetailArticle = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [article, setArticle] = useState<any>();
     const [comments, setComments] = useState<any[]>();
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const deleteComment = async (commentId: any) => {
         try{
@@ -54,7 +56,7 @@ const DetailArticle = () => {
         }).then((data) => {
             if(data.data.message === "댓글 삭제 완료"){
                 alert("댓글이 삭제되었습니다.");
-                router.push(`/article/detail/${boardId}`);
+                router.push(`/article/list`);
             }
         })
     }
@@ -91,7 +93,7 @@ const DetailArticle = () => {
         }).then((data) => {
             if(data.data.message === "댓글 등록 완료"){
                 alert("댓글이 추가되었습니다.");
-                router.push(`/article/detail/${boardId}`);
+                router.push('/article/list');
             }
         })
     }
@@ -160,6 +162,7 @@ const DetailArticle = () => {
             if(data.data.message === "자유게시판 게시글 조회 완료"){
                 articleTitle.current.innerText = data.data.data.title;
                 articleContent.current.innerText = data.data.data.content;
+                setArticle(data.data.data);
                 setComments(data.data.data.comments);
             }
         });
@@ -191,8 +194,16 @@ const DetailArticle = () => {
                         <p ref={articleContent}></p>
                     </div>
                     <div className="button-wrap">
-                        <button onClick={deleteArticle}>삭제하기</button>
-                        <button onClick={() => router.push(`/article/edit/${boardId}`)}>수정하기</button>
+                        {
+                            article?.writerName === nickname ?
+                            <>
+                                <button onClick={deleteArticle}>삭제하기</button>
+                                <button onClick={() => router.push(`/article/edit/${boardId}`)}>수정하기</button>
+                            </>
+                            :
+                            <></>
+                        }
+                        
                     </div>
                 </div>
                 <div className="comment-wrap">
@@ -210,7 +221,12 @@ const DetailArticle = () => {
                                                 <p>{comment.content}</p>
                                             </div>
                                             <div className="comment-button">
-                                                <button onClick={() => {deleteComment(comment.commentId)}}>댓글삭제</button>
+                                                {
+                                                    comment.writerName === nickname ?
+                                                    <button onClick={() => {deleteComment(comment.commentId)}}>댓글삭제</button>
+                                                    :
+                                                    <></>
+                                                }
                                             </div>
                                         </div>
                                     </li>

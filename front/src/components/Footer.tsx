@@ -22,9 +22,9 @@ const Footer = () => {
                 <div className="footer-bottom">
                     <div className="footer-info">
                         <p>
-                        {lang==="en" ? "Safe for all users, regardless of device type High-quality video conferencing and video call capabilities It's a service" : 
-                        lang==="cn" ? "与机器种类无关，对所有使用者来说都是安全的 优质的视频会议和视频通话功能 提供的服务" 
-                        : "기기 종류와 관계없이 모든 사용자에게 안전하고 품질이 우수한 화상 회의와 영상 통화 기능을 제공하는 서비스입니다" }
+                        {lang==="en" ? "STEP UP is a video platform that creates a new dance experience. In this space for dance enthusiasts, unleash your passion and rhythm freely! Explore the world of dance and express yourself with STEP UP!" : 
+                        lang==="cn" ? "STEP UP是一个为舞蹈爱好者创造全新舞蹈体验的视频平台。在这个专属于热爱舞蹈的人们的空间里，自由展现您的激情与节奏！用STEP UP探索舞蹈世界，尽情表达自己！"
+                        : "STEP UP은 춤의 새로운 경험을 만들어내는 화상 플랫폼입니다. 춤을 사랑하는 사람들을 위한 이 공간에서, 당신의 열정과 리듬을 자유롭게 펼치세요!" }
                             
                         </p>
                     </div>

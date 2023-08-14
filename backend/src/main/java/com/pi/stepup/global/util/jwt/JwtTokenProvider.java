@@ -133,9 +133,12 @@ public class JwtTokenProvider {
 
         log.debug("bearertoken : {}", bearerToken);
         if (StringUtils.hasText(bearerToken)) {
-            if (bearerToken.startsWith("Bearer") && bearerToken.length() > 7) {
-                int tokenStartIndex = 7;
-                return bearerToken.substring(tokenStartIndex);
+            if (bearerToken.startsWith("Bearer")){
+                if (bearerToken.length() > 7) {
+                    int tokenStartIndex = 7;
+                    return bearerToken.substring(tokenStartIndex);
+                }
+                return null;
             }
             throw new MalformedHeaderException(MALFORMED_HEADER.getMessage());
         }
