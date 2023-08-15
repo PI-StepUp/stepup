@@ -410,7 +410,7 @@ const DanceRoom = () => {
         stream.getTracks().forEach((track: any) => {
           track.stop();
         });
-      };
+    };
 
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
