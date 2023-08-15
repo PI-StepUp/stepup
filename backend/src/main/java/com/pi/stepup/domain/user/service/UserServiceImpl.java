@@ -19,6 +19,7 @@ import com.pi.stepup.domain.user.domain.EmailContent;
 import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
+import com.pi.stepup.domain.user.dto.UserRequestDto.ChangePasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
@@ -181,15 +182,25 @@ public class UserServiceImpl implements UserService {
 
         validateUpdateUserInfo(user, updateUserRequestDto);
 
-        Country country = userRepository.findOneCountry(updateUserRequestDto.getCountryId());
-
-        if (StringUtils.hasText(updateUserRequestDto.getPassword())) {
-            if (!isSamePassword(user.getPassword(), updateUserRequestDto.getPassword())) {
-                user.updatePassword(passwordEncoder.encode(updateUserRequestDto.getPassword()));
-            }
+        Country country = null;
+        if (updateUserRequestDto.getCountryId() != null) {
+            country = userRepository.findOneCountry(updateUserRequestDto.getCountryId());
         }
 
         user.updateUserBasicInfo(updateUserRequestDto, country);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(ChangePasswordRequestDto changePasswordRequestDto) {
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        if (StringUtils.hasText(changePasswordRequestDto.getPassword())) {
+            if (!isSamePassword(user.getPassword(), changePasswordRequestDto.getPassword())) {
+                user.updatePassword(passwordEncoder.encode(changePasswordRequestDto.getPassword()));
+            }
+        }
     }
 
     @Override
