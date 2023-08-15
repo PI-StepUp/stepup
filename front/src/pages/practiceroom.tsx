@@ -86,9 +86,8 @@ const PracticeRoom = () => {
 	const localVideoRef = useRef<any>(null);
 	const localCanvasRef = useRef<HTMLCanvasElement>(null);
 	const localStreamRef = useRef<MediaStream>();
-	const myVideoDivRef = useRef<HTMLDivElement>(null);
-	const router = useRouter();
-	const hostToken = router.query.token;
+    const myVideoDivRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
 	const reflectHover = () => {
 		setReflect(true);
@@ -301,7 +300,7 @@ const PracticeRoom = () => {
                     musicId: musicId,
                 },
                 headers: {
-                    Authorization: `Bearer ${hostToken}`, 
+                    Authorization: `Bearer ${accessToken}`, 
                 },
             });
             const responseData = await response.data;

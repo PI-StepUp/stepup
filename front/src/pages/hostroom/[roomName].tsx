@@ -44,50 +44,48 @@ const Hostroom = () => {
     const [id, setId] = useRecoilState(idState);
     const [roomName, setRoomName] = useState<any>();
 
-	const [lang, setLang] = useRecoilState(LanguageState);
-	const [reflect, setReflect] = useState(false);
-	const [mic, setMic] = useState(false);
-	const [camera, setCamera] = useState(false);
-	const [moredot, setMoredot] = useState(false);
-	const [nickname, setNickname] = useRecoilState(nicknameState);
-	const [profileImg, setProfileImg] = useRecoilState(profileImgState);
-	const [rankname, setRankname] = useRecoilState(rankNameState);
-	const [musics, setMusics] = useState<any>();
-	const router = useRouter();
-	const roomId = router.query.roomId;
-	const [roomTitle, setRoomTitle] = useState(router.query.roomName);
-	const title = router.query.title;
-	const startAll: any = router.query.startAt;
-	const startTime = startAll?.split(":")[0];
-	const startMinute = startAll?.split(":")[1];
-	const endAll: any = router.query.endAt;
-	const endTime = endAll?.split(":")[0];
-	const endMinute = endAll?.split(":")[1];
-	const hostToken = router.query.token;
-	const reflectHover = () => {
-		setReflect(true);
-	}
-	const reflectLeave = () => {
-		setReflect(false);
-	}
-	const micHover = () => {
-		setMic(true);
-	}
-	const micLeave = () => {
-		setMic(false);
-	}
-	const cameraHover = () => {
-		setCamera(true);
-	}
-	const cameraLeave = () => {
-		setCamera(false);
-	}
-	const moreDotHover = () => {
-		setMoredot(true);
-	}
-	const moreDotLeave = () => {
-		setMoredot(false);
-	}
+    const [lang, setLang] = useRecoilState(LanguageState);
+    const [reflect, setReflect] = useState(false);
+    const [mic, setMic] = useState(false);
+    const [camera, setCamera] = useState(false);
+    const [moredot, setMoredot] = useState(false);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+    const [rankname, setRankname] = useRecoilState(rankNameState);
+    const [musics, setMusics] = useState<any>();
+    const router = useRouter();
+    const [roomTitle, setRoomTitle] = useState(router.query.roomName);
+    const title = router.query.title;
+    const startAll : any = router.query.startAt;
+    const startTime = startAll?.split(":")[0];
+    const startMinute = startAll?.split(":")[1];
+    const endAll : any = router.query.endAt;
+    const endTime = endAll?.split(":")[0];
+    const endMinute = endAll?.split(":")[1];
+    const reflectHover = () => {
+        setReflect(true);
+    }
+    const reflectLeave = () => {
+        setReflect(false);
+    }
+    const micHover = () => {
+        setMic(true);
+    }
+    const micLeave = () => {
+        setMic(false);
+    }
+    const cameraHover = () => {
+        setCamera(true);
+    }
+    const cameraLeave = () => {
+        setCamera(false);
+    }
+    const moreDotHover = () => {
+        setMoredot(true);
+    }
+    const moreDotLeave = () => {
+        setMoredot(false);
+    }
 
 	const playMusic = (musicId: number) => {
 		socketRef.current.emit("playMusic", musicId, roomName);
@@ -120,19 +118,19 @@ const Hostroom = () => {
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
 
-		axios.get('https://stepup-pi.com:8080/api/music', {
-			params: {
-				keyword: "",
-			},
-			headers: {
-				Authorization: `Bearer ${hostToken}`,
-			}
-		}).then((data) => {
-			console.log(data);
-			if (data.data.message === "노래 목록 조회 완료") {
-				setMusics(data.data.data);
-			}
-		});
+        axios.get('https://stepup-pi.com:8080/api/music',{
+            params:{
+                keyword: "",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }).then((data) => {
+            console.log(data);
+            if(data.data.message === "노래 목록 조회 완료"){
+                setMusics(data.data.data);
+            }
+        });
 
 		axiosDance.get('', {
 			params: {
@@ -271,7 +269,7 @@ const Hostroom = () => {
                                     <li key={index}>
                                         <div className="flex-wrap">
                                             <div className="musiclist-content-thumbnail">
-                                                <Image src={music.url} alt=""/>
+                                                <Image src={music.url} alt="" width={40} height={40}/>
                                             </div>
                                             <div className="musiclist-content-info">
                                                 <h4>{music.title}</h4>

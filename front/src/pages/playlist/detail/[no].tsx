@@ -11,7 +11,7 @@ import Link from "next/link";
 import HeartFillIcon from "/public/images/icon-heart-fill.svg";
 import HeartEmptyIcon from "/public/images/icon-heart-empty.svg";
 
-import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState, boardIdState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -23,6 +23,7 @@ const DetailArticle = () => {
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
 
     const addHeart = async () => {
         try{
@@ -45,7 +46,7 @@ const DetailArticle = () => {
 
         if(article.canHeart === 1){
             axiosMusic.post('/apply/heart', {
-                musicApplyId: musicId,
+                musicApplyId: boardIdStat,
             },{
                 headers:{
                     Authorization: `Bearer ${accessToken}`,
@@ -78,15 +79,14 @@ const DetailArticle = () => {
         }
 
 
-        await axiosMusic.delete(`/apply/${musicId}`, {
+        await axiosMusic.delete(`/apply/${boardIdStat}`, {
             params:{
-                boardId: Number(musicId),
+                boardId: Number(boardIdStat),
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log(data);
             if(data.data.message === "노래 신청 삭제 완료"){
                 alert("해당 게시글이 삭제되었습니다.");
                 router.push('/playlist/list');
@@ -113,7 +113,7 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        axiosMusic.get(`/apply/detail/${musicId}`,{
+        axiosMusic.get(`/apply/detail/${boardIdStat}`,{
             headers:{
                 Authorization: `Bearer ${accessToken}`,
             }

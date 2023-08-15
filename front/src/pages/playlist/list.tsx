@@ -11,7 +11,7 @@ import DefaultProfileImage from "/public/images/playlist-default-profile-img.svg
 import HeartFillIcon from "/public/images/icon-heart-fill.svg";
 import HeartEmptyIcon from "/public/images/icon-heart-empty.svg";
 
-import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState, boardIdState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
@@ -30,6 +30,7 @@ const PlayList = () => {
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
     const [playlistTitle, inView] = useInView();
 
     const handlePageChange = (page: any) => {
@@ -41,6 +42,7 @@ const PlayList = () => {
         if(nickname == ""){
             alert("해당 서비스는 로그인 후 이용하실 수 있습니다.");
         }else{
+            setBoardIdStat(musicId);
             router.push(`/playlist/detail/${musicId}`);
         }
     } 

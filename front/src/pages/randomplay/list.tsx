@@ -198,7 +198,6 @@ const RandomPlayList = () => {
 																		startAt: room.startAt,
 																		endAt: room.endAt,
 																		maxUser: Number(room.maxUser),
-																		token: accessToken,
 																	},
 																}}>
 																	<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
