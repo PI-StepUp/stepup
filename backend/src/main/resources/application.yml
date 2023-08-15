@@ -10,5 +10,6 @@ spring:
         - mail
         - springdoc
         - redisdev
+        - mongodev
     # release(prod) / develop(dev) 중에 선택
     active: develop
