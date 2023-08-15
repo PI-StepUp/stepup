@@ -17,8 +17,6 @@ public interface MusicApplyRepository {
 
     List<MusicApply> findAll(String keyword);
 
-    List<MusicApply> findAll(String keyword, String id);
-
     List<MusicApply> findById(String id);
 
     void delete(Long musicApplyId);

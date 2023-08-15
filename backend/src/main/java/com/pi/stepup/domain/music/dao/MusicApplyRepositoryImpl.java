@@ -31,18 +31,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public List<MusicApply> findAll(String keyword, String id) {
-        log.info("현재 사용자 아이디 : {}", id);
-//        String sql =
-//            "SELECT new com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyJPAFindResponseDto("
-//                + "ma.id, ma.title, ma.artist, ma.writer.nickname, ma.writer.profileImg, ma.heartCnt, h.id"
-//                + ") "
-//                + "FROM MusicApply ma "
-//                + "LEFT JOIN ma.hearts h ON h.user.id = :id "
-//                + "WHERE ma.writer.id = :id";
-        String sql = "SELECT DISTINCT ma FROM MusicApply ma "
-            + "LEFT JOIN ma.hearts h ";
-//            + "LEFT JOIN h.user u ON u.id = :id";
+    public List<MusicApply> findAll(String keyword) {
+        String sql = "SELECT ma FROM MusicApply ma ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
@@ -56,8 +46,7 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     public List<MusicApply> findById(String id) {
         return em.createQuery(
                 "SELECT ma FROM MusicApply ma "
-                    + "LEFT JOIN FETCH ma.hearts h " +
-                    "WHERE ma.writer.id = :id "
+                    + "WHERE ma.writer.id = :id "
                 , MusicApply.class
             )
             .setParameter("id", id)
@@ -95,18 +84,6 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
             heart = Optional.empty();
         }
         return heart;
-    }
-
-    @Override
-    public List<MusicApply> findAll(String keyword) {
-        String sql = "SELECT ma FROM MusicApply ma ";
-
-        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
-                "ma.artist LIKE '%" + keyword + "%'";
-        }
-
-        return em.createQuery(sql, MusicApply.class).getResultList();
     }
 
     @Override

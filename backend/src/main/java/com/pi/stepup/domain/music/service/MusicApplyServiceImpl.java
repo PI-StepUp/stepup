@@ -1,7 +1,7 @@
 package com.pi.stepup.domain.music.service;
 
+import static com.pi.stepup.domain.music.constant.MusicApplyLikeStatus.CAN_HEART;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.ADD_HEART_FAIL;
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.REMOVE_HEART_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
@@ -23,9 +23,6 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,6 +36,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     private final MusicApplyRepository musicApplyRepository;
     private final UserRepository userRepository;
+    private final MusicApplyRedisService musicApplyRedisService;
 
     @Override
     @Transactional
@@ -63,21 +61,8 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             id = null;
         }
 
-        if (id == null) {
-            musicApplies = musicApplyRepository.findAll(keyword);
-        } else {
-            musicApplies = musicApplyRepository.findAll(keyword, id);
-            log.info("노래 신청 - 로그인 아이디 : {}", id);
-            log.info("신청 목록 : {}", musicApplies);
-            if (!musicApplies.get(0).getHearts().isEmpty()) {
-                for (Heart h : musicApplies.get(0).getHearts()) {
-                    log.info("좋아요 누른사람 아이디 : {}",
-                        h.getUser().getId());
-                }
-            }
-        }
-
-
+        musicApplies = musicApplyRepository.findAll(keyword);
+        log.info("[INFO] read All");
         return setCanHeart(musicApplies, id);
     }
 
@@ -88,35 +73,15 @@ public class MusicApplyServiceImpl implements MusicApplyService {
         return setCanHeart(musicApplies, id);
     }
 
-    // 원래 메소드
-//    public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies) {
-//        List<MusicApplyFindResponseDto> result = new ArrayList<>();
-//
-//        for (MusicApply ma : musicApplies) {
-//            int canHeart = 1;
-//            if (ma.getHearts().size() != 0) {
-//                canHeart = 0;
-//            }
-//
-//            result.add(MusicApplyFindResponseDto.builder()
-//                .musicApply(ma)
-//                .canHeart(canHeart)
-//                .build());
-//        }
-//        return result;
-//    }
-
     public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies, String id) {
         List<MusicApplyFindResponseDto> result = new ArrayList<>();
+        log.info("[INFO] setCanHeart method");
 
         for (MusicApply ma : musicApplies) {
             int canHeart = 1;
 
-            for (Heart h : ma.getHearts()) {
-                if (h.getUser().getId().equals(id)) {
-                    canHeart = 0;
-                    break;
-                }
+            if (id != null) {
+                canHeart = musicApplyRedisService.getHeartStatus(id, ma.getMusicApplyId());
             }
 
             result.add(MusicApplyFindResponseDto.builder()
@@ -169,7 +134,8 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             throw new HeartStatusException(ADD_HEART_FAIL.getMessage());
         }
 
-        musicApplyRepository.insert(heart);
+        musicApplyRedisService.saveHeart(heart.getUser().getId(),
+            heart.getMusicApply().getMusicApplyId());
 
         // TODO : Entity 안에 PostPersist, PostRemove
         musicApply.addHeart();
@@ -177,28 +143,30 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     @Transactional
-    public void deleteHeart(Long musicRequestId) {
+    public void deleteHeart(Long musicApplyId) {
         String id = getLoggedInUserId();
-        Optional<Heart> heart = musicApplyRepository.findHeart(id, musicRequestId);
+        int isHeartExist = musicApplyRedisService.getHeartStatus(id, musicApplyId);
 
-        if (heart.isPresent()) {
-            musicApplyRepository.deleteHeart(heart.get().getHeartId());
-            MusicApply musicApply = heart.get().getMusicApply();
-            musicApply.removeHeart();
-        } else {
+        if (isHeartExist == CAN_HEART.getHeartStatus()) {
             throw new HeartStatusException(REMOVE_HEART_FAIL.getMessage());
+        } else {
+            MusicApply musicApply = musicApplyRepository.findOne(musicApplyId)
+                .orElseThrow(
+                    () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
+            musicApplyRedisService.deleteHeart(id, musicApplyId);
+            musicApply.removeHeart();
         }
     }
 
     @Override
     public Integer findHeartStatus(Long musicApplyId) {
         String id = getLoggedInUserId();
-        Optional<Heart> heart = musicApplyRepository.findHeart(id, musicApplyId);
+        int isHeartExist = musicApplyRedisService.getHeartStatus(id, musicApplyId);
 
-        if (heart.isPresent()) {
-            return 0;
-        } else {
+        if (isHeartExist == CAN_HEART.getHeartStatus()) {
             return 1;
+        } else {
+            return 0;
         }
     }
 }
