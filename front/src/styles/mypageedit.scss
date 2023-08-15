@@ -224,11 +224,13 @@
     list-style-type: none;
     border-radius: 10px;
     transition: 0.3s ease-in;
+    z-index: 1 !important;
   }
   
   .selectbox .option-item {
     padding: 5px 15px 5px;
     transition: .1s;
+    z-index: 2 !important;
   }
   
   .selectbox .option-item:hover {

@@ -96,7 +96,7 @@ const Hostroom = () => {
 
 	const finishRandomPlay = () => {
 		socketRef.current.emit("finish", roomName);
-		axiosRank.post(`/point`, {
+		axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
 			id: id,
 			pointPolicyId: 5,
 			randomDanceId: roomId,
