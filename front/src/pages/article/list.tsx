@@ -23,6 +23,7 @@ const ArticleList = () => {
     const searchValue = useRef<any>();
     const router = useRouter();
     const [articleTitle, inView] = useInView();
+    const [writeBtnShow, setWriteBtnShow] = useState<Boolean>(false);
 
     const moveArticleDetail = (boardId : any) => {
         if(nickname === ""){
@@ -49,6 +50,14 @@ const ArticleList = () => {
             setPage(1);
         })
     }
+
+    useEffect(() => {
+        if (nickname === "") {
+            setWriteBtnShow(false);
+        } else {
+            setWriteBtnShow(true);
+        }
+    }, [nickname])
         
     useEffect(() => {
         axiosBoard.get("/talk", {
@@ -125,10 +134,10 @@ const ArticleList = () => {
                 </table>
                 <div className="button-wrap">
                     {
-                        nickname === "" ?
-                        <></>
-                        :
+                        writeBtnShow ?
                         <button><Link href="/article/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                        :
+                        <></>
                     }
                 </div>
                 
