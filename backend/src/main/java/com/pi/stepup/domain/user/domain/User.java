@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "USERS")
@@ -85,10 +86,22 @@ public class User extends BaseEntity {
     }
 
     public void updateUserBasicInfo(UpdateUserRequestDto updateUserRequestDto, Country country) {
-        this.email = updateUserRequestDto.getEmail();
-        this.emailAlert = updateUserRequestDto.getEmailAlert();
-        this.country = country;
-        this.nickname = updateUserRequestDto.getNickname();
+        if (StringUtils.hasText(updateUserRequestDto.getEmail())) {
+            this.email = updateUserRequestDto.getEmail();
+        }
+
+        if (updateUserRequestDto.getEmailAlert() != null) {
+            this.emailAlert = updateUserRequestDto.getEmailAlert();
+        }
+
+        if (country != null) {
+            this.country = country;
+        }
+
+        if (StringUtils.hasText(updateUserRequestDto.getNickname())) {
+            this.nickname = updateUserRequestDto.getNickname();
+        }
+
         this.profileImg = updateUserRequestDto.getProfileImg();
     }
 
