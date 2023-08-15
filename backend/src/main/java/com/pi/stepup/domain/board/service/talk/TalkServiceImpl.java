@@ -8,6 +8,7 @@ import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkResponseDto.TalkInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
+import com.pi.stepup.domain.board.service.redis.CntRedisService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -32,6 +33,7 @@ public class TalkServiceImpl implements TalkService {
     private final TalkRepository talkRepository;
     private final UserRepository userRepository;
     private final CommentService commentService;
+    private final CntRedisService cntRedisService;
 
     @Transactional
     @Override
@@ -94,7 +96,7 @@ public class TalkServiceImpl implements TalkService {
         Talk talk = talkRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
         // 조회수 증가
-        talk.increaseViewCnt();
+        cntRedisService.increaseViewCnt(boardId);
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return Optional.ofNullable(TalkInfoResponseDto.builder()
                 .talk(talkRepository.findOne(boardId).orElseThrow())

@@ -6,6 +6,7 @@ import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeSaveRequestD
 import com.pi.stepup.domain.board.dto.notice.NoticeRequestDto.NoticeUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.notice.NoticeResponseDto.NoticeInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
+import com.pi.stepup.domain.board.service.redis.CntRedisService;
 import com.pi.stepup.domain.dance.dao.DanceRepository;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.exception.DanceBadRequestException;
@@ -33,6 +34,7 @@ public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository noticeRepository;
     private final DanceRepository danceRepository;
     private final UserRepository userRepository;
+    private final CntRedisService cntRedisService;
 
     @Transactional
     @Override
@@ -101,7 +103,7 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
         // 조회수 증가
-        notice.increaseViewCnt();
+        cntRedisService.increaseViewCnt(boardId);
         return NoticeInfoResponseDto.builder()
                 .notice(noticeRepository.findOne(boardId).orElseThrow())
                 .build();

@@ -9,6 +9,7 @@ import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto.MeetingInfoResp
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.exception.MeetingBadRequestException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
+import com.pi.stepup.domain.board.service.redis.CntRedisService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -33,6 +34,7 @@ public class MeetingServiceImpl implements MeetingService {
     private final MeetingRepository meetingRepository;
     private final UserRepository userRepository;
     private final CommentService commentService;
+    private final CntRedisService cntRedisService;
 
     @Transactional
     @Override
@@ -110,7 +112,7 @@ public class MeetingServiceImpl implements MeetingService {
         Meeting meeting = meetingRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
         // 조회수 증가
-        meeting.increaseViewCnt();
+        cntRedisService.increaseViewCnt(boardId);
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return MeetingInfoResponseDto.builder()
                 .meeting(meetingRepository.findOne(boardId).orElseThrow())
