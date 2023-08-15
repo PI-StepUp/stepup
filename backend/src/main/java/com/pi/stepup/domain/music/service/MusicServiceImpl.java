@@ -62,9 +62,13 @@ public class MusicServiceImpl implements MusicService {
 
     @Override
     public MusicFindResponseDto readOne(Long musicId) {
+        Music music = musicRepository.findOne(musicId)
+            .orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
+        MusicAnswer musicAnswer = musicAnswerRepository.findById(music.getAnswer())
+            .orElseThrow(() -> new MusicNotFoundException(MUSIC_ANSWER_NOT_FOUND.getMessage()));
         return MusicFindResponseDto.builder()
-            .music(musicRepository.findOne(musicId)
-                .orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage())))
+            .music(music)
+            .musicAnswer(musicAnswer)
             .build();
     }
 
