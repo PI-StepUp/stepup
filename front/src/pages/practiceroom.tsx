@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef} from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
 import ReflectIcon from "/public/images/icon-reflect.svg"
@@ -12,7 +12,7 @@ import { LanguageState } from "states/states";
 import Image from "next/image"
 import Link from "next/link"
 
-import { axiosMusic, axiosUser } from "apis/axios";
+import { axiosMusic, axiosUser, axiosRank } from "apis/axios";
 import { accessTokenState, refreshTokenState, idState } from "states/states";
 
 import { createLandmarker, calculateSimilarity } from "../utils/motionsetter";
@@ -70,34 +70,34 @@ let saveMotion = false;
 let danceRecord: any[] = [];
 
 const PracticeRoom = () => {
-    const [lang, setLang] = useRecoilState(LanguageState);
-    const [reflect, setReflect] = useState(false);
-    const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
-    const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-    const [id, setId] = useRecoilState(idState);
-    const [musics, setMusics] = useState<any>();
-    const [count3, setCount3] = useState(false);
-    const [count2, setCount2] = useState(false);
-    const [count1, setCount1] = useState(false);
-    const [playResult, setPlayResult] = useState('');
-    const [resultScore, setResultScore] = useState<number>();
-    const [selectedMusic, setSelectedMusic] = useState<any>(14);
-    const [scoreCount, setScoreCount] = useState<any>(0);
-    const localVideoRef = useRef<any>(null);
-    const localCanvasRef = useRef<HTMLCanvasElement>(null);
+	const [lang, setLang] = useRecoilState(LanguageState);
+	const [reflect, setReflect] = useState(false);
+	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
+	const [id, setId] = useRecoilState(idState);
+	const [musics, setMusics] = useState<any>();
+	const [count3, setCount3] = useState(false);
+	const [count2, setCount2] = useState(false);
+	const [count1, setCount1] = useState(false);
+	const [playResult, setPlayResult] = useState('');
+	const [resultScore, setResultScore] = useState<number>();
+	const [selectedMusic, setSelectedMusic] = useState<any>(14);
+	const [scoreCount, setScoreCount] = useState<any>(0);
+	const localVideoRef = useRef<any>(null);
+	const localCanvasRef = useRef<HTMLCanvasElement>(null);
 	const localStreamRef = useRef<MediaStream>();
-    const myVideoDivRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
-    const hostToken = router.query.token;
+	const myVideoDivRef = useRef<HTMLDivElement>(null);
+	const router = useRouter();
+	const hostToken = router.query.token;
 
-    const reflectHover = () => {
-        setReflect(true);
-    }
-    const reflectLeave = () => {
-        setReflect(false);
-    }
+	const reflectHover = () => {
+		setReflect(true);
+	}
+	const reflectLeave = () => {
+		setReflect(false);
+	}
 
-    const getLocalStream = useCallback(async () => {
+	const getLocalStream = useCallback(async () => {
 		try {
 			const localStream = await navigator.mediaDevices.getUserMedia({
 				audio: true,
@@ -107,12 +107,12 @@ const PracticeRoom = () => {
 				},
 			});
 			localStreamRef.current = localStream;
-			if (localVideoRef.current){
-                localVideoRef.current.srcObject = localStream;
-                localVideoRef.current.play();
-                console.log("video 실행");
-                localVideoRef.current.addEventListener("loadeddata", makePoseLandmarker);
-            }
+			if (localVideoRef.current) {
+				localVideoRef.current.srcObject = localStream;
+				localVideoRef.current.play();
+				console.log("video 실행");
+				localVideoRef.current.addEventListener("loadeddata", makePoseLandmarker);
+			}
 		} catch (e) {
 			console.log(`getUserMedia error: ${e}`);
 		}
@@ -142,130 +142,152 @@ const PracticeRoom = () => {
 
     // ======= PoseLandmarker 생성 =======
 	async function makePoseLandmarker() {
-        canvasCtx = localCanvasRef.current!.getContext("2d");
-        drawingUtils = new DrawingUtils(canvasCtx);
-        console.log("drawingutils 생성?", drawingUtils);
-        await createLandmarker().then((landMarker) => {
-            poseLandmarker = landMarker;
-            console.log("poselandmarker 생성", poseLandmarker);
-        });
-    }
+		canvasCtx = localCanvasRef.current!.getContext("2d");
+		drawingUtils = new DrawingUtils(canvasCtx);
+		console.log("drawingutils 생성?", drawingUtils);
+		await createLandmarker().then((landMarker) => {
+			poseLandmarker = landMarker;
+			console.log("poselandmarker 생성", poseLandmarker);
+		});
+	}
 
-    async function startMeasure() {
-        await setCount3(true);
-        await setTimeout(async() => {
-            await setCount3(false);
-            await setCount2(true);
-            setTimeout(async () => {
-                await setCount2(false);
-                await setCount1(true);
-                setTimeout(async () => {
-                    await setCount1(false);
-                    
-                    await startPredictAndCalcSimilarity(selectedMusic);
-                }, 2000);
-            }, 2000);
-        }, 2000);
-    }
+	async function startMeasure() {
+		await setCount3(true);
+		await setTimeout(async () => {
+			await setCount3(false);
+			await setCount2(true);
+			setTimeout(async () => {
+				await setCount2(false);
+				await setCount1(true);
+				setTimeout(async () => {
+					await setCount1(false);
+
+					await startPredictAndCalcSimilarity(selectedMusic);
+				}, 2000);
+			}, 2000);
+		}, 2000);
+	}
 
 
 	let lastVideoTime: number | undefined = -1;
-    
-    async function startPredictAndCalcSimilarity(musicId:number) {
-        saveMotion = true;
-        localCanvasRef.current!.style.display = "block";
-        danceRecord = [];
-        
-        const response = await getAnswerData(musicId);
-        console.log("response 값", response);
-        
-        predictWebcam();
 
-        return setTimeout(async () => {
-            saveMotion = false;
-            localCanvasRef.current!.style.display = "none";
-            console.log("측정 종료");
-            console.log("측정 기록", danceRecord);
+	async function startPredictAndCalcSimilarity(musicId: number) {
+		saveMotion = true;
+		localCanvasRef.current!.style.display = "block";
+		danceRecord = [];
 
-            const danceAnswer = await JSON.parse(response.data.answer);
-            console.log("danceAnswer 값", response.data);
+		const response = await getAnswerData(musicId);
+		console.log("response 값", response);
 
-            const score = await calculateSimilarity(danceRecord, danceAnswer);
-            console.log(score);
-            setResultScore(score);
+		predictWebcam();
 
-            if(score < 60){
-                setPlayResult("failure");
-                setTimeout(() => {
-                    setPlayResult("");
-                }, 5000)
-            }else{
-                setPlayResult("success");
-                setTimeout(() => {
-                    setPlayResult("");
-                }, 5000)
-            }
+		return setTimeout(async () => {
+			saveMotion = false;
+			localCanvasRef.current!.style.display = "none";
+			console.log("측정 종료");
+			console.log("측정 기록", danceRecord);
 
-            return score;
-        }, (response.data.playtime + 2)*1000);
-    }
+			const danceAnswer = await JSON.parse(response.data.answer);
+			console.log("danceAnswer 값", response.data);
 
-    let frameCount = 0;
+			const score = await calculateSimilarity(danceRecord, danceAnswer);
+			console.log(score);
+			setResultScore(score);
+
+			setTimeout(() => {
+				setPlayResult("");
+			}, 5000)
+
+			if (score < 60) {
+				setPlayResult("failure");
+				setTimeout(() => {
+					setPlayResult("");
+				}, 5000)
+			} else {
+				setPlayResult("success");
+			}
+
+			// 연습실 이용에 따른 포인트 지급
+			console.log("토큰 검사", accessToken);
+			axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
+				id: id,
+				pointPolicyId: 6,
+				randomDanceId: null,
+				count: 1,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			}).then((data) => {
+				if (data.data.message === "포인트 적립 완료") {
+					// alert("연습실 이용 포인트가 적립되었습니다!");
+					console.log("연습실 이용 포인트 적립 완료!")
+				}
+			}).catch((e) => {
+				console.log("포인트 지급 에러 발생", e);
+				alert("연습실 이용 포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+			})
+
+			return score;
+		}, (response.data.playtime + 2) * 1000);
+	}
+
+	let frameCount = 0;
 	// ============ 모션 인식 =============
-    async function predictWebcam() {
+	async function predictWebcam() {
 		if (!poseLandmarker) {
-            console.log("pose landmarker not loaded!");
-            await makePoseLandmarker();
-            predictWebcam();
+			console.log("pose landmarker not loaded!");
+			await makePoseLandmarker();
+			predictWebcam();
 			return;
 		}
 
 		let startTimeMs = await performance.now();
-        frameCount = 0;
+		frameCount = 0;
 
 
 		if (lastVideoTime !== localVideoRef.current?.currentTime) {
 			lastVideoTime = localVideoRef.current?.currentTime;
 
 			await poseLandmarker.detectForVideo(localVideoRef.current, startTimeMs, (result) => {
-                console.log(result);
-                frameCount += 1;
-                console.log("framecount", frameCount);
+				console.log(result);
+				frameCount += 1;
+				console.log("framecount", frameCount);
 				setDance(result, danceRecord);
 
-                canvasCtx.save();
-                canvasCtx.clearRect(0, 0, localCanvasRef.current!.width, localCanvasRef.current!.height);
-                for (const landmark of result.landmarks) {
-                    drawingUtils.drawLandmarks(landmark, {
-                        radius: (data) => DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1)
-                    });
-                    drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-                }
-                canvasCtx.restore();
+				canvasCtx.save();
+				canvasCtx.clearRect(0, 0, localCanvasRef.current!.width, localCanvasRef.current!.height);
+				for (const landmark of result.landmarks) {
+					drawingUtils.drawLandmarks(landmark, {
+						radius: (data) => DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1)
+					});
+					drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
+				}
+				canvasCtx.restore();
 			});
 		}
 
-        if (saveMotion) {
+		if (saveMotion) {
 			window.requestAnimationFrame(predictWebcam);
-        }
+		}
 	}
 
 	// ========== 안무 좌표 저장 ============
 
 	async function setDance(result: any, dance: any[]) {
 		let coordinate;
-        let oneFrame = [];
+		let oneFrame = [];
 
-        for(let i = 11; i < 29; i++){
-        if (17 <= i && i <= 22) continue;
-        
-        if (typeof result.landmarks[0] !== "undefined") {
-            coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
-        }
-            oneFrame.push(coordinate); 
-        }
+		for (let i = 11; i < 29; i++) {
+			if (17 <= i && i <= 22) continue;
 
-        dance.push(oneFrame);
+			if (typeof result.landmarks[0] !== "undefined") {
+				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
+			}
+			oneFrame.push(coordinate);
+		}
+
+		dance.push(oneFrame);
 	}
 
 	// =====================================

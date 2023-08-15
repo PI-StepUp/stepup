@@ -29,8 +29,11 @@ const MeetingList = () => {
     const [id, setId] = useRecoilState(idState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [meetingTitle, inView] = useInView();
+
     const [boardId, setBoardId] = useRecoilState(boardIdState);
     const router = useRouter();
+
+    const [writeBtnShow, setWriteBtnShow] = useState<Boolean>(false);
 
     const handlePageChange = (page: any) => {
         setPage(page);
@@ -41,6 +44,14 @@ const MeetingList = () => {
         setBoardId(boardId);
         router.push(`/meeting/detail/${boardId}`);
     }
+
+    useEffect(() => {
+        if (nickname === "") {
+            setWriteBtnShow(false);
+        } else {
+            setWriteBtnShow(true);
+        }
+    }, [nickname])
 
     useEffect(() => {
         axiosBoard.get('/meeting', {
@@ -84,10 +95,10 @@ const MeetingList = () => {
                     }
                     <div className="button-wrap">
                         {
-                            nickname === "" ?
-                            <></>
-                            :
+                            writeBtnShow ?
                             <button><Link href="/meeting/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                            :
+                            <></>
                         }
                     </div>
                     <div className="meeting-content-wrap">
