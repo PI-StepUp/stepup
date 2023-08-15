@@ -129,6 +129,7 @@ const PracticeRoom = () => {
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
+            console.log(data);
             if(data.data.message === "노래 목록 조회 완료"){
                 setMusics(data.data.data);
             }
@@ -426,7 +427,13 @@ const PracticeRoom = () => {
                                     <li key={index} onClick={() => changeMusic(music.musicId)}>
                                         <div className="flex-wrap">
                                             <div className="musiclist-content-thumbnail">
-                                                <Image src={PlayThumbnail} alt=""/>
+                                                {
+                                                    music.url ?
+                                                    <Image src={music.url} alt="" width={40} height={40}/>
+                                                    :
+                                                    <Image src={PlayThumbnail} alt=""/>
+                                                }
+                                                
                                             </div>
                                             <div className="musiclist-content-info">
                                                 <h4>{music.title}</h4>

@@ -94,7 +94,7 @@ const DanceRoom = () => {
 	const localStreamRef = useRef<MediaStream>();
 	const [users, setUsers] = useState<any[]>([]);
 
-    const [msgList, setMsgList] = useState<any[]>([]);
+    const [msgList, setMsgList] = useState<any>([]);
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [count3, setCount3] = useState(false);
@@ -522,7 +522,7 @@ const DanceRoom = () => {
 		});
 
         socketRef.current.on('message', (data:any) => {
-            setMsgList([...msgList, data]);
+            setMsgList((prevMsgList: any) => [...prevMsgList, data]);
             if(inputChat.current != null){
                 inputChat.current.value = "";
             }
