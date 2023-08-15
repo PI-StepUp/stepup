@@ -76,6 +76,9 @@ public class MusicServiceImpl implements MusicService {
         return musicRepository.findAll(keyword).stream()
             .map(music -> MusicFindResponseDto.builder()
                 .music(music)
+                .musicAnswer(musicAnswerRepository.findById(music.getAnswer())
+                    .orElseThrow(
+                        () -> new MusicNotFoundException(MUSIC_ANSWER_NOT_FOUND.getMessage())))
                 .build())
             .collect(Collectors.toList());
     }
