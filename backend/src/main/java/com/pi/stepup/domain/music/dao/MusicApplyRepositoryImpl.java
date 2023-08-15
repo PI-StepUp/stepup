@@ -87,6 +87,36 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    public List<Heart> findAllHeart() {
+        return em.createQuery(
+            "SELECT h FROM Heart h "
+                + "JOIN FETCH h.user "
+                + "JOIN FETCH h.musicApply", Heart.class
+        ).getResultList();
+    }
+
+    @Override
+    public List<Heart> findHeartByMusicApplyId(Long musicApplyId) {
+        return em.createQuery(
+                "SELECT h FROM Heart h "
+                    + "WHERE h.musicApply.musicApplyId = :musicApplyId "
+                , Heart.class
+            )
+            .setParameter("musicApplyId", musicApplyId)
+            .getResultList();
+    }
+
+    @Override
+    public List<Heart> findHeartById(String id) {
+        return em.createQuery(
+                "SELECT h FROM Heart h "
+                    + "WHERE h.user.id = :id", Heart.class
+            )
+            .setParameter("id", id)
+            .getResultList();
+    }
+
+    @Override
     public void delete(Long musicApplyId) {
         MusicApply musicApply = em.find(MusicApply.class, musicApplyId);
         em.remove(musicApply);
@@ -96,5 +126,29 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     public void deleteHeart(Long heartId) {
         Heart heart = em.find(Heart.class, heartId);
         em.remove(heart);
+    }
+
+    @Override
+    public void deleteHeartByIdAndMusicApplyId(String id, Long musicApplyId) {
+        try {
+            Heart heart = em.createQuery(
+                    "SELECT h FROM Heart h "
+                        + "WHERE h.user.id = :id AND h.musicApply.musicApplyId = :musicApplyId",
+                    Heart.class
+                ).setParameter("id", id)
+                .setParameter("musicApplyId", musicApplyId)
+                .getSingleResult();
+
+            em.remove(heart);
+        } catch (NoResultException ex) {
+            // 조회 결과가 없는 경우
+        }
+    }
+
+    @Override
+    public void insertHearts(List<Heart> hearts) {
+        for (Heart h : hearts) {
+            em.persist(h);
+        }
     }
 }
