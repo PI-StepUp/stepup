@@ -4,20 +4,20 @@ package com.pi.stepup.domain.music.service;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import com.pi.stepup.domain.music.dao.MusicAnswerRepository;
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicDuplicatedException;
 import com.pi.stepup.domain.music.exception.MusicNotFoundException;
-import com.pi.stepup.domain.music.exception.UnauthorizedUserAccessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +40,9 @@ class MusicServiceTest {
     @Mock
     private MusicRepository musicRepository;
 
+    @Mock
+    private MusicAnswerRepository musicAnswerRepository;
+
     private MusicSaveRequestDto musicSaveRequestDto;
     private Music music;
 
@@ -47,7 +50,7 @@ class MusicServiceTest {
     @BeforeEach
     public void init() {
         makeMusicSaveRequestDto();
-        music = musicSaveRequestDto.toEntity();
+        music = musicSaveRequestDto.toMusic();
     }
 
     @Test
@@ -77,6 +80,8 @@ class MusicServiceTest {
     @DisplayName("노래 한 곡 조회 테스트")
     public void readOneMusicServiceTest() {
         when(musicRepository.findOne(any())).thenReturn(Optional.of(music));
+        when(musicAnswerRepository.findById(any())).thenReturn(Optional.of(MusicAnswer.builder()
+            .build()));
 
         MusicFindResponseDto result = musicService.readOne(music.getMusicId());
 
@@ -102,6 +107,9 @@ class MusicServiceTest {
         doReturn(makedMusic)
             .when(musicRepository)
             .findAll(keyword);
+        doReturn(Optional.of(MusicAnswer.builder().build()))
+            .when(musicAnswerRepository)
+            .findById(any());
 
         List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
@@ -116,6 +124,9 @@ class MusicServiceTest {
         doReturn(makedMusic)
             .when(musicRepository)
             .findAll(keyword);
+        doReturn(Optional.of(MusicAnswer.builder().build()))
+            .when(musicAnswerRepository)
+            .findById(any());
 
         List<MusicFindResponseDto> foundMusic = musicService.readAll(keyword);
 
