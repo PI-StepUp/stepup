@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import ModalCloseIcon from "/public/images/icon-modal-close.svg";
 
-import { LanguageState, accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState, roleState } from "states/states";
+import { LanguageState, accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState, roleState, emailState, agreeToReceiveEmailState, countryState, countryIdState } from "states/states";
 
 const Login = () => {
 	const [id, setId] = useState('');
@@ -22,6 +22,10 @@ const Login = () => {
 	const [profileImg, setProfileImg] = useRecoilState(profileImgState);
 	const [rankName, setRankName] = useRecoilState(rankNameState);
 	const [role, setRole] = useRecoilState(roleState);
+	const [email, setEmail] = useRecoilState(emailState);
+	const [agreeToReceiveEmail, setAgreeToReceiveEmail] = useRecoilState(agreeToReceiveEmailState);
+	const [country, setCountry] = useRecoilState(countryState);
+	const [countryId, setCountryId] = useRecoilState(countryIdState);
 	const idEmailValue = useRef<any>();
 	const pwEmailValue = useRef<any>();
 	const dateValue = useRef<any>();
@@ -94,6 +98,10 @@ const Login = () => {
 				setProfileImg(user.data.data.userInfo.profileImg);
 				setRankName(user.data.data.userInfo.rankName);
 				setRole(user.data.data.userInfo.role);
+				setEmail(user.data.data.userInfo.email);
+				setAgreeToReceiveEmail(user.data.data.userInfo.emailAlert);
+				setCountry(user.data.data.userInfo.countryCode);
+				setCountryId(user.data.data.userInfo.countryId);
 				router.push('/');
 			}
 		} catch (e) {

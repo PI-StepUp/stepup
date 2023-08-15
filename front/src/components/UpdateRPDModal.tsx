@@ -1,9 +1,9 @@
 import React, { ReactElement, useRef, useState } from 'react';
 import { LanguageState, accessTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
-import { axiosDance } from "apis/axios";
 import Image from "next/image"
 import router from 'next/router';
+import axios from "axios";
 
 interface props {
 	open: boolean;
@@ -45,20 +45,7 @@ const Modal = (props: props): ReactElement => {
 
 	// 랜플댄 수정
 	const updateRPD = async () => {
-		// console.log(props.randomDanceId);
-		// console.log(roomTitle.current?.value);
-		// console.log(roomContent.current?.value);
-		// console.log(roomStartDate.current?.value + " " + roomStartTime.current?.value);
-		// console.log(roomStartDate.current?.value + " " + roomEndTime.current?.value);
-		// console.log(danceType);
-		// console.log(Number(roomMaxNum.current?.value));
-		// console.log(roomImg);
-		// console.log(props.hostId);
-		// console.log(props.danceMusicIdList);
-		// console.log(accessToken)
-
-		// 랜플댄 정보 수정
-		await axiosDance.put("/my", {
+		await axios.put("https://stepup-pi.com:8080/api/dance/my", {
 			randomDanceId: props.randomDanceId,
 			title: roomTitle.current?.value,
 			content: roomContent.current?.value,
