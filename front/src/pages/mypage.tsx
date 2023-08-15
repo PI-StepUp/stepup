@@ -143,8 +143,7 @@ const MyPage = () => {
     if (id !== '' && accessToken !== '' && refreshToken !== '') {
       const setup = async () => {
         // 로그인 유저 정보 조회
-        //////////////////////////////////////////////////////url 수정할것!!!!!!!!!!!
-        await axios.get("http://localhost:8080/api/user", {
+        await axios.get("https://stepup-pi.com:8080/api/user", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }

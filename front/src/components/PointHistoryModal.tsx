@@ -21,7 +21,7 @@ const Modal = (props: props): ReactElement => {
 	const [currentPage, setCurrentPage] = useState(1);
 
 	// 포인트 적립 내역 조회
-	axios.get("http://localhost:8080/api/rank/my/history", {
+	axios.get("https://stepup-pi.com:8080/api/rank/my/history", {
 		headers: {
 			Authorization: `Bearer ${accessToken}`
 		},
