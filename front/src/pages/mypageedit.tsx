@@ -14,6 +14,7 @@ import { LanguageState } from "states/states";
 import { accessTokenState, refreshTokenState, idState, rankNameState, canEditInfoState } from "states/states";
 
 import { axiosUser } from "apis/axios";
+import axios from "axios";
 
 import AWS from "aws-sdk";
 
@@ -29,8 +30,8 @@ const MyPageEdit = () => {
 	const [password, setPassword] = useState('');
 	const [email, setEmail] = useState('');
 	let [emailAlert, setEmailAlert] = useState<any>();
-	const [countryId, setcountryId] = useState<number>();
-	const [countryCode, setcountryCode] = useState('');
+	const [countryId, setCountryId] = useState<number>();
+	const [countryCode, setCountryCode] = useState('');
 	const [nickname, setNickname] = useState('');
 	const [birth, setBirth] = useState('');
 
@@ -39,17 +40,20 @@ const MyPageEdit = () => {
 
 	const [point, setPoint] = useState<number>();
 	const [rankImg, setRankImg] = useState('');
-
+	let countries: any = [];
+	const [countryList, setCountryList] = useState<any>();
+	const [countryDataReady, setCountryDataReady] = useState(false);
 	const [nicknameFlag, setNicknameFlag] = useState<boolean>(true);
 	const [emailFlag, setEmailFlag] = useState<boolean>(true);
 	const [pwFlag, setPwFlag] = useState<boolean>(true);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
 	const [open, setOpen] = useState({ display: 'none' });
-	const [option, setOption] = useState<String>(lang === "en" ? "KOREA" : lang === "cn" ? "韩国" : "대한민국");
+	const [option, setOption] = useState<String>();
 
 	const nicknameValue = useRef<any>();
 	const emailValue = useRef<any>();
+	const countryValue = useRef<any>();
 	const pw1Value = useRef<any>();
 	const pw2Value = useRef<any>();
 
@@ -72,7 +76,7 @@ const MyPageEdit = () => {
 
 	const handleOpen = () => {
 		console.log(open.display);
-		setcountryCode(open.display);
+		setCountryCode(open.display);
 		if (open.display === 'none') {
 			setOpen({ display: 'flex' });
 		} else {
@@ -83,32 +87,34 @@ const MyPageEdit = () => {
 	// map, 조건부렌더링으로 치환해둘 것!
 	const handleSelect = (country: string) => {
 		console.log(country);
-		switch (country) {
-			case 'KOREA':
-				setOption(lang === "en" ? "KOREA" : lang === "cn" ? "大韩民国" : "대한민국");
-				break;
-			case 'USA':
-				setOption(lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국");
-				break;
-			case 'CANADA':
-				setOption(lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다");
-				break;
-			case 'CHINA':
-				setOption(lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국");
-				break;
-			case 'JAPAN':
-				setOption(lang === "en" ? "JAPAN" : lang === "cn" ? "日本" : "일본");
-				break;
-			case 'UK':
-				setOption(lang === "en" ? "UK" : lang === "cn" ? "英国" : "영국");
-				break;
-			case 'FRANCE':
-				setOption(lang === "en" ? "FRANCE" : lang === "cn" ? "法国" : "프랑스");
-				break;
-			case 'AUSTRIA':
-				setOption(lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주");
-				break;
-		}
+		setCountryId(country.countryId);
+		setCountryCode(country.countryCode);
+		// switch (country) {
+		// 	case 'KOREA':
+		// 		setOption(lang === "en" ? "KOREA" : lang === "cn" ? "大韩民国" : "대한민국");
+		// 		break;
+		// 	case 'USA':
+		// 		setOption(lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국");
+		// 		break;
+		// 	case 'CANADA':
+		// 		setOption(lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다");
+		// 		break;
+		// 	case 'CHINA':
+		// 		setOption(lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국");
+		// 		break;
+		// 	case 'JAPAN':
+		// 		setOption(lang === "en" ? "JAPAN" : lang === "cn" ? "日本" : "일본");
+		// 		break;
+		// 	case 'UK':
+		// 		setOption(lang === "en" ? "UK" : lang === "cn" ? "英国" : "영국");
+		// 		break;
+		// 	case 'FRANCE':
+		// 		setOption(lang === "en" ? "FRANCE" : lang === "cn" ? "法国" : "프랑스");
+		// 		break;
+		// 	case 'AUSTRIA':
+		// 		setOption(lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주");
+		// 		break;
+		// }
 	}
 
 	useEffect(() => {
@@ -122,7 +128,7 @@ const MyPageEdit = () => {
 			// 접근 권한(로그인 여부) 확인
 			setCanEditInfo('');
 			try {
-				axiosUser.post('/auth', {
+				axios.post('https://stepup-pi.com:8080/api/user/auth', {
 					id: id,
 				}, {
 					headers: {
@@ -146,7 +152,7 @@ const MyPageEdit = () => {
 		if (id !== '' && accessToken !== '' && refreshToken !== '') {
 			const setup = async () => {
 				// 로그인 유저 정보 조회
-				await axiosUser.get("", {
+				await axios.get("https://stepup-pi.com:8080/api/user/", {
 					headers: {
 						Authorization: `Bearer ${accessToken}`
 					}
@@ -165,8 +171,9 @@ const MyPageEdit = () => {
 						await setPassword(data.data.data.password);
 						await setEmail(data.data.data.email);
 						await setEmailAlert(data.data.data.emailAlert);
-						await setcountryId(data.data.data.countryId);
-						await setcountryCode(data.data.data.countryCode);
+						await setCountryId(data.data.data.countryId);
+						await setCountryCode(data.data.data.countryCode);
+						await setOption(data.data.data.countryCode);
 						await setNickname(data.data.data.nickname);
 						await setBirth(data.data.data.birth);
 						await setProfileImg(data.data.data.profileImg);
@@ -186,7 +193,7 @@ const MyPageEdit = () => {
 		console.log("입력한 닉네임", nicknameValue.current!.value);
 
 		try {
-			axiosUser.post("/dupnick", {
+			axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
 				nickname: nicknameValue.current!.value,
 			}).then((data) => {
 				console.log("닉네임 중복 확인 결과", data);
@@ -206,14 +213,27 @@ const MyPageEdit = () => {
 		}
 	}
 
+	axios.get('https://stepup-pi.com:8080/api/user/country', {
+	}).then((data) => {
+		if (data.data.message === "국가 코드 목록 조회 완료") {
+			countries.push(data.data.data);
+			setCountryList(countries);
+			console.log(countryList);
+			console.log(data.data.data);
+			console.log("몇개?", countries[0].length);
+			console.log("이거쓸래", countries[0]);
+			setCountryDataReady(true);
+		}
+	})
+
 	// 이메일 중복 체크
 	const emailCheck = async () => {
 		console.log("-----------이메일 중복 확인-------------")
 		console.log("입력한 이메일", emailValue.current!.value);
 
 		try {
-			axiosUser.post("/dupemail", {
-				nickname: nicknameValue.current!.value,
+			axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
+				email: emailValue.current!.value,
 			}).then((data) => {
 				console.log("이메일 중복 확인 결과", data);
 				if (data.data.message === "이메일 사용 가능") {
@@ -292,7 +312,7 @@ const MyPageEdit = () => {
 		await handleImageUpload();
 
 		try {
-			axiosUser.put("", {
+			axios.put("https://stepup-pi.com:8080/api/user/", {
 				id: id,
 				password: password,
 				email: emailValue.current.value === null ? emailValue : emailValue.current.value,
@@ -332,7 +352,7 @@ const MyPageEdit = () => {
 			alert("비밀번호를 다시 확인해주세요.");
 			return;
 		}
-		await axiosUser.put("", {
+		await axios.put("https://stepup-pi.com:8080/api/user/", {
 			id: id,
 			password: pw1Value.current.value,
 			email: email,
@@ -352,6 +372,7 @@ const MyPageEdit = () => {
 			console.log("비번 변경 >> ", data);
 			if (data.data.message === "회원정보 수정 완료") {
 				console.log("비밀번호 수정 완료");
+				alert("비밀번호를 수정했습니다.")
 				router.push('/');
 			} else {
 				console.log("비밀번호 수정 미완료");
@@ -411,9 +432,9 @@ const MyPageEdit = () => {
 								<div className="list-title mt-70">{lang === "en" ? "PROFILE IMAGE" : lang === "cn" ? "个人资料图片" : "프로필 이미지"}</div>
 								<div className="profile">
 									<div className="img-box">
-										{profileImg === ''|| profileImg === null || profileImg === "url"
-										? (<Image className="img" src={img_profile} alt="profile" width={100} height={100}></Image>)
-										: (<Image className="img" src={profileImg.toString()} alt="profile" width={100} height={100}></Image>)}
+										{profileImg === '' || profileImg === null || profileImg === "url"
+											? (<Image className="img" src={img_profile} alt="profile" width={100} height={100}></Image>)
+											: (<Image className="img" src={profileImg.toString()} alt="profile" width={100} height={100}></Image>)}
 									</div>
 									<div className="upload">
 										<div>
@@ -430,7 +451,7 @@ const MyPageEdit = () => {
 								<div className="option mt-25">
 									<div className="o-title">{lang === "en" ? "NICKNAME" : lang === "cn" ? "昵称" : "닉네임"}</div>
 									<div className="o-input">
-										<input type="text" className="o-input-ol" placeholder={nickname} ref={nicknameValue} onChange={(e) => setNickname(e.target.value)} />
+										<input type="text" className="o-input-ol" defaultValue={nickname} ref={nicknameValue} onChange={(e) => setNickname(e.target.value)} />
 										{nicknameFlag ? (
 											<p className="o-warning" id="">{lang === "en" ? "Available Nickname" : lang === "cn" ? "可用昵称" : "사용 가능한 닉네임입니다"}</p>
 										) : (
@@ -447,7 +468,7 @@ const MyPageEdit = () => {
 								<div className="option mt-25">
 									<div className="o-title">{lang === "en" ? "EMAIL" : lang === "cn" ? "电子邮件" : "이메일"}</div>
 									<div className="o-input">
-										<input type="text" className="o-input-ol" placeholder={email} ref={emailValue} onChange={(e) => setEmail(e.target.value)} />
+										<input type="text" className="o-input-ol" defaultValue={email} ref={emailValue} onChange={(e) => setEmail(e.target.value)} />
 										{emailFlag ? (
 											<p className="o-warning" id="">{lang === "en" ? "Available Email" : lang === "cn" ? "可用电子邮件" : "사용 가능한 이메일입니다"}</p>
 										) : (
@@ -464,19 +485,35 @@ const MyPageEdit = () => {
 								<div className="option mt-25">
 									<div className="o-title">{lang === "en" ? "NATION" : lang === "cn" ? "国家" : "국가"}</div>
 									<div className="o-input">
-										<div className="selectbox" onClick={handleOpen}>
+										<div className="selectbox" onClick={handleOpen} ref={countryValue}>
 											<button className="country">{option}</button>
 											<ul className="option-list" style={open}>
-												<li className="option-item" onClick={() => handleSelect("KOREA")}>{lang === "en" ? "KOREA" : lang === "cn" ? "大韓民国" : "대한민국"}</li>
+												{/* {countryList?.map((country: any, index: number) => {
+													return (
+														<li className="option-item" key={index} onClick={() => handleSelect(country)}>{country.countryCode}</li>
+													)
+												})} */}
+												{console.log("html 안이다", countries[0])};
+												{
+													countryDataReady
+														? null
+														: (
+															countries[0]?.map((country: any, index: number) => {
+																return (
+																	<li className="option-item" key={index} onClick={() => handleSelect(country)}>{country.countryCode}</li>
+																)
+															})
+														)
+												}
+												{/* <li className="option-item" onClick={() => handleSelect("KOREA")}>{lang === "en" ? "KOREA" : lang === "cn" ? "大韓民国" : "대한민국"}</li>
 												<li className="option-item" onClick={() => handleSelect("USA")}>{lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국"}</li>
 												<li className="option-item" onClick={() => handleSelect("CANADA")}>{lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다"}</li>
 												<li className="option-item" onClick={() => handleSelect("CHINA")}>{lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국"}</li>
 												<li className="option-item" onClick={() => handleSelect("JAPAN")}>{lang === "en" ? "JAPAN" : lang === "cn" ? "日本" : "일본"}</li>
 												<li className="option-item" onClick={() => handleSelect("UK")}>{lang === "en" ? "UK" : lang === "cn" ? "英国" : "영국"}</li>
 												<li className="option-item" onClick={() => handleSelect("FRANCE")}>{lang === "en" ? "FRANCE" : lang === "cn" ? "法国" : "프랑스"}</li>
-												<li className="option-item" onClick={() => handleSelect("AUSTRIA")}>{lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주"}</li>
+												<li className="option-item" onClick={() => handleSelect("AUSTRIA")}>{lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주"}</li> */}
 											</ul>
-											{/* 언어 변경 시, 선택된 옵션의 언어가 변경되지 않는 문제 해결 필요 */}
 										</div>
 									</div>
 									<div className="o-btn"></div>

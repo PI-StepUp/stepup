@@ -44,50 +44,48 @@ const Hostroom = () => {
     const [id, setId] = useRecoilState(idState);
     const [roomName, setRoomName] = useState<any>();
 
-	const [lang, setLang] = useRecoilState(LanguageState);
-	const [reflect, setReflect] = useState(false);
-	const [mic, setMic] = useState(false);
-	const [camera, setCamera] = useState(false);
-	const [moredot, setMoredot] = useState(false);
-	const [nickname, setNickname] = useRecoilState(nicknameState);
-	const [profileImg, setProfileImg] = useRecoilState(profileImgState);
-	const [rankname, setRankname] = useRecoilState(rankNameState);
-	const [musics, setMusics] = useState<any>();
-	const router = useRouter();
-	const roomId = router.query.roomId;
-	const [roomTitle, setRoomTitle] = useState(router.query.roomName);
-	const title = router.query.title;
-	const startAll: any = router.query.startAt;
-	const startTime = startAll?.split(":")[0];
-	const startMinute = startAll?.split(":")[1];
-	const endAll: any = router.query.endAt;
-	const endTime = endAll?.split(":")[0];
-	const endMinute = endAll?.split(":")[1];
-	const hostToken = router.query.token;
-	const reflectHover = () => {
-		setReflect(true);
-	}
-	const reflectLeave = () => {
-		setReflect(false);
-	}
-	const micHover = () => {
-		setMic(true);
-	}
-	const micLeave = () => {
-		setMic(false);
-	}
-	const cameraHover = () => {
-		setCamera(true);
-	}
-	const cameraLeave = () => {
-		setCamera(false);
-	}
-	const moreDotHover = () => {
-		setMoredot(true);
-	}
-	const moreDotLeave = () => {
-		setMoredot(false);
-	}
+    const [lang, setLang] = useRecoilState(LanguageState);
+    const [reflect, setReflect] = useState(false);
+    const [mic, setMic] = useState(false);
+    const [camera, setCamera] = useState(false);
+    const [moredot, setMoredot] = useState(false);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+    const [rankname, setRankname] = useRecoilState(rankNameState);
+    const [musics, setMusics] = useState<any>();
+    const router = useRouter();
+    const [roomTitle, setRoomTitle] = useState(router.query.roomName);
+    const title = router.query.title;
+    const startAll : any = router.query.startAt;
+    const startTime = startAll?.split(":")[0];
+    const startMinute = startAll?.split(":")[1];
+    const endAll : any = router.query.endAt;
+    const endTime = endAll?.split(":")[0];
+    const endMinute = endAll?.split(":")[1];
+    const reflectHover = () => {
+        setReflect(true);
+    }
+    const reflectLeave = () => {
+        setReflect(false);
+    }
+    const micHover = () => {
+        setMic(true);
+    }
+    const micLeave = () => {
+        setMic(false);
+    }
+    const cameraHover = () => {
+        setCamera(true);
+    }
+    const cameraLeave = () => {
+        setCamera(false);
+    }
+    const moreDotHover = () => {
+        setMoredot(true);
+    }
+    const moreDotLeave = () => {
+        setMoredot(false);
+    }
 
 	const playMusic = (musicId: number) => {
 		socketRef.current.emit("playMusic", musicId, roomName);
@@ -96,7 +94,7 @@ const Hostroom = () => {
 
 	const finishRandomPlay = () => {
 		socketRef.current.emit("finish", roomName);
-		axiosRank.post(`/point`, {
+		axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
 			id: id,
 			pointPolicyId: 5,
 			randomDanceId: roomId,
@@ -120,19 +118,19 @@ const Hostroom = () => {
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
 
-		axios.get('https://stepup-pi.com:8080/api/music', {
-			params: {
-				keyword: "",
-			},
-			headers: {
-				Authorization: `Bearer ${hostToken}`,
-			}
-		}).then((data) => {
-			console.log(data);
-			if (data.data.message === "노래 목록 조회 완료") {
-				setMusics(data.data.data);
-			}
-		});
+        axios.get('https://stepup-pi.com:8080/api/music',{
+            params:{
+                keyword: "",
+            },
+            headers:{
+                Authorization: `Bearer ${accessToken}`,
+            }
+        }).then((data) => {
+            console.log(data);
+            if(data.data.message === "노래 목록 조회 완료"){
+                setMusics(data.data.data);
+            }
+        });
 
 		axiosDance.get('', {
 			params: {
@@ -211,38 +209,85 @@ const Hostroom = () => {
 						</div>
 					</div>
 
-				</div>
-				<div className="musiclist">
-					<div className="musiclist-title">
-						<h3>{lang === "en" ? "Playlist" : lang === "cn" ? "播放列表" : "스플리"}</h3>
-						<span>{musics?.length}</span>
-					</div>
-					<div className="musiclist-content">
-						<ul>
-							{musics?.map((music: any, index: any) => {
-								return (
-									<li key={index}>
-										<div className="flex-wrap">
-											<div className="musiclist-content-thumbnail">
-												<Image src={PlayThumbnail} alt="" />
-											</div>
-											<div className="musiclist-content-info">
-												<h4>{music.title}</h4>
-												<span>{music.artist}</span>
-											</div>
-										</div>
-										<div className="musiclist-content-control-icon">
-											<span onClick={() => playMusic(music.musicId)}><Image src={PlayIcon} alt="" /></span>
-										</div>
-									</li>
-								)
-							})}
-						</ul>
-					</div>
-				</div>
-			</div>
-		</>
-	)
+                    <div className="video-content">
+                        <div className="my-video">
+                            <video src=""></video>
+                        </div>
+                        <div className="yours-video">
+                            <ul>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="control-wrap">
+                            <ul>
+                                <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave}>
+                                    <button>
+                                        {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                    <button>
+                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onClick={finishRandomPlay}><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                    <button>
+                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
+                                    <button>
+                                        {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div className="musiclist">
+                    <div className="musiclist-title">
+                        <h3>{lang==="en" ? "Playlist" : lang==="cn" ? "播放列表" : "스플리" }</h3>
+                        <span>{musics?.length}</span>
+                    </div>
+                    <div className="musiclist-content">
+                        <ul>
+                            {musics?.map((music:any, index:any) => {
+                                return(
+                                    <li key={index}>
+                                        <div className="flex-wrap">
+                                            <div className="musiclist-content-thumbnail">
+                                                <Image src={music.url} alt="" width={40} height={40}/>
+                                            </div>
+                                            <div className="musiclist-content-info">
+                                                <h4>{music.title}</h4>
+                                                <span>{music.artist}</span>
+                                            </div>
+                                        </div>
+                                        <div className="musiclist-content-control-icon">
+                                            <span onClick={() => playMusic(music.musicId)}><Image src={PlayIcon} alt=""/></span>
+                                        </div>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
 }
 
 export default Hostroom;

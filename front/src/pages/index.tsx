@@ -85,9 +85,6 @@ const Index = () => {
 		}else{
 			router.push({
 				pathname: "/practiceroom",
-				query:{
-					token: accessToken,
-				}
 			});
 		}
 	}

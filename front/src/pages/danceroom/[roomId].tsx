@@ -94,7 +94,7 @@ const DanceRoom = () => {
 	const localStreamRef = useRef<MediaStream>();
 	const [users, setUsers] = useState<any[]>([]);
 
-    const [msgList, setMsgList] = useState<any[]>([]);
+    const [msgList, setMsgList] = useState<any>([]);
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [count3, setCount3] = useState(false);
@@ -179,13 +179,7 @@ const DanceRoom = () => {
     }
 
     const sendMessage = () => {
-        socketRef.current.emit("send_message", inputChat.current?.value, roomId);
-        socketRef.current.on('message', (data:any) => {
-            setMsgList([...msgList, data]);
-        })
-        if(inputChat.current != null){
-            inputChat.current.value = "";
-        }
+        socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
         scrollToBottom();
     }
 
@@ -197,14 +191,7 @@ const DanceRoom = () => {
 
     const handleKeyPress = (e: any) => {
         if (e.key === 'Enter') {
-            socketRef.current.emit("send_message", inputChat.current?.value, roomId);
-            socketRef.current.on('message', (data:any) => {
-                setMsgList([...msgList, data]);
-            })
-            if(inputChat.current != null){
-                inputChat.current.value = "";
-            }
-            scrollToBottom();
+            socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
         }
     };
 
@@ -418,6 +405,13 @@ const DanceRoom = () => {
         
     }
 
+    const stopMediaTracks = (stream: any) => {
+        if (!stream) return;
+        stream.getTracks().forEach((track: any) => {
+          track.stop();
+        });
+    };
+
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
 		getLocalStream();
@@ -504,7 +498,7 @@ const DanceRoom = () => {
 		socketRef.current.on('user_exit', (data: { id: string }) => {
 			if (!pcsRef.current[data.id]) return;
 			// 성공한 노래 개수에 따른 포인트 지급
-			axiosRank.post(`/point`, {
+			axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
 				id: id,
 				pointPolicyId: 4,
 				randomDanceId: roomId,
@@ -527,6 +521,14 @@ const DanceRoom = () => {
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
 		});
 
+        socketRef.current.on('message', async (data:any) => {
+            setMsgList((prevMsgList: any) => [...prevMsgList, data]);
+            if(inputChat.current != null){
+                inputChat.current.value = "";
+            }
+            scrollToBottom();
+        })
+        
         socketRef.current.on('cntCorrect', (roomName: any) => {
             if(roomId == roomName){
                 socketRef.current.emit('close_randomplay', nickname, correct, roomName);
@@ -581,6 +583,12 @@ const DanceRoom = () => {
         });
 
 		return () => {
+            if (localStreamRef.current) {
+                const videoTrack = localStreamRef.current.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.stop();
+                }
+            }
 			if (socketRef.current) {
 				socketRef.current.disconnect();
 			}
@@ -589,6 +597,10 @@ const DanceRoom = () => {
 				pcsRef.current[user.id].close();
 				delete pcsRef.current[user.id];
 			});
+
+            stopMediaTracks(localStreamRef.current);
+
+            localVideoRef.current = null;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [createPeerConnection, getLocalStream]);
@@ -599,7 +611,9 @@ const DanceRoom = () => {
                 <div className="practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
-                            <Link href="/randomplay/list"><Image src={LeftArrowIcon} alt=""/></Link>
+                            <Link href="/randomplay/list">
+                                <Image src={LeftArrowIcon} alt=""/>
+                            </Link>
                         </div>
                         <div className="room-title">
                             <h3>{roomTitle}</h3>
@@ -636,7 +650,7 @@ const DanceRoom = () => {
                                         </button>
                                     </li>
                                 }
-                                <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li><Link href="/randomplay/list"><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></Link></li>
                                 {
                                     videoEnabled ?
                                     <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
@@ -685,11 +699,11 @@ const DanceRoom = () => {
                         <div className="chat-title">
                             <h3>{lang==="en" ? "Chatting" : lang==="cn" ? "聊天" : "채팅하기" }</h3>
                         </div>
-                        <div className="chat-content-wrap">
+                        <div className="chat-content-wrap" >
                             <div className="chat-read" ref={chatContent}>
                                 <ul className="chat-content">
                                 {
-                                    msgList.map((data) => {
+                                    msgList.map((data: any) => {
                                         return (
                                             <>
                                                 <li>
@@ -697,8 +711,8 @@ const DanceRoom = () => {
                                                         <Image src={ChatDefaultImg} alt=""/>
                                                     </div>
                                                     <div className="chat-user-msg">
-                                                        <span>{myName}</span>
-                                                        <p>{data}</p>
+                                                        <span>{data.nickname}</span>
+                                                        <p>{data.content}</p>
                                                     </div>
                                                 </li>
                                             </>

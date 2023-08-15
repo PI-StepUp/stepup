@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import { useRecoilState } from "recoil";
-import { LanguageState, nicknameState } from "states/states";
+import { LanguageState, boardIdState, nicknameState } from "states/states";
 import { axiosBoard } from "apis/axios";
 
 import Pagination from "react-js-pagination";
@@ -20,15 +20,20 @@ const ArticleList = () => {
     const [articles, setArticles] = useState<any>();
     const [page, setPage] = useState<any>(1);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
     const searchValue = useRef<any>();
     const router = useRouter();
     const [articleTitle, inView] = useInView();
+    const [writeBtnShow, setWriteBtnShow] = useState<Boolean>(false);
 
     const moveArticleDetail = (boardId : any) => {
         if(nickname === ""){
             alert("해당 서비스는 로그인 후 이용 가능합니다.");
             return;
         }
+
+        setBoardIdStat(boardId);
+
         router.push({
             pathname: `/article/detail/${boardId}`,
         })
@@ -36,7 +41,6 @@ const ArticleList = () => {
 
     const handlePageChange = (page: any) => {
         setPage(page);
-        console.log(page);
     }
 
     const searchArticles = async (e:any) => {
@@ -50,6 +54,14 @@ const ArticleList = () => {
             setPage(1);
         })
     }
+
+    useEffect(() => {
+        if (nickname === "") {
+            setWriteBtnShow(false);
+        } else {
+            setWriteBtnShow(true);
+        }
+    }, [nickname])
         
     useEffect(() => {
         axiosBoard.get("/talk", {
@@ -113,7 +125,7 @@ const ArticleList = () => {
                             if(index+1 <= page*10 && index+1 > page*10-10){
                                 return(
                                     <tr onClick={() => moveArticleDetail(article.boardId)} key={index}>
-                                        <td>{article.boardId}</td>
+                                        <td>{articles.length - index}</td>
                                         <td>{article.writerName}</td>
                                         <td>{article.title}</td>
                                         <td>{article.commentCnt}</td>
@@ -126,10 +138,10 @@ const ArticleList = () => {
                 </table>
                 <div className="button-wrap">
                     {
-                        nickname === ""?
-                        <></>
-                        :
+                        writeBtnShow ?
                         <button><Link href="/article/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                        :
+                        <></>
                     }
                 </div>
                 

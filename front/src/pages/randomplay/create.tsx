@@ -35,6 +35,11 @@ const RoomCreate = () => {
     const createRoom = async (e: any) => {
         e.preventDefault();
 
+        if(roomStartTime.current.value > roomEndTime.current.value){
+            alert("개최시간을 제대로 입력하였는지 확인하세요.");
+            return;
+        }
+
 		try {
 			await axiosUser.post('/auth', {
 				id: id,
@@ -65,7 +70,6 @@ const RoomCreate = () => {
 					Authorization: `Bearer ${accessToken}`,
 				}
 			}).then((data) => {
-                console.log(data);
 				if (data.data.message === "랜덤 플레이 댄스 생성 완료") {
 					alert("방 생성이 완료되었습니다.");
 
@@ -113,6 +117,7 @@ const RoomCreate = () => {
                 <div className="create-content">
                     <form>
                         <table>
+                            <tbody>
                             <tr>
                                 <td>방 제목</td>
                                 <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={roomTitle}/></td>
@@ -160,6 +165,7 @@ const RoomCreate = () => {
                                     </div>
                                 </td>
                             </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>
