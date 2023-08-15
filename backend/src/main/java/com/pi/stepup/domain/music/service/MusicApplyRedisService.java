@@ -15,4 +15,6 @@ public interface MusicApplyRedisService {
     boolean checkRedisEmpty();
 
     void getHeartsFromDB();
+
+    Integer getHeartCnt(Long musicApplyId);
 }

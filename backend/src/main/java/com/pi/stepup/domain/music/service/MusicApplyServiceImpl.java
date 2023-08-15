@@ -88,7 +88,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
                 canHeart = musicApplyRedisService.getHeartStatus(id, ma.getMusicApplyId());
             }
 
-            ma.setHeartCnt(musicApplyRedisService.getHearts(ma.getMusicApplyId()).size());
+            ma.setHeartCnt(musicApplyRedisService.getHeartCnt(ma.getMusicApplyId()));
             result.add(MusicApplyFindResponseDto.builder()
                 .musicApply(ma)
                 .canHeart(canHeart)
