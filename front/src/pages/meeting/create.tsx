@@ -77,40 +77,42 @@ const MeetingCreate = () => {
                 <div className="create-content">
                     <form>
                         <table>
-                            <tr>
-                                <td>제목</td>
-                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={meetingTitle}/></td>
-                            </tr>
-                            <tr>
-                                <td>내용</td>
-                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={meetingContent}></textarea></td>
-                            </tr>
-                            <tr>
-                                <td>모임 날짜</td>
-                                <td><input type="date" placeholder="시간을 입력해주세요." className="input-date" ref={meetingDate}/></td>
-                            </tr>
-                            <tr>
-                                <td>모임 시간</td>
-                                <td>
-                                    <input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={meetingStartTime}/>- 
-                                    <input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={meetingEndTime}/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>지역</td>
-                                <td><input type="text" placeholder="지역을 입력해주세요." className="input-region" ref={meetingRegion}/></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <div className="create-button-wrap">
-                                        <ul>
-                                            <li><button>취소하기</button></li>
-                                            <li><button onClick={createArticle}>작성하기</button></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>제목</td>
+                                    <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={meetingTitle}/></td>
+                                </tr>
+                                <tr>
+                                    <td>내용</td>
+                                    <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={meetingContent}></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>모임 날짜</td>
+                                    <td><input type="date" placeholder="시간을 입력해주세요." className="input-date" ref={meetingDate}/></td>
+                                </tr>
+                                <tr>
+                                    <td>모임 시간</td>
+                                    <td>
+                                        <input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={meetingStartTime}/>- 
+                                        <input type="time" placeholder="시간을 입력해주세요." className="input-time" ref={meetingEndTime}/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>지역</td>
+                                    <td><input type="text" placeholder="지역을 입력해주세요." className="input-region" ref={meetingRegion}/></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div className="create-button-wrap">
+                                            <ul>
+                                                <li><button>취소하기</button></li>
+                                                <li><button onClick={createArticle}>작성하기</button></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>

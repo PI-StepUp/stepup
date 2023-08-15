@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, boardIdState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -24,8 +24,10 @@ const DetailArticle = () => {
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     const [article, setArticle] = useState<any>();
-    const [comments, setComments] = useState<any[]>();
+    const [comments, setComments] = useState<any>();
     const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+    const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
 
     const deleteComment = async (commentId: any) => {
         try{
@@ -55,8 +57,12 @@ const DetailArticle = () => {
             }
         }).then((data) => {
             if(data.data.message === "댓글 삭제 완료"){
+                setComments((prevComments: any) =>
+                    prevComments.filter((comment: any) => comment.commentId !== commentId)
+                );
+                commentValue.current.value = "";
                 alert("댓글이 삭제되었습니다.");
-                router.push(`/article/list`);
+                router.push(`/article/detail/${boardId}`);
             }
         })
     }
@@ -80,20 +86,26 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        await axiosBoard.post(`/comment/${boardId}`, {
-            boardId: boardId,
+        await axiosBoard.post(`/comment/${boardIdStat}`, {
+            boardId: boardIdStat,
             content: commentValue.current.value,
         },{
             params:{
-                boardId: boardId,
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
             if(data.data.message === "댓글 등록 완료"){
+                let lastCommentId = 1;
+                if(comments.length > 0){
+                    lastCommentId = comments[comments.length-1].commentId;
+                }
+                setComments([...comments, {commentId: lastCommentId+1, writerName: nickname, writerProfileImg: profileImg, content: commentValue.current.value}]);
+                commentValue.current.value = "";
                 alert("댓글이 추가되었습니다.");
-                router.push('/article/list');
+                router.push(`/article/detail/${boardId}`);
             }
         })
     }
@@ -117,9 +129,9 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        await axiosBoard.delete(`/talk/${boardId}`,{
+        await axiosBoard.delete(`/talk/${boardIdStat}`,{
             params:{
-                boardId: Number(boardId),
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,
@@ -151,14 +163,15 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        axiosBoard.get(`/talk/${boardId}`, {
+        axiosBoard.get(`/talk/${boardIdStat}`, {
             params:{
-                boardId: Number(boardId),
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
+            console.log(data);
             if(data.data.message === "자유게시판 게시글 조회 완료"){
                 articleTitle.current.innerText = data.data.data.title;
                 articleContent.current.innerText = data.data.data.content;

@@ -84,7 +84,7 @@ io.on('connection', socket => {
         socket.to(data.candidateReceiveID).emit('getCandidate', {candidate: data.candidate, candidateSendID: data.candidateSendID});
     });
 
-    socket.on('send_message', (data,roomName) => {
+    socket.on('send_message', (data, roomName) => {
         io.emit('message', data);
     });
 

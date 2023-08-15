@@ -1,4 +1,7 @@
 import {useRef} from "react";
+import { S3 } from 'aws-sdk';
+import fs from 'fs';
+import AWS from '../../../aws-config';
 
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
@@ -19,6 +22,29 @@ const ArticleCreate = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const s3 = new S3();
+
+    const filePath = `/article/${file.current.value}`;
+    const bucketName = 'stepup-pi';
+    const fileName = `${file.current.value}`;
+
+    async function uploadFileToS3(bucketName: any, fileName: any, filePath: any) {
+        const fileContent = fs.readFileSync(filePath);
+      
+        const params = {
+          Bucket: bucketName,
+          Key: fileName,
+          Body: fileContent
+        };
+      
+        try {
+          const data = await s3.upload(params).promise();
+          console.log('File uploaded successfully:', data.Location);
+        } catch (err) {
+            alert('파일 업로드 실패, 관리자에게 문의하세요.');
+            console.error('Error uploading file:', err);
+        }
+      }
 
     const createArticle = async (e:any) => {
         e.preventDefault();
@@ -76,29 +102,31 @@ const ArticleCreate = () => {
                 <div className="create-content">
                     <form action="">
                         <table>
-                            <tr>
-                                <td>제목</td>
-                                <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={title}/></td>
-                            </tr>
-                            <tr>
-                                <td>내용</td>
-                                <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={content}></textarea></td>
-                            </tr>
-                            <tr>
-                                <td>첨부파일</td>
-                                <td><input type="file" accept="image/*" id="file-upload" ref={file}/></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <div className="create-button-wrap">
-                                        <ul>
-                                            <li><button>취소하기</button></li>
-                                            <li><button onClick={createArticle}>작성하기</button></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>제목</td>
+                                    <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={title}/></td>
+                                </tr>
+                                <tr>
+                                    <td>내용</td>
+                                    <td><textarea className="input-content" placeholder="내용을 입력해주세요." ref={content}></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>첨부파일</td>
+                                    <td><input type="file" accept="image/*" id="file-upload" ref={file}/></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <div className="create-button-wrap">
+                                            <ul>
+                                                <li><button>취소하기</button></li>
+                                                <li><button onClick={createArticle}>작성하기</button></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>

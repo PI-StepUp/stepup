@@ -11,7 +11,7 @@ import Link from "next/link"
 
 import { useRecoilState } from "recoil";
 import { useRouter } from "next/router";
-import { LanguageState, roleState, nicknameState } from "states/states";
+import { LanguageState, roleState, nicknameState, boardIdState } from "states/states";
 import { axiosBoard } from "apis/axios";
 import Pagination from "react-js-pagination";
 
@@ -21,6 +21,11 @@ const NoticeList = () => {
     const [page, setPage] = useState<any>(1);
     const [role, setRole] = useRecoilState(roleState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+
+    const [boardId, setBoardId] = useRecoilState(boardIdState);
+
+    const [writeBtnShow, setWriteBtnShow] = useState<Boolean>(false);
+
     const router = useRouter();
 
     const moveNoticeDetail = (boardId : number) => {
@@ -29,6 +34,8 @@ const NoticeList = () => {
             return;
         }
 
+        setBoardId(boardId);
+
         router.push(`/notice/detail/${boardId}`);
     }
 
@@ -36,6 +43,14 @@ const NoticeList = () => {
         setPage(page);
         console.log(page);
     }
+
+    useEffect(() => {
+        if (role === "ROLE_ADMIN") {
+            setWriteBtnShow(true);
+        } else {
+            setWriteBtnShow(false);
+        }
+    }, [role])
 
     useEffect(() => {
         axiosBoard.get("/notice",{
@@ -94,7 +109,7 @@ const NoticeList = () => {
                 </ul>
                 <div className="notice-create-button">
                     {
-                        role === "ROLE_ADMIN" ?
+                        writeBtnShow ?
                         <button><Link href="/notice/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
                         :
                         <></>

@@ -60,3 +60,9 @@ export const roleState = atom({
     default: '',
     effects_UNSTABLE: [persistAtom]
 })
+
+export const boardIdState = atom({
+    key: 'boardIdState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})

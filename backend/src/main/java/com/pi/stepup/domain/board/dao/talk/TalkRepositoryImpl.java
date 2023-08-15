@@ -35,7 +35,7 @@ public class TalkRepositoryImpl implements TalkRepository {
 
     @Override
     public List<Talk> findById(String id) {
-        String jpql = "SELECT m FROM Talk m WHERE m.writer.id = :id";
+        String jpql = "SELECT t FROM Talk t WHERE t.writer.id = :id ORDER BY t.boardId desc";
         return em.createQuery(jpql, Talk.class)
                 .setParameter("id", id)
                 .getResultList();
@@ -43,7 +43,7 @@ public class TalkRepositoryImpl implements TalkRepository {
 
     @Override
     public List<Talk> findAll(String keyword) {
-        String jpql = "SELECT t FROM Talk t WHERE t.title LIKE :keyword OR t.content LIKE :keyword";
+        String jpql = "SELECT t FROM Talk t WHERE t.title LIKE :keyword OR t.content LIKE :keyword ORDER BY t.boardId desc";
         return em.createQuery(jpql, Talk.class)
                 .setParameter("keyword", "%" + keyword + "%")
                 .getResultList();
