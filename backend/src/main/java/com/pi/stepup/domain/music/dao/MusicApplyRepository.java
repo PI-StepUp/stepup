@@ -15,6 +15,12 @@ public interface MusicApplyRepository {
 
     Optional<Heart> findHeart(String id, Long musicApplyId);
 
+    List<Heart> findAllHeart();
+
+    List<Heart> findHeartByMusicApplyId(Long musicApplyId);
+
+    List<Heart> findHeartById(String id);
+
     List<MusicApply> findAll(String keyword);
 
     List<MusicApply> findById(String id);
@@ -22,4 +28,8 @@ public interface MusicApplyRepository {
     void delete(Long musicApplyId);
 
     void deleteHeart(Long heartId);
+
+    void deleteHeartByIdAndMusicApplyId(String id, Long musicApplyId);
+
+    void insertHearts(List<Heart> hearts);
 }

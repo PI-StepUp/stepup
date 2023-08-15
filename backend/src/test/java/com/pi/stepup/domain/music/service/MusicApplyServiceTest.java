@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.music.service;
 
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -108,7 +107,7 @@ class MusicApplyServiceTest {
             List<MusicApply> madeMusicApply = makeMusicApplies();
 
             doReturn(madeMusicApply)
-                .when(musicApplyRepository).findAll(keyword, user.getId());
+                .when(musicApplyRepository).findAll(keyword);
 
             List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
                 keyword);
@@ -128,7 +127,7 @@ class MusicApplyServiceTest {
             List<MusicApply> keywordMusicApply = makeMusicApplyByKeyword(madeMusicApply, keyword);
 
             doReturn(keywordMusicApply)
-                .when(musicApplyRepository).findAll(keyword, user.getId());
+                .when(musicApplyRepository).findAll(keyword);
 
             List<MusicApplyFindResponseDto> musicApplies = musicApplyService.readAllByKeyword(
                 keyword);
@@ -241,7 +240,7 @@ class MusicApplyServiceTest {
                 .thenReturn(user.getId());
             when(userRepository.findById(any(String.class))).thenReturn(Optional.ofNullable(user));
             when(musicApplyRepository.findOne(any())).thenReturn(Optional.ofNullable(musicApply));
-            when(musicApplyRepository.insert(any(Heart.class))).thenReturn(heart);
+//            when(musicApplyRepository.insert(any(Heart.class))).thenReturn(heart);
 
             musicApplyService.createHeart(heartSaveRequestDto);
 
@@ -301,7 +300,6 @@ class MusicApplyServiceTest {
     }
 
     private MusicApply updateMusicApply() {
-        musicApply.addHeart();
         return musicApply;
     }
 

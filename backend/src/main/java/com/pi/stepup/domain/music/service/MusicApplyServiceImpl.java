@@ -62,6 +62,10 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             id = null;
         }
 
+        if(musicApplyRedisService.checkRedisEmpty()) {
+            musicApplyRedisService.getHeartsFromDB();
+        }
+
         musicApplies = musicApplyRepository.findAll(keyword);
         log.info("[INFO] read All");
         return setCanHeart(musicApplies, id);
@@ -85,6 +89,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
                 canHeart = musicApplyRedisService.getHeartStatus(id, ma.getMusicApplyId());
             }
 
+            ma.setHeartCnt(musicApplyRedisService.getHearts(ma.getMusicApplyId()).size());
             result.add(MusicApplyFindResponseDto.builder()
                 .musicApply(ma)
                 .canHeart(canHeart)
@@ -137,9 +142,6 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
         musicApplyRedisService.saveHeart(heart.getUser().getId(),
             heart.getMusicApply().getMusicApplyId());
-
-        // TODO : Entity 안에 PostPersist, PostRemove
-        musicApply.addHeart();
     }
 
     @Override
@@ -155,7 +157,6 @@ public class MusicApplyServiceImpl implements MusicApplyService {
                 .orElseThrow(
                     () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
             musicApplyRedisService.deleteHeart(id, musicApplyId);
-            musicApply.removeHeart();
         }
     }
 
