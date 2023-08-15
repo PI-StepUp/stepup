@@ -52,6 +52,11 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(musicUpdateRequestDto.getMusicId())
             .orElseThrow(() -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
 
+        MusicAnswer musicAnswer = musicAnswerRepository.findById(music.getAnswer())
+            .orElseThrow(() -> new MusicNotFoundException(MUSIC_ANSWER_NOT_FOUND.getMessage()));
+
+        musicAnswer.updateMusicAnswer(musicUpdateRequestDto.getAnswer());
+        musicAnswerRepository.save(musicAnswer);
         music.updateMusicInfo(musicUpdateRequestDto.toEntity());
     }
 
