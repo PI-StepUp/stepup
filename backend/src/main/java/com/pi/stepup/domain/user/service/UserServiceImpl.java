@@ -306,14 +306,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateUpdateUserInfo(User user, UpdateUserRequestDto updateUserRequestDto) {
-        if (StringUtils.hasText(updateUserRequestDto.getEmail()) &&
-            !user.getEmail().equals(updateUserRequestDto.getEmail())) {
+        if (StringUtils.hasText(updateUserRequestDto.getEmail())) {
             checkEmailDuplicated(
                 CheckEmailRequestDto.builder().email(updateUserRequestDto.getEmail()).build());
         }
 
-        if (StringUtils.hasText(updateUserRequestDto.getNickname()) &&
-            !user.getNickname().equals(updateUserRequestDto.getNickname())) {
+        if (StringUtils.hasText(updateUserRequestDto.getNickname())) {
             checkNicknameDuplicated(
                 CheckNicknameRequestDto.builder().nickname(updateUserRequestDto.getNickname())
                     .build());
