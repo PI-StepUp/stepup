@@ -1,11 +1,14 @@
 package com.pi.stepup.domain.music.service;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_ANSWER_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_DUPLICATED;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 
+import com.pi.stepup.domain.music.dao.MusicAnswerRepository;
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicUpdateRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
@@ -25,15 +28,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class MusicServiceImpl implements MusicService {
 
     private final MusicRepository musicRepository;
+    private final MusicAnswerRepository musicAnswerRepository;
 
     @Override
     @Transactional
     public Music create(MusicSaveRequestDto musicSaveRequestDto) {
-        Music music = musicSaveRequestDto.toEntity();
+        Music music = musicSaveRequestDto.toMusic();
+        MusicAnswer musicAnswer = musicSaveRequestDto.toMusicAnswer();
 
         if (musicRepository.findByTitleAndArtist(music.getTitle(), music.getArtist()).isPresent()) {
             throw new MusicDuplicatedException(MUSIC_DUPLICATED.getMessage());
         }
+
+        musicAnswerRepository.save(musicAnswer);
+        music.setAnswerAsMusicAnswerId(musicAnswer.getId());
 
         return musicRepository.insert(music);
     }
