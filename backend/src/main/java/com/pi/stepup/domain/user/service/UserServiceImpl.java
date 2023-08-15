@@ -41,6 +41,7 @@ import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
 import com.pi.stepup.global.config.security.CustomUserDetails;
 import com.pi.stepup.global.config.security.SecurityUtils;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
 import java.util.List;
@@ -78,15 +79,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void checkEmailDuplicated(CheckEmailRequestDto checkEmailRequestDto) {
-        if (userRepository.findByEmail(checkEmailRequestDto.getEmail()).isPresent()) {
-            throw new EmailDuplicatedException(EMAIL_DUPLICATED.getMessage());
+        try {
+            User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+            if (!user.getEmail().equals(checkEmailRequestDto.getEmail())) {
+                throw new ForbiddenException();
+            }
+        } catch (ForbiddenException e) {
+            if (userRepository.findByEmail(checkEmailRequestDto.getEmail()).isPresent()) {
+                throw new EmailDuplicatedException(EMAIL_DUPLICATED.getMessage());
+            }
         }
     }
 
     @Override
     public void checkNicknameDuplicated(CheckNicknameRequestDto checkNicknameRequestDto) {
-        if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
-            throw new NicknameDuplicatedException(NICKNAME_DUPLICATED.getMessage());
+        try {
+            User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+            if (!user.getNickname().equals(checkNicknameRequestDto.getNickname())) {
+                throw new ForbiddenException();
+            }
+        } catch (ForbiddenException e) {
+            if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
+                throw new NicknameDuplicatedException(NICKNAME_DUPLICATED.getMessage());
+            }
         }
     }
 
