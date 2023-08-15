@@ -211,38 +211,85 @@ const Hostroom = () => {
 						</div>
 					</div>
 
-				</div>
-				<div className="musiclist">
-					<div className="musiclist-title">
-						<h3>{lang === "en" ? "Playlist" : lang === "cn" ? "播放列表" : "스플리"}</h3>
-						<span>{musics?.length}</span>
-					</div>
-					<div className="musiclist-content">
-						<ul>
-							{musics?.map((music: any, index: any) => {
-								return (
-									<li key={index}>
-										<div className="flex-wrap">
-											<div className="musiclist-content-thumbnail">
-												<Image src={PlayThumbnail} alt="" />
-											</div>
-											<div className="musiclist-content-info">
-												<h4>{music.title}</h4>
-												<span>{music.artist}</span>
-											</div>
-										</div>
-										<div className="musiclist-content-control-icon">
-											<span onClick={() => playMusic(music.musicId)}><Image src={PlayIcon} alt="" /></span>
-										</div>
-									</li>
-								)
-							})}
-						</ul>
-					</div>
-				</div>
-			</div>
-		</>
-	)
+                    <div className="video-content">
+                        <div className="my-video">
+                            <video src=""></video>
+                        </div>
+                        <div className="yours-video">
+                            <ul>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                                <li>
+                                    <video src=""></video>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="control-wrap">
+                            <ul>
+                                <li onMouseEnter = {reflectHover} onMouseLeave = {reflectLeave}>
+                                    <button>
+                                        {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                    <button>
+                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onClick={finishRandomPlay}><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                    <button>
+                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
+                                    </button>
+                                </li>
+                                <li onMouseEnter = {moreDotHover} onMouseLeave = {moreDotLeave}>
+                                    <button>
+                                        {moredot ? <Image src={MoreDotHoverIcon} alt=""/> : <Image src={MoreIcon} alt=""/>}
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div className="musiclist">
+                    <div className="musiclist-title">
+                        <h3>{lang==="en" ? "Playlist" : lang==="cn" ? "播放列表" : "스플리" }</h3>
+                        <span>{musics?.length}</span>
+                    </div>
+                    <div className="musiclist-content">
+                        <ul>
+                            {musics?.map((music:any, index:any) => {
+                                return(
+                                    <li key={index}>
+                                        <div className="flex-wrap">
+                                            <div className="musiclist-content-thumbnail">
+                                                <Image src={music.url} alt="" width={40} height={40}/>
+                                            </div>
+                                            <div className="musiclist-content-info">
+                                                <h4>{music.title}</h4>
+                                                <span>{music.artist}</span>
+                                            </div>
+                                        </div>
+                                        <div className="musiclist-content-control-icon">
+                                            <span onClick={() => playMusic(music.musicId)}><Image src={PlayIcon} alt=""/></span>
+                                        </div>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
 }
 
 export default Hostroom;
