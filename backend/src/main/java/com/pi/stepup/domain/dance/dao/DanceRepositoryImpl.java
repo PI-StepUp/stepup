@@ -161,6 +161,7 @@ public class DanceRepositoryImpl implements DanceRepository {
     public List<Reservation> findAllMyReservation(Long userId) {
         return em.createQuery("SELECT r FROM Reservation r "
                 + "WHERE r.user.userId = :userId "
+                + "AND r.randomDance.startAt > current_timestamp "
                 + "ORDER BY r.createdAt DESC", Reservation.class)
             .setParameter("userId", userId)
             .getResultList();
