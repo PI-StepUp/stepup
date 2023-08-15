@@ -11,7 +11,7 @@ import Link from "next/link"
 
 import { useRecoilState } from "recoil";
 import { useRouter } from "next/router";
-import { LanguageState, roleState, nicknameState } from "states/states";
+import { LanguageState, roleState, nicknameState, boardIdState } from "states/states";
 import { axiosBoard } from "apis/axios";
 import Pagination from "react-js-pagination";
 
@@ -21,7 +21,11 @@ const NoticeList = () => {
     const [page, setPage] = useState<any>(1);
     const [role, setRole] = useRecoilState(roleState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+
+    const [boardId, setBoardId] = useRecoilState(boardIdState);
+
     const [writeBtnShow, setWriteBtnShow] = useState<Boolean>(false);
+
     const router = useRouter();
 
     const moveNoticeDetail = (boardId : number) => {
@@ -29,6 +33,8 @@ const NoticeList = () => {
             alert("해당 서비스는 로그인 후 이용하실 수 있습니다.");
             return;
         }
+
+        setBoardId(boardId);
 
         router.push(`/notice/detail/${boardId}`);
     }
