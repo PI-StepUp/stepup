@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.user.service;
 
-import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
@@ -8,17 +7,19 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.CountryResponseDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.UserInfoResponseDto;
+import com.pi.stepup.domain.user.dto.statistics.UserCountryStatisticsDto;
 import java.util.List;
 
 public interface UserService {
 
     List<CountryResponseDto> readAllCountries();
+
+    List<UserCountryStatisticsDto> readStatisticsOfUserCountry();
 
     void checkEmailDuplicated(CheckEmailRequestDto checkEmailRequestDto);
 
@@ -41,6 +42,4 @@ public interface UserService {
     void findId(FindIdRequestDto findIdRequestDto);
 
     void findPassword(FindPasswordRequestDto findPasswordRequestDto);
-
-    TokenInfo reissueTokens(String refreshToken, ReissueTokensRequestDto reissueTokensRequestDto);
 }

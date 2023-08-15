@@ -38,6 +38,31 @@ public class MusicRequestDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class MusicUpdateRequestDto {
+
+        private Long musicId;
+        private String title;
+        private String artist;
+        private String answer;
+        private String URL;
+        private Integer playtime;
+
+        public Music toEntity() {
+            return Music.builder()
+                .musicId(this.musicId)
+                .title(this.title)
+                .artist(this.artist)
+                .answer(this.answer)
+                .URL(this.URL)
+                .playtime(this.playtime)
+                .build();
+        }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MusicApplySaveRequestDto {
 
         private String title;

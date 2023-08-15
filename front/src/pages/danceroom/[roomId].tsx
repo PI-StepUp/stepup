@@ -21,6 +21,7 @@ import { LanguageState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter";
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
+import { axiosRank } from "apis/axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -104,12 +105,11 @@ const DanceRoom = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [playResult, setPlayResult] = useState('');
     const [urlNo, setUrlNo] = useState<any>(0);
+    const [audioEnabled, setAudioEnabled] = useState(true);
+    const [videoEnabled, setVideoEnabled] = useState(true);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
-    const [end, setEnd] = useState(false);
     const modal = useRef<any>();
-    const [webcamRunning, setWebcamRunning] = useState<Boolean>(true);
-    const [micRunning, setMicRunning] = useState<Boolean>(true);
     const router = useRouter();
     const roomId = router.query.roomId;
     const roomTitle = router.query.title;
@@ -148,6 +148,26 @@ const DanceRoom = () => {
         setCamera(false);
     }
 
+    const toggleAudio = () => {
+        if(localStreamRef.current){
+            const audioTrack = localStreamRef.current.getAudioTracks()[0];
+            if(audioTrack){
+                audioTrack.enabled = !audioEnabled;
+                setAudioEnabled(!audioEnabled);
+            }
+        }
+    }
+
+    const toggleVideo = () => {
+        if(localStreamRef.current){
+            const videoTrack = localStreamRef.current.getVideoTracks()[0];
+            if(videoTrack){
+                videoTrack.enabled = !videoEnabled;
+                setVideoEnabled(!videoEnabled);
+            }
+        }
+    }
+
     const reflectMyVideo = () => {
         if (!reflectRunning) {
             localVideoRef.current?.setAttribute("class", "my-video reflect-video");
@@ -156,48 +176,6 @@ const DanceRoom = () => {
             localVideoRef.current?.setAttribute("class", "my-video");
             setReflectRunning(false);
         }
-    } 
-
-    const enableCam = (e: any) => {
-        const enableConstraints = {
-            video: true,
-        }
-
-        if(webcamRunning){
-            navigator.mediaDevices.getUserMedia(enableConstraints).then((stream) => {
-                localVideoRef.current.srcObject = stream;
-                localVideoRef.current.addEventListener("loadeddata", predictWebcam);
-            });
-            setWebcamRunning(false);
-            setCamera(false);
-
-        }else if(!webcamRunning){
-            getLocalStream();
-            setWebcamRunning(true);
-        }
-    } 
-
-    const enableMic = (e: any) => {
-        const enableConstraints = {
-            audio: true,
-        }
-
-        if(micRunning){
-            navigator.mediaDevices.getUserMedia(enableConstraints).then((stream) => {
-                localVideoRef.current.srcObject = stream;
-                localVideoRef.current.addEventListener("loadeddata", predictWebcam);
-            });
-            setMicRunning(false);
-            setMic(false);
-
-        }else if(!webcamRunning){
-            getLocalStream();
-            setMicRunning(true);
-        }
-    }
-
-    const youtubeChange = () => {
-        console.log("변화");
     }
 
     const sendMessage = () => {
@@ -287,6 +265,7 @@ const DanceRoom = () => {
 							stream: e.streams[0],
 						}),
 				);
+                console.log(users);
 			};
 
 			if (localStreamRef.current) {
@@ -344,6 +323,7 @@ const DanceRoom = () => {
                 }, 5000)
             }else{
                 setPlayResult("success");
+								setCorrect(correct + 1);
                 setTimeout(() => {
                     setPlayResult("");
                 }, 5000)
@@ -396,7 +376,7 @@ const DanceRoom = () => {
 			if (17 <= i && i <= 22) continue;
 
 			if (typeof result.landmarks[0] != "undefined") {
-				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y];
+				coordinate = [result.landmarks[0][i].x, result.landmarks[0][i].y, result.landmarks[0][i].z];
 			}
 			oneFrame.push(coordinate);
 		}
@@ -523,6 +503,25 @@ const DanceRoom = () => {
 
 		socketRef.current.on('user_exit', (data: { id: string }) => {
 			if (!pcsRef.current[data.id]) return;
+			// 성공한 노래 개수에 따른 포인트 지급
+			axiosRank.post(`/point`, {
+				id: id,
+				pointPolicyId: 4,
+				randomDanceId: roomId,
+				count: correct,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			}).then((data) => {
+				if (data.data.message === "포인트 적립 완료") {
+					alert("성공 포인트가 적립되었습니다!");
+				}
+			}).catch((e) => {
+				console.log("포인트 지급 에러 발생", e);
+				alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+			})
+
 			pcsRef.current[data.id].close();
 			delete pcsRef.current[data.id];
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
@@ -539,6 +538,27 @@ const DanceRoom = () => {
                 modal.current.style.display = "block";
                 winnerValue.current.value = winner;
             }
+
+						// 1등 포인트 적립
+						if(winner == id){
+							axiosRank.post(`/point`, {
+								id: id,
+								pointPolicyId: 1,
+								randomDanceId: roomId,
+								count: 1,
+							}, {
+								headers: {
+									Authorization: `Bearer ${accessToken}`
+								}
+							}).then((data) => {
+								if (data.data.message === "포인트 적립 완료") {
+									alert("수상 포인트가 적립되었습니다! 축하드립니다!");
+								}
+							}).catch((e) => {
+								console.log("포인트 지급 에러 발생", e);
+								alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+							})
+						}
         })
 
         socketRef.current.on("startRandomplay", async (musicId: number) => {
@@ -602,17 +622,35 @@ const DanceRoom = () => {
                                     {reflect ? <Image src={ReflectHoverIcon} alt=""/> : <Image src={ReflectIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
-                                    <button onClick={enableMic}>
-                                    {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                {
+                                    audioEnabled ?
+                                    <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                        <button onClick={toggleAudio} className="audio-enabled">
+                                        {mic ? <Image src={MicIcon} alt=""/> : <Image src={MicHoverIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                    :
+                                    <li onMouseEnter = {micHover} onMouseLeave = {micLeave}>
+                                        <button onClick={toggleAudio} className="audio-disabled">
+                                        {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                }
                                 <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
-                                <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
-                                    <button onClick={enableCam}>
-                                    {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
-                                    </button>
-                                </li>
+                                {
+                                    videoEnabled ?
+                                    <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                        <button onClick={toggleVideo} className="video-enabled">
+                                        {camera ? <Image src={CameraIcon} alt=""/> : <Image src={CameraHoverIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                    :
+                                    <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
+                                        <button onClick={toggleVideo} className="video-disabled">
+                                        {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}
+                                        </button>
+                                    </li>
+                                }
                             </ul>
                         </div>
                     </div>
@@ -743,7 +781,7 @@ const DanceRoom = () => {
             }
             {
                 urlNo ?
-                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"onChange={youtubeChange}></iframe>
+                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"></iframe>
                 :
                 <></>
             }

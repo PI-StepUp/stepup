@@ -15,6 +15,8 @@ import { accessTokenState, refreshTokenState, idState, rankNameState, canEditInf
 
 import { axiosUser } from "apis/axios";
 
+import AWS from "aws-sdk";
+
 const MyPageEdit = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
 	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
@@ -31,14 +33,16 @@ const MyPageEdit = () => {
 	const [countryCode, setcountryCode] = useState('');
 	const [nickname, setNickname] = useState('');
 	const [birth, setBirth] = useState('');
+
 	const [profileImg, setProfileImg] = useState<string | ArrayBuffer | null>('');
+	const [selectedImg, setSelectedImg] = useState<File | null>(null);
+
 	const [point, setPoint] = useState<number>();
 	const [rankImg, setRankImg] = useState('');
 
 	const [nicknameFlag, setNicknameFlag] = useState<boolean>(true);
 	const [emailFlag, setEmailFlag] = useState<boolean>(true);
 	const [pwFlag, setPwFlag] = useState<boolean>(true);
-	const [profileImgExist, setProfileImgExist] = useState<boolean>(true);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
 	const [open, setOpen] = useState({ display: 'none' });
@@ -50,6 +54,19 @@ const MyPageEdit = () => {
 	const pw2Value = useRef<any>();
 
 	const router = useRouter();
+
+	/**
+	 * AWS 자격 증명 처리
+	 * 보안 처리 해야 됨
+	 */
+
+	AWS.config.update({
+		region: 'ap-northeast-2', // AWS 리전 설정
+		credentials: new AWS.Credentials({
+			accessKeyId: 'AKIATPARPG5ZOYWHOJPR',
+			secretAccessKey: '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'
+		})
+	});
 
 	console.log(accessToken);
 
@@ -126,7 +143,7 @@ const MyPageEdit = () => {
 	}, []);
 
 	useEffect(() => {
-		if(id !== '' && accessToken !== '' && refreshToken !== ''){
+		if (id !== '' && accessToken !== '' && refreshToken !== '') {
 			const setup = async () => {
 				// 로그인 유저 정보 조회
 				await axiosUser.get("", {
@@ -153,9 +170,6 @@ const MyPageEdit = () => {
 						await setNickname(data.data.data.nickname);
 						await setBirth(data.data.data.birth);
 						await setProfileImg(data.data.data.profileImg);
-						if (data.data.data.profileImg === null) {
-							setProfileImgExist(false);
-						}
 						await setPoint(data.data.data.point);
 						await setRankname(data.data.data.rankName);
 						await setRankImg(data.data.data.rankImg);
@@ -231,6 +245,28 @@ const MyPageEdit = () => {
 		console.log("입력한 닉네임", nicknameValue.current.value);
 		console.log("입력한 이메일", emailValue.current!.value);
 
+		// 이미지 업로드
+		const handleImageUpload = async () => {
+			if(selectedImg) {
+				const s3 = new AWS.S3();
+				const params = { 
+					Bucket : 'stepup-pi',
+					// 파일 저장 이름, 날짜_원본파일이름
+					Key: `${Date.now()}_${selectedImg.name}`,
+					Body: selectedImg,
+					ContentType: selectedImg.type,
+				};
+
+				try {
+					await s3.upload(params).promise();
+					console.log("Image upload Success!!");					
+					setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
+				} catch(error) {
+					console.log("Image upload Fail!!", error);
+				}
+			}
+		}
+
 		const dupNicknameCheck = async () => {
 			let result: boolean;
 			await nicknameFlag ? result = true : result = false;
@@ -252,6 +288,8 @@ const MyPageEdit = () => {
 		if (ResultEmail === false) {
 			alert("이메일 중복 확인을 해주세요.");
 		}
+
+		await handleImageUpload();
 
 		try {
 			axiosUser.put("", {
@@ -344,13 +382,13 @@ const MyPageEdit = () => {
 	const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
 			const file = e.target.files[0];
-			const reader = new FileReader();
+			setSelectedImg(file);
+			const reader = new FileReader();	
 			reader.readAsDataURL(file);
 			console.log("reader", reader);
 			reader.onload = () => {
 				setProfileImg(reader.result);
 				console.log("url >>", reader.result);
-				setProfileImgExist(true);
 			}
 			console.log("프사 변경 url >> ", profileImg);
 		}
@@ -359,7 +397,6 @@ const MyPageEdit = () => {
 	// 프로필 사진 삭제
 	const onDeleteImage = async () => {
 		setProfileImg('');
-		setProfileImgExist(false);
 	}
 
 	return (
@@ -374,7 +411,9 @@ const MyPageEdit = () => {
 								<div className="list-title mt-70">{lang === "en" ? "PROFILE IMAGE" : lang === "cn" ? "个人资料图片" : "프로필 이미지"}</div>
 								<div className="profile">
 									<div className="img-box">
-										<Image className="img" src={profileImgExist ? profileImg?.toString() : img_profile} alt="profile" width={100} height={100}></Image>
+										{profileImg === ''|| profileImg === null || profileImg === "url"
+										? (<Image className="img" src={img_profile} alt="profile" width={100} height={100}></Image>)
+										: (<Image className="img" src={profileImg.toString()} alt="profile" width={100} height={100}></Image>)}
 									</div>
 									<div className="upload">
 										<div>

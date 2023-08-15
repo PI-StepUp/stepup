@@ -9,5 +9,6 @@ spring:
         - jwt
         - mail
         - springdoc
+        - redisdev
     # release(prod) / develop(dev) 중에 선택
     active: develop

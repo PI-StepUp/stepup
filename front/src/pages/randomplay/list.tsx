@@ -47,6 +47,7 @@ const RandomPlayList = () => {
 						refreshToken: refreshToken,
 					}
 				}).then((data) => {
+					console.log(data);
 					if (data.data.message === "토큰 재발급 완료") {
 						setAccessToken(data.data.data.accessToken);
 						setRefreshToken(data.data.data.refreshToken);
@@ -141,23 +142,6 @@ const RandomPlayList = () => {
 			}
 		}
 	}
-
-	function month(date: any) {
-		return ("0" + new Date(date).getMonth()).slice(-2);
-	}
-
-	function day(date: any) {
-		return ("0" + new Date(date).getDay()).slice(-2);
-	}
-
-	function hour(date: any) {
-		return ("0" + new Date(date).getHours()).slice(-2);
-	}
-
-	function minute(date: any) {
-		return ("0" + new Date(date).getMinutes()).slice(-2);
-	}
-
 	return (
 		<>
 			<Header />
@@ -176,7 +160,6 @@ const RandomPlayList = () => {
 							{rooms?.slice(0, roomsVisibleItems)?.map((room, index) => {
 								return (
 									<li key={index}>
-										
 											<div className="section-content-img">
 											<span>{(room.danceType === "SURVIVAL") ?
 												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
@@ -194,16 +177,31 @@ const RandomPlayList = () => {
 													{
 														(currentDate < new Date(room.startAt)) ? 
 															(room.reserveStatus === 0) ?
-															<button onClick={async () => await reserveRandomDance(room.randomDanceId)}>
+															<button onClick={async () => await reserveRandomDance(room.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
 															</button>
 															: 
-															<button onClick={async () => await cancelReservation(room.randomDanceId)}>
+															<button onClick={async () => await cancelReservation(room.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
 															</button>
 														:
 														(currentDate < new Date(room.endAt)) ? 
-															(accessToken) ? 
+															(accessToken) ?
+																(nickname === room.hostNickname) ?
+																<Link href={{
+																	pathname: `/hostroom/${room.title}`,
+																	query: {
+																		hostId: nickname,
+																		title: room.title,
+																		startAt: room.startAt,
+																		endAt: room.endAt,
+																		maxUser: Number(room.maxUser),
+																		token: accessToken,
+																	},
+																}}>
+																	<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
+																</Link>
+																:
 																<Link href={{
 																	pathname: `/danceroom/${room.randomDanceId}`,
 																	query: {
@@ -214,19 +212,19 @@ const RandomPlayList = () => {
 																		myName: nickname,
 																	},
 																}}>
-																	<button>{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
+																	<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
 																</Link>
 																:
-																<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")}>
+																<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
 																	{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
 																</button> 
 																:
-																<button>{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+																<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 													}
-												<span>{month(room.startAt)}/{day(room.startAt)} {hour(room.startAt)}:{minute(room.startAt)} ~ {month(room.endAt)}/{day(room.endAt)} {hour(room.endAt)}:{minute(room.endAt)}</span>
+												<span>{room.startAt.split("T")[0].split("-")[1]}월 {room.startAt.split("T")[0].split("-")[2]}일 {room.startAt.split("T")[1].split(":")[0]}시 {room.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+												{room.endAt.split("T")[0].split("-")[1]}월 {room.endAt.split("T")[0].split("-")[2]}일 {room.endAt.split("T")[1].split(":")[0]}시 {room.endAt.split("T")[1].split(":")[1]}분</span>
 												</div>
 											</div>
-										
 									</li>
 								)
 							})}
@@ -270,11 +268,11 @@ const RandomPlayList = () => {
 														{
 															(currentDate < new Date(inprogress.startAt)) ? 
 															(inprogress.reserveStatus === 0) ?
-																<button onClick={async () => await reserveRandomDance(inprogress.randomDanceId)}>
+																<button onClick={async () => await reserveRandomDance(inprogress.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
 																</button>
 																: 
-																<button onClick={async () => await cancelReservation(inprogress.randomDanceId)}>
+																<button onClick={async () => await cancelReservation(inprogress.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
 																</button>
 														
@@ -291,16 +289,17 @@ const RandomPlayList = () => {
 																			myName: nickname,
 																		},
 																	}}>
-																		<button>{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
+																		<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
 																	</Link>
 																	:
-																	<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")}>
+																	<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
 																	{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
 																	</button> 
 																	:
-																	<button>{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+																	<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 														}
-													<span>{month(inprogress.startAt)}/{day(inprogress.startAt)} {hour(inprogress.startAt)}:{minute(inprogress.startAt)} ~ {month(inprogress.endAt)}/{day(inprogress.endAt)} {hour(inprogress.endAt)}:{minute(inprogress.endAt)}</span>
+													<span>{inprogress.startAt.split("T")[0].split("-")[1]}월 {inprogress.startAt.split("T")[0].split("-")[2]}일 {inprogress.startAt.split("T")[1].split(":")[0]}시 {inprogress.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+												{inprogress.endAt.split("T")[0].split("-")[1]}월 {inprogress.endAt.split("T")[0].split("-")[2]}일 {inprogress.endAt.split("T")[1].split(":")[0]}시 {inprogress.endAt.split("T")[1].split(":")[1]}분</span>
 												</div>
 											</div>
 										
@@ -348,11 +347,11 @@ const RandomPlayList = () => {
 																(currentDate < new Date(scheduled.startAt)) ? 
 																	(
 																		(scheduled.reserveStatus === 0) ?
-																		<button onClick={async () => await reserveRandomDance(scheduled.randomDanceId)}>
+																		<button onClick={async () => await reserveRandomDance(scheduled.randomDanceId)} className="blue-button">
 																		{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
 																		</button>
 																		: 
-																		<button onClick={async () => await cancelReservation(scheduled.randomDanceId)}>
+																		<button onClick={async () => await cancelReservation(scheduled.randomDanceId)} className="blue-button">
 																		{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
 																		</button>
 																	)
@@ -371,18 +370,19 @@ const RandomPlayList = () => {
 																						myName: nickname,
 																					},
 																				}}>
-																					<button>{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
+																					<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
 																				</Link>
 																				:
-																				<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")}>
+																				<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
 																				{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
 																				</button>
 																			)
 																		:
-																		<button>{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+																		<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
 																	)
 															}
-														<span>{month(scheduled.startAt)}/{day(scheduled.startAt)} {hour(scheduled.startAt)}:{minute(scheduled.startAt)} ~ {month(scheduled.endAt)}/{day(scheduled.endAt)} {hour(scheduled.endAt)}:{minute(scheduled.endAt)}</span>
+														<span>{scheduled.startAt.split("T")[0].split("-")[1]}월 {scheduled.startAt.split("T")[0].split("-")[2]}일 {scheduled.startAt.split("T")[1].split(":")[0]}시 {scheduled.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+														{scheduled.endAt.split("T")[0].split("-")[1]}월 {scheduled.endAt.split("T")[0].split("-")[2]}일 {scheduled.endAt.split("T")[1].split(":")[0]}시 {scheduled.endAt.split("T")[1].split(":")[1]}분</span>
 													</div>
 												</div>
 										</li>

@@ -2,13 +2,11 @@ package com.pi.stepup.global.util.jwt;
 
 import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.EXPIRED_TOKEN;
 import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.INVALID_TOKEN;
-import static com.pi.stepup.global.util.jwt.constant.JwtExceptionMessage.MALFORMED_HEADER;
 
 import com.pi.stepup.domain.user.dto.TokenInfo;
 import com.pi.stepup.global.error.exception.TokenException;
 import com.pi.stepup.global.util.jwt.exception.ExpiredTokenException;
 import com.pi.stepup.global.util.jwt.exception.InvalidTokenException;
-import com.pi.stepup.global.util.jwt.exception.MalformedHeaderException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,15 +30,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
 
     private final Key key;
-    private final long THIRTY_MINUTES = 1000 * 60 * 30;
-    private final long ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
+
+    @Value("${jwt.access-expired-in}")
+    private long ACCESS_TOKEN_EXPIRED_IN;
+
+    @Value("${jwt.refresh-expired-in}")
+    private long REFRESH_TOKEN_EXPIRED_IN;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -49,28 +49,29 @@ public class JwtTokenProvider {
     }
 
     // 유저 정보로 AccessToken, RefreshToken 생성하는 메서드
-    public TokenInfo generateToken(Collection<? extends GrantedAuthority> authorityInfo,
-        String id) {
-        log.debug("jwt token provide authentication : {}", authorityInfo);
+    public TokenInfo generateToken(Authentication authentication) {
+        log.debug("jwt token provide authentication : {}", authentication);
         // 권한 가져옴
-        String authorities = authorityInfo.stream()
+        String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
 
         // AccessToken 생성
-        Date accessTokenExpiresIn = new Date(now + THIRTY_MINUTES);
+        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRED_IN);
         String accessToken = Jwts.builder()
-            .setSubject(id)
+            .setSubject(authentication.getName())
             .claim("auth", authorities)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 
         // RefreshToken 생성
-        Date refreshTokenExpiresIn = new Date(now + ONE_WEEK);
+        Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRED_IN);
         String refreshToken = Jwts.builder()
+            .setSubject(authentication.getName())
+            .claim("auth", authorities)
             .setExpiration(refreshTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
@@ -126,23 +127,5 @@ public class JwtTokenProvider {
             throw new ExpiredTokenException(EXPIRED_TOKEN.getMessage());
         }
 
-    }
-
-    public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-
-        log.debug("bearertoken : {}", bearerToken);
-        if (StringUtils.hasText(bearerToken)) {
-            if (bearerToken.startsWith("Bearer")){
-                if (bearerToken.length() > 7) {
-                    int tokenStartIndex = 7;
-                    return bearerToken.substring(tokenStartIndex);
-                }
-                return null;
-            }
-            throw new MalformedHeaderException(MALFORMED_HEADER.getMessage());
-        }
-
-        return bearerToken;
     }
 }

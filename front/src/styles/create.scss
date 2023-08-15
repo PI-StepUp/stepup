@@ -1,13 +1,24 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 .create-wrap {
 	@include block-center(1200px);
 	padding-top: 73px;
 	padding-bottom: 165px;
-
+	@include mobile{
+		@include setSize(100vw);
+		padding-top:50px;
+		padding-bottom: 44px;
+	}
 	.create-title {
+		@include mobile{
+			margin-left:4vw;
+		}
 		span {
 			@include font(28px, 700, #6BBDA7);
+			@include mobile{
+                font-size:20px;
+            }
 		}
 
 		.flex-wrap {
@@ -16,27 +27,44 @@
 
 			h3 {
 				@include font(50px, 700, #1D1D1D);
+				@include mobile{
+                    font-size:34px;
+                }
 			}
 
 			.horizontal-line {
 				@include setSize(200px, 2px);
 				background-color: #1D1D1D;
 				margin-left: 18px;
+				@include mobile{
+                    @include setSize(80px, 2px);
+                    margin-left:12px;
+                }
 			}
 		}
 	}
 
 	.create-content {
 		margin-top: 110px;
+		@include mobile{
+            margin-top:40px;
+            padding:0px 4vw;
+        }
 
 		form {
+			@include mobile{
+				@include setSize(90vw, auto);
+				margin:0 auto;
+			}
 			table {
 				margin: 0 auto;
 
 				tr {
 					margin-top: 40px;
 					@include flex(flex-start, center);
-
+					@include mobile{
+						margin-top:20px;
+					}
 					td {
 						&:first-child {
 							padding-top: 0px;
@@ -45,11 +73,17 @@
 						&:nth-child(1) {
 							width: 200px;
 							@include font(30px, 600, #454545);
+							@include mobile{
+								@include setSize(30vw);
+								font-size:20px;
+							}
 						}
 
 						&:nth-child(2) {
 							width: 900px;
-
+							@include mobile{
+								width:100%;
+							}
 							.input-title {
 								@include setSize(900px, 70px);
 								background-color: #EDEDED;
@@ -57,6 +91,10 @@
 								border-radius: 10px;
 								@include box-padding(20px);
 								@include font(14px, 500, #454545);
+								@include mobile{
+									@include setSize(60vw, 50px);
+									font-size:12px;
+								}
 							}
 
 							.input-content {
@@ -67,6 +105,10 @@
 								@include box-padding(20px);
 								@include font(14px, 500, #454545);
 								margin-left: 0px;
+								@include mobile{
+									@include setSize(60vw, 180px);
+									font-size:12px;
+								}
 							}
 
 							.input-max {
@@ -99,13 +141,16 @@
 							}
 
 							input[type="file"] {
+								@include mobile{
+									@include setSize(60vw, 30px);
+								}
 								&::file-selector-button {
 									@include setSize(150px, 30px);
 									background: #EDEDED;
 									border: none;
 									border-radius: 10px;
 									cursor: pointer;
-
+									
 									&:hover {
 										background: rgb(77, 77, 77);
 										color: #fff;
@@ -120,6 +165,10 @@
 								border-radius: 10px;
 								@include box-padding(20px);
 								@include font(14px, 500, #454545);
+								@include mobile{
+									@include setSize(60vw, 50px);
+									font-size:12px;
+								}
 							}
 
 							.input-region {
@@ -129,6 +178,10 @@
 								border-radius: 10px;
 								@include box-padding(20px);
 								@include font(14px, 500, #454545);
+								@include mobile{
+									@include setSize(60vw, 50px);
+									font-size:12px;
+								}
 							}
 
 							.input-time {
@@ -138,7 +191,9 @@
 								border-radius: 10px;
 								@include box-padding(20px);
 								@include font(14px, 500, #454545);
-
+								@include mobile{
+									@include setSize(25vw,50px);
+								}
 								&:first-child {
 									margin-right: 20px;
 								}
@@ -149,6 +204,9 @@
 							}
 
 							.create-button-wrap {
+								@include mobile{
+									margin-top:10px;
+								}
 								ul {
 									@include flex(flex-end, center);
 
@@ -159,6 +217,9 @@
 											@include setSize(108px, 44px);
 											border: none;
 											cursor: pointer;
+											@include mobile{
+												@include setSize(80px, 32px);
+											}
 										}
 
 										&:nth-child(1) {
@@ -167,6 +228,9 @@
 											button {
 												background-color: #EDEDED;
 												@include font(16px, 500, #343434);
+												@include mobile{
+													font-size:12px;
+												}
 											}
 										}
 
@@ -174,6 +238,9 @@
 											button {
 												background-color: #343434;
 												@include font(16px, 500, #FFFFFF);
+												@include mobile{
+													font-size:12px;
+												}
 											}
 										}
 
