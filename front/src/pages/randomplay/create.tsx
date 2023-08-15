@@ -41,19 +41,19 @@ const RoomCreate = () => {
         }
 
 		try {
-			await axiosUser.post('/auth', {
-				id: id,
-			}, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					refreshToken: refreshToken,
-				}
-			}).then((data) => {
-				if (data.data.message === "토큰 재발급 완료") {
-					setAccessToken(data.data.data.accessToken);
-					setRefreshToken(data.data.data.refreshToken);
-				}
-			})
+			// await axiosUser.post('/auth', {
+			// 	id: id,
+			// }, {
+			// 	headers: {
+			// 		Authorization: `Bearer ${accessToken}`,
+			// 		refreshToken: refreshToken,
+			// 	}
+			// }).then((data) => {
+			// 	if (data.data.message === "토큰 재발급 완료") {
+			// 		setAccessToken(data.data.data.accessToken);
+			// 		setRefreshToken(data.data.data.refreshToken);
+			// 	}
+			// })
 
 			await axiosDance.post("", {
 				title: roomTitle.current?.value,
