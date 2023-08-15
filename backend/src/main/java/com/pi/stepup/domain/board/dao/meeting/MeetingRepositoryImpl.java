@@ -31,12 +31,13 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             return Optional.empty();
         }
     }
+
     @Override
     public List<Meeting> findById(String id) {
-            String jpql = "SELECT m FROM Meeting m WHERE m.writer.id = :id";
+        String jpql = "SELECT m FROM Meeting m WHERE m.writer.id = :id ORDER BY m.boardId desc";
         return em.createQuery(jpql, Meeting.class)
-                .setParameter("id", id)
-                .getResultList();
+            .setParameter("id", id)
+            .getResultList();
     }
 
     @Override

@@ -21,6 +21,7 @@ const NoticeList = () => {
     const [page, setPage] = useState<any>(1);
     const [role, setRole] = useRecoilState(roleState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [writeBtnShow, setWriteBtnShow] = useState<Boolean>(false);
     const router = useRouter();
 
     const moveNoticeDetail = (boardId : number) => {
@@ -36,6 +37,14 @@ const NoticeList = () => {
         setPage(page);
         console.log(page);
     }
+
+    useEffect(() => {
+        if (role === "ROLE_ADMIN") {
+            setWriteBtnShow(true);
+        } else {
+            setWriteBtnShow(false);
+        }
+    }, [role])
 
     useEffect(() => {
         axiosBoard.get("/notice",{
@@ -94,7 +103,7 @@ const NoticeList = () => {
                 </ul>
                 <div className="notice-create-button">
                     {
-                        role === "ROLE_ADMIN" ?
+                        writeBtnShow ?
                         <button><Link href="/notice/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
                         :
                         <></>
