@@ -88,7 +88,6 @@ const PracticeRoom = () => {
 	const localStreamRef = useRef<MediaStream>();
     const myVideoDivRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
-    const hostToken = router.query.token;
 
     const reflectHover = () => {
         setReflect(true);
@@ -279,7 +278,7 @@ const PracticeRoom = () => {
                     musicId: musicId,
                 },
                 headers: {
-                    Authorization: `Bearer ${hostToken}`, 
+                    Authorization: `Bearer ${accessToken}`, 
                 },
             });
             const responseData = await response.data;

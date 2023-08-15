@@ -62,7 +62,6 @@ const Hostroom = () => {
     const endAll : any = router.query.endAt;
     const endTime = endAll?.split(":")[0];
     const endMinute = endAll?.split(":")[1];
-    const hostToken = router.query.token;
     const reflectHover = () => {
         setReflect(true);
     }
@@ -107,7 +106,7 @@ const Hostroom = () => {
                 keyword: "",
             },
             headers:{
-                Authorization: `Bearer ${hostToken}`,
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
             console.log(data);
@@ -206,7 +205,7 @@ const Hostroom = () => {
                                     <li key={index}>
                                         <div className="flex-wrap">
                                             <div className="musiclist-content-thumbnail">
-                                                <Image src={music.url} alt=""/>
+                                                <Image src={music.url} alt="" width={40} height={40}/>
                                             </div>
                                             <div className="musiclist-content-info">
                                                 <h4>{music.title}</h4>

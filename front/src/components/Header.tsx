@@ -56,9 +56,6 @@ const Header = () => {
 		}else{
 			router.push({
 				pathname: "/practiceroom",
-				query:{
-					token: accessToken,
-				}
 			});
 		}
 	}
