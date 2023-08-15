@@ -2,6 +2,7 @@ package com.pi.stepup.domain.music.component;
 
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.music.domain.Heart;
+import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.music.service.MusicApplyRedisService;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import java.util.ArrayList;
@@ -50,8 +51,10 @@ public class SyncScheduler {
                     hearts = addHeartToDB(heartFromDB, userId, musicApplyId);
                     musicApplyRepository.insertHearts(hearts);
 
-                    String musicApplyKey = "musicApply:" + musicApplyId + ":heart_user";
-                    redisTemplate.delete(musicApplyKey);
+                    String musicApplyHeartCntKey = "music_apply_id:"+musicApplyId+":heart_cnt";
+                    MusicApply musicApply = musicApplyRepository.findOne(musicApplyId).get();
+                    musicApply.setHeartCnt(
+                        (Integer) redisTemplate.opsForValue().get(musicApplyHeartCntKey));
                 }
                 redisTemplate.delete(userKey);
             }

@@ -31,9 +31,9 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
         redisTemplate.opsForSet().add(userKey, (Long) musicApplyId);
         redisTemplate.expire(userKey, HEART_EXPIRED_IN, TimeUnit.MILLISECONDS);
 
-        String musicApplyKey = "musicApply:" + musicApplyId + ":heart_user";
-        redisTemplate.opsForSet().add(musicApplyKey, userId);
-        redisTemplate.expire(musicApplyKey, HEART_EXPIRED_IN, TimeUnit.MILLISECONDS);
+        String musicApplyHeartCntKey = "music_apply_id:"+musicApplyId+":heart_cnt";
+        redisTemplate.opsForValue().increment(musicApplyHeartCntKey, 1);
+        redisTemplate.expire(musicApplyHeartCntKey, HEART_EXPIRED_IN, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -54,7 +54,6 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
         }
 
         Boolean isHeartExist = redisTemplate.opsForSet().isMember(userKey, musicApplyId);
-        redisTemplate.expire(userKey, HEART_EXPIRED_IN, TimeUnit.MILLISECONDS);
         log.info("[DEBUG] {} 사용자의 {} 번 노래 신청 좋아요 존재 여부 : {}", userId, musicApplyId, isHeartExist);
 
         if (isHeartExist == null || !isHeartExist) {
@@ -78,7 +77,6 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
             }
         }
 
-        redisTemplate.expire(musicApplyKey, HEART_EXPIRED_IN, TimeUnit.MILLISECONDS);
         return redisTemplate.opsForSet().members(musicApplyKey);
     }
 
@@ -87,8 +85,8 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
         String userKey = "user:" + userId + ":heart_music_applies";
         redisTemplate.opsForSet().remove(userKey, musicApplyId);
 
-        String musicApplyKey = "musicApply:" + musicApplyId + ":heart_user";
-        redisTemplate.opsForSet().remove(musicApplyKey, userId);
+        String musicApplyHeartCntKey = "music_apply_id:"+musicApplyId+":heart_cnt";
+        redisTemplate.opsForValue().decrement(musicApplyHeartCntKey, 1);
     }
 
     @Override
@@ -110,5 +108,11 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
         for (Heart h : heartsFromDB) {
             saveHeart(h.getUser().getId(), h.getMusicApply().getMusicApplyId());
         }
+    }
+
+    @Override
+    public Integer getHeartCnt(Long musicApplyId) {
+        String musicApplyHeartCntKey = "music_apply_id:"+musicApplyId+":heart_cnt";
+        return (Integer) redisTemplate.opsForValue().get(musicApplyHeartCntKey);
     }
 }
