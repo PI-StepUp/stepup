@@ -8,7 +8,7 @@ import LanguageButton from "components/LanguageButton";
 
 import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg"
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, boardIdState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState, nicknameState } from "states/states";
 import { axiosBoard, axiosUser } from "apis/axios";
@@ -29,10 +29,17 @@ const MeetingList = () => {
     const [id, setId] = useRecoilState(idState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [meetingTitle, inView] = useInView();
+    const [boardId, setBoardId] = useRecoilState(boardIdState);
+    const router = useRouter();
 
     const handlePageChange = (page: any) => {
         setPage(page);
         console.log(page);
+    }
+
+    const moveMeetingDetail = (boardId: any) => {
+        setBoardId(boardId);
+        router.push(`/meeting/detail/${boardId}`);
     }
 
     useEffect(() => {
@@ -96,7 +103,7 @@ const MeetingList = () => {
                                                 </div>
                                                 <div className="meeting-content">
                                                     <p>{meeting.content}</p>
-                                                    <span><Link href={"/meeting/detail/" + meeting.boardId}>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</Link></span>
+                                                    <span onClick={() => moveMeetingDetail(meeting.boardId)}>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                                 </div>
                                             </li>
                                         )

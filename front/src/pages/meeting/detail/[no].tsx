@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, boardIdState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -22,6 +22,7 @@ const DetailArticle = () => {
     const [id, setId] = useRecoilState(idState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+    const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
     const [comments, setComments] = useState<any>();
     const commentValue = useRef<any>();
 
@@ -49,7 +50,7 @@ const DetailArticle = () => {
             content: commentValue.current.value,
         },{
             params:{
-                boardId: boardId,
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,
@@ -128,7 +129,7 @@ const DetailArticle = () => {
         try{
             await axiosBoard.delete(`/meeting/${boardId}`, {
                 params:{
-                    boardId: Number(boardId),
+                    boardId: boardIdStat,
                 },
                 headers:{
                     Authorization: `Bearer ${accessToken}`,
@@ -165,9 +166,9 @@ const DetailArticle = () => {
         }
 
 
-        axiosBoard.get(`/meeting/${boardId}`, {
+        axiosBoard.get(`/meeting/${boardIdStat}`, {
             params:{
-                boardId: boardId,
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`
