@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, boardIdState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailArticle = () => {
@@ -27,6 +27,7 @@ const DetailArticle = () => {
     const [comments, setComments] = useState<any>();
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+    const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
 
     const deleteComment = async (commentId: any) => {
         try{
@@ -85,12 +86,12 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        await axiosBoard.post(`/comment/${boardId}`, {
-            boardId: boardId,
+        await axiosBoard.post(`/comment/${boardIdStat}`, {
+            boardId: boardIdStat,
             content: commentValue.current.value,
         },{
             params:{
-                boardId: boardId,
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,
@@ -128,9 +129,9 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        await axiosBoard.delete(`/talk/${boardId}`,{
+        await axiosBoard.delete(`/talk/${boardIdStat}`,{
             params:{
-                boardId: Number(boardId),
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,
@@ -162,9 +163,9 @@ const DetailArticle = () => {
             alert('시스템 에러, 관리자에게 문의하세요.');
         }
 
-        axiosBoard.get(`/talk/${boardId}`, {
+        axiosBoard.get(`/talk/${boardIdStat}`, {
             params:{
-                boardId: Number(boardId),
+                boardId: boardIdStat,
             },
             headers:{
                 Authorization: `Bearer ${accessToken}`,

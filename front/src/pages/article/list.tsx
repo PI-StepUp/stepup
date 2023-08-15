@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import { useRecoilState } from "recoil";
-import { LanguageState, nicknameState } from "states/states";
+import { LanguageState, boardIdState, nicknameState } from "states/states";
 import { axiosBoard } from "apis/axios";
 
 import Pagination from "react-js-pagination";
@@ -20,6 +20,7 @@ const ArticleList = () => {
     const [articles, setArticles] = useState<any>();
     const [page, setPage] = useState<any>(1);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+    const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
     const searchValue = useRef<any>();
     const router = useRouter();
     const [articleTitle, inView] = useInView();
@@ -30,6 +31,9 @@ const ArticleList = () => {
             alert("해당 서비스는 로그인 후 이용 가능합니다.");
             return;
         }
+
+        setBoardIdStat(boardId);
+
         router.push({
             pathname: `/article/detail/${boardId}`,
         })

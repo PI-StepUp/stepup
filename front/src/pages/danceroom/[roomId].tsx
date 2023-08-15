@@ -521,11 +521,12 @@ const DanceRoom = () => {
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
 		});
 
-        socketRef.current.on('message', (data:any) => {
+        socketRef.current.on('message', async (data:any) => {
             setMsgList((prevMsgList: any) => [...prevMsgList, data]);
             if(inputChat.current != null){
                 inputChat.current.value = "";
             }
+            scrollToBottom();
         })
         
         socketRef.current.on('cntCorrect', (roomName: any) => {
@@ -649,7 +650,7 @@ const DanceRoom = () => {
                                         </button>
                                     </li>
                                 }
-                                <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li><Link href="/randomplay/list"><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></Link></li>
                                 {
                                     videoEnabled ?
                                     <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
@@ -698,11 +699,11 @@ const DanceRoom = () => {
                         <div className="chat-title">
                             <h3>{lang==="en" ? "Chatting" : lang==="cn" ? "聊天" : "채팅하기" }</h3>
                         </div>
-                        <div className="chat-content-wrap">
+                        <div className="chat-content-wrap" >
                             <div className="chat-read" ref={chatContent}>
                                 <ul className="chat-content">
                                 {
-                                    msgList.map((data) => {
+                                    msgList.map((data: any) => {
                                         return (
                                             <>
                                                 <li>
