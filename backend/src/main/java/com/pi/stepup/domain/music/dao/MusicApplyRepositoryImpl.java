@@ -151,4 +151,11 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
             em.persist(h);
         }
     }
+
+    @Override
+    public void deleteHearts(List<Heart> hearts) {
+        for (Heart h : hearts) {
+            em.remove(h);
+        }
+    }
 }
