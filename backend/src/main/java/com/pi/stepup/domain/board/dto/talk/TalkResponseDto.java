@@ -23,7 +23,7 @@ public class TalkResponseDto {
         private final List<CommentInfoResponseDto> comments;
 
         @Builder
-        public TalkInfoResponseDto(Talk talk, List<CommentInfoResponseDto> comments) {
+        public TalkInfoResponseDto(Talk talk, List<CommentInfoResponseDto> comments, Long viewCnt) {
             this.boardId = talk.getBoardId();
             this.title = talk.getTitle();
             this.content = talk.getContent();
@@ -32,7 +32,7 @@ public class TalkResponseDto {
             this.fileURL = talk.getFileURL();
             this.boardType = talk.getBoardType();
             this.commentCnt = talk.getCommentCnt();
-            this.viewCnt = talk.getViewCnt();
+            this.viewCnt = viewCnt;
             this.comments = comments;
         }
     }

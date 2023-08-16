@@ -47,7 +47,7 @@ public class MeetingApiControllerTest {
 
     @MockBean
     private MeetingService meetingService;
-    private MeetingRequestDto.MeetingSaveRequestDto  meetingSaveRequestDto;
+    private MeetingRequestDto.MeetingSaveRequestDto meetingSaveRequestDto;
     private MeetingRequestDto.MeetingUpdateRequestDto meetingUpdateRequestDto;
     private MeetingResponseDto.MeetingInfoResponseDto meetingInfoResponseDto;
     private User writer;
@@ -118,8 +118,8 @@ public class MeetingApiControllerTest {
                 .title("(수정)정모 테스트 제목")
                 .content("(수정)정모 테스트 내용")
                 .fileURL("(수정)https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
-                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .startAt(LocalDateTime.parse("2023-07-20 10:00", formatter))
+                .endAt(LocalDateTime.parse("2023-08-30 10:00", formatter))
                 .region("광주")
                 .build();
     }

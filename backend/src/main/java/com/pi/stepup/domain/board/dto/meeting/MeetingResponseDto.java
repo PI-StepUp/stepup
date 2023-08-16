@@ -40,7 +40,7 @@ public class MeetingResponseDto {
             this.endAt = meeting.getEndAt();
             this.comments = comments;
             this.commentCnt = meeting.getCommentCnt();
-            this.viewCnt = meeting.getViewCnt();
+            this.viewCnt = viewCnt;
         }
     }
 }
