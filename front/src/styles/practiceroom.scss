@@ -1,13 +1,20 @@
 @import "./function.scss";
+@import "./responsively.scss";
 
 .practiceroom-wrap{
     @include flex;
+    @include mobile{
+        flex-direction: column;
+    }
     .practice-video-wrap{
         @include box-padding(20px);
         @include setSize(76vw,100vh);
         @include flex;
         flex-direction: column;
         background-color:#F5F5F5;
+        @include mobile{
+            @include setSize(100vw, 100vh);
+        }
         .practice-title{
             @include flex(flex-start, center);
             .pre-icon{
@@ -15,6 +22,10 @@
                 background-color:#FFFFFF;
                 border-radius:100%;
                 @include flex(center,center);
+                @include mobile{
+                    box-sizing: border-box;
+                    padding:20px;
+                }
                 cursor:pointer;
                 img{
                     @include setSize(40px, 40px);
@@ -71,10 +82,19 @@
                 position:fixed;
                 bottom:36px;
                 @include flex(center,center);
+                @include mobile{
+                    @include setSize(100vw, auto);
+                }
                 ul{
                     @include flex(center, center);
+                    @include mobile{
+                        @include setSize(100vw, auto);
+                    }
                     li{
                         margin-left:30px;
+                        @include mobile{
+                            margin-left:2vw;
+                        }
                         &:first-child{
                             margin-left:0px;
                         }
@@ -83,6 +103,9 @@
                             border:none;
                             border-radius:50px;
                             cursor:pointer;
+                            @include mobile{
+                                @include setSize(15vw, 15vw);
+                            }
                         }
                         .audio-enabled,.video-enabled{
                             background-color:#F95A3A;
@@ -100,6 +123,9 @@
                             @include setSize(220px, 60px);
                             background-color:#FFF;
                             @include font(20px, 900, #696973);
+                            @include mobile{
+                                @include setSize(50vw, 15vw);
+                            }
                             &:hover{
                                 background-color:#F95A3A;
                                 @include font(20px, 900, #FFFFFF);
@@ -114,6 +140,9 @@
     .participant-wrap{
         @include setSize(24vw);
         @include box-padding(30px);
+        @include mobile{
+            @include setSize(100vw, auto);
+        }
         .participant-list{
             .participant-list-title{
                 position:relative;
@@ -210,6 +239,9 @@
                     position:absolute;
                     bottom:20px;
                     @include flex(space-between, center);
+                    @include mobile{
+                        position:relative;
+                    }
                     input[type="text"] {
                         @include setSize(100%, 30px);
                         background-color:#E9E9E9;
@@ -236,8 +268,14 @@
     .musiclist{
         @include setSize(24vw);
         @include box-padding(30px);
+        @include mobile{
+            @include setSize(100vw, auto);
+        }
         .musiclist-title{
             position:relative;
+            @include mobile{
+                position:none;
+            }
             h3{
                 @include font(28px, 900, #2D2D2F);
             }
@@ -596,4 +634,8 @@
 
 iframe{
     opacity:1;
+}
+
+#youtubeAnswer{
+    opacity:0;
 }

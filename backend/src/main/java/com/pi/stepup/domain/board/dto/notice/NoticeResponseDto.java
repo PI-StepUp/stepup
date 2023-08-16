@@ -15,6 +15,7 @@ public class NoticeResponseDto {
         private final String fileURL;
         private final String boardType;
         private final Long randomDanceId;
+        private final Long viewCnt;
 
         @Builder
         public NoticeInfoResponseDto(Notice notice) {
@@ -25,6 +26,7 @@ public class NoticeResponseDto {
             this.profileImg = notice.getWriter().getProfileImg();
             this.fileURL = notice.getFileURL();
             this.boardType = notice.getBoardType();
+            this.viewCnt = notice.getViewCnt();
             if (notice.getRandomDance() != null) {
                 this.randomDanceId = notice.getRandomDance().getRandomDanceId();
             } else {

@@ -4,6 +4,7 @@ import { LanguageState } from "states/states";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "/public/images/stepup-logo.svg";
+import footprint from "/public/images/footprint.svg";
 
 const Footer = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
@@ -18,6 +19,8 @@ const Footer = () => {
                                     <p>KPOP에 필요한 모든 만남</p>
 									<span>STEP UP</span>
                                 </div>
+                                <Image src={footprint} alt="" className="left-footprint"></Image>
+								<Image src={footprint} alt="" className="right-footprint"></Image>
                             </Link></h5>
                     </div>
                     <div className="footer-nav">

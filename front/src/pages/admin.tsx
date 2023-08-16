@@ -9,7 +9,7 @@ import { roleState } from "states/states"
 
 const Admin = () => {
     const [role, setRole] = useRecoilState(roleState);
-    const [showPage, setShowPage] = useState<Boolean>(false);
+    const [showPage, setShowPage] = useState<Boolean>(true);
 
     const openTimeOptions = {
         chart: {
@@ -92,58 +92,59 @@ const Admin = () => {
     };
 
     const musicSeries = [0];
-    
+
     useEffect(() => {
-            axiosDance.get("",{
-                params:{
-                    progressType: "ALL",
-                }
-            }).then((data) => {
-                let todayMonth = new Date().getMonth() + 1;
-                let todayDay = new Date().getDate();
-                let dataDate = data.data.data;
-                for(let i=0; i<dataDate.length; i++){
-                    if(Number(dataDate[i].startAt.split("T")[0].split("-")[1]) === todayMonth && Number(dataDate[i].startAt.split("T")[0].split("-")[2]) === todayDay){
-                        if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) < 12){
-                            openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] = openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] + 1;
-                        }else if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) >= 12){
-                            openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]] = openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]] + 1;
-                        }
+
+        // if (role === "ROLE_ADMIN") {
+        //     setShowPage(true);
+        // } else {
+        //     setShowPage(false);
+        // }
+
+        axiosDance.get("",{
+            params:{
+                progressType: "ALL",
+            }
+        }).then((data) => {
+            let todayMonth = new Date().getMonth() + 1;
+            let todayDay = new Date().getDate();
+            let dataDate = data.data.data;
+            console.log(dataDate);
+            for(let i=0; i<dataDate.length; i++){
+                if(Number(dataDate[i].startAt.split("T")[0].split("-")[1]) === todayMonth && Number(dataDate[i].startAt.split("T")[0].split("-")[2]) === todayDay){
+                    if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) < 12){
+                        openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] = openTimeSeries[0].data[dataDate[i].startAt.split("T")[1].split(":")[0]] + 1;
+                    }else if(Number(dataDate[i].startAt.split("T")[1].split(":")[0]) >= 12){
+                        openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]-12] = openTimeSeries[1].data[dataDate[i].startAt.split("T")[1].split(":")[0]-12] + 1;
                     }
                 }
-            })
-    
-            axiosMusic.get("/apply",{
-                params:{
-                    keyword: "",
+            }
+        })
+
+        axiosMusic.get("/apply",{
+            params:{
+                keyword: "",
+            }
+        }).then((data) => {
+            console.log("music data", data);
+            let dataMusic = data.data.data;
+            let dataMap = new Map();
+            for(let i=0; i<dataMusic.length; i++){
+                if(dataMap.get(dataMusic[i].artist) === undefined){
+                    dataMap.set(dataMusic[i].artist, 1);
+                }else{
+                    dataMap.set(dataMusic[i].artist, dataMap.get(dataMusic[i].artist) + 1);
                 }
-            }).then((data) => {
-                let dataMusic = data.data.data;
-                let dataMap = new Map();
-                for(let i=0; i<dataMusic.length; i++){
-                    if(dataMap.get(dataMusic[i].artist) === undefined){
-                        dataMap.set(dataMusic[i].artist, 1);
-                    }else{
-                        dataMap.set(dataMusic[i].artist, dataMap.get(dataMusic[i].artist) + 1);
-                    }
-                }
-                console.log(dataMap);
-                dataMap.forEach((value, key, mapObject) => {
-                    musicOptions.labels.push(key);
-                    musicSeries.push(value);
-                })
+            }
+            dataMap.forEach((value, key, mapObject) => {
+                musicOptions.labels.push(key);
+                musicSeries.push(value);
+                
             })
+        })
+
     }, []);
 
-    useEffect(() => {
-        if (role === "ROLE_ADMIN") {
-            setShowPage(true);
-        } else {
-            setShowPage(false);
-        }
-    }, [role]);
-
-    
     return (
         <>
         {

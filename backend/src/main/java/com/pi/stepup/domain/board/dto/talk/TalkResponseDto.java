@@ -19,6 +19,7 @@ public class TalkResponseDto {
         private final String fileURL;
         private final String boardType;
         private final int commentCnt;
+        private final Long viewCnt;
         private final List<CommentInfoResponseDto> comments;
 
         @Builder
@@ -31,6 +32,7 @@ public class TalkResponseDto {
             this.fileURL = talk.getFileURL();
             this.boardType = talk.getBoardType();
             this.commentCnt = talk.getCommentCnt();
+            this.viewCnt = talk.getViewCnt();
             this.comments = comments;
         }
     }

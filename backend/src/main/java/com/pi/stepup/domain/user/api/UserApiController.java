@@ -11,7 +11,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWO
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOKENS_SUCCESS;
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_STATISTICS_OF_USER_COUNTRY_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 
@@ -23,7 +23,6 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.service.UserService;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,6 +64,16 @@ public class UserApiController {
             ResponseDto.create(
                 READ_ALL_COUNTRIES_SUCCESS.getMessage(),
                 userService.readAllCountries()
+            )
+        );
+    }
+
+    @GetMapping("/statistics/country")
+    public ResponseEntity<ResponseDto<?>> readStatisticsOfUserCountry() {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                READ_STATISTICS_OF_USER_COUNTRY_SUCCESS.getMessage(),
+                userService.readStatisticsOfUserCountry()
             )
         );
     }
@@ -246,23 +254,6 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 FIND_PASSWORD_SUCCESS.getMessage()
-            )
-        );
-    }
-
-    @Operation(summary = "토큰 재발급", description = "access token, refresh token을 재발급한다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "토큰 재발급 성공")
-    })
-    @PostMapping("/auth")
-    public ResponseEntity<ResponseDto<?>> reissueTokens(
-        @RequestHeader("refreshToken") String refreshToken,
-        @RequestBody ReissueTokensRequestDto reissueTokensRequestDto
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-            ResponseDto.create(
-                REISSUE_TOKENS_SUCCESS.getMessage(),
-                userService.reissueTokens(refreshToken, reissueTokensRequestDto)
             )
         );
     }

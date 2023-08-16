@@ -107,8 +107,10 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     @Override
     public MeetingInfoResponseDto readOne(Long boardId) {
-        meetingRepository.findOne(boardId).orElseThrow(()
-                -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+        Meeting meeting = meetingRepository.findOne(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+        // 조회수 증가
+        meeting.increaseViewCnt();
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return MeetingInfoResponseDto.builder()
                 .meeting(meetingRepository.findOne(boardId).orElseThrow())
