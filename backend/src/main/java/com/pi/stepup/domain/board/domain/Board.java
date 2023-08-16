@@ -47,7 +47,7 @@ public abstract class Board extends BaseEntity {
     @Column(name = "BOARD_TYPE", insertable = false, updatable = false)
     String boardType;
 
-    @Column(name = "VIEW_CNT", nullable = false)
+    @Column(name = "VIEW_CNT")
     Long viewCnt;
 
     public void increaseViewCnt() {

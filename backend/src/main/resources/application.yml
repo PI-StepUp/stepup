@@ -5,6 +5,8 @@ spring:
         - jwt
         - mail
         - springdoc
+        - redisrelease
+        - mongorelease
       develop:
         - jwt
         - mail
