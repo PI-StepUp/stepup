@@ -42,6 +42,7 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -266,6 +267,29 @@ public class DanceServiceImpl implements DanceService {
 
             allDance.add(danceSearchResponseDto);
         }
+
+        allDance.sort(new Comparator<DanceSearchResponseDto>() {
+            @Override
+            public int compare(DanceSearchResponseDto o1, DanceSearchResponseDto o2) {
+                if (o1.getIsEnd() < o2.getIsEnd()) {
+                    return -1;
+                }
+
+                if (o1.getIsEnd() > o2.getIsEnd()) {
+                    return 1;
+                }
+
+                if (o1.getStartAt().isBefore(o2.getStartAt())) {
+                    return -1;
+                }
+
+                if (!o1.getStartAt().isBefore(o2.getStartAt())) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        });
 
         return allDance;
     }
