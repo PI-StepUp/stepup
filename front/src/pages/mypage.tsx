@@ -132,7 +132,7 @@ const MyPage = () => {
           }
         })
       } catch (e) {
-        console.log("로그인 안했는데 진입?", e);
+        console.log("로그인되지 않은 상태에서 진입", e);
         alert('시스템 에러, 관리자에게 문의하세요.');
       }
     }
@@ -183,9 +183,6 @@ const MyPage = () => {
             await getpoint();
             await setPointLeft(goalRankPoint - point);
 
-            // await console.log("남은 포인트", pointLeft);
-            // await console.log("다음 랭크의 포인트", goalRankPoint);
-            // await console.log("로그인 유저 포인트", point);
           }
         })
 
@@ -198,8 +195,6 @@ const MyPage = () => {
           if (data.data.message === "내가 작성한 정모 목록 조회") {
             setMeetingBoard(data.data.data as Boards[]);
             meetingCnt = data.data.data.length!;
-            // console.log("정모 작성 목록", meetingBoard);
-            // console.log("정모게시글 개수 ", meetingCnt);
           }
         })
 
@@ -295,9 +290,7 @@ const MyPage = () => {
 
   const checkPw = async () => {
     console.log("-----------수정페이지 진입-------------")
-    // console.log(id, pwValue.current!.value);
     setCheckPassword(pwValue.current!.value);
-    // console.log(accessToken);
 
     try {
       axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
