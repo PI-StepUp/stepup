@@ -1,6 +1,10 @@
 import { useRecoilState } from "recoil";
 import { LanguageState } from "states/states";
 
+import Link from "next/link";
+import Image from "next/image";
+import logo from "/public/images/stepup-logo.svg";
+
 const Footer = () => {
     const [lang, setLang] = useRecoilState(LanguageState);
     return (
@@ -8,7 +12,13 @@ const Footer = () => {
             <footer>
                 <div className="footer-top">
                     <div className="footer-logo">
-                        <h5>Footer logo</h5>
+                        <h5><Link href="/">
+                                <Image src={logo} alt=""></Image>
+								<div className="logo-info">
+                                    <p>KPOP에 필요한 모든 만남</p>
+									<span>STEP UP</span>
+                                </div>
+                            </Link></h5>
                     </div>
                     <div className="footer-nav">
                         <ul>

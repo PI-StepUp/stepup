@@ -1,9 +1,9 @@
 import React, { ReactElement, useRef, useState } from 'react';
 import { LanguageState, accessTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
-import { axiosDance } from "apis/axios";
 import Image from "next/image"
 import router from 'next/router';
+import axios from "axios";
 
 interface props {
 	open: boolean;
@@ -23,16 +23,16 @@ interface props {
 const Modal = (props: props): ReactElement => {
 	const roomTitle = useRef<any>(props.title);
 	const roomContent = useRef<any>(props.content);
-	const startDateString = (props.startAt||'').split('T')[0];
+	const startDateString = (props.startAt || '').split('T')[0];
 	const startDate = new Date(startDateString);
 	const formattedStartDate = startDate.toISOString().split("T")[0];
 	const roomStartDate = useRef<any>(formattedStartDate);
-	const startTimeString = (props.startAt||'').split('T')[1];
-	const [startH, startM] = (startTimeString||'').split(":");
+	const startTimeString = (props.startAt || '').split('T')[1];
+	const [startH, startM] = (startTimeString || '').split(":");
 	const formattedStartTime = `${startH}:${startM}`;
 	const roomStartTime = useRef<any>(formattedStartTime);
-	const endTimeString = props.endAt;
-	const [endH, endM] = endTimeString.split(":");
+	const endTimeString = (props.endAt || '').split('T')[1];
+	const [endH, endM] = (endTimeString || '').split(":");
 	const formattedEndTime = `${endH}:${endM}`;
 	const roomEndTime = useRef<any>(formattedEndTime);
 	const roomMaxNum = useRef<any>(props.maxUser);
@@ -45,20 +45,7 @@ const Modal = (props: props): ReactElement => {
 
 	// 랜플댄 수정
 	const updateRPD = async () => {
-		// console.log(props.randomDanceId);
-		// console.log(roomTitle.current?.value);
-		// console.log(roomContent.current?.value);
-		// console.log(roomStartDate.current?.value + " " + roomStartTime.current?.value);
-		// console.log(roomStartDate.current?.value + " " + roomEndTime.current?.value);
-		// console.log(danceType);
-		// console.log(Number(roomMaxNum.current?.value));
-		// console.log(roomImg);
-		// console.log(props.hostId);
-		// console.log(props.danceMusicIdList);
-		// console.log(accessToken)
-
-		// 랜플댄 정보 수정
-		await axiosDance.put("/my", {
+		await axios.put("https://stepup-pi.com:8080/api/dance/my", {
 			randomDanceId: props.randomDanceId,
 			title: roomTitle.current?.value,
 			content: roomContent.current?.value,
@@ -76,6 +63,7 @@ const Modal = (props: props): ReactElement => {
 		}).then((data) => {
 			if (data.data.message === "랜덤 플레이 댄스 수정 완료") {
 				{ lang === "en" ? alert("Random play dance information has been updated.") : lang === "cn" ? alert("随机播放舞蹈信息已更新。") : alert("랜덤 플레이 댄스 정보를 수정했습니다.") }
+				close(false);
 				router.push('/mypage');
 			} else {
 				{ lang === "en" ? alert("Modification was not successful. Please try again.") : lang === "cn" ? alert("修改未成功。请再试一次。") : alert("수정을 완료하지 못했습니다. 다시 한 번 시도해주세요.") }
@@ -111,7 +99,7 @@ const Modal = (props: props): ReactElement => {
 							<table>
 								<tr>
 									<td className="modify-title">방 제목</td>
-									<td><input type="text" className="input-title" ref={roomTitle} defaultValue={props.title}/></td>
+									<td><input type="text" className="input-title" ref={roomTitle} defaultValue={props.title} /></td>
 								</tr>
 								<tr>
 									<td className="modify-title">방 소개</td>
@@ -129,19 +117,19 @@ const Modal = (props: props): ReactElement => {
 								</tr>
 								<tr>
 									<td className="modify-title">개최 날짜</td>
-									<td><input type="date" className="input-date" ref={roomStartDate} defaultValue={formattedStartDate}/></td>
+									<td><input type="date" className="input-date" ref={roomStartDate} defaultValue={formattedStartDate} /></td>
 								</tr>
 								<tr>
 									<td className="modify-title">개최 시간</td>
 									<td className="modify-time">
-										<input type="time" className="input-time" ref={roomStartTime} defaultValue={formattedStartTime}/>
+										<input type="time" className="input-time" ref={roomStartTime} defaultValue={formattedStartTime} />
 										<p> - </p>
-										<input type="time" className="input-time" ref={roomEndTime} defaultValue={formattedEndTime}/>
+										<input type="time" className="input-time" ref={roomEndTime} defaultValue={formattedEndTime} />
 									</td>
 								</tr>
 								<tr>
 									<td className="modify-title">최대 참여자 수</td>
-									<td><input type="number" className="input-max" ref={roomMaxNum} defaultValue={props.maxUser}/></td>
+									<td><input type="number" className="input-max" ref={roomMaxNum} defaultValue={props.maxUser} /></td>
 								</tr>
 								<tr>
 									<td className="modify-title">대표이미지</td>

@@ -4,9 +4,10 @@ import Link from "next/link"
 import Header from "../components/Header"
 import Banner from "components/MypageBanner";
 import Modal from "../components/UpdateRPDModal"
+import PointModal from "../components/PointHistoryModal"
 import Footer from "../components/Footer"
 import Image from "next/image"
-import img_profile from "/public/images/profile-default.png"
+import img_profile from "/public/images/default-meeting-profile.svg"
 import img_rpdance from "/public/images/dummy-rpdance.png"
 import img_notice from "/public/images/icon-notice.png"
 import img_offline from "/public/images/icon-offline.png"
@@ -20,7 +21,7 @@ import { useRouter } from "next/router";
 import { LanguageState } from "states/states";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState, canEditInfoState } from "states/states";
 
-import { axiosUser, axiosDance, axiosBoard, axiosRank } from "apis/axios";
+import axios from "axios";
 
 const MyPage = () => {
   interface Boards {
@@ -52,7 +53,11 @@ const MyPage = () => {
   const [reserved, setReserved] = useState<any[]>();
   const [myRandomDance, setMyRandomDance] = useState<any[]>();
   const [myRandomDanceHistory, setMyRandomDanceHistory] = useState<any[]>();
-  const [visibleItems, setVisibleItems] = useState(3);
+  const [visibleItemsReserved, setVisibleItemsReserved] = useState(3);
+  const [visibleItemsOpen, setVisibleItemsOpen] = useState(3);
+  const [visibleItemsHistory, setVisibleItemsHistory] = useState(3);
+  const [visibleItemsMeeting, setVisibleItemsMeeting] = useState(3);
+  const [visibleItemsTalk, setVisibleItemsTalk] = useState(3);
   const [meetingBoard, setMeetingBoard] = useState<Boards[] | null>(null);
   const [talkBoard, setTalkBoard] = useState<Boards[] | null>(null);
   const [boardCnt, setBoardCnt] = useState<number>();
@@ -63,6 +68,7 @@ const MyPage = () => {
 
   // 로그인한 유저가 개최한 랜플댄 정보 수정
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [pointModalOpen, setPointModalOpen] = useState<boolean>(false);
   const [editId, setEditId] = useState<number>(0);
   const [editTitle, setEditTitle] = useState<string>('');
   const [editContent, setEditContent] = useState<string>('');
@@ -73,16 +79,10 @@ const MyPage = () => {
   const [editThumbnail, setEditThumbnail] = useState<string>('');
   const [editHostId, setEditHostId] = useState<string>(id);
   const [editDanceMusicIdList, SetEditDanceMusicIdList] = useState<any>();
+  const [rankBtnColor, setRankBtnColor] = useState<String>();
 
   const router = useRouter();
   const pwValue = useRef<HTMLInputElement>();
-
-  // console.log("id", id);
-  // console.log("Language ");
-  // console.log(lang);
-  // console.log("Token ");
-  // console.log(accessToken);
-  // console.log(refreshToken);
 
   // 작성한 게시글 목록으로 스크롤 이동
   const list = useRef<HTMLDivElement>(null);
@@ -98,14 +98,9 @@ const MyPage = () => {
   // 예약된 랜플댄 개수
   let reservedRandomDanceCnt: number = 0;
 
-
   // 작성한 게시글 개수 합산
   let talkCnt: number;
   let meetingCnt: number;
-  // let boardCnt: number;
-
-  // rank 관련 변수
-  let rankBtnColor: string = "#A77044";
 
   useEffect(() => {
     if (id === '' || accessToken === '' || refreshToken === '') {
@@ -114,7 +109,7 @@ const MyPage = () => {
     } else {
       // 접근 권한(로그인 여부) 확인
       try {
-        axiosUser.post('/auth', {
+        axios.post('https://stepup-pi.com:8080/api/user/auth', {
           id: id,
         }, {
           headers: {
@@ -122,8 +117,8 @@ const MyPage = () => {
             refreshToken: refreshToken,
           }
         }).then((data) => {
-          console.log(data);
-          console.log(data.data.message)
+          // console.log(data);
+          // console.log(data.data.message)
           if (data.data.message === "토큰 재발급 완료") {
             setAccessToken(data.data.data.accessToken);
             setRefreshToken(data.data.data.refreshToken);
@@ -137,18 +132,15 @@ const MyPage = () => {
           }
         })
       } catch (e) {
-        console.log("로그인 안했는데 진입?", e);
+        console.log("로그인되지 않은 상태에서 진입", e);
         alert('시스템 에러, 관리자에게 문의하세요.');
       }
     }
-    setDomLoaded(true);
-  }, []);
 
-  useEffect(() => {
     if (id !== '' && accessToken !== '' && refreshToken !== '') {
       const setup = async () => {
         // 로그인 유저 정보 조회
-        await axiosUser.get("", {
+        await axios.get("https://stepup-pi.com:8080/api/user", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -158,32 +150,28 @@ const MyPage = () => {
             await setLoginUser(data.data.data);
             await setLoginUserNickname(data.data.data.nickname);
             await setRankName(data.data.data.rankName);
-            // console.log("rankName >> ", rankName);
 
-            await setRankName(rankName);
-            switch (rankName) {
-              case "BRONZE":
-                rankBtnColor = "#A77044";
-                setGoalRankPoint(100);
-                // console.log("유저 정보 확인 - 포인트", goalRankPoint);
-                break;
-              case "SILVER":
-                rankBtnColor = "#A7A7AD";
-                setGoalRankPoint(300);
-                break;
-              case "GOLD":
-                rankBtnColor = "#FFB028";
-                setGoalRankPoint(1000);
-                break;
-              case "PLATINUM":
-                rankBtnColor = "#86f989";
-                setGoalRankPoint(10000);
-                break;
-              default:
-                rankBtnColor = "#A77044";
-                setGoalRankPoint(100);
-                break;
+            const getRankColor = (rank: string) => {
+              switch (rank) {
+                case "BRONZE":
+                  setRankBtnColor("#A77044");
+                  setGoalRankPoint(100);
+                  break;
+                case "SILVER":
+                  setRankBtnColor("#A7A7AD");
+                  setGoalRankPoint(300);
+                  break;
+                case "GOLD":
+                  setRankBtnColor("#FFB028");
+                  setGoalRankPoint(1000);
+                  break;
+                case "PLATINUM":
+                  setRankBtnColor("#86f989");
+                  setGoalRankPoint(10000);
+                  break;
+              }
             }
+            await getRankColor(data.data.data.rankName);
 
             await setProfileImg(data.data.data.profileImg);
 
@@ -195,43 +183,23 @@ const MyPage = () => {
             await getpoint();
             await setPointLeft(goalRankPoint - point);
 
-            // await console.log("남은 포인트", pointLeft);
-            // await console.log("다음 랭크의 포인트", goalRankPoint);
-            // await console.log("로그인 유저 정보", loginUser);
           }
         })
 
-        // // 로그인 유저의 포인트 적립 내역 조회
-        // await axiosRank.get("/my/history", {
-        //   headers: {
-        //     Authorization: `Bearer ${accessToken}`
-        //   }
-        // }).then((data) => {
-        //   // console.log("로그인 유저의 포인트 적립 내역 조회", data);
-        //   if (data.data.message === "포인트 적립 내역 조회 완료") {
-        //     setPointHistory(data.data.data);
-        //     // console.log("포인트 적립 내역", pointHistory);
-        //   }
-        // })
-
         // 로그인 유저가 작성한 정모 게시글 조회
-        await axiosBoard.get(`/meeting/my`, {
+        await axios.get(`https://stepup-pi.com:8080/api/board/meeting/my`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
         }).then((data) => {
-          // console.log("로그인 유저가 작성한 정모 게시글 조회", data);
-          // console.log("조회하자마자 바로 len 계산 >>", data.data.data.length);
           if (data.data.message === "내가 작성한 정모 목록 조회") {
             setMeetingBoard(data.data.data as Boards[]);
             meetingCnt = data.data.data.length!;
-            // console.log("정모 작성 목록", meetingBoard);
-            // console.log("정모게시글 개수 ", meetingCnt);
           }
         })
 
         // 로그인 유저가 작성한 자유게시판 게시글 조회
-        await axiosBoard.get(`/talk/my`, {
+        await axios.get(`https://stepup-pi.com:8080/api/board/talk/my`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -240,14 +208,12 @@ const MyPage = () => {
           if (data.data.message === "내가 작성한 자유게시판 목록 조회") {
             setTalkBoard(data.data.data as Boards[]);
             talkCnt = data.data.data.length!;
-            // console.log("자유게시판 작성 목록", talkBoard);
-            // console.log("자유게시판 개수 ", talkCnt);
             setBoardCnt(talkCnt + meetingCnt);
           }
         })
 
         // 로그인 유저의 랜플댄 예약 목록 조회
-        await axiosDance.get("/my/reserve", {
+        await axios.get("https://stepup-pi.com:8080/api/dance/my/reserve", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -256,13 +222,11 @@ const MyPage = () => {
           if (data.data.message === "내가 예약한 랜덤 플레이 댄스 목록 조회 완료") {
             setReserved(data.data.data);
             reservedRandomDanceCnt = reserved?.length!;
-            // setReservedThumbnail(data.data.data.thumbnail);
-            // console.log("내 예약 목록", reserved);
           }
         })
 
         // 로그인 유저가 개최한 랜플댄 목록 조회
-        await axiosDance.get("/my/open", {
+        await axios.get("https://stepup-pi.com:8080/api/dance/my/open", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -270,12 +234,11 @@ const MyPage = () => {
           // console.log("로그인 유저가 개최한 랜플댄 목록", data);
           if (data.data.message === "내가 개최한 랜덤 플레이 댄스 목록 조회 완료") {
             setMyRandomDance(data.data.data);
-            // console.log("내 예약 목록", myRandomDance);
           }
         })
 
         // 로그인 유저가 참여한 랜플댄 목록 조회
-        await axiosDance.get("/my/attend/", {
+        await axios.get("https://stepup-pi.com:8080/api/dance/my/attend/", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           },
@@ -286,20 +249,23 @@ const MyPage = () => {
           }
         })
         await setReadyData(true);
+        await setDomLoaded(true);
       }
       setup();
     }
-  })
+
+  }, []);
 
   // 로그인 유저의 랜플댄 예약 취소
   const cancelRandomDance = async (selectedId: any) => {
-    await axiosDance.delete(`/my/reserve/${selectedId}`, {
+    await axios.delete(`https://stepup-pi.com:8080/api/dance/my/reserve/${selectedId.reservationId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
-    }).then((data: { data: { message: string; }; }) => {
+    }).then((data) => {
       if (data.data.message === "랜덤 플레이 댄스 예약 취소 완료") {
         alert("예약을 취소하셨습니다.")
+        router.push("/mypage");
       } else {
         alert("예약을 취소하지 못했습니다. 다시 한 번 시도해주세요.")
       }
@@ -308,14 +274,14 @@ const MyPage = () => {
 
   // 로그인 유저가 개최한 랜플댄 삭제
   const deleteMyRandomDance = async (roomid: any) => {
-    console.log("삭제 함수 >> ", roomid.rpdId);
-    await axiosDance.delete(`/my/${roomid.rpdId}`, {
+    await axios.delete(`https://stepup-pi.com:8080/api/dance/my/${roomid.rpdId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
     }).then((data: { data: { message: string; }; }) => {
       if (data.data.message === "랜덤 플레이 댄스 삭제 완료") {
         alert("개최한 랜덤 플레이 댄스를 삭제했습니다.");
+        router.push("/mypage");
       } else {
         alert("삭제를 하지 못했습니다. 다시 한 번 시도해주세요.");
       }
@@ -324,12 +290,10 @@ const MyPage = () => {
 
   const checkPw = async () => {
     console.log("-----------수정페이지 진입-------------")
-    console.log(id, pwValue.current!.value);
     setCheckPassword(pwValue.current!.value);
-    console.log(accessToken);
 
     try {
-      axiosUser.post("/checkpw", {
+      axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
         id: id,
         password: pwValue.current!.value,
       }, {
@@ -337,7 +301,7 @@ const MyPage = () => {
           Authorization: `Bearer ${accessToken}`,
         }
       }).then((data) => {
-        console.log("비밀번호 일치 여부 결과", data);
+        // console.log("비밀번호 일치 여부 결과", data);
         if (data.data.message === "비밀번호 일치") {
           setEqualPw(true);
           setCanEditInfo(true);
@@ -370,9 +334,16 @@ const MyPage = () => {
     scrollToEditRPD();
     setModalOpen(true);
   }
-
   const leaveModalClose = async () => {
     setModalOpen(false);
+  }
+
+  // 포인트 적립 내역 모달창
+  const leavePointModalOpen = async () => {
+    setPointModalOpen(true);
+  }
+  const leavePointModalClose = async () => {
+    setPointModalOpen(false);
   }
 
   return (
@@ -398,14 +369,14 @@ const MyPage = () => {
                     {/* 프로필 클릭 시 포인트 적립 내역 모달창 추가 예정 */}
                     <div className="info history">
                       <div className="img-profile">
-                        {profileImg === null || profileImg === 'url'
-                          ? (<Image className="img" src={img_profile} alt="profile_default" width={100} height={100}></Image>)
-                          : (<Image className="img" src={profileImg.toString} alt="profile" width={100} height={100}></Image>)}
+                        {profileImg === null || profileImg === 'url' || profileImg == ""
+                          ? (<Image onClick={leavePointModalOpen} className="img" src={img_profile} alt="profile_default" width={100} height={100}></Image>)
+                          : (<Image onClick={leavePointModalOpen} className="img" src={profileImg.toString()} alt="profile" width={100} height={100}></Image>)}
                       </div>
                       <div>
                         <progress value={point} max={goalRankPoint}></progress>
                         <div className="progress-text">
-                          <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {readyData ? pointLeft : null}</p>
+                          <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {Number(goalRankPoint-point)}</p>
                           {readyData ? (<p>{point}/{goalRankPoint}</p>) : (<p></p>)}
                         </div>
                         <div className="info-user">
@@ -431,7 +402,7 @@ const MyPage = () => {
                 <ul className="list">
                   <div>{lang === "en" ? "My Reservation" : lang === "cn" ? "我的预订" : "내 예약"}</div>
                   <div>
-                    {reserved?.map((reservation, index) => {
+                    {reserved?.slice(0, visibleItemsReserved)?.map((reservation, index) => {
                       const reservationId = reservation.randomDanceId;
                       return (
                         <li className="contents" key={index}>
@@ -452,6 +423,11 @@ const MyPage = () => {
                       )
                     })}
                   </div>
+                  {reserved && visibleItemsReserved < reserved.length && (
+                    <button className="btn-more" onClick={() => setVisibleItemsReserved(visibleItemsReserved + 3)}>
+                      {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
+                    </button>
+                  )}
                 </ul>
               </div>
               {/* end - my reservation */}
@@ -459,9 +435,8 @@ const MyPage = () => {
                 <ul className="list">
                   <div>{lang === "en" ? "My Organized" : lang === "cn" ? "我举办的活动" : "개최한 랜플댄"}</div>
                   <div>
-                    {myRandomDance?.map((randomDance, index) => {
+                    {myRandomDance?.slice(0, visibleItemsOpen)?.map((randomDance, index) => {
                       const rpdId: number = randomDance.randomDanceId;
-                      console.log("목록 출력 중 >> ", rpdId);
                       return (
                         <li className="contents" key={index}>
                           <div className="img-box">
@@ -482,6 +457,11 @@ const MyPage = () => {
                       )
                     })}
                   </div>
+                  {myRandomDance && visibleItemsOpen < myRandomDance.length && (
+                    <button className="btn-more" onClick={() => setVisibleItemsOpen(visibleItemsOpen + 3)}>
+                      {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
+                    </button>
+                  )}
                 </ul>
               </div>
               {/* end - my open */}
@@ -507,12 +487,12 @@ const MyPage = () => {
                 <ul className="list">
                   <div>{lang === "en" ? "Participation History" : lang === "cn" ? "参与历史" : "참여 이력"}</div>
                   <div>
-                    {myRandomDanceHistory?.slice(0, visibleItems)?.map((randomDance, index) => {
+                    {myRandomDanceHistory?.slice(0, visibleItemsHistory)?.map((randomDance, index) => {
                       const randomDanceId = randomDance.randomDanceId;
                       return (
                         <li className="contents" key={index}>
                           <div className="img-box">
-                          {randomDance.thumbnail === null || randomDance.thumbnail === "url"
+                            {randomDance.thumbnail === null || randomDance.thumbnail === "url"
                               ? (<Image className="img" src={img_rpdance} alt="open" width={100} height={100}></Image>)
                               : (<Image className="img" src={randomDance.thumbnail.toString} alt="open" width={100} height={100}></Image>)}
                           </div>
@@ -528,19 +508,19 @@ const MyPage = () => {
                       )
                     })}
                   </div>
+                  {myRandomDanceHistory && visibleItemsHistory < myRandomDanceHistory.length && (
+                    <button className="btn-more" onClick={() => setVisibleItemsHistory(visibleItemsHistory + 3)}>
+                      {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
+                    </button>
+                  )}
                 </ul>
-                {myRandomDanceHistory && visibleItems < myRandomDanceHistory.length && (
-                  <button onClick={() => setVisibleItems(visibleItems + 3)}>
-                    {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
-                  </button>
-                )}
               </div>
               {/* end - past random play dance */}
               <div ref={list}>
                 <ul className="list">
                   <div>{lang === "en" ? "Written Posts - Offline Meetings" : lang === "cn" ? "撰写的帖子 - 线下聚会" : "작성한 글 - 오프라인 정모"}</div>
                   <div>
-                    {meetingBoard?.slice(0, visibleItems)?.map((board, index) => {
+                    {meetingBoard?.slice(0, visibleItemsMeeting)?.map((board, index) => {
                       const linkUrl = `/meeting/detail/${board.boardId}`;
                       return (
                         <li className="contents" key={index}>
@@ -559,17 +539,17 @@ const MyPage = () => {
                       )
                     })}
                   </div>
-                  {meetingBoard && visibleItems < meetingBoard.length && (
-                    <button className="btn-more" onClick={() => setVisibleItems(visibleItems + 3)}>
+                  {meetingBoard && visibleItemsMeeting < meetingBoard.length && (
+                    <button className="btn-more" onClick={() => setVisibleItemsMeeting(visibleItemsMeeting + 3)}>
                       {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
                     </button>
                   )}
                 </ul>
                 {/* end - meeting board */}
                 <ul className="list">
-                  <div>{lang === "en" ? "Written Posts - Free Board" : lang === "cn" ? "撰写的帖子 - 自由留言板" : "작성한 글 - 자유게시판"}</div>
+                  <div>{lang === "en" ? "Written Posts - Free Talk" : lang === "cn" ? "撰写的帖子 - 自由留言板" : "작성한 글 - 자유게시판"}</div>
                   <div>
-                    {talkBoard?.slice(0, visibleItems)?.map((board, index) => {
+                    {talkBoard?.slice(0, visibleItemsTalk)?.map((board, index) => {
                       const linkUrl = `/article/detail/${board.boardId}`;
                       return (
                         <li className="contents" key={index}>
@@ -588,8 +568,8 @@ const MyPage = () => {
                       )
                     })}
                   </div>
-                  {talkBoard && visibleItems < talkBoard.length && (
-                    <button className="btn-more" onClick={() => setVisibleItems(visibleItems + 3)}>
+                  {talkBoard && visibleItemsTalk < talkBoard.length && (
+                    <button className="btn-more" onClick={() => setVisibleItemsTalk(visibleItemsTalk + 3)}>
                       {lang === "en" ? "View More" : lang === "cn" ? "查看更多" : "더보기"}
                     </button>
                   )}
@@ -611,6 +591,9 @@ const MyPage = () => {
           </div>
           {modalOpen &&
             <Modal open={modalOpen} close={leaveModalClose} randomDanceId={editId} title={editTitle} content={editContent} startAt={editStartAt} endAt={editEndAt} danceType={editDanceType} maxUser={Number(editMaxUser)} thumbnail={editThumbnail} hostId={editHostId} danceMusicIdList={editDanceMusicIdList}></Modal>
+          }
+          {pointModalOpen &&
+            <PointModal open={pointModalOpen} close={leavePointModalClose}></PointModal>
           }
           <Footer />
         </div>

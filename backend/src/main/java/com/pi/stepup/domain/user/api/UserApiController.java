@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.user.api;
 
+import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHANGE_PASSWORD_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_ID_DUPLICATED_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_NICKNAME_DUPLICATED_SUCCESS;
@@ -14,6 +15,7 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOK
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 
+import com.pi.stepup.domain.user.dto.UserRequestDto.ChangePasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
@@ -36,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -197,6 +200,21 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body(
             ResponseDto.create(
                 UPDATE_USER_SUCCESS.getMessage()
+            )
+        );
+    }
+
+    @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경한다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공")
+    })
+    @PatchMapping("/pw")
+    public ResponseEntity<ResponseDto<?>> changePassword(
+        @RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
+        userService.changePassword(changePasswordRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ResponseDto.create(
+                CHANGE_PASSWORD_SUCCESS.getMessage()
             )
         );
     }

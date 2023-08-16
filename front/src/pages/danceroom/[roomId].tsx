@@ -21,6 +21,7 @@ import { LanguageState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter";
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
+import { axiosRank } from "apis/axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -93,7 +94,7 @@ const DanceRoom = () => {
 	const localStreamRef = useRef<MediaStream>();
 	const [users, setUsers] = useState<any[]>([]);
 
-    const [msgList, setMsgList] = useState<any[]>([]);
+    const [msgList, setMsgList] = useState<any>([]);
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [count3, setCount3] = useState(false);
@@ -178,13 +179,7 @@ const DanceRoom = () => {
     }
 
     const sendMessage = () => {
-        socketRef.current.emit("send_message", inputChat.current?.value, roomId);
-        socketRef.current.on('message', (data:any) => {
-            setMsgList([...msgList, data]);
-        })
-        if(inputChat.current != null){
-            inputChat.current.value = "";
-        }
+        socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
         scrollToBottom();
     }
 
@@ -196,14 +191,7 @@ const DanceRoom = () => {
 
     const handleKeyPress = (e: any) => {
         if (e.key === 'Enter') {
-            socketRef.current.emit("send_message", inputChat.current?.value, roomId);
-            socketRef.current.on('message', (data:any) => {
-                setMsgList([...msgList, data]);
-            })
-            if(inputChat.current != null){
-                inputChat.current.value = "";
-            }
-            scrollToBottom();
+            socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
         }
     };
 
@@ -322,6 +310,7 @@ const DanceRoom = () => {
                 }, 5000)
             }else{
                 setPlayResult("success");
+								setCorrect(correct + 1);
                 setTimeout(() => {
                     setPlayResult("");
                 }, 5000)
@@ -416,6 +405,13 @@ const DanceRoom = () => {
         
     }
 
+    const stopMediaTracks = (stream: any) => {
+        if (!stream) return;
+        stream.getTracks().forEach((track: any) => {
+          track.stop();
+        });
+    };
+
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
 		getLocalStream();
@@ -501,11 +497,38 @@ const DanceRoom = () => {
 
 		socketRef.current.on('user_exit', (data: { id: string }) => {
 			if (!pcsRef.current[data.id]) return;
+			// 성공한 노래 개수에 따른 포인트 지급
+			axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
+				id: id,
+				pointPolicyId: 4,
+				randomDanceId: roomId,
+				count: correct,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			}).then((data) => {
+				if (data.data.message === "포인트 적립 완료") {
+					alert("성공 포인트가 적립되었습니다!");
+				}
+			}).catch((e) => {
+				console.log("포인트 지급 에러 발생", e);
+				alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+			})
+
 			pcsRef.current[data.id].close();
 			delete pcsRef.current[data.id];
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
 		});
 
+        socketRef.current.on('message', async (data:any) => {
+            setMsgList((prevMsgList: any) => [...prevMsgList, data]);
+            if(inputChat.current != null){
+                inputChat.current.value = "";
+            }
+            scrollToBottom();
+        })
+        
         socketRef.current.on('cntCorrect', (roomName: any) => {
             if(roomId == roomName){
                 socketRef.current.emit('close_randomplay', nickname, correct, roomName);
@@ -517,6 +540,27 @@ const DanceRoom = () => {
                 modal.current.style.display = "block";
                 winnerValue.current.value = winner;
             }
+
+						// 1등 포인트 적립
+						if(winner == id){
+							axiosRank.post(`/point`, {
+								id: id,
+								pointPolicyId: 1,
+								randomDanceId: roomId,
+								count: 1,
+							}, {
+								headers: {
+									Authorization: `Bearer ${accessToken}`
+								}
+							}).then((data) => {
+								if (data.data.message === "포인트 적립 완료") {
+									alert("수상 포인트가 적립되었습니다! 축하드립니다!");
+								}
+							}).catch((e) => {
+								console.log("포인트 지급 에러 발생", e);
+								alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+							})
+						}
         })
 
         socketRef.current.on("startRandomplay", async (musicId: number) => {
@@ -539,6 +583,12 @@ const DanceRoom = () => {
         });
 
 		return () => {
+            if (localStreamRef.current) {
+                const videoTrack = localStreamRef.current.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.stop();
+                }
+            }
 			if (socketRef.current) {
 				socketRef.current.disconnect();
 			}
@@ -547,6 +597,10 @@ const DanceRoom = () => {
 				pcsRef.current[user.id].close();
 				delete pcsRef.current[user.id];
 			});
+
+            stopMediaTracks(localStreamRef.current);
+
+            localVideoRef.current = null;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [createPeerConnection, getLocalStream]);
@@ -557,7 +611,9 @@ const DanceRoom = () => {
                 <div className="practice-video-wrap">
                     <div className="practice-title">
                         <div className="pre-icon">
-                            <Link href="/randomplay/list"><Image src={LeftArrowIcon} alt=""/></Link>
+                            <Link href="/randomplay/list">
+                                <Image src={LeftArrowIcon} alt=""/>
+                            </Link>
                         </div>
                         <div className="room-title">
                             <h3>{roomTitle}</h3>
@@ -594,7 +650,7 @@ const DanceRoom = () => {
                                         </button>
                                     </li>
                                 }
-                                <li><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li><Link href="/randomplay/list"><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></Link></li>
                                 {
                                     videoEnabled ?
                                     <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
@@ -643,11 +699,11 @@ const DanceRoom = () => {
                         <div className="chat-title">
                             <h3>{lang==="en" ? "Chatting" : lang==="cn" ? "聊天" : "채팅하기" }</h3>
                         </div>
-                        <div className="chat-content-wrap">
+                        <div className="chat-content-wrap" >
                             <div className="chat-read" ref={chatContent}>
                                 <ul className="chat-content">
                                 {
-                                    msgList.map((data) => {
+                                    msgList.map((data: any) => {
                                         return (
                                             <>
                                                 <li>
@@ -655,8 +711,8 @@ const DanceRoom = () => {
                                                         <Image src={ChatDefaultImg} alt=""/>
                                                     </div>
                                                     <div className="chat-user-msg">
-                                                        <span>{myName}</span>
-                                                        <p>{data}</p>
+                                                        <span>{data.nickname}</span>
+                                                        <p>{data.content}</p>
                                                     </div>
                                                 </li>
                                             </>

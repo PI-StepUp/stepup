@@ -8,7 +8,7 @@ import LanguageButton from "components/LanguageButton";
 
 import defaultMeetingProfileImg from "/public/images/default-meeting-profile.svg"
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, boardIdState } from "states/states";
 import { useRecoilState } from "recoil";
 import { LanguageState, nicknameState } from "states/states";
 import { axiosBoard, axiosUser } from "apis/axios";
@@ -30,10 +30,32 @@ const MeetingList = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [meetingTitle, inView] = useInView();
 
+    const [boardId, setBoardId] = useRecoilState(boardIdState);
+    const router = useRouter();
+
+    const [writeBtnShow, setWriteBtnShow] = useState<Boolean>(false);
+
     const handlePageChange = (page: any) => {
         setPage(page);
         console.log(page);
     }
+
+    const moveMeetingDetail = (boardId: any) => {
+        if(nickname === ""){
+            alert("해당 서비스는 로그인 후 이용가능합니다.");
+            return;
+        }
+        setBoardId(boardId);
+        router.push(`/meeting/detail/${boardId}`);
+    }
+
+    useEffect(() => {
+        if (nickname === "") {
+            setWriteBtnShow(false);
+        } else {
+            setWriteBtnShow(true);
+        }
+    }, [nickname])
 
     useEffect(() => {
         axiosBoard.get('/meeting', {
@@ -77,10 +99,10 @@ const MeetingList = () => {
                     }
                     <div className="button-wrap">
                         {
-                            nickname === "" ?
-                            <></>
-                            :
+                            writeBtnShow ?
                             <button><Link href="/meeting/create">{lang==="en" ? "CREATE" : lang==="cn" ? "撰写文章" : "글 작성하기" }</Link></button>
+                            :
+                            <></>
                         }
                     </div>
                     <div className="meeting-content-wrap">
@@ -96,7 +118,7 @@ const MeetingList = () => {
                                                 </div>
                                                 <div className="meeting-content">
                                                     <p>{meeting.content}</p>
-                                                    <span><Link href={"/meeting/detail/" + meeting.boardId}>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</Link></span>
+                                                    <span onClick={() => moveMeetingDetail(meeting.boardId)}>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>
                                                 </div>
                                             </li>
                                         )

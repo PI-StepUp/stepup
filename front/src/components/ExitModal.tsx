@@ -2,8 +2,8 @@ import React, { ReactElement, useState } from 'react';
 import { LanguageState } from "states/states";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState } from "states/states";
 import { useRecoilState } from "recoil";
-import { axiosUser } from "apis/axios";
 import router from 'next/router';
+import axios from "axios";
 
 interface props {
 	open: boolean;
@@ -23,7 +23,7 @@ const Modal = (props: props): ReactElement => {
 
 	// 회원 탈퇴
 	const leaveStepup = async () => {
-		await axiosUser.delete(`?id=${id}`, {
+		await axios.delete(`https://stepup-pi.com:8080/api/user?id=${id}`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`
 			},

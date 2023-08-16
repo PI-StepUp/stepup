@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import io from 'socket.io-client';
 
 import LeftArrowIcon from "/public/images/icon-left-arrow.svg"
@@ -20,7 +20,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router";
 
-import { axiosMusic, axiosUser, axiosDance } from "apis/axios";
+import { axiosMusic, axiosUser, axiosDance, axiosRank } from "apis/axios";
 import axios from "axios";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, rankNameState } from "states/states";
 
@@ -62,7 +62,6 @@ const Hostroom = () => {
     const endAll : any = router.query.endAt;
     const endTime = endAll?.split(":")[0];
     const endMinute = endAll?.split(":")[1];
-    const hostToken = router.query.token;
     const reflectHover = () => {
         setReflect(true);
     }
@@ -88,26 +87,43 @@ const Hostroom = () => {
         setMoredot(false);
     }
 
-    const playMusic = (musicId : number) => {
-        socketRef.current.emit("playMusic", musicId, roomName);
-        alert("새로운 곡이 재생됩니다.");
-    }
+	const playMusic = (musicId: number) => {
+		socketRef.current.emit("playMusic", musicId, roomName);
+		alert("새로운 곡이 재생됩니다.");
+	}
 
-    const finishRandomPlay = () => {
-        socketRef.current.emit("finish", roomName);
-        alert("랜덤플레이댄스가 종료되었습니다. 이용해주셔서 감사합니다.");
-        router.push('/randomplay/list');
-    }
+	const finishRandomPlay = () => {
+		socketRef.current.emit("finish", roomName);
+		axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
+			id: id,
+			pointPolicyId: 5,
+			randomDanceId: roomId,
+			count: 1,
+		}, {
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		}).then((data) => {
+			if (data.data.message === "포인트 적립 완료") {
+				alert("개최 포인트가 적립되었습니다!");
+			}
+		}).catch((e) => {
+			console.log("포인트 지급 에러 발생", e);
+			alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+		})
+		alert("랜덤플레이댄스가 종료되었습니다. 이용해주셔서 감사합니다.");
+		router.push('/randomplay/list');
+	}
 
-    useEffect(() => {
-        socketRef.current = io.connect(SOCKET_SERVER_URL);
+	useEffect(() => {
+		socketRef.current = io.connect(SOCKET_SERVER_URL);
 
         axios.get('https://stepup-pi.com:8080/api/music',{
             params:{
                 keyword: "",
             },
             headers:{
-                Authorization: `Bearer ${hostToken}`,
+                Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
             console.log(data);
@@ -116,35 +132,82 @@ const Hostroom = () => {
             }
         });
 
-        axiosDance.get('',{
-            params: {
-                progressType: "ALL",
-            }
-        }).then((data) => {
-            console.log(data);
-            if(data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료"){
-                for(let i=0; i<data.data.data.length; i++) {
-                    if(data.data.data[i].title === roomTitle){
-                        setRoomName(data.data.data[i].randomDanceId);
-                    }
-                }
-            }
-        });
+		axiosDance.get('', {
+			params: {
+				progressType: "ALL",
+			}
+		}).then((data) => {
+			console.log(data);
+			if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
+				for (let i = 0; i < data.data.data.length; i++) {
+					if (data.data.data[i].title === roomTitle) {
+						setRoomName(data.data.data[i].randomDanceId);
+					}
+				}
+			}
+		});
 
-    }, [])
-    return(
-        <>
-            <div className="practiceroom-wrap">
-                <div className="practice-video-wrap">
-                    <div className="practice-title">
-                        <div className="pre-icon">
-                            <Link href="/"><Image src={LeftArrowIcon} alt=""/></Link>
-                        </div>
-                        <div className="room-title">
-                            <h3>{title}</h3>
-                            <span>진행시간: {startTime}시 {startMinute}분 - {endTime}시 {endMinute}분</span>
-                        </div>
-                    </div>
+	}, [])
+	return (
+		<>
+			<div className="practiceroom-wrap">
+				<div className="practice-video-wrap">
+					<div className="practice-title">
+						<div className="pre-icon">
+							<Link href="/"><Image src={LeftArrowIcon} alt="" /></Link>
+						</div>
+						<div className="room-title">
+							<h3>{title}</h3>
+							<span>진행시간: {startTime}시 {startMinute}분 - {endTime}시 {endMinute}분</span>
+						</div>
+					</div>
+
+					<div className="video-content">
+						<div className="my-video">
+							<video src=""></video>
+						</div>
+						<div className="yours-video">
+							<ul>
+								<li>
+									<video src=""></video>
+								</li>
+								<li>
+									<video src=""></video>
+								</li>
+								<li>
+									<video src=""></video>
+								</li>
+								<li>
+									<video src=""></video>
+								</li>
+							</ul>
+						</div>
+						<div className="control-wrap">
+							<ul>
+								<li onMouseEnter={reflectHover} onMouseLeave={reflectLeave}>
+									<button>
+										{reflect ? <Image src={ReflectHoverIcon} alt="" /> : <Image src={ReflectIcon} alt="" />}
+									</button>
+								</li>
+								<li onMouseEnter={micHover} onMouseLeave={micLeave}>
+									<button>
+										{mic ? <Image src={MicHoverIcon} alt="" /> : <Image src={MicIcon} alt="" />}
+									</button>
+								</li>
+								<li onClick={finishRandomPlay}><button className="exit-button">{lang === "en" ? "End Practice" : lang === "cn" ? "结束练习" : "연습 종료하기"}</button></li>
+								<li onMouseEnter={cameraHover} onMouseLeave={cameraLeave}>
+									<button>
+										{camera ? <Image src={CameraHoverIcon} alt="" /> : <Image src={CameraIcon} alt="" />}
+									</button>
+								</li>
+								<li onMouseEnter={moreDotHover} onMouseLeave={moreDotLeave}>
+									<button>
+										{moredot ? <Image src={MoreDotHoverIcon} alt="" /> : <Image src={MoreIcon} alt="" />}
+									</button>
+								</li>
+							</ul>
+						</div>
+					</div>
 
                     <div className="video-content">
                         <div className="my-video">
@@ -206,7 +269,7 @@ const Hostroom = () => {
                                     <li key={index}>
                                         <div className="flex-wrap">
                                             <div className="musiclist-content-thumbnail">
-                                                <Image src={PlayThumbnail} alt=""/>
+                                                <Image src={music.url} alt="" width={40} height={40}/>
                                             </div>
                                             <div className="musiclist-content-info">
                                                 <h4>{music.title}</h4>
