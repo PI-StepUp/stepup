@@ -58,7 +58,6 @@ const NoticeList = () => {
                 keyword: "",
             }
         }).then((data) => {
-            console.log(data);
             if(data.data.message === "공지사항 전체 목록 조회 완료"){
                 setNotices(data.data.data);
             }

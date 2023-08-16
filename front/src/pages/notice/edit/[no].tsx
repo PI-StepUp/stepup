@@ -25,24 +25,6 @@ const NoticeCreate = () => {
     const editNotice = async (e: any) => {
         e.preventDefault();
 
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
         await axiosBoard.put("/notice", {
             boardId: boardId,
             title: noticeTitle.current?.value,
@@ -60,6 +42,59 @@ const NoticeCreate = () => {
             if(data.data.message === "공지사항 수정 완료"){
                 alert("게시글이 수정되었습니다.");
                 router.push('/notice/list');
+            }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosBoard.put("/notice", {
+                    boardId: boardId,
+                    title: noticeTitle.current?.value,
+                    content: noticeContent.current?.value,
+                    writerName: notice.writerName,
+                    writerProfileImg: notice.writerProfileImg,
+                    fileURL: noticeFile.current?.value,
+                    boardType: notice.boardType,
+                    randomDanceId: 1,
+                },{
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosBoard.put("/notice", {
+                        boardId: boardId,
+                        title: noticeTitle.current?.value,
+                        content: noticeContent.current?.value,
+                        writerName: notice.writerName,
+                        writerProfileImg: notice.writerProfileImg,
+                        fileURL: noticeFile.current?.value,
+                        boardType: notice.boardType,
+                        randomDanceId: 1,
+                    },{
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "공지사항 수정 완료"){
+                            alert("게시글이 수정되었습니다.");
+                            router.push('/notice/list');
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }

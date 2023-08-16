@@ -39,50 +39,39 @@ const RandomPlayList = () => {
 	const router = useRouter();
 	
 	useEffect(() => {	
-		if (accessToken) {
-			try {
-				axiosDance.get('', {
-					params: {
-						progressType: "ALL",
-					},
-					headers: {
-						Authorization: `Bearer ${accessToken}`
-					}
-				}).then((data) => {
-					console.log(data);
-					if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
-						setRooms(data.data.data);
-					}
-				})
-		
-				axiosDance.get('', {
-					params: {
-						progressType: "IN_PROGRESS",
-					},
-					headers: {
-						Authorization: `Bearer ${accessToken}`
-					}
-				}).then((data) => {
-					if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
-						setInprogress(data.data.data);
-					}
-				})
-		
-				axiosDance.get('', {
-					params: {
-						progressType: "SCHEDULED",
-					},
-					headers: {
-						Authorization: `Bearer ${accessToken}`
-					}
-				}).then((data) => {
-					if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
-						setScheduled(data.data.data);
-					}
-				})
-			} catch (e) {
-				alert('시스템 에러, 관리자에게 문의하세요.');
-			}
+		try {
+			axiosDance.get('', {
+				params: {
+					progressType: "ALL",
+				},
+			}).then((data) => {
+				console.log(data);
+				if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
+					setRooms(data.data.data);
+				}
+			})
+	
+			axiosDance.get('', {
+				params: {
+					progressType: "IN_PROGRESS",
+				},
+			}).then((data) => {
+				if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
+					setInprogress(data.data.data);
+				}
+			})
+	
+			axiosDance.get('', {
+				params: {
+					progressType: "SCHEDULED",
+				},
+			}).then((data) => {
+				if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
+					setScheduled(data.data.data);
+				}
+			})
+		} catch (e) {
+			alert('시스템 에러, 관리자에게 문의하세요.');
 		}
 	}, []);
 
@@ -97,12 +86,46 @@ const RandomPlayList = () => {
 				headers: {
 					Authorization: `Bearer ${accessToken}`
 				}
+			}).then((data) => {
+				if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+					alert("예약을 완료했습니다.");
+				}
+			}).catch((error: any) => {
+				if(error.response.data.message === "만료된 토큰"){
+					axiosDance.post(`/reserve/${randomDanceId}`, {}, {
+						headers: {
+							refreshToken: refreshToken,
+						}
+					}).then((data) => {
+						console.log(data);
+						if(data.data.message === "토큰 재발급 완료"){
+							setAccessToken(data.data.data.accessToken);
+							setRefreshToken(data.data.data.refreshToken);
+						}
+					}).then(() => {
+						axiosDance.post(`/reserve/${randomDanceId}`, {}, {
+							headers: {
+								Authorization: `Bearer ${accessToken}`
+							}
+						}).then((data) => {
+							if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+								alert("예약을 완료했습니다.");
+							}
+						})
+					}).catch((data) => {
+						if(data.response.status === 401){
+							alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+							router.push("/login");
+							return;
+						}
+	
+						if(data.response.status === 500){
+							alert("시스템 에러, 관리자에게 문의하세요.");
+							return;
+						}
+					})
+				}
 			})
-				.then((data) => {
-					if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
-						alert("예약을 완료했습니다.");
-					}
-				});
 			location.reload();
 		} catch (e) {
 			console.log(e);
@@ -117,12 +140,45 @@ const RandomPlayList = () => {
 					headers: {
 						Authorization: `Bearer ${accessToken}`
 					}
+				}).then((data) => {
+					if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+						alert("예약을 완료했습니다.");
+					}
+				}).catch((error: any) => {
+					if(error.response.data.message === "만료된 토큰"){
+						axiosDance.delete(`/my/reserve/${randomDanceId}`, {
+							headers: {
+								refreshToken: refreshToken,
+							}
+						}).then((data) => {
+							if(data.data.message === "토큰 재발급 완료"){
+								setAccessToken(data.data.data.accessToken);
+								setRefreshToken(data.data.data.refreshToken);
+							}
+						}).then(() => {
+							axiosDance.delete(`/my/reserve/${randomDanceId}`, {
+								headers: {
+									Authorization: `Bearer ${accessToken}`
+								}
+							}).then((data) => {
+								if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+									alert("예약을 완료했습니다.");
+								}
+							})
+						}).catch((data) => {
+							if(data.response.status === 401){
+								alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+								router.push("/login");
+								return;
+							}
+		
+							if(data.response.status === 500){
+								alert("시스템 에러, 관리자에게 문의하세요.");
+								return;
+							}
+						})
+					}
 				})
-					.then((data) => {
-						if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
-							alert("예약을 완료했습니다.");
-						}
-					});
 				location.reload();
 			} catch (e) {
 				console.log(e);
