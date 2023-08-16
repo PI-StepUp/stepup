@@ -35,6 +35,7 @@ const DetailArticle = () => {
                 }
             }).then(() => {
                 alert('좋아요가 추가되었습니다.');
+                router.reload();
                 router.push(`/playlist/detail/${musicId}`);
             }).catch((error: any) => {
                 if(error.response.data.message === "만료된 토큰"){

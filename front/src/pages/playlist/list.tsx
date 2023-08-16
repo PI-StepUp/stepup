@@ -48,12 +48,12 @@ const PlayList = () => {
     } 
 
     useEffect(() => {
-
         axiosMusic.get("/apply",{
             params:{
                 keyword:"",
             },
         }).then((data) => {
+            console.log("데이터", data);
             setPlaylist(data.data.data);
         });
 
@@ -103,7 +103,8 @@ const PlayList = () => {
                                             <div className="heart-wrap">
                                                 {
                                                     playlist.canHeart === 1 ?
-                                                    <Image src={HeartEmptyIcon} alt=""></Image> :
+                                                    <Image src={HeartEmptyIcon} alt=""></Image>
+                                                    :
                                                     <Image src={HeartFillIcon} alt=""></Image>
                                                 }
                                                 <span>{playlist.heartCnt}</span>
