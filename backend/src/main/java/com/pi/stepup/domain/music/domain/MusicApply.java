@@ -4,6 +4,7 @@ import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.global.entity.BaseEntity;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,7 +45,7 @@ public class MusicApply extends BaseEntity {
     @ColumnDefault("0")
     private Integer heartCnt;
 
-    @OneToMany(mappedBy = "musicApply")
+    @OneToMany(mappedBy = "musicApply", cascade = CascadeType.REMOVE)
     private List<Heart> hearts = new ArrayList<>();
 
     @Builder
