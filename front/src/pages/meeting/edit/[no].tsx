@@ -44,33 +44,12 @@ const MeetingEdit = () => {
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log(data);
             if(data.data.message === "정모 수정 완료"){
                 alert("오프라인 모임 수정이 완료되었습니다.");
                 router.push('/meeting/list');
             }
         }).catch((error: any) => {
-            axiosBoard.put('/meeting', {
-                boardId: article.boardId,
-                title: meetingTitle.current?.value,
-                content: meetingContent.current?.value,
-                writerName: article.writerName,
-                writerProfileImg: article.writerProfileImg,
-                fileURL: article.fileURL,
-                boardType: article.boardType,
-                region: meetingRegion.current?.value,
-                startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
-                endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
-            }, {
-                headers:{
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            }).then(() => {
+            if(error.response.data.message === "만료된 토큰"){
                 axiosBoard.put('/meeting', {
                     boardId: article.boardId,
                     title: meetingTitle.current?.value,
@@ -84,27 +63,49 @@ const MeetingEdit = () => {
                     endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
                 }, {
                     headers:{
-                        Authorization: `Bearer ${accessToken}`,
+                        refreshToken: refreshToken,
                     }
                 }).then((data) => {
-                    console.log(data);
-                    if(data.data.message === "정모 수정 완료"){
-                        alert("오프라인 모임 수정이 완료되었습니다.");
-                        router.push('/meeting/list');
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
                     }
-                })
-            }).catch((data) => {
-                if(data.response.status === 401){
-                    alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
-                    router.push("/login");
-                    return;
-                }
-
-                if(data.response.status === 500){
-                    alert("시스템 에러, 관리자에게 문의하세요.");
-                    return;
-                }
-            })
+                }).then(() => {
+                    axiosBoard.put('/meeting', {
+                        boardId: article.boardId,
+                        title: meetingTitle.current?.value,
+                        content: meetingContent.current?.value,
+                        writerName: article.writerName,
+                        writerProfileImg: article.writerProfileImg,
+                        fileURL: article.fileURL,
+                        boardType: article.boardType,
+                        region: meetingRegion.current?.value,
+                        startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
+                        endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+                    }, {
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        console.log(data);
+                        if(data.data.message === "정모 수정 완료"){
+                            alert("오프라인 모임 수정이 완료되었습니다.");
+                            router.push('/meeting/list');
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+    
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                });
+            }
         })
     }
 
@@ -190,6 +191,8 @@ const MeetingEdit = () => {
                 <div className="create-content">
                     <form>
                         <table>
+                            <tbody>
+
                             <tr>
                                 <td>제목</td>
                                 <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={meetingTitle}/></td>
@@ -224,6 +227,7 @@ const MeetingEdit = () => {
                                     </div>
                                 </td>
                             </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>

@@ -114,6 +114,7 @@ const DetailArticle = () => {
                 setComments([...comments, {commentId: lastCommentId+1, writerName: nickname, writerProfileImg: profileImg, content: commentValue.current.value}]);
                 commentValue.current.value = "";
                 alert("댓글이 추가되었습니다.");
+                router.reload();
                 router.push(`/article/detail/${boardId}`);
             }
         }).catch((error: any) => {
@@ -153,6 +154,7 @@ const DetailArticle = () => {
                             setComments([...comments, {commentId: lastCommentId+1, writerName: nickname, writerProfileImg: profileImg, content: commentValue.current.value}]);
                             commentValue.current.value = "";
                             alert("댓글이 추가되었습니다.");
+                            router.reload();
                             router.push(`/article/detail/${boardId}`);
                         }
                     })

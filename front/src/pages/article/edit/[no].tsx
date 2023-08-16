@@ -180,6 +180,7 @@ const ArticleEdit = () => {
                 <div className="create-content">
                     <form action="">
                         <table>
+                            <tbody>
                             <tr>
                                 <td>제목</td>
                                 <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={title}/></td>
@@ -203,6 +204,7 @@ const ArticleEdit = () => {
                                     </div>
                                 </td>
                             </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>

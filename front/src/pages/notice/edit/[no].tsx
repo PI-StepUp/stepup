@@ -6,7 +6,7 @@ import Footer from "components/Footer";
 
 import { axiosBoard, axiosUser } from "apis/axios";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 import { useRouter } from "next/router";
 
@@ -100,25 +100,6 @@ const NoticeCreate = () => {
     }
 
     useEffect(() => {
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
-
         axiosBoard.get(`/notice/${boardId}`, {
             params:{
                 boardId: boardId,
@@ -127,11 +108,56 @@ const NoticeCreate = () => {
                 Authorization: `Bearer ${accessToken}`
             }
         }).then((data) => {
+            console.log("data", data);
             if(data.data.message === "공지사항 게시글 조회 완료"){
                 noticeTitle.current.value = data.data.data.title;
                 noticeContent.current.value = data.data.data.content;
                 noticeFile.current.value = data.data.data.fileURL;
                 setNotice(data.data.data);
+            }
+        }).catch((error: any) => {
+            console.error("error", error);
+            if(error.response.data.message === "만료된 토큰"){
+                axiosBoard.get(`/notice/${boardId}`, {
+                    params:{
+                        boardId: boardId,
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosBoard.get(`/notice/${boardId}`, {
+                        params:{
+                            boardId: boardId,
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "공지사항 게시글 조회 완료"){
+                            noticeTitle.current.value = data.data.data.title;
+                            noticeContent.current.value = data.data.data.content;
+                            noticeFile.current.value = data.data.data.fileURL;
+                            setNotice(data.data.data);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }, [])
@@ -151,6 +177,7 @@ const NoticeCreate = () => {
                 <div className="create-content">
                     <form action="">
                         <table>
+                            <tbody>
                             <tr>
                                 <td>제목</td>
                                 <td><input type="text" placeholder="제목을 입력해주세요." className="input-title" ref={noticeTitle}/></td>
@@ -174,6 +201,7 @@ const NoticeCreate = () => {
                                     </div>
                                 </td>
                             </tr>
+                            </tbody>
                         </table>
                     </form>
                 </div>
