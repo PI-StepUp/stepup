@@ -34,4 +34,6 @@ public interface MusicApplyRepository {
     void insertHearts(List<Heart> hearts);
 
     void deleteHearts(List<Heart> hearts);
+
+    void deleteHeartById(String id);
 }

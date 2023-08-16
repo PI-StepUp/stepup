@@ -1,13 +1,17 @@
 package com.pi.stepup.domain.music.component;
 
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
+import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
+
 import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.MusicApply;
+import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.music.service.MusicApplyRedisService;
 import com.pi.stepup.domain.user.dao.UserRepository;
+import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,54 +32,84 @@ public class SyncScheduler {
     private final UserRepository userRepository;
     private final MusicApplyRedisService musicApplyRedisService;
 
-    @Scheduled(fixedDelay = 3_500_000) // 3_600_000 10_000
+    private final long SCHEDULED_TIME = 5_000;
+    private final long CHECK_TTL_TIME = 5;
+
+    @Scheduled(fixedDelay = SCHEDULED_TIME) // 3_600_000 10_000
     @Transactional
     public void syncExpiredDataToDB() {
         log.info("[INFO] Redis에 저장 된 Data DB에 저장");
-        Set<String> userKeysWithKeyword = redisTemplate.keys("*heart_music_applies*");
-        List<Heart> heartsToAdd = new ArrayList<>();
-        List<Heart> heartsToDelete = new ArrayList<>();
-
-        if (userKeysWithKeyword == null || userKeysWithKeyword.isEmpty()) {
-            return;
-        }
-
-        for (String userKey : userKeysWithKeyword) {
-            if (redisTemplate.getExpire(userKey) <= 60) {
-                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", userKey);
-                Set<Object> values = redisTemplate.opsForSet().members(userKey);
-
-                String userId = getUserId(userKey);
-                List<Heart> heartFromDB = musicApplyRepository.findHeartById(userId);
-
-                for (Object value : values) {
-                    Long musicApplyId = getMusicId(value);
-
-                    Heart deleteHeart = deleteHeartFromDB(heartFromDB, userId, musicApplyId);
-                    if (deleteHeart != null) {
-                        heartsToDelete.add(deleteHeart);
-                    }
-                    heartsToAdd.addAll(addHeartToDB(heartFromDB, userId, musicApplyId));
-
-                    String musicApplyHeartCntKey = "music_apply_id:" + musicApplyId + ":heart_cnt";
-                    MusicApply musicApply = musicApplyRepository.findOne(musicApplyId).get();
-                    musicApply.setHeartCnt(
-                        (Integer) redisTemplate.opsForValue().get(musicApplyHeartCntKey));
-                }
-                redisTemplate.delete(userKey);
-            }
-        }
-        musicApplyRepository.insertHearts(heartsToAdd);
-        musicApplyRepository.deleteHearts(heartsToDelete);
+        checkHeart();
+        checkHeartCnt();
     }
 
-    public Long getMusicId(Object value) {
+    void checkHeartCnt() {
+        log.info("[INFO] 좋아요 개수 동기화 중 ...");
+        Set<String> heartCntKeysWithKeyword = redisTemplate.keys("*heart_cnt*");
+
+        for (String heartCntKey : heartCntKeysWithKeyword) {
+            if (redisTemplate.getExpire(heartCntKey) <= CHECK_TTL_TIME) {
+                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", heartCntKey);
+                Long musicApplyId = getMusicApplyId(heartCntKey);
+                int heartCnt = (int) redisTemplate.opsForValue().get(heartCntKey);
+
+                MusicApply musicApply = musicApplyRepository.findOne(musicApplyId).orElseThrow(
+                    () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
+                musicApply.setHeartCnt(heartCnt);
+            }
+        }
+    }
+
+    void checkHeart() {
+        log.info("[INFO] 좋아요 동기화 중 ...");
+
+        Set<String> userKeysWithKeyword = redisTemplate.keys("*heart_music_applies*");
+        List<Heart> hearts = new ArrayList<>();
+
+        for (String userKey : userKeysWithKeyword) {
+            // 만료 5초 전인 데이터들
+            if (redisTemplate.getExpire(userKey) <= CHECK_TTL_TIME) {
+                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", userKey);
+                Set<Object> values = redisTemplate.opsForSet().members(userKey);
+                String userId = getUserId(userKey);
+
+                // userId에 해당하는 musicApply 전부 삭제 => heart pk가 변경되는 현상 발생..
+                musicApplyRepository.deleteHeartById(userId);
+
+                for (Object value : values) {
+                    Long musicApplyId = getMusicApplyId(value);
+                    Heart heart = Heart.builder()
+                        .musicApply(musicApplyRepository.findOne(musicApplyId).orElseThrow(
+                            () -> new MusicApplyNotFoundException(
+                                MUSIC_APPLY_NOT_FOUND.getMessage())))
+                        .user(userRepository.findById(userId).orElseThrow(
+                            () -> new UserNotFoundException(USER_NOT_FOUND.getMessage())))
+                        .build();
+
+                    log.debug("[DEBUG] 삽입되는 heart music apply id: {}",
+                        heart.getMusicApply().getMusicApplyId());
+
+                    hearts.add(heart);
+                }
+                musicApplyRepository.insertHearts(hearts);
+            }
+        }
+    }
+
+    public Long getMusicApplyId(Object value) {
         // Object여서 Integer로 저장되는 문제 때문에 Long으로 형변환
         Long musicApplyId = null;
         if (value instanceof Integer) {
             musicApplyId = ((Integer) value).longValue();
         } else if (value instanceof Long) {
             musicApplyId = (Long) value;
+        } else if (value instanceof String) {
+            String pattern = "music_apply_id:(.*?):heart_cnt";
+            Pattern regexPattern = Pattern.compile(pattern);
+            Matcher matcher = regexPattern.matcher((CharSequence) value);
+            if (matcher.find()) {
+                musicApplyId = Long.valueOf(matcher.group(1));
+            }
         }
         return musicApplyId;
     }
@@ -93,43 +127,4 @@ public class SyncScheduler {
         }
         return userId;
     }
-
-
-    private List<Heart> addHeartToDB(List<Heart> heartFromDB, String userId, Long musicApplyId) {
-        // DB에 존재하지 않으면 DB에 저장
-        List<Heart> hearts = new ArrayList<>();
-
-        for (Heart h : heartFromDB) {
-            if (h.getUser().getId().equals(userId)
-                && Objects.equals(h.getMusicApply().getMusicApplyId(), musicApplyId)) {
-                continue;
-            }
-
-            hearts.add(Heart.builder()
-                .user(userRepository.findById(userId).get())
-                .musicApply(musicApplyRepository.findOne(musicApplyId).get())
-                .build());
-        }
-        return hearts;
-    }
-
-    public Heart deleteHeartFromDB(List<Heart> heartFromDB, String userId,
-        Long musicApplyId) {
-        // DB에 존재하지만, redis에 없는 경우 DB에서 삭제
-        Heart heart = null;
-        if (!heartFromDB.isEmpty()) {
-            boolean isHeartInDB = heartFromDB.stream()
-                .anyMatch(h -> h.getMusicApply().getMusicApplyId().equals(musicApplyId)
-                    && h.getUser().getId().equals(userId));
-
-            if (!isHeartInDB) {
-                heart = Heart.builder()
-                    .user(userRepository.findById(userId).get())
-                    .musicApply(musicApplyRepository.findOne(musicApplyId).get())
-                    .build();
-            }
-        }
-        return heart;
-    }
-
 }

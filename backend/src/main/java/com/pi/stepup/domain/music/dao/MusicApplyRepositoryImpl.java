@@ -151,6 +151,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public void insertHearts(List<Heart> hearts) {
+        log.info("[INFO] insert heart repository");
+        log.debug("[DEBUG] 삽입되는 좋아요 개수 : {}", hearts.size());
         for (Heart h : hearts) {
             em.persist(h);
         }
@@ -158,6 +160,14 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public void deleteHearts(List<Heart> hearts) {
+        for (Heart h : hearts) {
+            em.remove(h);
+        }
+    }
+
+    @Override
+    public void deleteHeartById(String id) {
+        List<Heart> hearts = findHeartById(id);
         for (Heart h : hearts) {
             em.remove(h);
         }
