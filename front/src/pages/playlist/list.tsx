@@ -54,7 +54,6 @@ const PlayList = () => {
                 keyword:"",
             },
         }).then((data) => {
-            console.log(data);
             setPlaylist(data.data.data);
         });
 
