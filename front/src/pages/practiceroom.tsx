@@ -197,7 +197,7 @@ const PracticeRoom = () => {
 				setPlayResult("");
 			}, 5000)
 
-			if (score < 60) {
+			if (score < 70) {
 				setPlayResult("failure");
 				setTimeout(() => {
 					setPlayResult("");
