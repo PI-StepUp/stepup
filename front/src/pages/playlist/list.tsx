@@ -48,14 +48,63 @@ const PlayList = () => {
     } 
 
     useEffect(() => {
-        axiosMusic.get("/apply",{
-            params:{
-                keyword:"",
-            },
-        }).then((data) => {
-            console.log("데이터", data);
-            setPlaylist(data.data.data);
-        });
+        if (accessToken) {
+            axiosMusic.get("/apply", {
+                params: {
+                    keyword: "",
+                },
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }).then((data) => {
+                console.log("데이터", data);
+                setPlaylist(data.data.data);
+            }).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosMusic.post('/apply', {
+                        musicApplyId: boardIdStat,
+                    },{
+                        headers:{
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosMusic.delete(`/apply`,{
+                            headers:{
+                                Authorization: `Bearer ${accessToken}`,
+                            }
+                        }).then((data) => {
+                            console.log("데이터", data);
+                            setPlaylist(data.data.data);
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    })
+                }
+            });
+        } else {
+            axiosMusic.get("/apply", {
+                params: {
+                    keyword: "",
+                }
+            }).then((data) => {
+                console.log("데이터", data);
+                setPlaylist(data.data.data);
+            });
+        }
 
     }, [inView]);
     
