@@ -28,7 +28,7 @@ public class SyncScheduler {
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
 
-    private final long SCHEDULED_TIME = 10_000;
+    private final long SCHEDULED_TIME = 100_000;
     private final long CHECK_TTL_TIME = 60;
 
     @Scheduled(fixedDelay = SCHEDULED_TIME) // 3_600_000 10_000
