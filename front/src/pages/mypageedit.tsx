@@ -82,24 +82,6 @@ const MyPageEdit = () => {
 		} else {
 			// 접근 권한(로그인 여부) 확인
 			setCanEditInfo('');
-			try {
-				axios.post('https://stepup-pi.com:8080/api/user/auth', {
-					id: id,
-				}, {
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						refreshToken: refreshToken,
-					}
-				}).then((data) => {
-					console.log(data);
-					if (data.data.message === "토큰 재발급 완료") {
-						setAccessToken(data.data.data.accessToken);
-						setRefreshToken(data.data.data.refreshToken);
-					}
-				})
-			} catch (e) {
-				alert('시스템 에러, 관리자에게 문의하세요.');
-			}
 		}
 	}, []);
 
@@ -200,30 +182,8 @@ const MyPageEdit = () => {
 				try {
 					await s3.upload(params).promise();
 					console.log("Image upload Success!!");
-					setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
+					await setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
 				} catch (error) {
-					console.log("Image upload Fail!!", error);
-				}
-			}
-		}
-
-		// 이미지 업로드
-		const handleImageUpload = async () => {
-			if(selectedImg) {
-				const s3 = new AWS.S3();
-				const params = { 
-					Bucket : 'stepup-pi',
-					// 파일 저장 이름, 날짜_원본파일이름
-					Key: `${Date.now()}_${selectedImg.name}`,
-					Body: selectedImg,
-					ContentType: selectedImg.type,
-				};
-
-				try {
-					await s3.upload(params).promise();
-					console.log("Image upload Success!!");					
-					setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
-				} catch(error) {
 					console.log("Image upload Fail!!", error);
 				}
 			}
@@ -260,7 +220,7 @@ const MyPageEdit = () => {
 				countryId: countryId,
 				countryCode: countryCode,
 				nickname: nicknameValue.current.value,
-				profileImg: profileImg,
+				profileImg: profileImg.toString(),
 			}, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
