@@ -39,80 +39,83 @@ const RandomPlayList = () => {
 	const router = useRouter();
 	
 	useEffect(() => {	
-		try {
+		if (accessToken) {
 			axiosDance.get('', {
 				params: {
 					progressType: "ALL",
 				},
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
 			}).then((data) => {
 				console.log(data);
 				if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
 					setRooms(data.data.data);
 				}
 			})
-	
+
 			axiosDance.get('', {
 				params: {
 					progressType: "IN_PROGRESS",
 				},
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
 			}).then((data) => {
 				if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
 					setInprogress(data.data.data);
 				}
 			})
-	
+
 			axiosDance.get('', {
 				params: {
 					progressType: "SCHEDULED",
 				},
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
 			}).then((data) => {
 				if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
 					setScheduled(data.data.data);
 				}
 			})
-		} catch (e) {
-			alert('시스템 에러, 관리자에게 문의하세요.');
+		} else {
+			try {
+				axiosDance.get('', {
+					params: {
+						progressType: "ALL",
+					},
+				}).then((data) => {
+					console.log(data);
+					if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
+						setRooms(data.data.data);
+					}
+				})
+	
+				axiosDance.get('', {
+					params: {
+						progressType: "IN_PROGRESS",
+					},
+				}).then((data) => {
+					if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
+						setInprogress(data.data.data);
+					}
+				})
+	
+				axiosDance.get('', {
+					params: {
+						progressType: "SCHEDULED",
+					},
+				}).then((data) => {
+					if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
+						setScheduled(data.data.data);
+					}
+				})
+			} catch (e) {
+				alert('시스템 에러, 관리자에게 문의하세요.');
+			}
 		}
-
-		axiosDance.get('', {
-			params: {
-				progressType: "ALL",
-			},
-			headers: {
-				Authorization: `Bearer ${accessToken}`
-			}
-		}).then((data) => {
-			console.log(data);
-			if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
-				setRooms(data.data.data);
-			}
-		})
-
-		axiosDance.get('', {
-			params: {
-				progressType: "IN_PROGRESS",
-			},
-			headers: {
-				Authorization: `Bearer ${accessToken}`
-			}
-		}).then((data) => {
-			if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
-				setInprogress(data.data.data);
-			}
-		})
-
-		axiosDance.get('', {
-			params: {
-				progressType: "SCHEDULED",
-			},
-			headers: {
-				Authorization: `Bearer ${accessToken}`
-			}
-		}).then((data) => {
-			if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
-				setScheduled(data.data.data);
-			}
-		})
+		
 
 	}, []);
 
