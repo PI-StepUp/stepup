@@ -310,7 +310,7 @@ const DanceRoom = () => {
                 }, 5000)
             }else{
                 setPlayResult("success");
-								setCorrect(correct + 1);
+				setCorrect(correct + 1);
                 setTimeout(() => {
                     setPlayResult("");
                 }, 5000)
@@ -884,7 +884,7 @@ const DanceRoom = () => {
             }
             {
                 urlNo ?
-                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"></iframe>
+                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay" id="youtubeAnswer"></iframe>
                 :
                 <></>
             }

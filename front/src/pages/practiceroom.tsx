@@ -377,61 +377,31 @@ const PracticeRoom = () => {
 	// ==============정답 데이터 get=====================
 
     async function getAnswerData(musicId:number) {
+        try{
+            await axiosUser.post('/login', {
+                id: "ssafy",
+                password: "ssafy",
+            }).then((data) => {
+                setAccessToken(data.data.data.tokens.accessToken);
+                setRefreshToken(data.data.data.tokens.refreshToken);
+            })
+        }catch(e){
+            console.error(e);
+        }
+
         try {
-            await axiosMusic.get(`/${musicId}`, {
+            const response = await axiosMusic.get(`/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
                 headers: {
                     Authorization: `Bearer ${accessToken}`, 
                 },
-            }).then(async (data) => {
-                const responseData = await data.data;
-                console.log("successfully!");
-                console.log("responseData 값", responseData);
-                return await responseData;
-            }).catch((error: any) => {
-                if(error.response.data.message === "만료된 토큰"){
-                    axiosMusic.get(`/${musicId}`, {
-                        params:{
-                            musicId: musicId,
-                        },
-                        headers: {
-                            refreshToken: refreshToken, 
-                        },
-                    }).then((data) => {
-                        if(data.data.message === "토큰 재발급 완료"){
-                            setAccessToken(data.data.data.accessToken);
-                            setRefreshToken(data.data.data.refreshToken);
-                        }
-                    }).then(() => {
-                        axiosMusic.get(`/${musicId}`, {
-                            params:{
-                                musicId: musicId,
-                            },
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`, 
-                            },
-                        }).then(async (data) => {
-                            const responseData = await data.data;
-                            console.log("successfully!");
-                            console.log("responseData 값", responseData);
-                            return await responseData;
-                        })
-                    }).catch((data) => {
-                        if(data.response.status === 401){
-                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
-                            router.push("/login");
-                            return;
-                        }
-    
-                        if(data.response.status === 500){
-                            alert("시스템 에러, 관리자에게 문의하세요.");
-                            return;
-                        }
-                    })
-                }
             })
+            const responseData = await response.data;
+            console.log("successfully!");
+            console.log("responseData 값", responseData);
+            return await responseData;
         } catch (error) {
             console.error("Error:", error);
         }
@@ -506,8 +476,8 @@ const PracticeRoom = () => {
                             <Link href="/"><Image src={LeftArrowIcon} alt=""/></Link>
                         </div>
                         <div className="room-title">
-                            <h3>Step Up 연습실</h3>
-                            <span>K-Pop 댄스에 도전해 높은 점수를 노려보세요!</span>
+                            <h3>STEP UP 연습실</h3>
+                            <span>KPOP 커버에 도전해 더 높은 점수를 노려보세요!</span>
                         </div>
                     </div>
 
