@@ -118,6 +118,10 @@
 								border-radius: 10px;
 								@include box-padding(20px);
 								@include font(14px, 500, #454545);
+								@include mobile{
+									@include setSize(60vw, 50px);
+									font-size:12px;
+								}
 							}
 
 							select {
@@ -129,7 +133,11 @@
 								@include font(14px, 500, #454545);
 								box-sizing: border-box;
 								padding: 20px;
-
+								@include mobile{
+									@include setSize(60vw, 50px);
+									padding: 14px;
+									font-size:12px;
+								}
 								option {
 									@include setSize(860px, 70px);
 									background-color: #EDEDED;

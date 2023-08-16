@@ -167,20 +167,6 @@ const Hostroom = () => {
 							<video src=""></video>
 						</div>
 						<div className="yours-video">
-							<ul>
-								<li>
-									<video src=""></video>
-								</li>
-								<li>
-									<video src=""></video>
-								</li>
-								<li>
-									<video src=""></video>
-								</li>
-								<li>
-									<video src=""></video>
-								</li>
-							</ul>
 						</div>
 						<div className="control-wrap">
 							<ul>

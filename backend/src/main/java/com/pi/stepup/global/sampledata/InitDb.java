@@ -173,7 +173,7 @@ public class InitDb {
             String sql = "insert into users (user_id, created_at, modified_at, birth, country_id,"
                 + " email, email_alert, id, nickname, password, point, profile_img, rank_id,"
                 + "  role) "
-                + " values (1, sysdate(), sysdate(), '1997-01-01', 1, 'admin@naver.com',"
+                + " values (1, '2023-08-15', '2023-08-15', '1997-01-01', 1, 'admin@naver.com',"
                 + " 1, 'admin', 'admin', ?, 0, 'url', 4, 'ROLE_ADMIN')";
             Query query = em.createNativeQuery(sql);
             query.setParameter(1, password);
@@ -189,7 +189,7 @@ public class InitDb {
                 String sql =
                     "insert into users (user_id, created_at, modified_at, birth, country_id, "
                         + "  email, email_alert, id, nickname, password, point, profile_img, rank_id, role) "
-                        + " values (?, sysdate(), sysdate(), '1997-01-01', 1, '"
+                        + " values (?, '2023-08-15', '2023-08-15', '1997-01-01', 1, '"
                         + id[i]
                         + "@naver.com', 1, ?, ?, ?, 0, 'url', 1, 'ROLE_USER')";
                 Query query = em.createNativeQuery(sql);
