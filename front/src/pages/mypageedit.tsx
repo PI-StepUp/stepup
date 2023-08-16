@@ -5,7 +5,7 @@ import Banner from "components/MypageeditBanner";
 import Footer from "../components/Footer"
 import Modal from "../components/ExitModal"
 import Image from "next/image"
-import img_profile from "/public/images/profile-default.png"
+import img_profile from "/public/images/default-meeting-profile.svg"
 import img_leave from "/public/images/icon-leave.svg"
 
 import { useRecoilState } from "recoil";
@@ -14,6 +14,10 @@ import { LanguageState } from "states/states";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, emailState, agreeToReceiveEmailState, countryState, countryIdState, canEditInfoState } from "states/states";
 
 import axios from "axios";
+
+import AWS from "aws-sdk";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const MyPageEdit = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
@@ -34,6 +38,8 @@ const MyPageEdit = () => {
 	const [pwFlag, setPwFlag] = useState<boolean>(true);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
+	const [selectedImg, setSelectedImg] = useState<File | null>(null);
+
 	const [open, setOpen] = useState({ display: 'none' });
 
 	const nicknameValue = useRef<any>();
@@ -43,9 +49,15 @@ const MyPageEdit = () => {
 
 	const router = useRouter();
 
+	AWS.config.update({
+		region: process.env.NEXT_PUBLIC_MY_AWS_S3_BUCKET_REGION, // AWS 리전 설정
+		credentials: new AWS.Credentials({
+			accessKeyId: String(process.env.NEXT_PUBLIC_MY_AWS_ACCESS_KEY),
+			secretAccessKey: String(process.env.NEXT_PUBLIC_MY_AWS_SECRET_KEY),
+		})
+	});
+
 	const handleOpen = () => {
-		// console.log(open.display);
-		// setCountryCode(open.display);
 		if (open.display === 'none') {
 			setOpen({ display: 'flex' });
 		} else {
@@ -102,8 +114,8 @@ const MyPageEdit = () => {
 
 	// 닉네임 중복 여부 체크
 	const nicknameCheck = async () => {
-		console.log("-----------닉네임 중복 확인-------------")
-		console.log("입력한 닉네임", nicknameValue.current!.value);
+		// console.log("-----------닉네임 중복 확인-------------")
+		// console.log("입력한 닉네임", nicknameValue.current!.value);
 
 		try {
 			axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
@@ -113,7 +125,7 @@ const MyPageEdit = () => {
 					Authorization: `Bearer ${accessToken}`,
 				}
 			}).then((data) => {
-				console.log("닉네임 중복 확인 결과", data);
+				// console.log("닉네임 중복 확인 결과", data);
 				if (data.data.message === "닉네임 사용 가능") {
 					setNicknameFlag(true);
 					setNickname(nicknameValue.current.value);
@@ -133,8 +145,8 @@ const MyPageEdit = () => {
 
 	// 이메일 중복 체크
 	const emailCheck = async () => {
-		console.log("-----------이메일 중복 확인-------------")
-		console.log("입력한 이메일", emailValue.current!.value);
+		// console.log("-----------이메일 중복 확인-------------")
+		// console.log("입력한 이메일", emailValue.current!.value);
 
 		try {
 			axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
@@ -173,6 +185,28 @@ const MyPageEdit = () => {
 		// console.log("입력한 닉네임", nicknameValue.current.value);
 		// console.log("입력한 이메일", emailValue.current!.value);
 
+		// 이미지 업로드
+		const handleImageUpload = async () => {
+			if (selectedImg) {
+				const s3 = new AWS.S3();
+				const params = {
+					Bucket: 'stepup-pi',
+					// 파일 저장 이름, 날짜_원본파일이름
+					Key: `${Date.now()}_${selectedImg.name}`,
+					Body: selectedImg,
+					ContentType: selectedImg.type,
+				};
+
+				try {
+					await s3.upload(params).promise();
+					console.log("Image upload Success!!");
+					setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
+				} catch (error) {
+					console.log("Image upload Fail!!", error);
+				}
+			}
+		}
+
 		const dupNicknameCheck = async () => {
 			let result: boolean;
 			await nicknameFlag ? result = true : result = false;
@@ -194,6 +228,8 @@ const MyPageEdit = () => {
 		if (ResultEmail === false) {
 			alert("이메일 중복 확인을 해주세요.");
 		}
+
+		await handleImageUpload();
 
 		try {
 			axios.put("https://stepup-pi.com:8080/api/user", {
@@ -220,6 +256,7 @@ const MyPageEdit = () => {
 				console.log("에러 발생", e);
 				alert('회원 정보 수정에 실패했습니다. 관리자에게 문의해주세요.');
 			})
+
 		} catch (e) {
 		}
 	}
@@ -271,11 +308,13 @@ const MyPageEdit = () => {
 	const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
 			const file = e.target.files[0];
+			setSelectedImg(file);
 			const reader = new FileReader();
 			reader.readAsDataURL(file);
-			console.log("reader", reader);
+			// console.log("reader", reader);
 			reader.onload = () => {
-				setProfileImg(reader.result);
+				// 이미지 경로
+				setProfileImg(reader.result || "url");
 				console.log("url >>", reader.result);
 			}
 			console.log("프사 변경 url >> ", profileImg);
@@ -286,6 +325,8 @@ const MyPageEdit = () => {
 	const onDeleteImage = async () => {
 		setProfileImg('');
 	}
+
+
 
 	return (
 		<>

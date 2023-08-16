@@ -7,7 +7,7 @@ import Modal from "../components/UpdateRPDModal"
 import PointModal from "../components/PointHistoryModal"
 import Footer from "../components/Footer"
 import Image from "next/image"
-import img_profile from "/public/images/profile-default.png"
+import img_profile from "/public/images/default-meeting-profile.svg"
 import img_rpdance from "/public/images/dummy-rpdance.png"
 import img_notice from "/public/images/icon-notice.png"
 import img_offline from "/public/images/icon-offline.png"
@@ -117,8 +117,8 @@ const MyPage = () => {
             refreshToken: refreshToken,
           }
         }).then((data) => {
-          console.log(data);
-          console.log(data.data.message)
+          // console.log(data);
+          // console.log(data.data.message)
           if (data.data.message === "토큰 재발급 완료") {
             setAccessToken(data.data.data.accessToken);
             setRefreshToken(data.data.data.refreshToken);
@@ -136,10 +136,7 @@ const MyPage = () => {
         alert('시스템 에러, 관리자에게 문의하세요.');
       }
     }
-    setDomLoaded(true);
-  }, []);
 
-  useEffect(() => {
     if (id !== '' && accessToken !== '' && refreshToken !== '') {
       const setup = async () => {
         // 로그인 유저 정보 조회
@@ -159,7 +156,6 @@ const MyPage = () => {
                 case "BRONZE":
                   setRankBtnColor("#A77044");
                   setGoalRankPoint(100);
-                  // console.log("유저 정보 확인 - 포인트", goalRankPoint);
                   break;
                 case "SILVER":
                   setRankBtnColor("#A7A7AD");
@@ -189,7 +185,7 @@ const MyPage = () => {
 
             // await console.log("남은 포인트", pointLeft);
             // await console.log("다음 랭크의 포인트", goalRankPoint);
-            // await console.log("로그인 유저 정보", loginUser);
+            // await console.log("로그인 유저 포인트", point);
           }
         })
 
@@ -258,10 +254,12 @@ const MyPage = () => {
           }
         })
         await setReadyData(true);
+        await setDomLoaded(true);
       }
       setup();
     }
-  })
+
+  }, []);
 
   // 로그인 유저의 랜플댄 예약 취소
   const cancelRandomDance = async (selectedId: any) => {
@@ -272,6 +270,7 @@ const MyPage = () => {
     }).then((data) => {
       if (data.data.message === "랜덤 플레이 댄스 예약 취소 완료") {
         alert("예약을 취소하셨습니다.")
+        router.push("/mypage");
       } else {
         alert("예약을 취소하지 못했습니다. 다시 한 번 시도해주세요.")
       }
@@ -287,6 +286,7 @@ const MyPage = () => {
     }).then((data: { data: { message: string; }; }) => {
       if (data.data.message === "랜덤 플레이 댄스 삭제 완료") {
         alert("개최한 랜덤 플레이 댄스를 삭제했습니다.");
+        router.push("/mypage");
       } else {
         alert("삭제를 하지 못했습니다. 다시 한 번 시도해주세요.");
       }
@@ -376,14 +376,14 @@ const MyPage = () => {
                     {/* 프로필 클릭 시 포인트 적립 내역 모달창 추가 예정 */}
                     <div className="info history">
                       <div className="img-profile">
-                        {profileImg === null || profileImg === 'url'
+                        {profileImg === null || profileImg === 'url' || profileImg == ""
                           ? (<Image onClick={leavePointModalOpen} className="img" src={img_profile} alt="profile_default" width={100} height={100}></Image>)
-                          : (<Image onClick={leavePointModalOpen} className="img" src={profileImg.toString} alt="profile" width={100} height={100}></Image>)}
+                          : (<Image onClick={leavePointModalOpen} className="img" src={profileImg.toString()} alt="profile" width={100} height={100}></Image>)}
                       </div>
                       <div>
                         <progress value={point} max={goalRankPoint}></progress>
                         <div className="progress-text">
-                          <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {readyData ? pointLeft : null}</p>
+                          <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {Number(goalRankPoint-point)}</p>
                           {readyData ? (<p>{point}/{goalRankPoint}</p>) : (<p></p>)}
                         </div>
                         <div className="info-user">
