@@ -39,6 +39,7 @@
             margin-left:6vw;
             @include flex(space-between, center);
         }
+        
         h1{
             a{
                 @include flex(flex-start, center);
@@ -56,6 +57,48 @@
                         @include font(10px, 500, #BD5278);
                         margin-top:2px;
                     }
+                }
+                @keyframes foot-animation-post {
+                    0%{
+                        opacity:0;
+                    }
+                    25%{
+                        opacity: 0;
+                    }
+                    100%{
+                        opacity:1;
+                    }
+                }
+                @keyframes foot-animation{
+                    0%{
+                        opacity:0;
+                    }
+                    100%{
+                        opacity:1;
+                    }
+                }
+                .left-footprint{
+                    @include setSize(20px, 20px);
+                    transform: rotateY(180deg);
+                    position:relative;
+                    top:-20px;
+                    left:-5px;
+                    animation-name: foot-animation-post;
+                    animation-duration: 3s;
+                    animation-iteration-count: infinite;
+                    animation-timing-function: ease-in-out;
+                    opacity:0;
+                }
+                .right-footprint{
+                    @include setSize(30px, 30px);
+                    position:relative;
+                    top:-10px;
+                    left:-15px;
+                    animation-name: foot-animation;
+                    animation-duration: 3s;
+                    animation-iteration-count: infinite;
+                    animation-timing-function: ease-in-out;
+                    opacity:0;
                 }
             }
         }
@@ -83,7 +126,7 @@
                 margin-right:16px;
                 cursor:pointer;
                 &:first-child{
-                    margin-left:38px;
+                    margin-left:18px;
                 }
             }
         }
