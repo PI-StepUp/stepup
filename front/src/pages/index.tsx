@@ -10,6 +10,7 @@ import musicNoteIcon from "/public/images/musicnote-icon.svg"
 import realtimeRandomPlay1 from "/public/images/realtimeRandomplayImg1.png"
 import logo from "/public/images/stepup-logo.svg"
 import hamburgerMenu from "/public/images/hamburger-menu.svg"
+import footprint from "/public/images/footprint.svg"
 
 import Footer from "components/Footer"
 import LanguageButton from "components/LanguageButton";
@@ -146,6 +147,8 @@ const Index = () => {
 									<span>STEP UP</span>
 									<p>RANDOM PLAY DANCE</p>
 								</div>
+								<Image src={footprint} alt="" className="left-footprint"></Image>
+								<Image src={footprint} alt="" className="right-footprint"></Image>
 							</Link>
 						</h1>
 						<div className="hamburger-menu" onClick={openSideMenu}>

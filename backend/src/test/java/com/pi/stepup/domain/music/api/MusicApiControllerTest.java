@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.google.gson.Gson;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.service.MusicService;
@@ -54,6 +55,7 @@ class MusicApiControllerTest {
     private MusicFindResponseDto musicFindResponseDto;
 
     private Music music;
+    private MusicAnswer musicAnswer;
     private User admin;
 
     @BeforeEach
@@ -61,8 +63,10 @@ class MusicApiControllerTest {
         makeAdmin();
         gson = new Gson();
         makeMusicSaveRequestDto();
-        music = musicSaveRequestDto.toEntity();
-        musicFindResponseDto = MusicFindResponseDto.builder().music(music).build();
+        music = musicSaveRequestDto.toMusic();
+        musicAnswer = musicSaveRequestDto.toMusicAnswer();
+        musicFindResponseDto = MusicFindResponseDto.builder().music(music).musicAnswer(musicAnswer)
+            .build();
     }
 
     @Test
@@ -170,7 +174,8 @@ class MusicApiControllerTest {
         List<MusicFindResponseDto> music = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Music tmp = Music.builder().title("title" + i).artist("artist" + (i + 1)).build();
-            music.add(new MusicFindResponseDto(tmp));
+            MusicAnswer tmpAnswer = MusicAnswer.builder().answer("answer" + i).build();
+            music.add(new MusicFindResponseDto(tmp, tmpAnswer));
         }
         return music;
     }

@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.music.dto;
 
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,11 +19,11 @@ public class MusicResponseDto {
         private final Integer playtime;
 
         @Builder
-        public MusicFindResponseDto(Music music) {
+        public MusicFindResponseDto(Music music, MusicAnswer musicAnswer) {
             this.musicId = music.getMusicId();
             this.title = music.getTitle();
             this.artist = music.getArtist();
-            this.answer = music.getAnswer();
+            this.answer = musicAnswer.getAnswer();
             this.URL = music.getURL();
             this.playtime = music.getPlaytime();
         }

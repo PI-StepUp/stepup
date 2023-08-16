@@ -31,7 +31,7 @@ const RandomPlayList = () => {
 	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
 	const [id, setId] = useRecoilState(idState);
 	const [nickname, setNickname] = useRecoilState(nicknameState);
-	
+
 	const [roomsVisibleItems, setRoomsVisibleItems] = useState(6);
 	const [inprogressVisibleItems, setInprogressVisibleItems] = useState(3);
 	const [scheduledVisibleItems, setScheduledVisibleItems] = useState(3);
@@ -39,66 +39,81 @@ const RandomPlayList = () => {
 	const router = useRouter();
 	
 	useEffect(() => {	
-		if (accessToken) {
-			try {
-				axiosUser.post('/auth', {
-					id: id,
-				}, {
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						refreshToken: refreshToken,
-					}
-				}).then((data) => {
-					console.log(data);
-					if (data.data.message === "토큰 재발급 완료") {
-						setAccessToken(data.data.data.accessToken);
-						setRefreshToken(data.data.data.refreshToken);
-					}
-				}).then(() => {
-					axiosDance.get('', {
-						params: {
-							progressType: "ALL",
-						},
-						headers: {
-							Authorization: `Bearer ${accessToken}`
-						}
-					}).then((data) => {
-						console.log(data);
-						if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
-							setRooms(data.data.data);
-						}
-					})
-			
-					axiosDance.get('', {
-						params: {
-							progressType: "IN_PROGRESS",
-						},
-						headers: {
-							Authorization: `Bearer ${accessToken}`
-						}
-					}).then((data) => {
-						if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
-							setInprogress(data.data.data);
-						}
-					})
-			
-					axiosDance.get('', {
-						params: {
-							progressType: "SCHEDULED",
-						},
-						headers: {
-							Authorization: `Bearer ${accessToken}`
-						}
-					}).then((data) => {
-						if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
-							setScheduled(data.data.data);
-						}
-					})
-				})
-			} catch (e) {
-				alert('시스템 에러, 관리자에게 문의하세요.');
-			}
+		try {
+			axiosDance.get('', {
+				params: {
+					progressType: "ALL",
+				},
+			}).then((data) => {
+				console.log(data);
+				if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
+					setRooms(data.data.data);
+				}
+			})
+	
+			axiosDance.get('', {
+				params: {
+					progressType: "IN_PROGRESS",
+				},
+			}).then((data) => {
+				if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
+					setInprogress(data.data.data);
+				}
+			})
+	
+			axiosDance.get('', {
+				params: {
+					progressType: "SCHEDULED",
+				},
+			}).then((data) => {
+				if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
+					setScheduled(data.data.data);
+				}
+			})
+		} catch (e) {
+			alert('시스템 에러, 관리자에게 문의하세요.');
 		}
+
+		axiosDance.get('', {
+			params: {
+				progressType: "ALL",
+			},
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		}).then((data) => {
+			console.log(data);
+			if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
+				setRooms(data.data.data);
+			}
+		})
+
+		axiosDance.get('', {
+			params: {
+				progressType: "IN_PROGRESS",
+			},
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		}).then((data) => {
+			if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
+				setInprogress(data.data.data);
+			}
+		})
+
+		axiosDance.get('', {
+			params: {
+				progressType: "SCHEDULED",
+			},
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		}).then((data) => {
+			if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
+				setScheduled(data.data.data);
+			}
+		})
+
 	}, []);
 
 	async function reserveRandomDance(randomDanceId: number) {
@@ -112,12 +127,46 @@ const RandomPlayList = () => {
 				headers: {
 					Authorization: `Bearer ${accessToken}`
 				}
+			}).then((data) => {
+				if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+					alert("예약을 완료했습니다.");
+				}
+			}).catch((error: any) => {
+				if(error.response.data.message === "만료된 토큰"){
+					axiosDance.post(`/reserve/${randomDanceId}`, {}, {
+						headers: {
+							refreshToken: refreshToken,
+						}
+					}).then((data) => {
+						console.log(data);
+						if(data.data.message === "토큰 재발급 완료"){
+							setAccessToken(data.data.data.accessToken);
+							setRefreshToken(data.data.data.refreshToken);
+						}
+					}).then(() => {
+						axiosDance.post(`/reserve/${randomDanceId}`, {}, {
+							headers: {
+								Authorization: `Bearer ${accessToken}`
+							}
+						}).then((data) => {
+							if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+								alert("예약을 완료했습니다.");
+							}
+						})
+					}).catch((data) => {
+						if(data.response.status === 401){
+							alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+							router.push("/login");
+							return;
+						}
+	
+						if(data.response.status === 500){
+							alert("시스템 에러, 관리자에게 문의하세요.");
+							return;
+						}
+					})
+				}
 			})
-				.then((data) => {
-					if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
-						alert("예약을 완료했습니다.");
-					}
-				});
 			location.reload();
 		} catch (e) {
 			console.log(e);
@@ -132,12 +181,45 @@ const RandomPlayList = () => {
 					headers: {
 						Authorization: `Bearer ${accessToken}`
 					}
+				}).then((data) => {
+					if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+						alert("예약을 완료했습니다.");
+					}
+				}).catch((error: any) => {
+					if(error.response.data.message === "만료된 토큰"){
+						axiosDance.delete(`/my/reserve/${randomDanceId}`, {
+							headers: {
+								refreshToken: refreshToken,
+							}
+						}).then((data) => {
+							if(data.data.message === "토큰 재발급 완료"){
+								setAccessToken(data.data.data.accessToken);
+								setRefreshToken(data.data.data.refreshToken);
+							}
+						}).then(() => {
+							axiosDance.delete(`/my/reserve/${randomDanceId}`, {
+								headers: {
+									Authorization: `Bearer ${accessToken}`
+								}
+							}).then((data) => {
+								if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
+									alert("예약을 완료했습니다.");
+								}
+							})
+						}).catch((data) => {
+							if(data.response.status === 401){
+								alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+								router.push("/login");
+								return;
+							}
+		
+							if(data.response.status === 500){
+								alert("시스템 에러, 관리자에게 문의하세요.");
+								return;
+							}
+						})
+					}
 				})
-					.then((data) => {
-						if (data.data.message === "랜덤 플레이 댄스 예약 완료") {
-							alert("예약을 완료했습니다.");
-						}
-					});
 				location.reload();
 			} catch (e) {
 				console.log(e);
@@ -162,7 +244,7 @@ const RandomPlayList = () => {
 							{rooms?.slice(0, roomsVisibleItems)?.map((room, index) => {
 								return (
 									<li key={index}>
-											<div className="section-content-img">
+										<div className="section-content-img">
 											<span>{(room.danceType === "SURVIVAL") ?
 												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
 												:
@@ -170,62 +252,62 @@ const RandomPlayList = () => {
 													(lang === "en" ? "BASIC" : lang === "cn" ? "默认模式" : "자유모드")
 													:
 													(lang === "en" ? "RANKING" : lang === "cn" ? "排名模式" : "랭킹모드")}</span>
-												<Image src={RandomplayThumbnail} alt="" />
-											</div>
-											<div className="section-content-info">
-												<h4>{room.title}</h4>
-												<span>{room.hostNickname}</span>
-												<div className="flex-wrap">
-													{
-														(currentDate < new Date(room.startAt)) ? 
-															(room.reserveStatus === 0) ?
+											<Image src={RandomplayThumbnail} alt="" />
+										</div>
+										<div className="section-content-info">
+											<h4>{room.title}</h4>
+											<span>{room.hostNickname}</span>
+											<div className="flex-wrap">
+												{
+													(currentDate < new Date(room.startAt)) ?
+														(room.reserveStatus === 0) ?
 															<button onClick={async () => await reserveRandomDance(room.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
 															</button>
-															: 
+															:
 															<button onClick={async () => await cancelReservation(room.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
 															</button>
 														:
-														(currentDate < new Date(room.endAt)) ? 
+														(currentDate < new Date(room.endAt)) ?
 															(accessToken) ?
 																(nickname === room.hostNickname) ?
-																<Link href={{
-																	pathname: `/hostroom/${room.title}`,
-																	query: {
-																		hostId: nickname,
-																		title: room.title,
-																		startAt: room.startAt,
-																		endAt: room.endAt,
-																		maxUser: Number(room.maxUser),
-																	},
-																}}>
-																	<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
-																</Link>
-																:
-																<Link href={{
-																	pathname: `/danceroom/${room.randomDanceId}`,
-																	query: {
-																		title: room.title,
-																		content: room.content,
-																		startAt: room.startAt,
-																		endAt: room.endAt,
-																		myName: nickname,
-																	},
-																}}>
-																	<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
-																</Link>
+																	<Link href={{
+																		pathname: `/hostroom/${room.title}`,
+																		query: {
+																			hostId: nickname,
+																			title: room.title,
+																			startAt: room.startAt,
+																			endAt: room.endAt,
+																			maxUser: Number(room.maxUser),
+																		},
+																	}}>
+																		<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button>
+																	</Link>
+																	:
+																	<Link href={{
+																		pathname: `/danceroom/${room.randomDanceId}`,
+																		query: {
+																			title: room.title,
+																			content: room.content,
+																			startAt: room.startAt,
+																			endAt: room.endAt,
+																			myName: nickname,
+																		},
+																	}}>
+																		<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button>
+																	</Link>
 																:
 																<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
 																	{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
-																</button> 
-																:
-																<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
-													}
+																</button>
+															:
+															<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+												}
 												<span>{room.startAt.split("T")[0].split("-")[1]}월 {room.startAt.split("T")[0].split("-")[2]}일 {room.startAt.split("T")[1].split(":")[0]}시 {room.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
-												{room.endAt.split("T")[0].split("-")[1]}월 {room.endAt.split("T")[0].split("-")[2]}일 {room.endAt.split("T")[1].split(":")[0]}시 {room.endAt.split("T")[1].split(":")[1]}분</span>
-												</div>
+													{room.endAt.split("T")[0].split("-")[1]}월 {room.endAt.split("T")[0].split("-")[2]}일 {room.endAt.split("T")[1].split(":")[0]}시 {room.endAt.split("T")[1].split(":")[1]}분</span>
 											</div>
+										</div>
 									</li>
 								)
 							})}
@@ -251,59 +333,59 @@ const RandomPlayList = () => {
 							{inprogress?.slice(0, inprogressVisibleItems)?.map((inprogress, index) => {
 								return (
 									<li key={index}>
-										
-											<div className="section-content-img">
-												<span>{(inprogress.danceType === "SURVIVAL") ?
+
+										<div className="section-content-img">
+											<span>{(inprogress.danceType === "SURVIVAL") ?
 												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
 												:
 												(inprogress.danceType === "BASIC") ?
 													(lang === "en" ? "BASIC" : lang === "cn" ? "默认模式" : "자유모드")
 													:
 													(lang === "en" ? "RANKING" : lang === "cn" ? "排名模式" : "랭킹모드")}</span>
-												<Image src={RandomplayThumbnail} alt="" />
-											</div>
-											<div className="section-content-info">
-												<h4>{inprogress.title}</h4>
-												<span>{inprogress.hostNickname}</span>
-												<div className="flex-wrap">
-														{
-															(currentDate < new Date(inprogress.startAt)) ? 
-															(inprogress.reserveStatus === 0) ?
-																<button onClick={async () => await reserveRandomDance(inprogress.randomDanceId)} className="blue-button">
+											<Image src={RandomplayThumbnail} alt="" />
+										</div>
+										<div className="section-content-info">
+											<h4>{inprogress.title}</h4>
+											<span>{inprogress.hostNickname}</span>
+											<div className="flex-wrap">
+												{
+													(currentDate < new Date(inprogress.startAt)) ?
+														(inprogress.reserveStatus === 0) ?
+															<button onClick={async () => await reserveRandomDance(inprogress.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
-																</button>
-																: 
-																<button onClick={async () => await cancelReservation(inprogress.randomDanceId)} className="blue-button">
+															</button>
+															:
+															<button onClick={async () => await cancelReservation(inprogress.randomDanceId)} className="blue-button">
 																{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
-																</button>
-														
-														: 
-																	(currentDate < new Date(inprogress.endAt)) ? 
-																	(accessToken) ? 
-																	<Link href={{
-																		pathname: `/danceroom/${inprogress.randomDanceId}`,
-																		query: {
-																			title: inprogress.title,
-																			content: inprogress.content,
-																			startAt: inprogress.startAt,
-																			endAt: inprogress.endAt,
-																			myName: nickname,
-																		},
-																	}}>
-																		<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
-																	</Link>
-																	:
-																	<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
+															</button>
+
+														:
+														(currentDate < new Date(inprogress.endAt)) ?
+															(accessToken) ?
+																<Link href={{
+																	pathname: `/danceroom/${inprogress.randomDanceId}`,
+																	query: {
+																		title: inprogress.title,
+																		content: inprogress.content,
+																		startAt: inprogress.startAt,
+																		endAt: inprogress.endAt,
+																		myName: nickname,
+																	},
+																}}>
+																	<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button>
+																</Link>
+																:
+																<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
 																	{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
-																	</button> 
-																	:
-																	<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
-														}
-													<span>{inprogress.startAt.split("T")[0].split("-")[1]}월 {inprogress.startAt.split("T")[0].split("-")[2]}일 {inprogress.startAt.split("T")[1].split(":")[0]}시 {inprogress.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
-												{inprogress.endAt.split("T")[0].split("-")[1]}월 {inprogress.endAt.split("T")[0].split("-")[2]}일 {inprogress.endAt.split("T")[1].split(":")[0]}시 {inprogress.endAt.split("T")[1].split(":")[1]}분</span>
-												</div>
+																</button>
+															:
+															<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+												}
+												<span>{inprogress.startAt.split("T")[0].split("-")[1]}월 {inprogress.startAt.split("T")[0].split("-")[2]}일 {inprogress.startAt.split("T")[1].split(":")[0]}시 {inprogress.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+													{inprogress.endAt.split("T")[0].split("-")[1]}월 {inprogress.endAt.split("T")[0].split("-")[2]}일 {inprogress.endAt.split("T")[1].split(":")[0]}시 {inprogress.endAt.split("T")[1].split(":")[1]}분</span>
 											</div>
-										
+										</div>
+
 									</li>
 								)
 							})}
@@ -330,62 +412,62 @@ const RandomPlayList = () => {
 								scheduled?.slice(0, scheduledVisibleItems)?.map((scheduled, index) => {
 									return (
 										<li key={index}>
-												<div className="section-content-img">
-													<span>{(scheduled.danceType === "SURVIVAL") ?
-												(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
-												:
-												(scheduled.danceType === "BASIC") ?
-													(lang === "en" ? "BASIC" : lang === "cn" ? "默认模式" : "자유모드")
+											<div className="section-content-img">
+												<span>{(scheduled.danceType === "SURVIVAL") ?
+													(lang === "en" ? "SURVIVAL" : lang === "cn" ? "生存模式" : "서바이벌")
 													:
-													(lang === "en" ? "RANKING" : lang === "cn" ? "排名模式" : "랭킹모드")}</span>
-													<Image src={RandomplayThumbnail} alt="" />
-												</div>
-												<div className="section-content-info">
-													<h4>{scheduled.title}</h4>
-													<span>{scheduled.hostNickname}</span>
-													<div className="flex-wrap">
-															{
-																(currentDate < new Date(scheduled.startAt)) ? 
-																	(
-																		(scheduled.reserveStatus === 0) ?
-																		<button onClick={async () => await reserveRandomDance(scheduled.randomDanceId)} className="blue-button">
+													(scheduled.danceType === "BASIC") ?
+														(lang === "en" ? "BASIC" : lang === "cn" ? "默认模式" : "자유모드")
+														:
+														(lang === "en" ? "RANKING" : lang === "cn" ? "排名模式" : "랭킹모드")}</span>
+												<Image src={RandomplayThumbnail} alt="" />
+											</div>
+											<div className="section-content-info">
+												<h4>{scheduled.title}</h4>
+												<span>{scheduled.hostNickname}</span>
+												<div className="flex-wrap">
+													{
+														(currentDate < new Date(scheduled.startAt)) ?
+															(
+																(scheduled.reserveStatus === 0) ?
+																	<button onClick={async () => await reserveRandomDance(scheduled.randomDanceId)} className="blue-button">
 																		{lang === "en" ? "Reserve" : lang === "cn" ? "预订" : "예약하기"}
-																		</button>
-																		: 
-																		<button onClick={async () => await cancelReservation(scheduled.randomDanceId)} className="blue-button">
+																	</button>
+																	:
+																	<button onClick={async () => await cancelReservation(scheduled.randomDanceId)} className="blue-button">
 																		{lang === "en" ? "Cancel" : lang === "cn" ? "取消预约" : "예약취소"}
-																		</button>
-																	)
-																: 
+																	</button>
+															)
+															:
+															(
+																(currentDate < new Date(scheduled.endAt)) ?
 																	(
-																		(currentDate < new Date(scheduled.endAt)) ? 
-																			(
-																				(accessToken) ? 
-																				<Link href={{
-																					pathname: `/danceroom/${scheduled.randomDanceId}`,
-																					query: {
-																						title: scheduled.title,
-																						content: scheduled.content,
-																						startAt: scheduled.startAt,
-																						endAt: scheduled.endAt,
-																						myName: nickname,
-																					},
-																				}}>
-																					<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button> 
-																				</Link>
-																				:
-																				<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
+																		(accessToken) ?
+																			<Link href={{
+																				pathname: `/danceroom/${scheduled.randomDanceId}`,
+																				query: {
+																					title: scheduled.title,
+																					content: scheduled.content,
+																					startAt: scheduled.startAt,
+																					endAt: scheduled.endAt,
+																					myName: nickname,
+																				},
+																			}}>
+																				<button className="orange-button">{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}</button>
+																			</Link>
+																			:
+																			<button onClick={() => alert("해당 서비스는 로그인 후 이용하실 수 있습니다.")} className="orange-button">
 																				{lang === "en" ? "Join" : lang === "cn" ? "参与" : "참여하기"}
-																				</button>
-																			)
-																		:
-																		<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+																			</button>
 																	)
-															}
-														<span>{scheduled.startAt.split("T")[0].split("-")[1]}월 {scheduled.startAt.split("T")[0].split("-")[2]}일 {scheduled.startAt.split("T")[1].split(":")[0]}시 {scheduled.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
+																	:
+																	<button className="gray-button">{lang === "en" ? "Finished" : lang === "cn" ? "已结束" : "마감"}</button>
+															)
+													}
+													<span>{scheduled.startAt.split("T")[0].split("-")[1]}월 {scheduled.startAt.split("T")[0].split("-")[2]}일 {scheduled.startAt.split("T")[1].split(":")[0]}시 {scheduled.startAt.split("T")[1].split(":")[1]}분 -&nbsp;
 														{scheduled.endAt.split("T")[0].split("-")[1]}월 {scheduled.endAt.split("T")[0].split("-")[2]}일 {scheduled.endAt.split("T")[1].split(":")[0]}시 {scheduled.endAt.split("T")[1].split(":")[1]}분</span>
-													</div>
 												</div>
+											</div>
 										</li>
 									)
 								})
