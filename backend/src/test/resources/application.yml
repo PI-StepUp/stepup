@@ -22,8 +22,16 @@ spring:
           starttls:
             enable: true
 
+  redis:
+    host: localhost
+    port: 6379
+    ttls:
+      user-info: 1_000
+
 jwt:
   secret: XUrYUhZfrEWLtykR7h80CrcITM59YLt5CRi3AdqZu33
+  refresh-expired-in: 1_000
+  access-expired-in: 1_000
 
 logging.level:
   org.hibernate.SQL: debug

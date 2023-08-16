@@ -21,8 +21,8 @@ public class Notice extends Board {
     private RandomDance randomDance;
 
     @Builder
-    public Notice(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, String boardType, RandomDance randomDance) {
-        super(boardId, writer, title, content, comments, fileURL, boardType);
+    public Notice(Long boardId, User writer, String title, String content, List<Comment> comments, String fileURL, String boardType, Long viewCnt, RandomDance randomDance) {
+        super(boardId, writer, title, content, comments, fileURL, boardType, viewCnt);
         this.randomDance = randomDance;
     }
 

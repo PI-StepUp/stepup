@@ -2,6 +2,7 @@ package com.pi.stepup.global.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pi.stepup.domain.user.constant.UserRole;
+import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.filter.JwtAccessDeniedHandler;
 import com.pi.stepup.global.util.jwt.filter.JwtAuthenticationEntryPoint;
@@ -26,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final UserRedisService userRedisService;
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
 
@@ -53,12 +55,8 @@ public class SecurityConfig {
             .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
 
             //관리자 권한
-            .regexMatchers(HttpMethod.POST, Constants.AdminPermitArray)
+            .regexMatchers(Constants.AdminPermitArray)
             .hasAuthority(UserRole.ROLE_ADMIN.name())
-            .regexMatchers(HttpMethod.DELETE, Constants.AdminPermitArray)
-            .hasAuthority(UserRole.ROLE_ADMIN.name())
-            .regexMatchers(HttpMethod.PUT, Constants.AdminPermitArray)
-            .hasAuthority(String.valueOf(UserRole.ROLE_ADMIN))
 
             //문서 관련도 로그인하지 않아도 접근 가능
             .antMatchers("/swagger-ui/**").permitAll()
@@ -77,7 +75,8 @@ public class SecurityConfig {
             .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
             .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
             .and()
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, objectMapper),
+            .addFilterBefore(
+                new JwtAuthenticationFilter(userRedisService, jwtTokenProvider, objectMapper),
                 UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

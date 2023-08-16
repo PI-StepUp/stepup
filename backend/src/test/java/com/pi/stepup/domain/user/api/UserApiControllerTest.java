@@ -10,7 +10,6 @@ import static com.pi.stepup.domain.user.api.UserApiUrls.FIND_PASSWORD_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.LOGIN_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ALL_COUNTRIES_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.READ_ONE_URL;
-import static com.pi.stepup.domain.user.api.UserApiUrls.REISSUE_TOKENS_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.SIGN_UP_URL;
 import static com.pi.stepup.domain.user.api.UserApiUrls.UPDATE_URL;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.CHECK_EMAIL_DUPLICATED_SUCCESS;
@@ -23,7 +22,6 @@ import static com.pi.stepup.domain.user.constant.UserResponseMessage.FIND_PASSWO
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.LOGIN_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ALL_COUNTRIES_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.READ_ONE_SUCCESS;
-import static com.pi.stepup.domain.user.constant.UserResponseMessage.REISSUE_TOKENS_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.SIGN_UP_SUCCESS;
 import static com.pi.stepup.domain.user.constant.UserResponseMessage.UPDATE_USER_SUCCESS;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +53,6 @@ import com.pi.stepup.domain.user.dto.UserRequestDto.CheckPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.FindPasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.LoginRequestDto;
-import com.pi.stepup.domain.user.dto.UserRequestDto.ReissueTokensRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.SignUpRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.UpdateUserRequestDto;
 import com.pi.stepup.domain.user.dto.UserResponseDto.AuthenticatedResponseDto;
@@ -65,6 +62,7 @@ import com.pi.stepup.domain.user.exception.EmailDuplicatedException;
 import com.pi.stepup.domain.user.exception.IdDuplicatedException;
 import com.pi.stepup.domain.user.exception.NicknameDuplicatedException;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.domain.user.service.UserService;
 import com.pi.stepup.domain.user.util.WithMockCustomUser;
 import com.pi.stepup.global.config.security.SecurityConfig;
@@ -95,6 +93,9 @@ class UserApiControllerTest {
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    private UserRedisService userRedisService;
 
     private final Gson gson = new Gson();
     private final String UTF_8 = "UTF-8";
@@ -385,39 +386,6 @@ class UserApiControllerTest {
         verify(userService, times(1)).delete();
     }
 
-    @DisplayName("재발급에 성공할 경우 생성 상태와 토큰 정보를 반환한다.")
-    @WithMockUser
-    @Test
-    void reissueTokensTest() throws Exception {
-        String grantType = "Bearer";
-        String accessToken = "accessToken";
-        String refreshToken = "refreshToken";
-        String headerRefreshToken = "headerRefreshToken";
-
-        TokenInfo tokenInfo = TokenInfo.builder()
-            .grantType(grantType)
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
-
-        doReturn(tokenInfo)
-            .when(userService)
-            .reissueTokens(any(String.class), any(ReissueTokensRequestDto.class));
-
-        ResultActions resultActions = mockMvc.perform(
-                post(REISSUE_TOKENS_URL.getUrl())
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .characterEncoding(UTF_8)
-                    .header("refreshToken", headerRefreshToken)
-                    .content(gson.toJson(ReissueTokensRequestDto.builder().build()))
-            )
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("message").value(REISSUE_TOKENS_SUCCESS.getMessage()));
-
-        String tokenInfoPrefix = "data.";
-        checkTokenInfoResponse(resultActions, tokenInfo, tokenInfoPrefix);
-    }
-
     @DisplayName("수정에 성공할 경우 성공 상태 및 메세지가 반환된다.")
     @WithMockUser
     @Test
@@ -445,11 +413,11 @@ class UserApiControllerTest {
             .checkPassword(any(CheckPasswordRequestDto.class));
 
         mockMvc.perform(
-            post(CHECK_PASSWORD_URL.getUrl())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .characterEncoding(UTF_8)
-                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
-        )
+                post(CHECK_PASSWORD_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+            )
             .andExpect(status().isOk())
             .andExpect(jsonPath("message").value(CHECK_PASSWORD_SUCCESS.getMessage()));
     }
@@ -463,11 +431,11 @@ class UserApiControllerTest {
             .checkPassword(any(CheckPasswordRequestDto.class));
 
         mockMvc.perform(
-            post(CHECK_PASSWORD_URL.getUrl())
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .characterEncoding(UTF_8)
-                .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
-        )
+                post(CHECK_PASSWORD_URL.getUrl())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .characterEncoding(UTF_8)
+                    .content(gson.toJson(CheckPasswordRequestDto.builder().build()))
+            )
             .andExpect(status().isBadRequest());
     }
 

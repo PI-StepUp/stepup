@@ -23,6 +23,7 @@ import { accessTokenState, refreshTokenState, idState, nicknameState, profileImg
 
 import axios from "axios";
 
+
 const MyPage = () => {
   interface Boards {
     boardId: number,

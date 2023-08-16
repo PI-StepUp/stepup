@@ -11,11 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.google.gson.Gson;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.dto.MusicRequestDto.MusicSaveRequestDto;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.service.MusicService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +47,15 @@ class MusicApiControllerTest {
     @MockBean
     private JwtTokenProvider jwtTokenProvider; // jwtTokenProvider 주입받기 실패했다고 떠서 추가
 
+    @MockBean
+    private UserRedisService userRedisService;
+
     private Gson gson;
     private MusicSaveRequestDto musicSaveRequestDto;
     private MusicFindResponseDto musicFindResponseDto;
 
     private Music music;
+    private MusicAnswer musicAnswer;
     private User admin;
 
     @BeforeEach
@@ -57,8 +63,10 @@ class MusicApiControllerTest {
         makeAdmin();
         gson = new Gson();
         makeMusicSaveRequestDto();
-        music = musicSaveRequestDto.toEntity();
-        musicFindResponseDto = MusicFindResponseDto.builder().music(music).build();
+        music = musicSaveRequestDto.toMusic();
+        musicAnswer = musicSaveRequestDto.toMusicAnswer();
+        musicFindResponseDto = MusicFindResponseDto.builder().music(music).musicAnswer(musicAnswer)
+            .build();
     }
 
     @Test
@@ -166,7 +174,8 @@ class MusicApiControllerTest {
         List<MusicFindResponseDto> music = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Music tmp = Music.builder().title("title" + i).artist("artist" + (i + 1)).build();
-            music.add(new MusicFindResponseDto(tmp));
+            MusicAnswer tmpAnswer = MusicAnswer.builder().answer("answer" + i).build();
+            music.add(new MusicFindResponseDto(tmp, tmpAnswer));
         }
         return music;
     }

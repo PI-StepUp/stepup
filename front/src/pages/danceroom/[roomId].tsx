@@ -21,7 +21,7 @@ import { LanguageState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter";
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
-import { axiosRank } from "apis/axios";
+import { axiosMusic, axiosRank, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -287,7 +287,7 @@ const DanceRoom = () => {
         danceRecord = [];
         frameCount = 0;
         
-        const response = await getAnswerData(musicId);
+        const response: any = await getAnswerData(musicId);
         console.log("response 값", response);
         
         predictWebcam();
@@ -310,7 +310,7 @@ const DanceRoom = () => {
                 }, 5000)
             }else{
                 setPlayResult("success");
-								setCorrect(correct + 1);
+				setCorrect(correct + 1);
                 setTimeout(() => {
                     setPlayResult("");
                 }, 5000)
@@ -377,24 +377,25 @@ const DanceRoom = () => {
 
     async function getAnswerData(musicId:number) {
         try{
-            await axios.post('https://stepup-pi.com:8080/api/user/login', {
+            await axiosUser.post('/login', {
                 id: "ssafy",
                 password: "ssafy",
             }).then((data) => {
                 setAccessToken(data.data.data.tokens.accessToken);
+                setRefreshToken(data.data.data.tokens.refreshToken);
             })
         }catch(e){
             console.error(e);
         }
         try {
-            const response = await axios.get(`https://stepup-pi.com:8080/api/music/${musicId}`, {
+            const response = await axiosMusic.get(`/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
                 headers: {
                     Authorization: `Bearer ${accessToken}` 
                 },
-            });
+            })
             const responseData = await response.data;
             console.log("successfully!");
             console.log("responseData 값", responseData);
@@ -498,7 +499,7 @@ const DanceRoom = () => {
 		socketRef.current.on('user_exit', (data: { id: string }) => {
 			if (!pcsRef.current[data.id]) return;
 			// 성공한 노래 개수에 따른 포인트 지급
-			axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
+			axiosRank.post(`/point`, {
 				id: id,
 				pointPolicyId: 4,
 				randomDanceId: roomId,
@@ -511,10 +512,54 @@ const DanceRoom = () => {
 				if (data.data.message === "포인트 적립 완료") {
 					alert("성공 포인트가 적립되었습니다!");
 				}
-			}).catch((e) => {
-				console.log("포인트 지급 에러 발생", e);
-				alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
-			})
+			}).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosRank.post(`/point`, {
+                        id: id,
+                        pointPolicyId: 4,
+                        randomDanceId: roomId,
+                        count: correct,
+                    }, {
+                        headers: {
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosRank.post(`/point`, {
+                            id: id,
+                            pointPolicyId: 4,
+                            randomDanceId: roomId,
+                            count: correct,
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        }).then((data) => {
+                            if (data.data.message === "포인트 적립 완료") {
+                                alert("성공 포인트가 적립되었습니다!");
+                            }
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    }).catch((e) => {
+                        console.log("포인트 지급 에러 발생", e);
+                        alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+                    })
+                }
+            })
 
 			pcsRef.current[data.id].close();
 			delete pcsRef.current[data.id];
@@ -541,26 +586,70 @@ const DanceRoom = () => {
                 winnerValue.current.value = winner;
             }
 
-						// 1등 포인트 적립
-						if(winner == id){
-							axiosRank.post(`/point`, {
-								id: id,
-								pointPolicyId: 1,
-								randomDanceId: roomId,
-								count: 1,
-							}, {
-								headers: {
-									Authorization: `Bearer ${accessToken}`
-								}
-							}).then((data) => {
-								if (data.data.message === "포인트 적립 완료") {
-									alert("수상 포인트가 적립되었습니다! 축하드립니다!");
-								}
-							}).catch((e) => {
-								console.log("포인트 지급 에러 발생", e);
-								alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
-							})
-						}
+            // 1등 포인트 적립
+            if(winner == id){
+                axiosRank.post(`/point`, {
+                    id: id,
+                    pointPolicyId: 1,
+                    randomDanceId: roomId,
+                    count: 1,
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                }).then((data) => {
+                    if (data.data.message === "포인트 적립 완료") {
+                        alert("수상 포인트가 적립되었습니다! 축하드립니다!");
+                    }
+                }).catch((error: any) => {
+                    if(error.response.data.message === "만료된 토큰"){
+                        axiosRank.post(`/point`, {
+                            id: id,
+                            pointPolicyId: 1,
+                            randomDanceId: roomId,
+                            count: 1,
+                        }, {
+                            headers: {
+                                refreshToken: refreshToken,
+                            }
+                        }).then((data) => {
+                            if(data.data.message === "토큰 재발급 완료"){
+                                setAccessToken(data.data.data.accessToken);
+                                setRefreshToken(data.data.data.refreshToken);
+                            }
+                        }).then(() => {
+                            axiosRank.post(`/point`, {
+                                id: id,
+                                pointPolicyId: 1,
+                                randomDanceId: roomId,
+                                count: 1,
+                            }, {
+                                headers: {
+                                    Authorization: `Bearer ${accessToken}`
+                                }
+                            }).then((data) => {
+                                if (data.data.message === "포인트 적립 완료") {
+                                    alert("수상 포인트가 적립되었습니다! 축하드립니다!");
+                                }
+                            })
+                        }).catch((data) => {
+                            if(data.response.status === 401){
+                                alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                                router.push("/login");
+                                return;
+                            }
+        
+                            if(data.response.status === 500){
+                                alert("시스템 에러, 관리자에게 문의하세요.");
+                                return;
+                            }
+                        }).catch((e) => {
+                            console.log("포인트 지급 에러 발생", e);
+                            alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+                        })
+                    }
+                })
+            }
         })
 
         socketRef.current.on("startRandomplay", async (musicId: number) => {
@@ -795,7 +884,7 @@ const DanceRoom = () => {
             }
             {
                 urlNo ?
-                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay"></iframe>
+                <iframe width="420" height="345" src={`${EMBED_URL[urlNo]}?autoplay=1`} allow="autoplay" id="youtubeAnswer"></iframe>
                 :
                 <></>
             }

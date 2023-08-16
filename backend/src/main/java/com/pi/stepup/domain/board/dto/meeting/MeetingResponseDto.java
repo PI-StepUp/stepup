@@ -23,10 +23,11 @@ public class MeetingResponseDto {
         private final LocalDateTime startAt;
         private final LocalDateTime endAt;
         private final List<CommentInfoResponseDto> comments;
+        private final Long viewCnt;
         private final int commentCnt;
 
         @Builder
-        public MeetingInfoResponseDto(Meeting meeting, List<CommentInfoResponseDto> comments) {
+        public MeetingInfoResponseDto(Meeting meeting, List<CommentInfoResponseDto> comments, Long viewCnt) {
             this.boardId = meeting.getBoardId();
             this.title = meeting.getTitle();
             this.content = meeting.getContent();
@@ -39,6 +40,7 @@ public class MeetingResponseDto {
             this.endAt = meeting.getEndAt();
             this.comments = comments;
             this.commentCnt = meeting.getCommentCnt();
+            this.viewCnt = meeting.getViewCnt();
         }
     }
 }
