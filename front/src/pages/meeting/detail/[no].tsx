@@ -46,6 +46,7 @@ const DetailArticle = () => {
                 setComments([...comments, {commentId: lastCommentId+1, writerName: nickname, writerProfileImg: profileImg, content: commentValue.current.value}]);
                 commentValue.current.value = "";
                 alert("댓글이 추가되었습니다.");
+                router.reload();
                 router.push(`/meeting/detail/${boardId}`);
             }
         }).catch((error: any) => {
@@ -85,6 +86,7 @@ const DetailArticle = () => {
                             setComments([...comments, {commentId: lastCommentId+1, writerName: nickname, writerProfileImg: profileImg, content: commentValue.current.value}]);
                             commentValue.current.value = "";
                             alert("댓글이 추가되었습니다.");
+                            router.reload();
                             router.push(`/meeting/detail/${boardId}`);
                         }
                     })
@@ -329,7 +331,7 @@ const DetailArticle = () => {
                 <div className="comment-wrap">
                     <ul>
                         {
-                            comments?.map((comment, index) => {
+                            comments?.map((comment: any, index: any) => {
                                 return(
                                     <li key={index}>
                                         <div className="img-wrap">
