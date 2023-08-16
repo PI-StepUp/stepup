@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.201.0",
+    "@aws-sdk/s3-request-presigner": "^3.201.0",
     "@mediapipe/tasks-vision": "^0.10.3",
     "@types/dynamic-time-warping": "^1.0.0",
     "@types/node": "20.4.2",

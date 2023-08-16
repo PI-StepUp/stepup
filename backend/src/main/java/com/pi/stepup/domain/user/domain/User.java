@@ -56,8 +56,6 @@ public class User extends BaseEntity {
 
     private Integer point;
 
-    private String refreshToken;
-
     @ManyToOne
     @JoinColumn(name = "RANK_ID")
     private Rank rank;
@@ -77,12 +75,7 @@ public class User extends BaseEntity {
         this.profileImg = profileImg;
         this.role = role;
         this.point = point;
-        this.refreshToken = refreshToken;
         this.rank = rank;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 
     public void updateUserBasicInfo(UpdateUserRequestDto updateUserRequestDto, Country country) {

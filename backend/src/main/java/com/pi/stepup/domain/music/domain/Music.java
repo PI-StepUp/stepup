@@ -52,10 +52,6 @@ public class Music extends BaseEntity {
             this.artist = music.getArtist();
         }
 
-        if (StringUtils.hasText(music.getAnswer())) {
-            this.answer = music.getAnswer();
-        }
-
         if (StringUtils.hasText(music.getURL())) {
             this.URL = music.getURL();
         }
@@ -63,5 +59,9 @@ public class Music extends BaseEntity {
         if (music.getPlaytime() != null && music.getPlaytime() > 0) {
             this.playtime = music.getPlaytime();
         }
+    }
+
+    public void setAnswerAsMusicAnswerId(String musicAnswerId) {
+        this.answer = musicAnswerId;
     }
 }

@@ -10,6 +10,7 @@ import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_UP
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_DELETE_FORBIDDEN;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_DUPLICATED;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.RESERVATION_IMPOSSIBLE;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_ANSWER_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
@@ -29,8 +30,10 @@ import com.pi.stepup.domain.dance.exception.DanceBadRequestException;
 import com.pi.stepup.domain.dance.exception.DanceForbiddenException;
 import com.pi.stepup.domain.dance.exception.ReservationDuplicatedException;
 import com.pi.stepup.domain.dance.exception.ReservationForbiddenException;
+import com.pi.stepup.domain.music.dao.MusicAnswerRepository;
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.music.exception.MusicNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -55,6 +58,7 @@ public class DanceServiceImpl implements DanceService {
     private final DanceRepository danceRepository;
     private final UserRepository userRepository;
     private final MusicRepository musicRepository;
+    private final MusicAnswerRepository musicAnswerRepository;
 
     @Override
     @Transactional
@@ -149,8 +153,10 @@ public class DanceServiceImpl implements DanceService {
             Long musicId = danceMusicList.get(i).getMusic().getMusicId();
             Music music = musicRepository.findOne(musicId).orElseThrow(()
                 -> new MusicNotFoundException(MUSIC_NOT_FOUND.getMessage()));
+            MusicAnswer musicAnswer = musicAnswerRepository.findById(music.getAnswer())
+                .orElseThrow(() -> new MusicNotFoundException(MUSIC_ANSWER_NOT_FOUND.getMessage()));
             MusicFindResponseDto musicFindResponseDto = MusicFindResponseDto.builder()
-                .music(music).build();
+                .music(music).musicAnswer(musicAnswer).build();
             allDanceMusic.add(musicFindResponseDto);
         }
 

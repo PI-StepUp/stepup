@@ -45,6 +45,12 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.mockito/mockito-inline
 	testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.6.1'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// mongodb
+	implementation ('org.springframework.boot:spring-boot-starter-data-mongodb')
 }
 
 tasks.named('test') {
