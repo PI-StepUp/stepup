@@ -32,4 +32,6 @@ public interface MusicApplyRepository {
     void deleteHeartByIdAndMusicApplyId(String id, Long musicApplyId);
 
     void insertHearts(List<Heart> hearts);
+
+    void deleteHearts(List<Heart> hearts);
 }
