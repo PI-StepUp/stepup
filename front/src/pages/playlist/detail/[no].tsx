@@ -26,24 +26,6 @@ const DetailArticle = () => {
     const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
 
     const addHeart = async () => {
-        try{
-            await axiosUser.post('/auth', {
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
         if(article.canHeart === 1){
             axiosMusic.post('/apply/heart', {
                 musicApplyId: boardIdStat,
@@ -54,6 +36,43 @@ const DetailArticle = () => {
             }).then(() => {
                 alert('좋아요가 추가되었습니다.');
                 router.push(`/playlist/detail/${musicId}`);
+            }).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosMusic.post('/apply/heart', {
+                        musicApplyId: boardIdStat,
+                    },{
+                        headers:{
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosMusic.post('/apply/heart', {
+                            musicApplyId: boardIdStat,
+                        },{
+                            headers:{
+                                Authorization: `Bearer ${accessToken}`,
+                            }
+                        }).then(() => {
+                            alert('좋아요가 추가되었습니다.');
+                            router.push(`/playlist/detail/${musicId}`);
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    })
+                }
             })
         }
     }
