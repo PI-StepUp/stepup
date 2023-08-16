@@ -1,5 +1,6 @@
 package com.pi.stepup.domain.user.service;
 
+import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.user.dao.RefreshTokenRedisRepository;
 import com.pi.stepup.domain.user.dao.UserInfoRedisRepository;
 import com.pi.stepup.domain.user.domain.RefreshToken;
@@ -58,7 +59,7 @@ public class UserRedisServiceImpl implements UserRedisService {
             .birth(user.getBirth())
             .profileImg(user.getProfileImg())
             .point(user.getPoint())
-            .rankName(user.getRank().getName())
+            .rankName(String.valueOf(user.getRank().getName()))
             .rankImg(user.getRank().getRankImg())
             .role(user.getRole())
             .ttl(USER_INFO_EXPIRED_IN)
@@ -67,8 +68,16 @@ public class UserRedisServiceImpl implements UserRedisService {
 
     @Override
     public UserInfo getUserInfo(String id) {
-        return userInfoRedisRepository.findById(id)
+        UserInfo userInfo = userInfoRedisRepository.findById(id)
             .orElse(null);
+
+        if (userInfo != null) {
+            String rankName = String.valueOf(userInfo.getRankName());
+            rankName = rankName.replaceAll("^\"|\"$", "").replaceAll("\\\\", "");
+            RankName rank = RankName.valueOf(rankName.toUpperCase());
+            userInfo.setRankName(rank.name());
+        }
+        return userInfo;
     }
 
     @Override
