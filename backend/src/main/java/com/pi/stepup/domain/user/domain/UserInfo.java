@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.user.domain;
 
-import com.pi.stepup.domain.rank.constant.RankName;
 import com.pi.stepup.domain.user.constant.UserRole;
 import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
@@ -31,10 +30,14 @@ public class UserInfo {
     private LocalDate birth;
     private String profileImg;
     private Integer point;
-    private RankName rankName;
+    private String rankName;
     private String rankImg;
     private UserRole role;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long ttl;
+
+    public void setRankName(String rankName) {
+        this.rankName = rankName;
+    }
 }

@@ -25,12 +25,14 @@ import com.pi.stepup.domain.user.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class PointHistoryServiceImpl implements PointHistoryService {
 
     private final UserRepository userRepository;
@@ -89,6 +91,8 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
     @Override
     public Integer readPoint() {
-        return userService.readOne().getPoint();
+        String id = getLoggedInUserId();
+        log.info("[INFO] read point 메소드 호출");
+        return pointRedisService.getPoint(id);
     }
 }
