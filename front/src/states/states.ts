@@ -60,3 +60,33 @@ export const roleState = atom({
     default: '',
     effects_UNSTABLE: [persistAtom]
 })
+
+export const boardIdState = atom({
+    key: 'boardIdState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})
+
+export const emailState = atom({
+    key: 'emailState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})
+
+export const agreeToReceiveEmailState = atom({
+    key: 'agreeToReceiveEmailState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})
+
+export const countryState = atom({
+    key: 'countryState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})
+
+export const countryIdState = atom({
+    key: 'countryIdState',
+    default: '',
+    effects_UNSTABLE: [persistAtom]
+})

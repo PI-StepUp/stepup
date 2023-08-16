@@ -14,9 +14,9 @@ public class RankResponseDto {
     public static class PointHistoryFindResponseDto {
         private final PointType pointType;
         private final Integer point;
-        private final Long randomDanceId;
-        private final String randomDanceTitle;
         private final Integer count;
+        private Long randomDanceId;
+        private String randomDanceTitle;
 
         @Builder
         public PointHistoryFindResponseDto(PointHistory pointHistory) {
@@ -24,10 +24,11 @@ public class RankResponseDto {
             RandomDance randomDance = pointHistory.getRandomDance();
 
             this.pointType = pointPolicy.getPointType();
-            // TODO : 포인트 합산 했는데 count도 따로 전달해줘서 이 부분 상의해봐야 할 듯
             this.point = pointPolicy.getPoint() * pointHistory.getCount();
-            this.randomDanceId = randomDance.getRandomDanceId();
-            this.randomDanceTitle = randomDance.getTitle();
+            if(randomDance != null) {
+                this.randomDanceId = randomDance.getRandomDanceId();
+                this.randomDanceTitle = randomDance.getTitle();
+            }
             this.count = pointHistory.getCount();
         }
     }

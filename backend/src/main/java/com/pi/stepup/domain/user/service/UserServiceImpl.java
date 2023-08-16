@@ -19,6 +19,7 @@ import com.pi.stepup.domain.user.domain.EmailContent;
 import com.pi.stepup.domain.user.domain.EmailMessage;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.dto.TokenInfo;
+import com.pi.stepup.domain.user.dto.UserRequestDto.ChangePasswordRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckEmailRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckIdRequestDto;
 import com.pi.stepup.domain.user.dto.UserRequestDto.CheckNicknameRequestDto;
@@ -40,6 +41,7 @@ import com.pi.stepup.domain.user.util.EmailMessageMaker;
 import com.pi.stepup.domain.user.util.RandomPasswordGenerator;
 import com.pi.stepup.global.config.security.CustomUserDetails;
 import com.pi.stepup.global.config.security.SecurityUtils;
+import com.pi.stepup.global.error.exception.ForbiddenException;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import com.pi.stepup.global.util.jwt.exception.NotMatchedTokenException;
 import java.util.List;
@@ -77,15 +79,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void checkEmailDuplicated(CheckEmailRequestDto checkEmailRequestDto) {
-        if (userRepository.findByEmail(checkEmailRequestDto.getEmail()).isPresent()) {
-            throw new EmailDuplicatedException(EMAIL_DUPLICATED.getMessage());
+        try {
+            User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+            if (!user.getEmail().equals(checkEmailRequestDto.getEmail())) {
+                throw new ForbiddenException();
+            }
+        } catch (ForbiddenException e) {
+            if (userRepository.findByEmail(checkEmailRequestDto.getEmail()).isPresent()) {
+                throw new EmailDuplicatedException(EMAIL_DUPLICATED.getMessage());
+            }
         }
     }
 
     @Override
     public void checkNicknameDuplicated(CheckNicknameRequestDto checkNicknameRequestDto) {
-        if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
-            throw new NicknameDuplicatedException(NICKNAME_DUPLICATED.getMessage());
+        try {
+            User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+            if (!user.getNickname().equals(checkNicknameRequestDto.getNickname())) {
+                throw new ForbiddenException();
+            }
+        } catch (ForbiddenException e) {
+            if (userRepository.findByNickname(checkNicknameRequestDto.getNickname()).isPresent()) {
+                throw new NicknameDuplicatedException(NICKNAME_DUPLICATED.getMessage());
+            }
         }
     }
 
@@ -181,15 +201,25 @@ public class UserServiceImpl implements UserService {
 
         validateUpdateUserInfo(user, updateUserRequestDto);
 
-        Country country = userRepository.findOneCountry(updateUserRequestDto.getCountryId());
-
-        if (StringUtils.hasText(updateUserRequestDto.getPassword())) {
-            if (!isSamePassword(user.getPassword(), updateUserRequestDto.getPassword())) {
-                user.updatePassword(passwordEncoder.encode(updateUserRequestDto.getPassword()));
-            }
+        Country country = null;
+        if (updateUserRequestDto.getCountryId() != null) {
+            country = userRepository.findOneCountry(updateUserRequestDto.getCountryId());
         }
 
         user.updateUserBasicInfo(updateUserRequestDto, country);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(ChangePasswordRequestDto changePasswordRequestDto) {
+        User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
+            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        if (StringUtils.hasText(changePasswordRequestDto.getPassword())) {
+            if (!isSamePassword(user.getPassword(), changePasswordRequestDto.getPassword())) {
+                user.updatePassword(passwordEncoder.encode(changePasswordRequestDto.getPassword()));
+            }
+        }
     }
 
     @Override
@@ -276,14 +306,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateUpdateUserInfo(User user, UpdateUserRequestDto updateUserRequestDto) {
-        if (StringUtils.hasText(updateUserRequestDto.getEmail()) &&
-            !user.getEmail().equals(updateUserRequestDto.getEmail())) {
+        if (StringUtils.hasText(updateUserRequestDto.getEmail())) {
             checkEmailDuplicated(
                 CheckEmailRequestDto.builder().email(updateUserRequestDto.getEmail()).build());
         }
 
-        if (StringUtils.hasText(updateUserRequestDto.getNickname()) &&
-            !user.getNickname().equals(updateUserRequestDto.getNickname())) {
+        if (StringUtils.hasText(updateUserRequestDto.getNickname())) {
             checkNicknameDuplicated(
                 CheckNicknameRequestDto.builder().nickname(updateUserRequestDto.getNickname())
                     .build());
