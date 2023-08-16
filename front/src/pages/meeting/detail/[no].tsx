@@ -26,26 +26,8 @@ const DetailArticle = () => {
     const [comments, setComments] = useState<any>();
     const commentValue = useRef<any>();
 
-    const createComment = async () => {
-        try{
-            await axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
-        await axiosBoard.post(`/comment/${boardId}`, {
+    const createComment = () => {
+        axiosBoard.post(`/comment/${boardId}`, {
             boardId: boardId,
             content: commentValue.current.value,
         },{
@@ -64,31 +46,68 @@ const DetailArticle = () => {
                 setComments([...comments, {commentId: lastCommentId+1, writerName: nickname, writerProfileImg: profileImg, content: commentValue.current.value}]);
                 commentValue.current.value = "";
                 alert("댓글이 추가되었습니다.");
+                router.reload();
                 router.push(`/meeting/detail/${boardId}`);
+            }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosBoard.post(`/comment/${boardId}`, {
+                    boardId: boardId,
+                    content: commentValue.current.value,
+                },{
+                    params:{
+                        boardId: boardIdStat,
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosBoard.post(`/comment/${boardId}`, {
+                        boardId: boardId,
+                        content: commentValue.current.value,
+                    },{
+                        params:{
+                            boardId: boardIdStat,
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "댓글 등록 완료"){
+                            let lastCommentId = 1;
+                            if(comments.length > 0){
+                                lastCommentId = comments[comments.length-1].commentId;
+                            }
+                            setComments([...comments, {commentId: lastCommentId+1, writerName: nickname, writerProfileImg: profileImg, content: commentValue.current.value}]);
+                            commentValue.current.value = "";
+                            alert("댓글이 추가되었습니다.");
+                            router.reload();
+                            router.push(`/meeting/detail/${boardId}`);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }
 
-    const deleteComment = async (commentId: any) => {
-        try{
-            await axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
-        await axiosBoard.delete(`/comment/${commentId}`, {
+    const deleteComment = (commentId: any) => {
+        axiosBoard.delete(`/comment/${commentId}`, {
             params: {
                 commentId: commentId,
             },
@@ -104,28 +123,55 @@ const DetailArticle = () => {
                 alert("댓글이 삭제되었습니다.");
                 router.push(`/meeting/detail/${boardId}`);
             }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosBoard.delete(`/comment/${commentId}`, {
+                    params: {
+                        commentId: commentId,
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosBoard.delete(`/comment/${commentId}`, {
+                        params: {
+                            commentId: commentId,
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "댓글 삭제 완료"){
+                            setComments((prevComments: any) =>
+                                prevComments.filter((comment: any) => comment.commentId !== commentId)
+                            );
+                            commentValue.current.value = "";
+                            alert("댓글이 삭제되었습니다.");
+                            router.push(`/meeting/detail/${boardId}`);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
+            }
         })
     }
 
     const deleteArticle = async () => {
-
-        try{
-            await axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
         try{
             await axiosBoard.delete(`/meeting/${boardId}`, {
                 params:{
@@ -139,6 +185,47 @@ const DetailArticle = () => {
                     alert("게시글 삭제 완료");
                     router.push('/meeting/list');
                 }
+            }).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosBoard.delete(`/meeting/${boardId}`, {
+                        params:{
+                            boardId: boardIdStat,
+                        },
+                        headers:{
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosBoard.delete(`/meeting/${boardId}`, {
+                            params:{
+                                boardId: boardIdStat,
+                            },
+                            headers:{
+                                Authorization: `Bearer ${accessToken}`,
+                            }
+                        }).then((data) => {
+                            if(data.data.message === "정모 삭제 완료"){
+                                alert("게시글 삭제 완료");
+                                router.push('/meeting/list');
+                            }
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    })
+                }
             })
         }catch(e){
             alert("글 삭제 실패, 관리자에게 문의하세요.");
@@ -146,26 +233,6 @@ const DetailArticle = () => {
     }
 
     useEffect(() => {
-
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
-
         axiosBoard.get(`/meeting/${boardIdStat}`, {
             params:{
                 boardId: boardIdStat,
@@ -177,6 +244,48 @@ const DetailArticle = () => {
             if(data.data.message === "정모 게시글 조회 완료"){
                 setArticle(data.data.data);
                 setComments(data.data.data.comments);
+            }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosBoard.get(`/meeting/${boardIdStat}`, {
+                    params:{
+                        boardId: boardIdStat,
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    console.log(data);
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosBoard.get(`/meeting/${boardIdStat}`, {
+                        params:{
+                            boardId: boardIdStat,
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "정모 게시글 조회 완료"){
+                            setArticle(data.data.data);
+                            setComments(data.data.data.comments);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }, [])
@@ -222,7 +331,7 @@ const DetailArticle = () => {
                 <div className="comment-wrap">
                     <ul>
                         {
-                            comments?.map((comment, index) => {
+                            comments?.map((comment: any, index: any) => {
                                 return(
                                     <li key={index}>
                                         <div className="img-wrap">

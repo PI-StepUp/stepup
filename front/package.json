@@ -21,6 +21,7 @@
     "apexcharts": "^3.41.1",
     "aws-sdk": "^2.1436.0",
     "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
     "dynamic-time-warping": "^1.0.0",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.10",

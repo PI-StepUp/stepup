@@ -56,6 +56,7 @@ const Hostroom = () => {
     const router = useRouter();
     const [roomTitle, setRoomTitle] = useState(router.query.roomName);
     const title = router.query.title;
+    const roomId = router.query.roomid;
     const startAll : any = router.query.startAt;
     const startTime = startAll?.split(":")[0];
     const startMinute = startAll?.split(":")[1];
@@ -94,10 +95,10 @@ const Hostroom = () => {
 
 	const finishRandomPlay = () => {
 		socketRef.current.emit("finish", roomName);
-		axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
+		axiosRank.post(`/point`, {
 			id: id,
 			pointPolicyId: 5,
-			randomDanceId: roomId,
+			randomDanceId: roomName,
 			count: 1,
 		}, {
 			headers: {
@@ -107,12 +108,57 @@ const Hostroom = () => {
 			if (data.data.message === "포인트 적립 완료") {
 				alert("개최 포인트가 적립되었습니다!");
 			}
-		}).catch((e) => {
-			console.log("포인트 지급 에러 발생", e);
-			alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
-		})
-		alert("랜덤플레이댄스가 종료되었습니다. 이용해주셔서 감사합니다.");
-		router.push('/randomplay/list');
+		}).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosRank.post(`/point`, {
+                    id: id,
+                    pointPolicyId: 5,
+                    randomDanceId: roomId,
+                    count: 1,
+                }, {
+                    headers: {
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosRank.post(`/point`, {
+                        id: id,
+                        pointPolicyId: 5,
+                        randomDanceId: roomId,
+                        count: 1,
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    }).then((data) => {
+                        if (data.data.message === "포인트 적립 완료") {
+                            alert("개최 포인트가 적립되었습니다!");
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                }).catch((e) => {
+                    console.log("포인트 지급 에러 발생", e);
+                    alert("포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+                })
+                alert("랜덤플레이댄스가 종료되었습니다. 이용해주셔서 감사합니다.");
+                router.push('/randomplay/list');
+            }
+        })
+        
 	}
 
 	useEffect(() => {
@@ -126,18 +172,56 @@ const Hostroom = () => {
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log(data);
             if(data.data.message === "노래 목록 조회 완료"){
                 setMusics(data.data.data);
             }
-        });
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axios.get('https://stepup-pi.com:8080/api/music',{
+                    params:{
+                        keyword: "",
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosMusic.get('',{
+                        params:{
+                            keyword: "",
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "노래 목록 조회 완료"){
+                            setMusics(data.data.data);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
+            }
+        })
 
 		axiosDance.get('', {
 			params: {
 				progressType: "ALL",
 			}
 		}).then((data) => {
-			console.log(data);
 			if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
 				for (let i = 0; i < data.data.data.length; i++) {
 					if (data.data.data[i].title === roomTitle) {
@@ -145,7 +229,7 @@ const Hostroom = () => {
 					}
 				}
 			}
-		});
+		})
 
 	}, [])
 	return (
@@ -167,20 +251,6 @@ const Hostroom = () => {
 							<video src=""></video>
 						</div>
 						<div className="yours-video">
-							<ul>
-								<li>
-									<video src=""></video>
-								</li>
-								<li>
-									<video src=""></video>
-								</li>
-								<li>
-									<video src=""></video>
-								</li>
-								<li>
-									<video src=""></video>
-								</li>
-							</ul>
 						</div>
 						<div className="control-wrap">
 							<ul>
@@ -221,12 +291,7 @@ const Hostroom = () => {
                                 <li>
                                     <video src=""></video>
                                 </li>
-                                <li>
-                                    <video src=""></video>
-                                </li>
-                                <li>
-                                    <video src=""></video>
-                                </li>
+                                
                             </ul>
                         </div>
                         <div className="control-wrap">
