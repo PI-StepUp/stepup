@@ -6,4 +6,8 @@ public interface PointRedisService {
     void updatePoint(String id, Integer pointToAdd);
 
     void updateRank(String id, RankName rankName);
+
+    int getPoint(String id);
+
+    RankName getRankName(String id);
 }
