@@ -37,7 +37,7 @@ const Hostroom = () => {
             },
         ],
     };
-    const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
+    const SOCKET_SERVER_URL = 'http://localhost:4002';
     const socketRef = useRef<any>();
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
@@ -56,6 +56,7 @@ const Hostroom = () => {
     const router = useRouter();
     const [roomTitle, setRoomTitle] = useState(router.query.roomName);
     const title = router.query.title;
+    const roomId = router.query.roomid;
     const startAll : any = router.query.startAt;
     const startTime = startAll?.split(":")[0];
     const startMinute = startAll?.split(":")[1];
@@ -97,7 +98,7 @@ const Hostroom = () => {
 		axiosRank.post(`/point`, {
 			id: id,
 			pointPolicyId: 5,
-			randomDanceId: roomId,
+			randomDanceId: roomName,
 			count: 1,
 		}, {
 			headers: {
