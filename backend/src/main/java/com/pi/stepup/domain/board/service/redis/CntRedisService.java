@@ -5,4 +5,6 @@ public interface CntRedisService {
 
     public void updateDbAndViewCnt();
 
+    public Long getViewCntFromRedis(Long boardId);
+
 }

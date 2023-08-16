@@ -18,7 +18,7 @@ public class NoticeResponseDto {
         private final Long viewCnt;
 
         @Builder
-        public NoticeInfoResponseDto(Notice notice) {
+        public NoticeInfoResponseDto(Notice notice, Long viewCnt) {
             this.boardId = notice.getBoardId();
             this.title = notice.getTitle();
             this.content = notice.getContent();
@@ -33,5 +33,6 @@ public class NoticeResponseDto {
                 this.randomDanceId = null;
             }
         }
+
     }
 }

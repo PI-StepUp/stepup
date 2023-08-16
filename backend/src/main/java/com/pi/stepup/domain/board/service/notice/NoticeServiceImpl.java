@@ -102,10 +102,13 @@ public class NoticeServiceImpl implements NoticeService {
     public NoticeInfoResponseDto readOne(Long boardId) {
         Notice notice = noticeRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
+
+        Long viewCntFromRedis = cntRedisService.getViewCntFromRedis(boardId);
         // 조회수 증가
         cntRedisService.increaseViewCnt(boardId);
         return NoticeInfoResponseDto.builder()
                 .notice(noticeRepository.findOne(boardId).orElseThrow())
+                .viewCnt(viewCntFromRedis)
                 .build();
     }
 
