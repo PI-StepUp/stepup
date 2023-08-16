@@ -11,8 +11,10 @@ import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceSearchResponseDto;
 import com.pi.stepup.domain.dance.service.DanceService;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,9 +54,14 @@ public class DanceApiTest {
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
 
+    @MockBean
+    private UserRedisService userRedisService;
+
     private User host;
     private Music music;
     private Music music2;
+    private MusicAnswer musicAnswer;
+    private MusicAnswer musicAnswer2;
     private RandomDance randomDance;
     private DanceCreateRequestDto danceCreateRequestDto;
     private DanceUpdateRequestDto danceUpdateRequestDto;
@@ -83,6 +90,9 @@ public class DanceApiTest {
         makeMusic();
         makeMusic2();
         makeDance();
+
+        musicAnswer = MusicAnswer.builder().build();
+        musicAnswer2 = MusicAnswer.builder().build();
     }
 
     public void makeHost() {
@@ -150,8 +160,8 @@ public class DanceApiTest {
     }
 
     private void makeAllDanceMusicList() {
-        allDanceMusic.add(MusicFindResponseDto.builder().music(music).build());
-        allDanceMusic.add(MusicFindResponseDto.builder().music(music2).build());
+        allDanceMusic.add(MusicFindResponseDto.builder().music(music).musicAnswer(musicAnswer).build());
+        allDanceMusic.add(MusicFindResponseDto.builder().music(music2).musicAnswer(musicAnswer2).build());
     }
 
     private void makeAllMyDanceList() {

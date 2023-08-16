@@ -2,6 +2,7 @@ package com.pi.stepup.domain.music.dto;
 
 import com.pi.stepup.domain.music.domain.Heart;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.music.domain.MusicApply;
 import com.pi.stepup.domain.user.domain.User;
 import lombok.AllArgsConstructor;
@@ -23,13 +24,18 @@ public class MusicRequestDto {
         private String URL;
         private Integer playtime;
 
-        public Music toEntity() {
+        public Music toMusic() {
             return Music.builder()
                 .title(this.title)
                 .artist(this.artist)
-                .answer(this.answer)
                 .URL(this.URL)
                 .playtime(this.playtime)
+                .build();
+        }
+
+        public MusicAnswer toMusicAnswer() {
+            return MusicAnswer.builder()
+                .answer(this.answer)
                 .build();
         }
     }

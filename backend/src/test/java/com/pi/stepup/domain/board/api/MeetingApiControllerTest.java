@@ -7,6 +7,7 @@ import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto;
 import com.pi.stepup.domain.board.service.meeting.MeetingService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +39,10 @@ public class MeetingApiControllerTest {
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    private UserRedisService userRedisService;
+
     private Gson gson;
 
     @MockBean

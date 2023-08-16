@@ -2,6 +2,7 @@ package com.pi.stepup.domain.user.dao;
 
 import com.pi.stepup.domain.user.domain.Country;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.dto.statistics.UserCountryStatisticsDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,15 @@ public class UserRepositoryImpl implements UserRepository {
     public List<Country> findAllCountries() {
         return em.createQuery("SELECT c FROM Country c", Country.class)
             .getResultList();
+    }
+
+    @Override
+    public List<UserCountryStatisticsDto> findStatisticsOfUserCountry() {
+        return em.createQuery(
+            "SELECT new com.pi.stepup.domain.user.dto.statistics.UserCountryStatisticsDto(c.code, COUNT(u)) "
+                + "FROM User u RIGHT JOIN u.country c "
+                + "GROUP BY c", UserCountryStatisticsDto.class
+        ).getResultList();
     }
 
     @Override

@@ -26,24 +26,6 @@ const DetailArticle = () => {
     const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
 
     const addHeart = async () => {
-        try{
-            await axiosUser.post('/auth', {
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
         if(article.canHeart === 1){
             axiosMusic.post('/apply/heart', {
                 musicApplyId: boardIdStat,
@@ -53,32 +35,50 @@ const DetailArticle = () => {
                 }
             }).then(() => {
                 alert('좋아요가 추가되었습니다.');
+                router.reload();
                 router.push(`/playlist/detail/${musicId}`);
+            }).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosMusic.post('/apply/heart', {
+                        musicApplyId: boardIdStat,
+                    },{
+                        headers:{
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosMusic.post('/apply/heart', {
+                            musicApplyId: boardIdStat,
+                        },{
+                            headers:{
+                                Authorization: `Bearer ${accessToken}`,
+                            }
+                        }).then(() => {
+                            alert('좋아요가 추가되었습니다.');
+                            router.push(`/playlist/detail/${musicId}`);
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    })
+                }
             })
         }
     }
 
     const deleteArticle = async () => {
-
-        try{
-            await axiosUser.post('/auth', {
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
-
         await axiosMusic.delete(`/apply/${boardIdStat}`, {
             params:{
                 boardId: Number(boardIdStat),
@@ -91,28 +91,51 @@ const DetailArticle = () => {
                 alert("해당 게시글이 삭제되었습니다.");
                 router.push('/playlist/list');
             }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosMusic.delete(`/apply/${boardIdStat}`, {
+                    params:{
+                        boardId: Number(boardIdStat),
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosMusic.delete(`/apply/${boardIdStat}`, {
+                        params:{
+                            boardId: Number(boardIdStat),
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "노래 신청 삭제 완료"){
+                            alert("해당 게시글이 삭제되었습니다.");
+                            router.push('/playlist/list');
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
+            }
         })
     }
 
     useEffect(() => {
-        try{
-            axiosUser.post('/auth', {
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
         axiosMusic.get(`/apply/detail/${boardIdStat}`,{
             headers:{
                 Authorization: `Bearer ${accessToken}`,
@@ -120,6 +143,41 @@ const DetailArticle = () => {
         }).then((data) => {
             if(data.data.message === "노래 신청 상세 조회 완료"){
                 setArticle(data.data.data);
+            }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosMusic.get(`/apply/detail/${boardIdStat}`,{
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    console.log(data);
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosMusic.get(`/apply/detail/${boardIdStat}`,{
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "노래 신청 상세 조회 완료"){
+                            setArticle(data.data.data);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }, [])

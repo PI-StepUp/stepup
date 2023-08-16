@@ -48,27 +48,8 @@ const ArticleCreate = () => {
 
     const createArticle = async (e: any) => {
         e.preventDefault();
-
-        try {
-            axiosUser.post('/auth', {
-                id: id,
-            }, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if (data.data.message === "토큰 재발급 완료") {
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        } catch (e) {
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
-        try {
-            const create = await axiosBoard.post('/talk', {
+        try{
+            await axiosBoard.post('/talk', {
                 title: title.current.value,
                 content: content.current.value,
                 fileURL: file.current.value,
@@ -76,13 +57,58 @@ const ArticleCreate = () => {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 }
-            })
+            }).then((data) => {
+                if(data.data.message === "자유게시판 등록 완료"){
+                    alert("글 등록이 완료되었습니다.");
+                    router.push('/article/list');
+                }
+            }).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosBoard.post('/talk', {
+                        title: title.current.value,
+                        content: content.current.value,
+                        fileURL: file.current.value,
+                    },{
+                        headers:{
+                            refreshToken: refreshToken
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosBoard.post('/talk', {
+                            title: title.current.value,
+                            content: content.current.value,
+                            fileURL: file.current.value,
+                        },{
+                            headers:{
+                                Authorization: `Bearer ${accessToken}`,
+                            }
+                        }).then((data) => {
+                            if(data.data.message === "자유게시판 등록 완료"){
+                                alert("글 등록이 완료되었습니다.");
+                                router.push('/article/list');
+                            }
+                        })
+                    })
+                }
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
 
-            if (create.data.message === "자유게시판 등록 완료") {
-                alert("글 등록이 완료되었습니다.");
-                router.push('/article/list');
-            }
-        } catch (e) {
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
+            })
+                
+        }catch(e){
             alert("글 등록 실패, 관리자에게 문의하세요.");
         }
     }

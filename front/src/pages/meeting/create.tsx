@@ -26,24 +26,6 @@ const MeetingCreate = () => {
     const createArticle = async (e: any) => {
         e.preventDefault();
 
-        try{
-            await axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
         await axiosBoard.post('/meeting', {
             title: meetingTitle.current?.value,
             content: meetingContent.current?.value,
@@ -58,6 +40,53 @@ const MeetingCreate = () => {
             if(data.data.message === "정모 등록 완료"){
                 alert("오프라인 모임 등록이 완료되었습니다.");
                 router.push('/meeting/list');
+            }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosBoard.post('/meeting', {
+                    title: meetingTitle.current?.value,
+                    content: meetingContent.current?.value,
+                    startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
+                    endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+                    region: meetingRegion.current?.value,
+                }, {
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosBoard.post('/meeting', {
+                        title: meetingTitle.current?.value,
+                        content: meetingContent.current?.value,
+                        startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
+                        endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+                        region: meetingRegion.current?.value,
+                    }, {
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "정모 등록 완료"){
+                            alert("오프라인 모임 등록이 완료되었습니다.");
+                            router.push('/meeting/list');
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }

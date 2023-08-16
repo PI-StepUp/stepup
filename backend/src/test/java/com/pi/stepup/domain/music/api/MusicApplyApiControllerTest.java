@@ -23,6 +23,7 @@ import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyFindResponseDto
 import com.pi.stepup.domain.music.exception.MusicApplyNotFoundException;
 import com.pi.stepup.domain.music.service.MusicApplyService;
 import com.pi.stepup.domain.user.domain.User;
+import com.pi.stepup.domain.user.service.UserRedisService;
 import com.pi.stepup.global.util.jwt.JwtTokenProvider;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,9 @@ class MusicApplyApiControllerTest {
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    private UserRedisService userRedisService;
 
     private Gson gson;
     private MusicApplySaveRequestDto musicApplySaveRequestDto;

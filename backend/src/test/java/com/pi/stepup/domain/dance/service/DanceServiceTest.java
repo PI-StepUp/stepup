@@ -30,8 +30,10 @@ import com.pi.stepup.domain.dance.exception.AttendDuplicatedException;
 import com.pi.stepup.domain.dance.exception.DanceBadRequestException;
 import com.pi.stepup.domain.dance.exception.DanceForbiddenException;
 import com.pi.stepup.domain.dance.exception.ReservationDuplicatedException;
+import com.pi.stepup.domain.music.dao.MusicAnswerRepository;
 import com.pi.stepup.domain.music.dao.MusicRepository;
 import com.pi.stepup.domain.music.domain.Music;
+import com.pi.stepup.domain.music.domain.MusicAnswer;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.global.config.security.SecurityUtils;
@@ -64,6 +66,9 @@ class DanceServiceTest {
 
     @Mock
     MusicRepository musicRepository;
+
+    @Mock
+    MusicAnswerRepository musicAnswerRepository;
 
     private RandomDance randomDance;
     private RandomDance randomDance2;
@@ -448,6 +453,8 @@ class DanceServiceTest {
         when(danceRepository.findOne(any(Long.class))).thenReturn(Optional.of(randomDance));
         when(danceRepository.findAllDanceMusic(any())).thenReturn(danceMusicList);
         when(musicRepository.findOne(any(Long.class))).thenReturn(Optional.of(music));
+        when(musicAnswerRepository.findById(any())).thenReturn(
+            Optional.of(MusicAnswer.builder().build()));
 
         assertThatNoException().isThrownBy(() -> danceService.readAllDanceMusic(pk));
 

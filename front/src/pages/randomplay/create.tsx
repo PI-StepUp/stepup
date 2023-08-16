@@ -41,20 +41,6 @@ const RoomCreate = () => {
         }
 
 		try {
-			await axiosUser.post('/auth', {
-				id: id,
-			}, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					refreshToken: refreshToken,
-				}
-			}).then((data) => {
-				if (data.data.message === "토큰 재발급 완료") {
-					setAccessToken(data.data.data.accessToken);
-					setRefreshToken(data.data.data.refreshToken);
-				}
-			})
-
 			await axiosDance.post("", {
 				title: roomTitle.current?.value,
 				content: roomContent.current?.value,
@@ -94,7 +80,82 @@ const RoomCreate = () => {
                         }
                     });
 				}
-			})
+			}).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosDance.post("", {
+                        title: roomTitle.current?.value,
+                        content: roomContent.current?.value,
+                        startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
+                        endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
+                        danceType: danceType,
+                        maxUser: Number(roomMaxNum.current?.value),
+                        thumbnail: "",
+                        hostId: nickname,
+                        danceMusicIdList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    }, {
+                        headers: {
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosDance.post("", {
+                            title: roomTitle.current?.value,
+                            content: roomContent.current?.value,
+                            startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
+                            endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
+                            danceType: danceType,
+                            maxUser: Number(roomMaxNum.current?.value),
+                            thumbnail: "",
+                            hostId: nickname,
+                            danceMusicIdList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                            }
+                        }).then((data) => {
+                            if (data.data.message === "랜덤 플레이 댄스 생성 완료") {
+                                alert("방 생성이 완료되었습니다.");
+            
+                                if(roomStartDate.current?.value.split("-")[1] >= new Date().getMonth()){
+                                    if(roomStartDate.current?.value.split("-")[2] >= new Date().getDay()){
+                                        if(roomStartTime.current?.value.split(":")[0] > new Date().getHours() || (roomStartTime.current?.value.split(":")[0] == new Date().getHours() && roomStartTime.current?.value.split(":")[1] >= new Date().getMinutes())){
+                                            router.push('/randomplay/list');
+                                            return;
+                                        }
+                                    }
+                                }
+                                
+                                router.push({
+                                    pathname: `/hostroom/${roomTitle.current?.value}`,
+                                    query: {
+                                        hostId: nickname,
+                                        title: roomTitle.current?.value,
+                                        startAt: roomStartTime.current?.value,
+                                        endAt: roomEndTime.current?.value,
+                                        maxUser: Number(roomMaxNum.current?.value),
+                                        token: accessToken,
+                                    }
+                                });
+                            }
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    })
+                }
+            })
 
 		} catch (e) {
 			console.log(e);

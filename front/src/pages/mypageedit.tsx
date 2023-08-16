@@ -207,6 +207,28 @@ const MyPageEdit = () => {
 			}
 		}
 
+		// 이미지 업로드
+		const handleImageUpload = async () => {
+			if(selectedImg) {
+				const s3 = new AWS.S3();
+				const params = { 
+					Bucket : 'stepup-pi',
+					// 파일 저장 이름, 날짜_원본파일이름
+					Key: `${Date.now()}_${selectedImg.name}`,
+					Body: selectedImg,
+					ContentType: selectedImg.type,
+				};
+
+				try {
+					await s3.upload(params).promise();
+					console.log("Image upload Success!!");					
+					setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
+				} catch(error) {
+					console.log("Image upload Fail!!", error);
+				}
+			}
+		}
+
 		const dupNicknameCheck = async () => {
 			let result: boolean;
 			await nicknameFlag ? result = true : result = false;
