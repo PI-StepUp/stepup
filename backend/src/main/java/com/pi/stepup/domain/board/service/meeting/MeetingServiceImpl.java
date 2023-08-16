@@ -113,10 +113,12 @@ public class MeetingServiceImpl implements MeetingService {
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
         // 조회수 증가
         cntRedisService.increaseViewCnt(boardId);
+        Long currentViewCnt = cntRedisService.getViewCntFromRedis(boardId);
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return MeetingInfoResponseDto.builder()
                 .meeting(meetingRepository.findOne(boardId).orElseThrow())
                 .comments(comments)
+                .viewCnt(currentViewCnt)
                 .build();
     }
 

@@ -17,6 +17,7 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,6 +28,7 @@ import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NO
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
@@ -102,13 +104,12 @@ public class NoticeServiceImpl implements NoticeService {
     public NoticeInfoResponseDto readOne(Long boardId) {
         Notice notice = noticeRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-
-        Long viewCntFromRedis = cntRedisService.getViewCntFromRedis(boardId);
         // 조회수 증가
         cntRedisService.increaseViewCnt(boardId);
+        Long currentViewCnt = cntRedisService.getViewCntFromRedis(boardId);
         return NoticeInfoResponseDto.builder()
                 .notice(noticeRepository.findOne(boardId).orElseThrow())
-                .viewCnt(viewCntFromRedis)
+                .viewCnt(currentViewCnt)
                 .build();
     }
 
