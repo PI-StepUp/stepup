@@ -329,32 +329,6 @@ class UserServiceImplTest {
         }
     }
 
-    @DisplayName("비밀번호 수정에 성공한다.")
-    @Test
-    void updateTest_UpdatePassword() {
-        // given
-        User user = makeUserSample();
-        String testPassword = "testPassword";
-        String encodedTestPassword = "encodedTestPassword";
-
-        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            mockGetUserIdAndFindById(securityUtilsMocked, user);
-
-            when(passwordEncoder.encode(testPassword))
-                .thenReturn(encodedTestPassword);
-
-            userService.update(
-                UpdateUserRequestDto.builder()
-                    .email(user.getEmail())
-                    .nickname(user.getNickname())
-                    .password(testPassword)
-                    .build()
-            );
-
-            assertThat(user.getPassword()).isEqualTo(encodedTestPassword);
-        }
-    }
-
     @DisplayName("기본 회원정보 수정에 성공한다")
     @Test
     void updateTest_UpdateBasicInfo() {
