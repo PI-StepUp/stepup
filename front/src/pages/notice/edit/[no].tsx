@@ -39,6 +39,7 @@ const NoticeCreate = () => {
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
+            console.error("data", data);
             if(data.data.message === "공지사항 수정 완료"){
                 alert("게시글이 수정되었습니다.");
                 router.push('/notice/list');
@@ -96,6 +97,8 @@ const NoticeCreate = () => {
                     }
                 })
             }
+        }).catch((error) => {
+            console.error(error);
         })
     }
 
@@ -108,7 +111,6 @@ const NoticeCreate = () => {
                 Authorization: `Bearer ${accessToken}`
             }
         }).then((data) => {
-            console.log("data", data);
             if(data.data.message === "공지사항 게시글 조회 완료"){
                 noticeTitle.current.value = data.data.data.title;
                 noticeContent.current.value = data.data.data.content;
