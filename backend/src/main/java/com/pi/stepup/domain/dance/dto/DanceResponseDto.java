@@ -49,6 +49,7 @@ public class DanceResponseDto {
         private final String hostNickname;
         private final String progressType;
         private final Integer reserveStatus;
+        private final int isEnd;
 
         @Builder
         private DanceSearchResponseDto(RandomDance randomDance, String progressType, Integer reserveStatus) {
@@ -63,7 +64,7 @@ public class DanceResponseDto {
             this.hostNickname = randomDance.getHost().getNickname();
             this.progressType = progressType;
             this.reserveStatus = reserveStatus;
+            this.isEnd = LocalDateTime.now().isBefore(this.endAt) ? 0 : 1;
         }
-
     }
 }
