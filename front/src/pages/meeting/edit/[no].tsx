@@ -28,24 +28,6 @@ const MeetingEdit = () => {
     const editArticle = async (e: any) => {
         e.preventDefault();
 
-        try{
-            await axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
-
         await axiosBoard.put('/meeting', {
             boardId: article.boardId,
             title: meetingTitle.current?.value,
@@ -67,16 +49,20 @@ const MeetingEdit = () => {
                 alert("오프라인 모임 수정이 완료되었습니다.");
                 router.push('/meeting/list');
             }
-        })
-    }
-
-    useEffect(() => {
-        try{
-            axiosUser.post('/auth',{
-                id: id,
-            },{
+        }).catch((error: any) => {
+            axiosBoard.put('/meeting', {
+                boardId: article.boardId,
+                title: meetingTitle.current?.value,
+                content: meetingContent.current?.value,
+                writerName: article.writerName,
+                writerProfileImg: article.writerProfileImg,
+                fileURL: article.fileURL,
+                boardType: article.boardType,
+                region: meetingRegion.current?.value,
+                startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
+                endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+            }, {
                 headers:{
-                    Authorization: `Bearer ${accessToken}`,
                     refreshToken: refreshToken,
                 }
             }).then((data) => {
@@ -84,12 +70,45 @@ const MeetingEdit = () => {
                     setAccessToken(data.data.data.accessToken);
                     setRefreshToken(data.data.data.refreshToken);
                 }
+            }).then(() => {
+                axiosBoard.put('/meeting', {
+                    boardId: article.boardId,
+                    title: meetingTitle.current?.value,
+                    content: meetingContent.current?.value,
+                    writerName: article.writerName,
+                    writerProfileImg: article.writerProfileImg,
+                    fileURL: article.fileURL,
+                    boardType: article.boardType,
+                    region: meetingRegion.current?.value,
+                    startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
+                    endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+                }, {
+                    headers:{
+                        Authorization: `Bearer ${accessToken}`,
+                    }
+                }).then((data) => {
+                    console.log(data);
+                    if(data.data.message === "정모 수정 완료"){
+                        alert("오프라인 모임 수정이 완료되었습니다.");
+                        router.push('/meeting/list');
+                    }
+                })
+            }).catch((data) => {
+                if(data.response.status === 401){
+                    alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                    router.push("/login");
+                    return;
+                }
+
+                if(data.response.status === 500){
+                    alert("시스템 에러, 관리자에게 문의하세요.");
+                    return;
+                }
             })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
+        })
+    }
 
-
+    useEffect(() => {
         axiosBoard.get(`/meeting/${boardId}`, {
             params:{
                 boardId: boardId,
@@ -106,6 +125,52 @@ const MeetingEdit = () => {
                 meetingEndTime.current.value = data.data.data?.endAt.split("T")[1];
                 meetingRegion.current.value = data.data.data.region;
                 setArticle(data.data.data);
+            }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosBoard.get(`/meeting/${boardId}`, {
+                    params:{
+                        boardId: boardId,
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axiosBoard.get(`/meeting/${boardId}`, {
+                        params:{
+                            boardId: boardId,
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "정모 게시글 조회 완료"){
+                            meetingTitle.current.value = data.data.data.title;
+                            meetingContent.current.value = data.data.data.content;
+                            meetingDate.current.value = data.data.data.startAt.split("T")[0];
+                            meetingStartTime.current.value = data.data.data.startAt.split("T")[1];
+                            meetingEndTime.current.value = data.data.data?.endAt.split("T")[1];
+                            meetingRegion.current.value = data.data.data.region;
+                            setArticle(data.data.data);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }, [])

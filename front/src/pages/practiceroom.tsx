@@ -128,9 +128,49 @@ const PracticeRoom = () => {
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log(data);
+            console.log("music data", data);
             if(data.data.message === "노래 목록 조회 완료"){
                 setMusics(data.data.data);
+            }
+        }).catch((error: any) => {
+            if(error.response.data.message === "만료된 토큰"){
+                axiosMusic.get("",{
+                    params:{
+                        keyword: "",
+                    },
+                    headers:{
+                        refreshToken: refreshToken,
+                    }
+                }).then((data) => {
+                    if(data.data.message === "토큰 재발급 완료"){
+                        setAccessToken(data.data.data.accessToken);
+                        setRefreshToken(data.data.data.refreshToken);
+                    }
+                }).then(() => {
+                    axios.get("https://stepup-pi.com:8080/api/music",{
+                        params:{
+                            keyword: "",
+                        },
+                        headers:{
+                            Authorization: `Bearer ${accessToken}`,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "노래 목록 조회 완료"){
+                            setMusics(data.data.data);
+                        }
+                    })
+                }).catch((data) => {
+                    if(data.response.status === 401){
+                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    if(data.response.status === 500){
+                        alert("시스템 에러, 관리자에게 문의하세요.");
+                        return;
+                    }
+                })
             }
         })
     }, [])
@@ -207,8 +247,7 @@ const PracticeRoom = () => {
 			}
 
 			// 연습실 이용에 따른 포인트 지급
-			console.log("토큰 검사", accessToken);
-			axios.post(`https://stepup-pi.com:8080/api/rank/point`, {
+			axiosRank.post(`/point`, {
 				id: id,
 				pointPolicyId: 6,
 				randomDanceId: null,
@@ -222,11 +261,55 @@ const PracticeRoom = () => {
 					// alert("연습실 이용 포인트가 적립되었습니다!");
 					console.log("연습실 이용 포인트 적립 완료!")
 				}
-			}).catch((e) => {
-				console.log("포인트 지급 에러 발생", e);
-				alert("연습실 이용 포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
-			})
-
+			}).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosRank.post(`/point`, {
+                        id: id,
+                        pointPolicyId: 6,
+                        randomDanceId: null,
+                        count: 1,
+                    }, {
+                        headers: {
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosRank.post(`/point`, {
+                            id: id,
+                            pointPolicyId: 6,
+                            randomDanceId: null,
+                            count: 1,
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        }).then((data) => {
+                            if (data.data.message === "포인트 적립 완료") {
+                                // alert("연습실 이용 포인트가 적립되었습니다!");
+                                console.log("연습실 이용 포인트 적립 완료!")
+                            }
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    }).catch((e) => {
+                        console.log("포인트 지급 에러 발생", e);
+                        alert("연습실 이용 포인트 적립에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+                    })
+                }
+            })
 			return score;
 		}, (response.data.playtime + 2) * 1000);
 	}
@@ -295,18 +378,60 @@ const PracticeRoom = () => {
 
     async function getAnswerData(musicId:number) {
         try {
-            const response = await axios.get(`https://stepup-pi.com:8080/api/music/${musicId}`, {
+            await axiosMusic.get(`/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
                 headers: {
                     Authorization: `Bearer ${accessToken}`, 
                 },
-            });
-            const responseData = await response.data;
-            console.log("successfully!");
-            console.log("responseData 값", responseData);
-            return await responseData;
+            }).then(async (data) => {
+                const responseData = await data.data;
+                console.log("successfully!");
+                console.log("responseData 값", responseData);
+                return await responseData;
+            }).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosMusic.get(`/${musicId}`, {
+                        params:{
+                            musicId: musicId,
+                        },
+                        headers: {
+                            refreshToken: refreshToken, 
+                        },
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosMusic.get(`/${musicId}`, {
+                            params:{
+                                musicId: musicId,
+                            },
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`, 
+                            },
+                        }).then(async (data) => {
+                            const responseData = await data.data;
+                            console.log("successfully!");
+                            console.log("responseData 값", responseData);
+                            return await responseData;
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    })
+                }
+            })
         } catch (error) {
             console.error("Error:", error);
         }

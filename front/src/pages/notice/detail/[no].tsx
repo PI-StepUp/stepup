@@ -24,24 +24,6 @@ const DetailNotice = () => {
     const [role, setRole] = useRecoilState(roleState);
 
     const deleteArticle = async () => {
-
-        try{
-            await axiosUser.post('/auth',{
-                id: id,
-            },{
-                headers:{
-                    Authorization: `Bearer ${accessToken}`,
-                    refreshToken: refreshToken,
-                }
-            }).then((data) => {
-                if(data.data.message === "토큰 재발급 완료"){
-                    setAccessToken(data.data.data.accessToken);
-                    setRefreshToken(data.data.data.refreshToken);
-                }
-            })
-        }catch(e){
-            alert('시스템 에러, 관리자에게 문의하세요.');
-        }
         try{
             await axiosBoard.delete(`/notice/${boardId}`, {
                 params:{
@@ -55,6 +37,48 @@ const DetailNotice = () => {
                 if(data.data.message === "공지사항 삭제 완료"){
                     alert("해당 게시글이 삭제되었습니다.");
                     router.push('/notice/list');
+                }
+            }).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosBoard.delete(`/notice/${boardId}`, {
+                        params:{
+                            boardId: boardIdStat,
+                        },
+                        headers:{
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosBoard.delete(`/notice/${boardId}`, {
+                            params:{
+                                boardId: boardIdStat,
+                            },
+                            headers:{
+                                Authorization: `Bearer ${accessToken}`,
+                            }
+                        }).then((data) => {
+                            console.log(data);
+                            if(data.data.message === "공지사항 삭제 완료"){
+                                alert("해당 게시글이 삭제되었습니다.");
+                                router.push('/notice/list');
+                            }
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            router.push("/login");
+                            return;
+                        }
+    
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    })
                 }
             })
         }catch(e){
