@@ -11,54 +11,41 @@ import img_leave from "/public/images/icon-leave.svg"
 import { useRecoilState } from "recoil";
 import { useRouter } from "next/router";
 import { LanguageState } from "states/states";
-import { accessTokenState, refreshTokenState, idState, rankNameState, canEditInfoState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, emailState, agreeToReceiveEmailState, countryState, countryIdState, canEditInfoState } from "states/states";
 
-import { axiosUser } from "apis/axios";
 import axios from "axios";
 
 const MyPageEdit = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
 	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
-	const [rankname, setRankname] = useRecoilState(rankNameState);
-	const [canEditInfo, setCanEditInfo] = useRecoilState(canEditInfoState);
-
-	const [loginUser, setLoginUser] = useState<any>();
 	const [id, setId] = useRecoilState(idState);
-	const [password, setPassword] = useState('');
-	const [email, setEmail] = useState('');
-	let [emailAlert, setEmailAlert] = useState<any>();
-	const [countryId, setCountryId] = useState<number>();
-	const [countryCode, setCountryCode] = useState('');
-	const [nickname, setNickname] = useState('');
-	const [birth, setBirth] = useState('');
-	const [profileImg, setProfileImg] = useState<string | ArrayBuffer | null>('');
-	const [point, setPoint] = useState<number>();
-	const [rankImg, setRankImg] = useState('');
-	let countries: any = [];
-	const [countryList, setCountryList] = useState<any>();
-	const [countryDataReady, setCountryDataReady] = useState(false);
+	const [canEditInfo, setCanEditInfo] = useRecoilState(canEditInfoState);
+	const [profileImg, setProfileImg] = useRecoilState(profileImgState);
+	const [nickname, setNickname] = useRecoilState(nicknameState);
+	const [email, setEmail] = useRecoilState(emailState);
+	const [countryCode, setCountryCode] = useRecoilState(countryState);
+	const [countryId, setCountryId] = useRecoilState(countryIdState);
+	const [agreeToReceiveEmail, setAgreeToReceiveEmail] = useRecoilState(agreeToReceiveEmailState);
+
+	const [countries, setCountries] = useState<any[]>();
 	const [nicknameFlag, setNicknameFlag] = useState<boolean>(true);
 	const [emailFlag, setEmailFlag] = useState<boolean>(true);
 	const [pwFlag, setPwFlag] = useState<boolean>(true);
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 
 	const [open, setOpen] = useState({ display: 'none' });
-	const [option, setOption] = useState<String>();
 
 	const nicknameValue = useRef<any>();
 	const emailValue = useRef<any>();
-	const countryValue = useRef<any>();
 	const pw1Value = useRef<any>();
 	const pw2Value = useRef<any>();
 
 	const router = useRouter();
 
-	console.log(accessToken);
-
 	const handleOpen = () => {
-		console.log(open.display);
-		setCountryCode(open.display);
+		// console.log(open.display);
+		// setCountryCode(open.display);
 		if (open.display === 'none') {
 			setOpen({ display: 'flex' });
 		} else {
@@ -67,36 +54,10 @@ const MyPageEdit = () => {
 	}
 
 	// map, 조건부렌더링으로 치환해둘 것!
-	const handleSelect = (country: string) => {
+	const handleSelect = (country: object) => {
 		console.log(country);
 		setCountryId(country.countryId);
 		setCountryCode(country.countryCode);
-		// switch (country) {
-		// 	case 'KOREA':
-		// 		setOption(lang === "en" ? "KOREA" : lang === "cn" ? "大韩民国" : "대한민국");
-		// 		break;
-		// 	case 'USA':
-		// 		setOption(lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국");
-		// 		break;
-		// 	case 'CANADA':
-		// 		setOption(lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다");
-		// 		break;
-		// 	case 'CHINA':
-		// 		setOption(lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국");
-		// 		break;
-		// 	case 'JAPAN':
-		// 		setOption(lang === "en" ? "JAPAN" : lang === "cn" ? "日本" : "일본");
-		// 		break;
-		// 	case 'UK':
-		// 		setOption(lang === "en" ? "UK" : lang === "cn" ? "英国" : "영국");
-		// 		break;
-		// 	case 'FRANCE':
-		// 		setOption(lang === "en" ? "FRANCE" : lang === "cn" ? "法国" : "프랑스");
-		// 		break;
-		// 	case 'AUSTRIA':
-		// 		setOption(lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주");
-		// 		break;
-		// }
 	}
 
 	useEffect(() => {
@@ -131,42 +92,12 @@ const MyPageEdit = () => {
 	}, []);
 
 	useEffect(() => {
-		if (id !== '' && accessToken !== '' && refreshToken !== '') {
-			const setup = async () => {
-				// 로그인 유저 정보 조회
-				await axios.get("https://stepup-pi.com:8080/api/user/", {
-					headers: {
-						Authorization: `Bearer ${accessToken}`
-					}
-				}).then(async (data) => {
-					// console.log("로그인 유저 정보 조회", data);
-					if (data.data.message === "회원정보 조회 완료") {
-						await setLoginUser(data.data.data);
-						console.log("유저 정보", data.data.data);
-						const setprofile = async () => {
-							await setProfileImg(data.data.data.profileImg);
-							if (profileImg === null) {
-								setProfileImg("profileImg_default.png");
-							}
-						}
-						await setprofile();
-						await setPassword(data.data.data.password);
-						await setEmail(data.data.data.email);
-						await setEmailAlert(data.data.data.emailAlert);
-						await setCountryId(data.data.data.countryId);
-						await setCountryCode(data.data.data.countryCode);
-						await setOption(data.data.data.countryCode);
-						await setNickname(data.data.data.nickname);
-						await setBirth(data.data.data.birth);
-						await setProfileImg(data.data.data.profileImg);
-						await setPoint(data.data.data.point);
-						await setRankname(data.data.data.rankName);
-						await setRankImg(data.data.data.rankImg);
-					}
-				})
+		axios.get('https://stepup-pi.com:8080/api/user/country', {
+		}).then((data) => {
+			if (data.data.message === "국가 코드 목록 조회 완료") {
+				setCountries(data.data.data);
 			}
-			setup();
-		}
+		})
 	}, []);
 
 	// 닉네임 중복 여부 체크
@@ -177,10 +108,15 @@ const MyPageEdit = () => {
 		try {
 			axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
 				nickname: nicknameValue.current!.value,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				}
 			}).then((data) => {
 				console.log("닉네임 중복 확인 결과", data);
 				if (data.data.message === "닉네임 사용 가능") {
 					setNicknameFlag(true);
+					setNickname(nicknameValue.current.value);
 					console.log("닉네임 사용 가능!");
 				} else {
 					setNicknameFlag(false);
@@ -195,19 +131,6 @@ const MyPageEdit = () => {
 		}
 	}
 
-	axios.get('https://stepup-pi.com:8080/api/user/country', {
-	}).then((data) => {
-		if (data.data.message === "국가 코드 목록 조회 완료") {
-			countries.push(data.data.data);
-			setCountryList(countries);
-			console.log(countryList);
-			console.log(data.data.data);
-			console.log("몇개?", countries[0].length);
-			console.log("이거쓸래", countries[0]);
-			setCountryDataReady(true);
-		}
-	})
-
 	// 이메일 중복 체크
 	const emailCheck = async () => {
 		console.log("-----------이메일 중복 확인-------------")
@@ -216,10 +139,15 @@ const MyPageEdit = () => {
 		try {
 			axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
 				email: emailValue.current!.value,
+			}, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				}
 			}).then((data) => {
 				console.log("이메일 중복 확인 결과", data);
 				if (data.data.message === "이메일 사용 가능") {
 					setEmailFlag(true);
+					setEmail(emailValue.current.value);
 					console.log("이메일 사용 가능!");
 				} else {
 					setNicknameFlag(false);
@@ -236,16 +164,14 @@ const MyPageEdit = () => {
 
 	// 이메일 수신 여부 체크
 	const agreementCheck = async () => {
-		await console.log("이메일 수신 여부 변경 전 >> ", emailAlert);
-		await setEmailAlert((prevEmailAlert: number) => prevEmailAlert === 0 ? 1 : 0);
-		await console.log("이메일 수신 여부 변경 후 >> ", emailAlert);
+		await setAgreeToReceiveEmail((prevEmailAlert: number) => prevEmailAlert === 0 ? 1 : 0);
 	}
 
 	// 회원정보 수정
 	const editInfo = async () => {
 		console.log("-----------회원 정보 수정-------------")
-		console.log("입력한 닉네임", nicknameValue.current.value);
-		console.log("입력한 이메일", emailValue.current!.value);
+		// console.log("입력한 닉네임", nicknameValue.current.value);
+		// console.log("입력한 이메일", emailValue.current!.value);
 
 		const dupNicknameCheck = async () => {
 			let result: boolean;
@@ -270,19 +196,13 @@ const MyPageEdit = () => {
 		}
 
 		try {
-			axios.put("https://stepup-pi.com:8080/api/user/", {
-				id: id,
-				password: password,
-				email: emailValue.current.value === null ? emailValue : emailValue.current.value,
-				emailAlert: emailAlert,
+			axios.put("https://stepup-pi.com:8080/api/user", {
+				email: emailValue.current.value,
+				emailAlert: agreeToReceiveEmail,
 				countryId: countryId,
 				countryCode: countryCode,
 				nickname: nicknameValue.current.value,
-				birth: birth,
 				profileImg: profileImg,
-				point: point,
-				rankName: rankname,
-				rankImg: rankImg,
 			}, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
@@ -310,31 +230,21 @@ const MyPageEdit = () => {
 			alert("비밀번호를 다시 확인해주세요.");
 			return;
 		}
-		await axios.put("https://stepup-pi.com:8080/api/user/", {
-			id: id,
-			password: pw1Value.current.value,
-			email: email,
-			emailAlert: emailAlert,
-			countryId: countryId,
-			countryCode: countryCode,
-			nickname: nickname,
-			birth: birth,
-			profileImg: profileImg,
-			point: point,
-			rankName: rankname,
+		await axios.patch("https://stepup-pi.com:8080/api/user/pw", {
+			password: pw2Value.current.value,
 		}, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			}
 		}).then((data) => {
 			console.log("비번 변경 >> ", data);
-			if (data.data.message === "회원정보 수정 완료") {
-				console.log("비밀번호 수정 완료");
+			if (data.data.message === "비밀번호 변경 완료") {
+				console.log("비밀번호 변경 완료");
 				alert("비밀번호를 수정했습니다.")
 				router.push('/');
 			} else {
-				console.log("비밀번호 수정 미완료");
-				alert("비밀번호 수정에 실패했습니다. 다시 한 번 시도해주세요.");
+				console.log("비밀번호 변경 실패");
+				alert("비밀번호 변경에 실패했습니다. 다시 한 번 시도해주세요.");
 			}
 		})
 	}
@@ -408,7 +318,7 @@ const MyPageEdit = () => {
 								<div className="option mt-25">
 									<div className="o-title">{lang === "en" ? "NICKNAME" : lang === "cn" ? "昵称" : "닉네임"}</div>
 									<div className="o-input">
-										<input type="text" className="o-input-ol" defaultValue={nickname} ref={nicknameValue} onChange={(e) => setNickname(e.target.value)} />
+										<input type="text" className="o-input-ol" defaultValue={nickname} ref={nicknameValue} onChange={nicknameCheck} />
 										{nicknameFlag ? (
 											<p className="o-warning" id="">{lang === "en" ? "Available Nickname" : lang === "cn" ? "可用昵称" : "사용 가능한 닉네임입니다"}</p>
 										) : (
@@ -425,7 +335,7 @@ const MyPageEdit = () => {
 								<div className="option mt-25">
 									<div className="o-title">{lang === "en" ? "EMAIL" : lang === "cn" ? "电子邮件" : "이메일"}</div>
 									<div className="o-input">
-										<input type="text" className="o-input-ol" defaultValue={email} ref={emailValue} onChange={(e) => setEmail(e.target.value)} />
+										<input type="email" className="o-input-ol" defaultValue={String(email)} ref={emailValue} onChange={emailCheck} />
 										{emailFlag ? (
 											<p className="o-warning" id="">{lang === "en" ? "Available Email" : lang === "cn" ? "可用电子邮件" : "사용 가능한 이메일입니다"}</p>
 										) : (
@@ -442,34 +352,16 @@ const MyPageEdit = () => {
 								<div className="option mt-25">
 									<div className="o-title">{lang === "en" ? "NATION" : lang === "cn" ? "国家" : "국가"}</div>
 									<div className="o-input">
-										<div className="selectbox" onClick={handleOpen} ref={countryValue}>
-											<button className="country">{option}</button>
+										<div className="selectbox" onClick={handleOpen}>
+											<button className="country">{String(countryCode)}</button>
 											<ul className="option-list" style={open}>
-												{/* {countryList?.map((country: any, index: number) => {
-													return (
-														<li className="option-item" key={index} onClick={() => handleSelect(country)}>{country.countryCode}</li>
-													)
-												})} */}
-												{console.log("html 안이다", countries[0])};
 												{
-													countryDataReady
-														? null
-														: (
-															countries[0]?.map((country: any, index: number) => {
-																return (
-																	<li className="option-item" key={index} onClick={() => handleSelect(country)}>{country.countryCode}</li>
-																)
-															})
+													countries?.map((country: any, index: any) => {
+														return (
+															<li className="option-item" key={index} onClick={() => handleSelect(country)}>{country.countryCode}</li>
 														)
+													})
 												}
-												{/* <li className="option-item" onClick={() => handleSelect("KOREA")}>{lang === "en" ? "KOREA" : lang === "cn" ? "大韓民国" : "대한민국"}</li>
-												<li className="option-item" onClick={() => handleSelect("USA")}>{lang === "en" ? "USA" : lang === "cn" ? "美国" : "미국"}</li>
-												<li className="option-item" onClick={() => handleSelect("CANADA")}>{lang === "en" ? "CANADA" : lang === "cn" ? "加拿大" : "캐나다"}</li>
-												<li className="option-item" onClick={() => handleSelect("CHINA")}>{lang === "en" ? "CHINA" : lang === "cn" ? "中国" : "중국"}</li>
-												<li className="option-item" onClick={() => handleSelect("JAPAN")}>{lang === "en" ? "JAPAN" : lang === "cn" ? "日本" : "일본"}</li>
-												<li className="option-item" onClick={() => handleSelect("UK")}>{lang === "en" ? "UK" : lang === "cn" ? "英国" : "영국"}</li>
-												<li className="option-item" onClick={() => handleSelect("FRANCE")}>{lang === "en" ? "FRANCE" : lang === "cn" ? "法国" : "프랑스"}</li>
-												<li className="option-item" onClick={() => handleSelect("AUSTRIA")}>{lang === "en" ? "AUSTRIA" : lang === "cn" ? "澳大利亚" : "호주"}</li> */}
 											</ul>
 										</div>
 									</div>
@@ -505,16 +397,16 @@ Even after consenting to receiving, you can withdraw your consent according to y
 고객님은 수신 동의 이후에라도 의사에 따라 동의를 철회할 수 있으며, 수신을 동의하지 않아도 회사가 제공하는 기본적인 서비스를 이용할 수 있으나, 당사의 마케팅 정보를 수신하지 못할 수 있습니다.`}
 									</textarea>
 									{/* 언어 변경 시, 적용이 되지 않는 문제 해결 필요 */}
-									<div className={`btn-agreement ${emailAlert === 1 ? 'checked' : ''}`}>
+									<div className={`btn-agreement ${agreeToReceiveEmail === 1 ? 'checked' : ''}`}>
 										<span>{lang === "en" ? "I agree to receive emails" : lang === "cn" ? "我同意接收电子邮件" : "이메일 수신에 동의"}</span>
-										<input type="checkbox" id="btn-agreement" onClick={agreementCheck} checked={emailAlert === 1} />
+										<input type="checkbox" id="btn-agreement" onClick={agreementCheck} checked={agreeToReceiveEmail === 1} />
 										<label htmlFor="btn-agreement"></label>
 									</div>
 								</div>
 							</li>
 							{/* end - agreement */}
 							<div className="btn-info mt-40">
-								<div className="cancel"><Link href="/mypageedit">{lang === "en" ? "CANCEL" : lang === "cn" ? "消除" : "취소"}</Link></div>
+								<div className="cancel"><Link href="/mypage">{lang === "en" ? "CANCEL" : lang === "cn" ? "消除" : "취소"}</Link></div>
 								<div className="save" onClick={editInfo}>{lang === "en" ? "SAVE" : lang === "cn" ? "节省" : "저장"}</div>
 							</div>
 						</ul>
