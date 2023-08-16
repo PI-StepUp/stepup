@@ -37,7 +37,7 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
+const SOCKET_SERVER_URL = 'http://localhost:4002';
 
 const EMBED_URL: any = {
     1: "https://www.youtube.com/embed/g4vaGXR7fUY",
@@ -287,7 +287,7 @@ const DanceRoom = () => {
         danceRecord = [];
         frameCount = 0;
         
-        const response = await getAnswerData(musicId);
+        const response: any = await getAnswerData(musicId);
         console.log("response 값", response);
         
         predictWebcam();
@@ -388,60 +388,18 @@ const DanceRoom = () => {
             console.error(e);
         }
         try {
-            await axiosMusic.get(`/${musicId}`, {
+            const response = await axiosMusic.get(`/${musicId}`, {
                 params:{
                     musicId: musicId,
                 },
                 headers: {
                     Authorization: `Bearer ${accessToken}` 
                 },
-            }).then(async (data) => {
-                const responseData = await data.data;
-                console.log("successfully!");
-                console.log("responseData 값", responseData);
-                return await responseData;
-            }).catch((error: any) => {
-                if(error.response.data.message === "만료된 토큰"){
-                    axiosMusic.get(`/${musicId}`, {
-                        params:{
-                            musicId: musicId,
-                        },
-                        headers: {
-                            refreshToken: refreshToken, 
-                        },
-                    }).then((data) => {
-                        if(data.data.message === "토큰 재발급 완료"){
-                            setAccessToken(data.data.data.accessToken);
-                            setRefreshToken(data.data.data.refreshToken);
-                        }
-                    }).then(() => {
-                        axiosMusic.get(`/${musicId}`, {
-                            params:{
-                                musicId: musicId,
-                            },
-                            headers: {
-                                Authorization: `Bearer ${accessToken}` 
-                            },
-                        }).then(async (data) => {
-                            const responseData = await data.data;
-                            console.log("successfully!");
-                            console.log("responseData 값", responseData);
-                            return await responseData;
-                        })
-                    }).catch((data) => {
-                        if(data.response.status === 401){
-                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
-                            router.push("/login");
-                            return;
-                        }
-    
-                        if(data.response.status === 500){
-                            alert("시스템 에러, 관리자에게 문의하세요.");
-                            return;
-                        }
-                    })
-                }
             })
+            const responseData = await response.data;
+            console.log("successfully!");
+            console.log("responseData 값", responseData);
+            return await responseData;
         } catch (error) {
             console.error("Error:", error);
         }
