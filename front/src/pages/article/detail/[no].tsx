@@ -314,7 +314,7 @@ const DetailArticle = () => {
                         <button><Link href="/article/list">목록보기</Link></button>
                     </div>
                     <div className="detail-main-title">
-                        <span>공지사항</span>
+                        <span>게시글</span>
                         <h4 ref={articleTitle}></h4>
                         <p>2023년 07월 15일 AM 10시</p>
                     </div>
