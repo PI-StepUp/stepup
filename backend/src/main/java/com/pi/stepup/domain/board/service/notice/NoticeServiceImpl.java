@@ -54,6 +54,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .title(noticeSaveRequestDto.getTitle())
                 .content(noticeSaveRequestDto.getContent())
                 .fileURL(noticeSaveRequestDto.getFileURL())
+                .viewCnt(0L)
                 .build();
 
         noticeRepository.insert(notice);
