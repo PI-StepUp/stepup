@@ -1,17 +1,17 @@
 package com.pi.stepup.domain.dance.constant;
 
 public enum ProgressType {
-    ALL{
+    ALL {
         @Override
         public String toString() {
             return "ALL";
         }
-    }, SCHEDULED{
+    }, SCHEDULED {
         @Override
         public String toString() {
             return "SCHEDULED";
         }
-    }, IN_PROGRESS{
+    }, IN_PROGRESS {
         @Override
         public String toString() {
             return "IN_PROGRESS";

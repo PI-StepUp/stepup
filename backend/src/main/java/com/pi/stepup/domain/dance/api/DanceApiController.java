@@ -122,7 +122,6 @@ public class DanceApiController {
         List<DanceSearchResponseDto> allDance
             = danceService.readAllRandomDance(danceSearchRequestDto);
 
-        //그냥 메시지 다른 거 전달하지 말까...
         if (danceSearchRequestDto.getProgressType().equals(ProgressType.SCHEDULED.toString())) {
             return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
                 SELECT_SCHEDULED_RANDOM_DANCE.getMessage(),

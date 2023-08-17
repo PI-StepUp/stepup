@@ -1,10 +1,9 @@
 package com.pi.stepup.domain.dance.dto;
 
 import com.pi.stepup.domain.dance.domain.RandomDance;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 public class DanceResponseDto {
 
@@ -52,7 +51,8 @@ public class DanceResponseDto {
         private final int isEnd;
 
         @Builder
-        private DanceSearchResponseDto(RandomDance randomDance, String progressType, Integer reserveStatus) {
+        private DanceSearchResponseDto(RandomDance randomDance, String progressType,
+            Integer reserveStatus) {
             this.randomDanceId = randomDance.getRandomDanceId();
             this.title = randomDance.getTitle();
             this.content = randomDance.getContent();

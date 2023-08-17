@@ -69,14 +69,11 @@ public class DanceServiceImpl implements DanceService {
             -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
         RandomDance randomDance = danceCreateRequestDto.toEntity(host);
-        //시간이 잘못된 경우
         if (!validationDance(randomDance)) {
             throw new DanceBadRequestException(DANCE_INVALID_TIME.getMessage());
         }
 
-        //노래는 최소 10곡 ~ 최대 50곡
         List<Long> danceMusicIdList = danceCreateRequestDto.getDanceMusicIdList();
-        //지금은 일단 2곡 이상으로 해놓았음
         if (danceMusicIdList.size() >= 2 && danceMusicIdList.size() <= 50) {
             for (int i = 0; i < danceMusicIdList.size(); i++) {
                 Music music = musicRepository.findOne(
@@ -93,7 +90,6 @@ public class DanceServiceImpl implements DanceService {
     }
 
     private boolean validationDance(RandomDance randomDance) {
-        //끝 시간이 시작 시간보다 이후
         if (randomDance.getEndAt().isAfter(randomDance.getStartAt())) {
             return true;
         } else {
@@ -120,9 +116,6 @@ public class DanceServiceImpl implements DanceService {
         randomDance.update(danceUpdateRequestDto);
     }
 
-    //랜플댄 삭제 시 삭제 사유 받아서 처리
-    //진행예정 랜플댄이 있는 경우 회원 탈퇴 불가능하게
-    //진행 중이면 랜플댄 못 나가게...
     @Override
     @Transactional
     public void delete(Long randomDanceId) {
@@ -184,7 +177,6 @@ public class DanceServiceImpl implements DanceService {
         return allMyOpenDance;
     }
 
-    //TODO: 수정 필요
     @Override
     public List<DanceSearchResponseDto> readAllRandomDance(
         DanceSearchRequestDto danceSearchRequestDto) {
@@ -194,7 +186,6 @@ public class DanceServiceImpl implements DanceService {
         String loginUserId = "id";
         User user = null;
 
-        //로그인 안 한 경우에도 접근 가능
         try {
             loginUserId = SecurityUtils.getLoggedInUserId();
             user = userRepository.findById(loginUserId).orElseThrow(()
@@ -220,7 +211,6 @@ public class DanceServiceImpl implements DanceService {
         for (int i = 0; i < randomDanceList.size(); i++) {
             RandomDance randomDance = randomDanceList.get(i);
 
-            //로그인 안 한 사용자면 예약하기 버튼 비활성화 - 1
             DanceSearchResponseDto danceSearchResponseDto
                 = DanceSearchResponseDto.builder()
                 .randomDance(randomDance)
@@ -229,7 +219,6 @@ public class DanceServiceImpl implements DanceService {
                 .build();
 
             if (isLogin) {
-                //자기가 개최한 거면 예약하기 버튼 비활성화 - 1
                 if (randomDance.getHost().getId().equals(loginUserId)) {
                     danceSearchResponseDto
                         = DanceSearchResponseDto.builder()
@@ -238,13 +227,11 @@ public class DanceServiceImpl implements DanceService {
                         .reserveStatus(1)
                         .build();
 
-                    //자기가 개최한 게 아니면 예약 현황 가져오기
                 } else {
                     Optional<Reservation> reservation
                         = danceRepository.findReservationByRandomDanceIdAndUserId
                         (randomDance.getRandomDanceId(), user.getUserId());
 
-                    //예약이 존재하면 예약하기 버튼 비활성화 - 1
                     if (reservation.isPresent()) {
                         danceSearchResponseDto
                             = DanceSearchResponseDto.builder()
@@ -253,7 +240,6 @@ public class DanceServiceImpl implements DanceService {
                             .reserveStatus(1)
                             .build();
 
-                        //예약이 존재하지 않으면 예약하기 버튼 활성화 - 0
                     } else {
                         danceSearchResponseDto
                             = DanceSearchResponseDto.builder()
@@ -304,7 +290,6 @@ public class DanceServiceImpl implements DanceService {
         RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow(()
             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
-        //본인이 개최한 랜플댄에 예약하려고 할 때
         if (randomDance.getHost().getId().equals(loginUserId)) {
             throw new ReservationDuplicatedException(RESERVATION_IMPOSSIBLE.getMessage());
         }
@@ -377,7 +362,6 @@ public class DanceServiceImpl implements DanceService {
             = danceRepository.findOne(randomDanceId).orElseThrow(()
             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
-        //다시 참여버튼 누른 경우
         if (danceRepository.findAttendByRandomDanceIdAndUserId
             (randomDanceId, user.getUserId()).isPresent()) {
             throw new AttendDuplicatedException(ATTEND_DUPLICATED.getMessage());
