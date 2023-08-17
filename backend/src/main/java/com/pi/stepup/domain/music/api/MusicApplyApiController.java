@@ -53,7 +53,6 @@ public class MusicApplyApiController {
         );
     }
 
-    // TODO : 아래 두개(readAllBy~) 리팩토링 가능?
     @Operation(summary = "노래 신청 목록 조회",
         description = "등록되어 있는 모든 노래 신청들의 상세 정보를 불러온다.")
     @ApiResponse(responseCode = "200",

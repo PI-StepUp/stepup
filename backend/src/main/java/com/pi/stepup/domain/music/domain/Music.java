@@ -26,7 +26,7 @@ public class Music extends BaseEntity {
 
     private String artist;
 
-    private String answer; // 배열로 바꿀 것
+    private String answer;
 
     private String URL;
 
