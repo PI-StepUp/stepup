@@ -468,7 +468,7 @@ const PracticeRoom = () => {
                             <span>KPOP 커버에 도전해 더 높은 점수를 노려보세요!</span>
                         </div>
                         <div className="score-wrap">
-                            <span>안무 정확도: {refreshScore.toString()}점</span>
+                            <span>안무 정확도: {refreshScore.toString() === "NaN" ? "측정중" : refreshScore.toString() + "점"}</span>
                         </div>
                     </div>
 

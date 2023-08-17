@@ -712,7 +712,7 @@ const DanceRoom = () => {
                             <span>진행시간: {startTime}시 {startMinute}분 - {endTime}시 {endMinute}분</span>
                         </div>
                         <div className="score-wrap">
-                            <span>안무 정확도: {refreshScore.toString()}점</span>
+                            <span>안무 정확도: { refreshScore.toString() === "NaN" ? "측정중.." : refreshScore.toString() + "점"}</span>
                         </div>
                     </div>
                     <div className="video-content">
