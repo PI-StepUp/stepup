@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import { S3 } from 'aws-sdk';
-import fs from 'fs';
-import AWS from '../../../aws-config';
+// import { S3 } from 'aws-sdk';
+// import fs from 'fs';
+// import AWS from '../../../aws-config';
 
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
@@ -23,29 +23,29 @@ const ArticleCreate = () => {
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
-    const s3 = new S3();
+    // const s3 = new S3();
 
-    const filePath = `/article/${file.current.value}`;
-    const bucketName = 'stepup-pi';
-    const fileName = `${file.current.value}`;
+    // const filePath = `/article/${file.current.value}`;
+    // const bucketName = 'stepup-pi';
+    // const fileName = `${file.current.value}`;
 
-    async function uploadFileToS3(bucketName: any, fileName: any, filePath: any) {
-        const fileContent = fs.readFileSync(filePath);
+    // async function uploadFileToS3(bucketName: any, fileName: any, filePath: any) {
+    //     const fileContent = fs.readFileSync(filePath);
 
-        const params = {
-            Bucket: bucketName,
-            Key: fileName,
-            Body: fileContent
-        };
+    //     const params = {
+    //         Bucket: bucketName,
+    //         Key: fileName,
+    //         Body: fileContent
+    //     };
 
-        try {
-            const data = await s3.upload(params).promise();
-            console.log('File uploaded successfully:', data.Location);
-        } catch (err) {
-            alert('파일 업로드 실패, 관리자에게 문의하세요.');
-            console.error('Error uploading file:', err);
-        }
-    }
+    //     try {
+    //         const data = await s3.upload(params).promise();
+    //         console.log('File uploaded successfully:', data.Location);
+    //     } catch (err) {
+    //         alert('파일 업로드 실패, 관리자에게 문의하세요.');
+    //         console.error('Error uploading file:', err);
+    //     }
+    // }
 
     const createArticle = async (e: any) => {
         e.preventDefault();

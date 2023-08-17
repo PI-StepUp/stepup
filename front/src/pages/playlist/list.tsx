@@ -133,7 +133,13 @@ const PlayList = () => {
                 }
                 
                 <div className="playlist-create-button-wrap">
-                    <button><Link href="/playlist/create">{lang==="en" ? "Request" : lang==="cn" ? "申请新曲" : "신곡 신청하기" }</Link></button>
+                    {
+                        nickname == "" ?
+                        <></>
+                        :
+                        <button><Link href="/playlist/create">{lang==="en" ? "Request" : lang==="cn" ? "申请新曲" : "신곡 신청하기" }</Link></button>
+                    }
+                    
                 </div>
                 <div className="playlist-content-wrap">
                     <ul>
