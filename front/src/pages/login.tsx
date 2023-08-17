@@ -68,10 +68,10 @@ const Login = () => {
 
 	// 아이디 찾기
 	// 인증 이메일 전송 시 시간 소요로 인한 비동기 async, await 제거
-	const findId = () => {
+	const findId = async () => {
 		console.log("id찾기", idEmailValue.current.value);
 		try {
-			axiosUser.post('/findid', {
+			await axiosUser.post('/findid', {
 				email: idEmailValue.current.value,
 				birth: dateValue.current.value,
 			}).then((data) => {
