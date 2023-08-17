@@ -7,7 +7,12 @@ import static com.pi.stepup.domain.user.constant.UserExceptionMessage.NICKNAME_D
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.USER_NOT_FOUND;
 import static com.pi.stepup.domain.user.constant.UserExceptionMessage.WRONG_PASSWORD;
 
+import com.pi.stepup.domain.board.dao.board.BoardRepository;
+import com.pi.stepup.domain.board.dao.comment.CommentRepository;
+import com.pi.stepup.domain.dance.dao.DanceRepository;
+import com.pi.stepup.domain.music.dao.MusicApplyRepository;
 import com.pi.stepup.domain.rank.constant.RankName;
+import com.pi.stepup.domain.rank.dao.PointHistoryRepository;
 import com.pi.stepup.domain.rank.dao.RankRepository;
 import com.pi.stepup.domain.rank.domain.Rank;
 import com.pi.stepup.domain.rank.exception.RankNotFoundException;
@@ -67,6 +72,13 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+
+    private final MusicApplyRepository musicApplyRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
+    private final DanceRepository danceRepository;
+    private final PointHistoryRepository pointHistoryRepository;
+
 
     @Override
     public List<CountryResponseDto> readAllCountries() {
@@ -189,6 +201,22 @@ public class UserServiceImpl implements UserService {
 
         userRedisService.deleteRefreshToken(user.getId());
         userRedisService.deleteUserInfo(user);
+
+        musicApplyRepository.deleteAllHeartsByUserId(user.getUserId());
+        musicApplyRepository.findAllByUserId(user.getUserId())
+            .forEach(ma -> musicApplyRepository.delete(ma.getMusicApplyId()));
+
+        commentRepository.deleteAllByUserId(user.getUserId());
+        boardRepository.findAllBoardByUserId(user.getUserId())
+            .forEach(boardRepository::delete);
+
+        danceRepository.deleteAllAttendByUserId(user.getUserId());
+        danceRepository.deleteAllReservationByUserId(user.getUserId());
+        pointHistoryRepository.deleteAllByUserId(user.getUserId());
+
+        danceRepository.updateAllHostDeletedByUserID(user.getUserId());
+
+
         userRepository.delete(user);
     }
 

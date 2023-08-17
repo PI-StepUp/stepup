@@ -15,6 +15,8 @@ public interface DanceRepository {
 
     void delete(Long randomDanceId);
 
+    void updateAllHostDeletedByUserID(Long userId);
+
     List<DanceMusic> findAllDanceMusic(Long randomDanceId);
 
     List<RandomDance> findAllMyOpenDance(String id);
@@ -34,9 +36,13 @@ public interface DanceRepository {
 
     void deleteReservation(Long randomDanceId, Long userId);
 
+    void deleteAllReservationByUserId(Long userId);
+
     List<Reservation> findAllMyReservation(Long userId);
 
     AttendHistory insertAttend(AttendHistory attendHistory);
+
+    void deleteAllAttendByUserId(Long userId);
 
     Optional<AttendHistory> findAttendByRandomDanceIdAndUserId(Long randomDanceId, Long userId);
 

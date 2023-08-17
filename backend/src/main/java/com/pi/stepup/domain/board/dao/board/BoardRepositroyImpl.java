@@ -1,6 +1,7 @@
 package com.pi.stepup.domain.board.dao.board;
 
 import com.pi.stepup.domain.board.domain.Board;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +24,18 @@ public class BoardRepositroyImpl implements BoardRepository {
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Board> findAllBoardByUserId(Long userId) {
+        return em.createQuery("SELECT b FROM Board b "
+            + "WHERE b.writer.userId = :userId", Board.class)
+            .setParameter("userId", userId)
+            .getResultList();
+    }
+
+    @Override
+    public void delete(Board board) {
+        em.remove(board);
     }
 }
