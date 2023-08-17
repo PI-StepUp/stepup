@@ -64,10 +64,71 @@ const Modal = (props: props): ReactElement => {
 			if (data.data.message === "랜덤 플레이 댄스 수정 완료") {
 				{ lang === "en" ? alert("Random play dance information has been updated.") : lang === "cn" ? alert("随机播放舞蹈信息已更新。") : alert("랜덤 플레이 댄스 정보를 수정했습니다.") }
 				close(false);
-				router.push('/mypage');
+				window.location.replace("/mypage");
 			} else {
 				{ lang === "en" ? alert("Modification was not successful. Please try again.") : lang === "cn" ? alert("修改未成功。请再试一次。") : alert("수정을 완료하지 못했습니다. 다시 한 번 시도해주세요.") }
-				router.push('/mypage');
+				window.location.replace("/mypage");
+			}
+		}).catch((error: any) => {
+			if (error.response.data.message === "만료된 토큰") {
+				axios.put("https://stepup-pi.com:8080/api/dance/my", {
+					randomDanceId: props.randomDanceId,
+					title: roomTitle.current?.value,
+					content: roomContent.current?.value,
+					startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
+					endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
+					danceType: danceType,
+					maxUser: Number(roomMaxNum.current?.value),
+					thumbnail: roomImg,
+					hostId: id,
+					danceMusicIdList: [1, 2, 3],
+				}, {
+					headers: {
+						refreshToken: refreshToken
+					}
+				}).then((data) => {
+					if (data.data.message === "토큰 재발급 완료") {
+						setAccessToken(data.data.data.accessToken);
+						setRefreshToken(data.data.data.refreshToken);
+					}
+				}).then(() => {
+					axios.put("https://stepup-pi.com:8080/api/dance/my", {
+						randomDanceId: props.randomDanceId,
+						title: roomTitle.current?.value,
+						content: roomContent.current?.value,
+						startAt: roomStartDate.current?.value + " " + roomStartTime.current?.value,
+						endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
+						danceType: danceType,
+						maxUser: Number(roomMaxNum.current?.value),
+						thumbnail: roomImg,
+						hostId: id,
+						danceMusicIdList: [1, 2, 3],
+					}, {
+						headers: {
+							Authorization: `Bearer ${accessToken}`
+						}
+					}).then((data) => {
+						if (data.data.message === "랜덤 플레이 댄스 수정 완료") {
+							{ lang === "en" ? alert("Random play dance information has been updated.") : lang === "cn" ? alert("随机播放舞蹈信息已更新。") : alert("랜덤 플레이 댄스 정보를 수정했습니다.") }
+							close(false);
+							window.location.replace("/mypage");
+						} else {
+							{ lang === "en" ? alert("Modification was not successful. Please try again.") : lang === "cn" ? alert("修改未成功。请再试一次。") : alert("수정을 완료하지 못했습니다. 다시 한 번 시도해주세요.") }
+							window.location.replace("/mypage");
+						}
+					}).catch((data) => {
+						if (data.response.status === 401) {
+							alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+							router.push("/login");
+							return;
+						}
+
+						if (data.response.status === 500) {
+							alert("시스템 에러, 관리자에게 문의하세요.");
+							return;
+						}
+					})
+				})
 			}
 		})
 	}
@@ -109,7 +170,6 @@ const Modal = (props: props): ReactElement => {
 									<td>
 										<select name="" id="" defaultValue={props.danceType} onChange={(e) => setDanceType(e.target.value)}>
 											<option value="RANKING">랜덤플레이</option>
-											<option value="SURVIVAL">서바이벌</option>
 											<option value="BASIC">자율모드</option>
 										</select>
 									</td>

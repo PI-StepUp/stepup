@@ -35,10 +35,53 @@ const Modal = (props: props): ReactElement => {
 				setId("");
 				setProfileImg("");
 				setRankname("");
-				{lang === "en" ? alert("You have been withdrawn. Thank you for using our service.") : lang === "cn" ? alert("您已经退出。感谢您使用我们的服务。") : alert("탈퇴되었습니다. 이용해주셔서 감사합니다.")}
+				{ lang === "en" ? alert("You have been withdrawn. Thank you for using our service.") : lang === "cn" ? alert("您已经退出。感谢您使用我们的服务。") : alert("탈퇴되었습니다. 이용해주셔서 감사합니다.") }
 				router.push('/');
 			} else {
-				{lang === "en" ? alert("Failed to withdraw from membership. Please try again.") : lang === "cn" ? alert("会员退出失败，请再试一次。") : alert("회원 탈퇴에 실패하셨습니다. 다시 한 번 시도해주세요.")}
+				{ lang === "en" ? alert("Failed to withdraw from membership. Please try again.") : lang === "cn" ? alert("会员退出失败，请再试一次。") : alert("회원 탈퇴에 실패하셨습니다. 다시 한 번 시도해주세요.") }
+			}
+		}).catch((error: any) => {
+			if (error.response.data.message === "만료된 토큰") {
+				axios.delete(`https://stepup-pi.com:8080/api/user?id=${id}`, {
+					headers: {
+						refreshToken: refreshToken
+					},
+				}).then((data) => {
+					if (data.data.message === "토큰 재발급 완료") {
+						setAccessToken(data.data.data.accessToken);
+						setRefreshToken(data.data.data.refreshToken);
+					}
+				}).then(() => {
+					axios.delete(`https://stepup-pi.com:8080/api/user?id=${id}`, {
+						headers: {
+							Authorization: `Bearer ${accessToken}`
+						},
+					}).then((data) => {
+						if (data.data.message === "회원 탈퇴 완료") {
+							setAccessToken("");
+							setRefreshToken("");
+							setNickname("");
+							setId("");
+							setProfileImg("");
+							setRankname("");
+							{ lang === "en" ? alert("You have been withdrawn. Thank you for using our service.") : lang === "cn" ? alert("您已经退出。感谢您使用我们的服务。") : alert("탈퇴되었습니다. 이용해주셔서 감사합니다.") }
+							router.push('/');
+						} else {
+							{ lang === "en" ? alert("Failed to withdraw from membership. Please try again.") : lang === "cn" ? alert("会员退出失败，请再试一次。") : alert("회원 탈퇴에 실패하셨습니다. 다시 한 번 시도해주세요.") }
+						}
+					}).catch((data) => {
+						if (data.response.status === 401) {
+							alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+							router.push("/login");
+							return;
+						}
+
+						if (data.response.status === 500) {
+							alert("시스템 에러, 관리자에게 문의하세요.");
+							return;
+						}
+					})
+				})
 			}
 		})
 	}
