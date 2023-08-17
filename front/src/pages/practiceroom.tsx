@@ -84,6 +84,7 @@ const PracticeRoom = () => {
 	const [resultScore, setResultScore] = useState<number>();
 	const [selectedMusic, setSelectedMusic] = useState<any>(14);
 	const [scoreCount, setScoreCount] = useState<any>(0);
+    const [refreshScore, setRefreshScore] = useState<any>(0);
 	const localVideoRef = useRef<any>(null);
 	const localCanvasRef = useRef<HTMLCanvasElement>(null);
 	const localStreamRef = useRef<MediaStream>();
@@ -226,6 +227,7 @@ const PracticeRoom = () => {
 
 			const score = await calculateSimilarity(danceRecord, danceAnswer);
 			setResultScore(score);
+            await setRefreshScore(score);
 
 			setTimeout(() => {
 				setPlayResult("");
@@ -464,6 +466,9 @@ const PracticeRoom = () => {
                         <div className="room-title">
                             <h3>STEP UP 연습실</h3>
                             <span>KPOP 커버에 도전해 더 높은 점수를 노려보세요!</span>
+                        </div>
+                        <div className="score-wrap">
+                            <span>안무 정확도: {refreshScore.toString()}점</span>
                         </div>
                     </div>
 
