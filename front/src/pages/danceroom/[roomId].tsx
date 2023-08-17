@@ -21,7 +21,7 @@ import { LanguageState } from "states/states";
 import { createLandmarker, calculateSimilarity } from "../../utils/motionsetter";
 import { PoseLandmarker } from "@mediapipe/tasks-vision";
 import axios from "axios";
-import { axiosMusic, axiosRank, axiosUser } from "apis/axios";
+import { axiosDance, axiosMusic, axiosRank, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -570,6 +570,55 @@ const DanceRoom = () => {
                     })
                 }
             })
+
+            // 랜플댄 참여 이력 추가
+            axiosDance.post(`/attend/${roomId}`, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			}).then((data) => {
+				if (data.data.message === "랜덤 플레이 댄스 참여 완료") {
+					// console.log("랜덤 플레이 댄스 참여 완료")
+				}
+			}).catch((error: any) => {
+                if(error.response.data.message === "만료된 토큰"){
+                    axiosDance.post(`/attend/${roomId}`, {
+                        headers: {
+                            refreshToken: refreshToken,
+                        }
+                    }).then((data) => {
+                        if(data.data.message === "토큰 재발급 완료"){
+                            setAccessToken(data.data.data.accessToken);
+                            setRefreshToken(data.data.data.refreshToken);
+                        }
+                    }).then(() => {
+                        axiosDance.post(`/attend/${roomId}`, {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`
+                            }
+                        }).then((data) => {
+                            if (data.data.message === "랜덤 플레이 댄스 참여 완료") {
+                                // console.log("랜덤 플레이 댄스 참여 완료")
+                            }
+                        })
+                    }).catch((data) => {
+                        if(data.response.status === 401){
+                            alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            setNickname("");
+                            router.push("/login");
+                            return;
+                        }
+                        if(data.response.status === 500){
+                            alert("시스템 에러, 관리자에게 문의하세요.");
+                            return;
+                        }
+                    }).catch((e) => {
+                        // console.log("참여 이력 에러 발생", e);
+                        alert("참여 이력 등록에 오류가 발생했습니다. 관리자에게 문의 바랍니다.");
+                    })
+                }
+            })
+            
 			pcsRef.current[data.id].close();
 			delete pcsRef.current[data.id];
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
