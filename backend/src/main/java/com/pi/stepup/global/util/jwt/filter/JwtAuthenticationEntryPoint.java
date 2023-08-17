@@ -16,10 +16,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-/**
- * 인증 되지 않은 접근에 대한 예외 처리 클래스
- */
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
