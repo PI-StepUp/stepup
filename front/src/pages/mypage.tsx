@@ -9,9 +9,7 @@ import Footer from "../components/Footer"
 import Image from "next/image"
 import img_profile from "/public/images/default-meeting-profile.svg"
 import img_rpdance from "/public/images/dummy-rpdance.png"
-import img_notice from "/public/images/icon-notice.png"
 import img_offline from "/public/images/icon-offline.png"
-import img_requestsong from "/public/images/icon-requestsong.png"
 import img_board from "/public/images/icon-board.png"
 import img_settings from "/public/images/icon-settings.svg"
 import img_vector from "/public/images/icon-vector.png"
@@ -50,7 +48,6 @@ const MyPage = () => {
   const [goalRankPoint, setGoalRankPoint] = useState<number>(0);
   const [point, setPoint] = useState<number>(0);
   const [pointLeft, setPointLeft] = useState<number>();
-  // const [pointHistory, setPointHistory] = useState<any[]>();
   const [reserved, setReserved] = useState<any[]>();
   const [myRandomDance, setMyRandomDance] = useState<any[]>();
   const [myRandomDanceHistory, setMyRandomDanceHistory] = useState<any[]>();
@@ -118,13 +115,11 @@ const MyPage = () => {
             refreshToken: refreshToken,
           }
         }).then((data) => {
-          // console.log(data);
-          // console.log(data.data.message)
           if (data.data.message === "토큰 재발급 완료") {
             setAccessToken(data.data.data.accessToken);
             setRefreshToken(data.data.data.refreshToken);
           } else if (data.data.message === "잘못된 형식의 헤더") {
-            console.log("로그인을 먼저 진행해주세요.")
+            // console.log("로그인을 먼저 진행해주세요.")
           }
         }).catch((e) => {
           if (e.response.data.message === "잘못된 형식의 헤더") {
@@ -133,7 +128,7 @@ const MyPage = () => {
           }
         })
       } catch (e) {
-        console.log("로그인되지 않은 상태에서 진입", e);
+        // console.log("로그인되지 않은 상태에서 진입", e);
         alert('시스템 에러, 관리자에게 문의하세요.');
       }
     }
@@ -146,7 +141,6 @@ const MyPage = () => {
             Authorization: `Bearer ${accessToken}`
           }
         }).then(async (data) => {
-          // console.log("로그인 유저 정보 조회", data);
           if (data.data.message === "회원정보 조회 완료") {
             await setLoginUser(data.data.data);
             await setLoginUserNickname(data.data.data.nickname);
@@ -173,7 +167,6 @@ const MyPage = () => {
               }
             }
             await getRankColor(data.data.data.rankName);
-
             await setProfileImg(data.data.data.profileImg);
 
             const getpoint = () => {
@@ -183,7 +176,6 @@ const MyPage = () => {
             }
             await getpoint();
             await setPointLeft(goalRankPoint - point);
-
           }
         })
 
@@ -219,7 +211,6 @@ const MyPage = () => {
             Authorization: `Bearer ${accessToken}`
           }
         }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
-          // console.log("로그인 유저 랜플댄 예약 목록 조회", data);
           if (data.data.message === "내가 예약한 랜덤 플레이 댄스 목록 조회 완료") {
             setReserved(data.data.data);
             reservedRandomDanceCnt = reserved?.length!;
@@ -232,7 +223,6 @@ const MyPage = () => {
             Authorization: `Bearer ${accessToken}`
           }
         }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
-          // console.log("로그인 유저가 개최한 랜플댄 목록", data);
           if (data.data.message === "내가 개최한 랜덤 플레이 댄스 목록 조회 완료") {
             setMyRandomDance(data.data.data);
           }
@@ -290,7 +280,6 @@ const MyPage = () => {
   }
 
   const checkPw = async () => {
-    console.log("-----------수정페이지 진입-------------")
     setCheckPassword(pwValue.current!.value);
 
     try {
@@ -302,19 +291,15 @@ const MyPage = () => {
           Authorization: `Bearer ${accessToken}`,
         }
       }).then((data) => {
-        // console.log("비밀번호 일치 여부 결과", data);
         if (data.data.message === "비밀번호 일치") {
           setEqualPw(true);
           setCanEditInfo(true);
-          console.log("비밀번호 일치");
           router.push('/mypageedit');
         } else {
-          console.log("비밀번호 불일치");
         }
       }).catch((e) => {
-        console.log("에러 발생", e);
+        // console.log("에러 발생", e);
         setEqualPw(false);
-        // alert('비밀번호가 일치하지 않습니다. 다시 입력해주세요.');
       })
     } catch (e) {
     }

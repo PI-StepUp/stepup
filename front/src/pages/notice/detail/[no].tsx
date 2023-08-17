@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
 import Footer from "components/Footer";
@@ -88,54 +88,66 @@ const DetailNotice = () => {
         }
     }
 
-    useEffect(() => {
-        axiosBoard.get(`/notice/${boardIdStat}`).then((data) => {
-            if(data.data.message === "공지사항 게시글 조회 완료"){
-                setArticle(data.data.data);
-            }
-        })
-    }, [])
-    return (
-        <>
-            <Header></Header>
-            <MainBanner></MainBanner>
-            <SubNav linkNo="1"></SubNav>
-            <div className="detail-article-wrap">
-                <div className="detail-title">
-                    <span>게시글</span>
-                    <div className="flex-wrap">
-                        <h3>글 상세보기</h3>
-                        <div className="vertical-line"></div>
-                    </div>
-                </div>
-                <div className="detail-content">
-                    <div className="list-wrap">
-                        <button><Link href="/notice/list">목록보기</Link></button>
-                    </div>
-                    <div className="detail-main-title">
-                        <span>공지사항</span>
-                        <h4>{article?.title}</h4>
-                        <p>2023년 07월 15일 AM 10시</p>
-                    </div>
-                    <div className="detail-main-content">
-                        <p>{article?.content}</p>
-                    </div>
-                    <div className="button-wrap">
-                    {
-                        role === "ROLE_ADMIN" ?
-                        <>
-                            <button onClick={deleteArticle}>삭제하기</button>
-                            <button onClick={() => router.push('/notice/edit/' + article.boardId)}>수정하기</button>
-                        </>
-                        :
-                        <></>
-                    }
-                    </div>
-                </div>
-            </div>
-            <Footer></Footer>
-        </>
-    )
+						if (data.response.status === 500) {
+							alert("시스템 에러, 관리자에게 문의하세요.");
+							return;
+						}
+					})
+				}
+			})
+		} catch (e) {
+			alert("글 삭제 실패, 관리자에게 문의하세요.");
+		}
+	}
+
+	useEffect(() => {
+		axiosBoard.get(`/notice/${boardIdStat}`).then((data) => {
+			if (data.data.message === "공지사항 게시글 조회 완료") {
+				setArticle(data.data.data);
+			}
+		})
+	}, [])
+	return (
+		<>
+			<Header></Header>
+			<MainBanner></MainBanner>
+			<SubNav linkNo="1"></SubNav>
+			<div className="detail-article-wrap">
+				<div className="detail-title">
+					<span>게시글</span>
+					<div className="flex-wrap">
+						<h3>글 상세보기</h3>
+						<div className="vertical-line"></div>
+					</div>
+				</div>
+				<div className="detail-content">
+					<div className="list-wrap">
+						<button><Link href="/notice/list">목록보기</Link></button>
+					</div>
+					<div className="detail-main-title">
+						<span>공지사항</span>
+						<h4>{article?.title}</h4>
+						<p>2023년 07월 15일 AM 10시</p>
+					</div>
+					<div className="detail-main-content">
+						<p>{article?.content}</p>
+					</div>
+					<div className="button-wrap">
+						{
+							role === "ROLE_ADMIN" ?
+								<>
+									<button onClick={deleteArticle}>삭제하기</button>
+									<button onClick={() => router.push('/notice/edit/' + article.boardId)}>수정하기</button>
+								</>
+								:
+								<></>
+						}
+					</div>
+				</div>
+			</div>
+			<Footer></Footer>
+		</>
+	)
 }
 
 export default DetailNotice;
