@@ -39,9 +39,7 @@ public class MusicResponseDto {
         private final String writerName;
         private final String writerProfileImg;
         private final Integer heartCnt;
-
-        // TODO : 하트 누를 수 있는지 확인 하는 status
-        private Integer canHeart; // 0 이면 이미 좋아요, 1이면 좋아요 누를 수 있음
+        private Integer canHeart;
 
         @Builder
         public MusicApplyFindResponseDto(MusicApply musicApply, Integer canHeart) {
