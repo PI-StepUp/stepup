@@ -39,27 +39,39 @@ async function calculateSimilarity(danceRecord: any[], danceAnswer: any[]) {
     console.log("normalized", danceCompareNorm);
     console.log("vectorized", danceCompareVec);
 
-    let similaritySum = 0;
+    let similaritySumUp = 0;
+    let similaritySumDown = 0;
     let frameCount = Math.min(danceAnswer[0][0].length, danceCompareVec[0][0].length);
 
     danceAnswer = sampleFrames(danceAnswer, frameCount);
     danceCompareVec = sampleFrames(danceCompareVec, frameCount);
 
+    console.log("danceAnswer 샘플링 ", danceAnswer);
+    console.log("danceCompareVec 샘플링 ", danceCompareVec);
 
-    console.log("프레임 수 작은거는? ", frameCount);
-    console.log("danceAnswer 길이    ", danceAnswer);
-    console.log("danceCompareVec 길이    ", danceCompareVec);
-
-    for (let i = 0; i < 12; i++) {
+    //상체
+    for (let i = 0; i < 8; i++) {
         let similarity = DTW(danceAnswer[i], danceCompareVec[i]) / frameCount;
         console.log(`similarity : ${similarity}`);
-        similaritySum += similarity;
+        similaritySumUp += similarity;
     }
-    similaritySum /= 12;
+    similaritySumUp /= 8;
 
-    console.log("similarity", similaritySum);
 
-    return (100 - Math.floor(transformScore(similaritySum) * 200));
+    //하체
+    for (let i = 8; i < 12; i++) {
+        let similarity = DTW(danceAnswer[i], danceCompareVec[i]) / frameCount;
+        console.log(`similarity : ${similarity}`);
+        similaritySumDown += similarity;
+    }
+    similaritySumDown /= 4;
+
+
+    console.log("similarity 더한거 ", (similaritySumUp + similaritySumDown)/2);
+    console.log("similaritySumUp ", similaritySumUp);
+    console.log("similaritySumDown ", similaritySumDown);
+
+    return (100 - Math.floor(transformScore(similaritySumUp*160+similaritySumDown*40)));
 }
 
 
@@ -90,8 +102,8 @@ function sampleFrames(frames: any[], sampleCount: number): any[] {
 
 
 function transformScore(score: number) {
-    if (score >= 0.5) {
-        return 0.49;
+    if (score >= 100) {
+        return 99;
     } else {
         return score;
     }

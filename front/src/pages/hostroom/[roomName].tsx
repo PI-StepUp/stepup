@@ -142,6 +142,7 @@ const Hostroom = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }
@@ -205,6 +206,7 @@ const Hostroom = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }
@@ -306,7 +308,7 @@ const Hostroom = () => {
                                         {mic ? <Image src={MicHoverIcon} alt=""/> : <Image src={MicIcon} alt=""/>}
                                     </button>
                                 </li>
-                                <li onClick={finishRandomPlay}><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></li>
+                                <li onClick={finishRandomPlay}><button className="exit-button">{lang==="en" ? "Shutting Down" : lang==="cn" ? "退出" : "종료하기" }</button></li>
                                 <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>
                                     <button>
                                         {camera ? <Image src={CameraHoverIcon} alt=""/> : <Image src={CameraIcon} alt=""/>}

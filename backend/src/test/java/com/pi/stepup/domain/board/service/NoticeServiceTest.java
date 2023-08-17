@@ -190,13 +190,13 @@ public class NoticeServiceTest {
     @DisplayName("공지 게시글 삭제 테스트")
     public void deleteDanceTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            // 관리자 유저로 설정
+
             securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
                     .thenReturn(adminUser.getId());
             when(noticeRepository.findOne(any(Long.class))).thenReturn(Optional.of(notice1));
-            // 삭제 시도
+
             noticeService.delete(1L);
-            // 삭제 메서드 호출 확인
+
             verify(noticeRepository, times(1)).delete(1L);
         }
     }
@@ -208,7 +208,6 @@ public class NoticeServiceTest {
             securityUtilsMocked.when(SecurityUtils::getLoggedInUserId)
                     .thenReturn(adminUser.getId());
 
-            // Mock NoticeRepository
             when(noticeRepository.findOne(any(Long.class)))
                     .thenReturn(Optional.of(notice1));
             when(danceRepository.findOne(any(Long.class))).thenReturn(Optional.of(randomDance));
@@ -235,7 +234,6 @@ public class NoticeServiceTest {
 
             List<NoticeResponseDto.NoticeInfoResponseDto> result = noticeService.readAll(keyword);
 
-            // 테스트 결과 검증
             assert(result.size() == 2);
             assert(result.get(0).getTitle().equals("공지 테스트 제목"));
             assert(result.get(1).getTitle().equals("공지 테스트 제목2"));

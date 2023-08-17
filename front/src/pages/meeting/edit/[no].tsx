@@ -9,7 +9,7 @@ import { axiosBoard, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 
 import { useRecoilState } from "recoil";
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 
 const MeetingEdit = () => {
     const meetingTitle = useRef<any>();
@@ -22,6 +22,7 @@ const MeetingEdit = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     const [article, setArticle] = useState<any>();
     const router = useRouter();
     const boardId = router.query.no;
@@ -87,7 +88,6 @@ const MeetingEdit = () => {
                             Authorization: `Bearer ${accessToken}`,
                         }
                     }).then((data) => {
-                        console.log(data);
                         if(data.data.message === "정모 수정 완료"){
                             alert("오프라인 모임 수정이 완료되었습니다.");
                             router.push('/meeting/list');
@@ -96,6 +96,7 @@ const MeetingEdit = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }
@@ -163,6 +164,7 @@ const MeetingEdit = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }

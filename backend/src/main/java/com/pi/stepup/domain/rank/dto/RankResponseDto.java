@@ -10,8 +10,10 @@ import lombok.Builder;
 import lombok.Getter;
 
 public class RankResponseDto {
+
     @Getter
     public static class PointHistoryFindResponseDto {
+
         private final PointType pointType;
         private final Integer point;
         private final Integer count;
@@ -25,7 +27,7 @@ public class RankResponseDto {
 
             this.pointType = pointPolicy.getPointType();
             this.point = pointPolicy.getPoint() * pointHistory.getCount();
-            if(randomDance != null) {
+            if (randomDance != null) {
                 this.randomDanceId = randomDance.getRandomDanceId();
                 this.randomDanceTitle = randomDance.getTitle();
             }
@@ -35,6 +37,7 @@ public class RankResponseDto {
 
     @Getter
     public static class UserRankFindResponseDto {
+
         private final RankName rankName;
         private final String rankImg;
 

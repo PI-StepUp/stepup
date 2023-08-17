@@ -46,10 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
         try {
-            // 1. Request Header 로부터 JWT 토큰 받아옴
             Token token = resolveToken(request);
 
-            // 2. JwtTokenProvider.validateToken() 으로 유효성 검사 진행
             if (token != null && jwtTokenProvider.validateToken(token.getToken())) {
                 if (token.getTokenType() == REFRESH) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(
@@ -73,7 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     throw new NotMatchedTokenException(NOT_MATCHED_TOKEN.getMessage());
                 }
 
-                // 토큰 유효할 경우, 토큰으로부터 Authentication 객체를 받아와 SecurityContext에 저장
                 Authentication authentication = jwtTokenProvider.getAuthentication(
                     token.getToken());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -129,7 +126,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public Token resolveToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
 
-        log.debug("bearertoken : {}", token);
         if (StringUtils.hasText(token)) {
             if (token.startsWith("Bearer") && token.length() > 7) {
                 int tokenStartIndex = 7;

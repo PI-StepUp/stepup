@@ -5,7 +5,7 @@ import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
 import { axiosBoard, axiosUser } from "apis/axios";
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 import { useRouter } from "next/router";
@@ -18,6 +18,7 @@ const NoticeCreate = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const router = useRouter();
     const createNotice = async (e: any) => {
@@ -72,6 +73,7 @@ const NoticeCreate = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }

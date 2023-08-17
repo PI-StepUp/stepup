@@ -80,12 +80,10 @@ public class NoticeRespositoryTest {
     @Test
     @DisplayName("공지 게시글 상세 조회 테스트")
     public void testFindOne() {
-        // Given
         testInsert();
-        // When
+
         Optional<Notice> foundNotice = noticeRepository.findOne(notice1.getBoardId());
 
-        // Then
         assertTrue(foundNotice.isPresent());
         assertThat(foundNotice.get().getBoardId()).isEqualTo(notice1.getBoardId());
     }
@@ -93,27 +91,21 @@ public class NoticeRespositoryTest {
     @Test
     @DisplayName("공지 게시글 전체 조회 테스트")
     public void testFindAll() {
-        // Given
         testInsert();
 
-        // When
         List<Notice> notices = noticeRepository.findAll("");
         int numberOfMeetingsFound = notices.size();
 
-        // Then
         assertThat(2).isEqualTo(numberOfMeetingsFound);
     }
 
     @Test
     @DisplayName("공지 게시글 삭제 테스트")
     public void testDelete() {
-        // Given
         testInsert();
 
-        // When
         noticeRepository.delete(notice1.getBoardId());
 
-        // Then
         Notice deletedNotice = em.find(Notice.class, notice1.getBoardId());
         assertNull(deletedNotice);
     }

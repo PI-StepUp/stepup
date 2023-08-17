@@ -1,5 +1,10 @@
 package com.pi.stepup.domain.rank.api;
 
+import static com.pi.stepup.domain.rank.constant.RankResponseMessage.READ_POINT_SUCCESS;
+import static com.pi.stepup.domain.rank.constant.RankResponseMessage.READ_PONT_HISTORY_SUCCESS;
+import static com.pi.stepup.domain.rank.constant.RankResponseMessage.READ_RANK_SUCCESS;
+import static com.pi.stepup.domain.rank.constant.RankResponseMessage.UPDATE_POINT_SUCCESS;
+
 import com.pi.stepup.domain.rank.dto.RankRequestDto.PointUpdateRequestDto;
 import com.pi.stepup.domain.rank.service.PointHistoryService;
 import com.pi.stepup.domain.rank.service.RankService;
@@ -11,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import static com.pi.stepup.domain.rank.constant.RankResponseMessage.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "rank", description = "rank domain apis")
 @RestController
@@ -21,6 +28,7 @@ import static com.pi.stepup.domain.rank.constant.RankResponseMessage.*;
 @RequiredArgsConstructor
 @Slf4j
 public class RankApiController {
+
     private final PointHistoryService pointHistoryService;
     private final RankService rankService;
 
@@ -33,10 +41,11 @@ public class RankApiController {
     @ApiResponse(responseCode = "403",
         description = "접근 권한 없음")
     @PostMapping("/point")
-    public ResponseEntity<ResponseDto<?>> updatePoint(@RequestBody PointUpdateRequestDto pointUpdateRequestDto) {
+    public ResponseEntity<ResponseDto<?>> updatePoint(
+        @RequestBody PointUpdateRequestDto pointUpdateRequestDto) {
         pointHistoryService.update(pointUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                UPDATE_POINT_SUCCESS.getMessage()
+            UPDATE_POINT_SUCCESS.getMessage()
         ));
     }
 
@@ -50,10 +59,9 @@ public class RankApiController {
         description = "접근 권한 없음")
     @GetMapping("/my/history")
     public ResponseEntity<ResponseDto<?>> readAllPointHistory() {
-        log.info("포인트 적립 내역 : {}", pointHistoryService.readAll());
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                READ_PONT_HISTORY_SUCCESS.getMessage(),
-                pointHistoryService.readAll()
+            READ_PONT_HISTORY_SUCCESS.getMessage(),
+            pointHistoryService.readAll()
         ));
     }
 
@@ -68,8 +76,8 @@ public class RankApiController {
     @GetMapping("/my/point")
     public ResponseEntity<ResponseDto<?>> readPoint() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                READ_POINT_SUCCESS.getMessage(),
-                pointHistoryService.readPoint()
+            READ_POINT_SUCCESS.getMessage(),
+            pointHistoryService.readPoint()
         ));
     }
 
@@ -84,8 +92,8 @@ public class RankApiController {
     @GetMapping("/my/grade")
     public ResponseEntity<ResponseDto<?>> readUserRank() {
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
-                READ_RANK_SUCCESS.getMessage(),
-                rankService.readOne()
+            READ_RANK_SUCCESS.getMessage(),
+            rankService.readOne()
         ));
     }
 }

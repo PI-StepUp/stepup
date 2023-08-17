@@ -20,6 +20,7 @@ const NoticeCreate = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickaname] = useRecoilState(nicknameState);
     const [notice, setNotice] = useState<any>();
 
     const editNotice = async (e: any) => {
@@ -87,10 +88,10 @@ const NoticeCreate = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickaname("");
                         router.push("/login");
                         return;
                     }
-
                     if(data.response.status === 500){
                         alert("시스템 에러, 관리자에게 문의하세요.");
                         return;
@@ -151,6 +152,7 @@ const NoticeCreate = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickaname("");
                         router.push("/login");
                         return;
                     }

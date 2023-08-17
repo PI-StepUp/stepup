@@ -64,6 +64,7 @@ const DetailArticle = () => {
                     }).catch((data) => {
                         if(data.response.status === 401){
                             alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            setNickname("");
                             router.push("/login");
                             return;
                         }
@@ -109,6 +110,7 @@ const DetailArticle = () => {
                     }).catch((data) => {
                         if(data.response.status === 401){
                             alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            setNickname("");
                             router.push("/login");
                             return;
                         }
@@ -168,6 +170,7 @@ const DetailArticle = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }
@@ -215,6 +218,7 @@ const DetailArticle = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }

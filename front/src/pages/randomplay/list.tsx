@@ -48,7 +48,6 @@ const RandomPlayList = () => {
 					Authorization: `Bearer ${accessToken}`
 				}
 			}).then((data) => {
-				console.log(data);
 				if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
 					setRooms(data.data.data);
 				}
@@ -86,7 +85,6 @@ const RandomPlayList = () => {
 						progressType: "ALL",
 					},
 				}).then((data) => {
-					console.log(data);
 					if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
 						setRooms(data.data.data);
 					}
@@ -141,7 +139,6 @@ const RandomPlayList = () => {
 							refreshToken: refreshToken,
 						}
 					}).then((data) => {
-						console.log(data);
 						if(data.data.message === "토큰 재발급 완료"){
 							setAccessToken(data.data.data.accessToken);
 							setRefreshToken(data.data.data.refreshToken);
@@ -159,6 +156,7 @@ const RandomPlayList = () => {
 					}).catch((data) => {
 						if(data.response.status === 401){
 							alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+							setNickname("");
 							router.push("/login");
 							return;
 						}
@@ -212,6 +210,7 @@ const RandomPlayList = () => {
 						}).catch((data) => {
 							if(data.response.status === 401){
 								alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+								setNickname("");
 								router.push("/login");
 								return;
 							}

@@ -41,7 +41,6 @@ public class NoticeServiceImpl implements NoticeService {
         User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        // 로그인한 사용자가 관리자가 아니면 글쓰기 불가
         if (!writer.getRole().equals(UserRole.ROLE_ADMIN)) {
             throw new ForbiddenException();
         }
@@ -62,7 +61,6 @@ public class NoticeServiceImpl implements NoticeService {
         return notice;
     }
 
-    // 게시글 수정
     @Transactional
     @Override
     public Notice update(NoticeUpdateRequestDto noticeUpdateRequestDto) {
@@ -74,7 +72,7 @@ public class NoticeServiceImpl implements NoticeService {
                 .orElseThrow(() -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
-        // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
+
         if (!loggedInUserId.equals(notice.getWriter().getId())) {
             throw new ForbiddenException();
         }
@@ -84,7 +82,6 @@ public class NoticeServiceImpl implements NoticeService {
         return notice;
     }
 
-    //게시글 전체 조회
     @Transactional
     @Override
     public List<NoticeInfoResponseDto> readAll(String keyword) {
@@ -94,20 +91,17 @@ public class NoticeServiceImpl implements NoticeService {
                 .collect(Collectors.toList());
     }
 
-    //게시글 상세
     @Transactional
     @Override
     public NoticeInfoResponseDto readOne(Long boardId) {
         Notice notice = noticeRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-        // 조회수 증가
         notice.increaseViewCnt();
         return NoticeInfoResponseDto.builder()
                 .notice(noticeRepository.findOne(boardId).orElseThrow())
                 .build();
     }
 
-    //게시글 삭제
     @Transactional
     @Override
     public void delete(Long boardId) {
@@ -115,7 +109,6 @@ public class NoticeServiceImpl implements NoticeService {
                 -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
-        // 로그인한 사용자가 작성자이거나 관리자일 경우에만 삭제 허용
         if (!loggedInUserId.equals(notice.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(notice.getWriter().getRole())) {
             throw new ForbiddenException();
         }

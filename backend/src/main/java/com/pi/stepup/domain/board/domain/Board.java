@@ -35,7 +35,6 @@ public abstract class Board extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     String content;
 
-    //댓글 정렬 최신순
     @OrderBy("commentId desc")
     @JsonIgnoreProperties({"board"})
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
