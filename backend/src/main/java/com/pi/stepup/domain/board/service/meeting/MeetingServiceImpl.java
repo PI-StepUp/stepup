@@ -57,6 +57,7 @@ public class MeetingServiceImpl implements MeetingService {
                 .startAt(LocalDateTime.parse(meetingSaveRequestDto.getStartAt()))
                 .endAt(LocalDateTime.parse(meetingSaveRequestDto.getEndAt()))
                 .region(meetingSaveRequestDto.getRegion())
+                .viewCnt(0L)
                 .build();
 
         meetingRepository.insert(meeting);
