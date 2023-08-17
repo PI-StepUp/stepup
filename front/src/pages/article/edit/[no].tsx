@@ -8,7 +8,7 @@ import Footer from "components/Footer";
 import { axiosBoard, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const ArticleEdit = () => {
@@ -22,6 +22,7 @@ const ArticleEdit = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const createArticle = async (e:any) => {
         e.preventDefault();
@@ -85,6 +86,7 @@ const ArticleEdit = () => {
                     }).catch((data) => {
                         if(data.response.status === 401){
                             alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            setNickname("");
                             router.push("/login");
                             return;
                         }
@@ -141,7 +143,6 @@ const ArticleEdit = () => {
                             Authorization: `Bearer ${accessToken}`,
                         }
                     }).then((data) => {
-                        console.log(data);
                         if(data.data.message === "자유게시판 게시글 조회 완료"){
                             title.current.value = data.data.data.title;
                             content.current.value = data.data.data.content;
@@ -152,6 +153,7 @@ const ArticleEdit = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }

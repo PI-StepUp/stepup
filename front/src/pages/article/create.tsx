@@ -11,7 +11,7 @@ import Footer from "components/Footer";
 import { axiosBoard, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const ArticleCreate = () => {
@@ -22,6 +22,7 @@ const ArticleCreate = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
     const s3 = new S3();
 
     const filePath = `/article/${file.current.value}`;
@@ -94,20 +95,19 @@ const ArticleCreate = () => {
                         })
                     })
                 }
-                }).catch((data) => {
-                    if(data.response.status === 401){
-                        alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
-                        router.push("/login");
-                        return;
-                    }
+            }).catch((data) => {
+                if(data.response.status === 401){
+                    alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                    setNickname("");
+                    router.push("/login");
+                    return;
+                }
 
-                    if(data.response.status === 500){
-                        alert("시스템 에러, 관리자에게 문의하세요.");
-                        return;
-                    }
-                })
-            })
-                
+                if(data.response.status === 500){
+                    alert("시스템 에러, 관리자에게 문의하세요.");
+                    return;
+                }
+            })  
         }catch(e){
             alert("글 등록 실패, 관리자에게 문의하세요.");
         }
