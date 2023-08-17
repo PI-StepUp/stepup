@@ -52,13 +52,11 @@ public class Meeting extends Board {
         }
     }
 
-    // 댓글이 추가될 때 호출
     @PostPersist
     public void updateCommentCntOnCommentAdd() {
         updateCommentCnt();
     }
 
-    // 댓글이 삭제될 때 호출
     @PostRemove
     public void updateCommentCntOnCommentRemove() {
         updateCommentCnt();

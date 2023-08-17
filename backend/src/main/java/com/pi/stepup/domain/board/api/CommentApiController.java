@@ -22,7 +22,6 @@ public class CommentApiController {
 
     private final CommentService commentService;
 
-
     @Operation(summary = "댓글 등록", description = "게시글에 해당하는 댓글을 작성한다.")
     @ApiResponse(responseCode = "201", description = "댓글 등록 완료")
 

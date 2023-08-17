@@ -68,10 +68,9 @@ public class MeetingRespositoryTest {
     @Test
     @DisplayName("정모 게시글 등록 테스트")
     public void testInsert() {
-        // When
         Meeting savedMeeting1 = meetingRepository.insert(meeting1);
         Meeting savedMeeting2 = meetingRepository.insert(meeting2);
-        // Then
+
         assertThat(savedMeeting1.getBoardId()).isNotNull();
         assertThat(savedMeeting2.getBoardId()).isNotNull();
     }
@@ -79,12 +78,10 @@ public class MeetingRespositoryTest {
     @Test
     @DisplayName("정모 게시글 상세 조회 테스트")
     public void testFindOne() {
-        // Given
         testInsert();
-        // When
+
         Optional<Meeting> foundMeeting = meetingRepository.findOne(meeting1.getBoardId());
 
-        // Then
         assertTrue(foundMeeting.isPresent());
         assertThat(foundMeeting.get().getBoardId()).isEqualTo(meeting1.getBoardId());
     }
@@ -92,41 +89,32 @@ public class MeetingRespositoryTest {
     @Test
     @DisplayName("내가 쓴 정모 게시글 조회 테스트")
     public void testFindById() {
-        // Given
         testInsert();
 
-        // When
         List<Meeting> meetings = meetingRepository.findById("j3beom");
         int numberOfMeetingsFound = meetings.size();
 
-        // Then
         assertThat(2).isEqualTo(numberOfMeetingsFound);
     }
 
     @Test
     @DisplayName("정모 게시글 전체 조회 테스트")
     public void testFindAll() {
-        // Given
         testInsert();
 
-        // When
         List<Meeting> meetings = meetingRepository.findAll("");
         int numberOfMeetingsFound = meetings.size();
 
-        // Then
         assertThat(2).isEqualTo(numberOfMeetingsFound);
     }
 
     @Test
     @DisplayName("정모 게시글 삭제 테스트")
     public void testDelete() {
-        // Given
         testInsert();
 
-        // When
         meetingRepository.delete(meeting1.getBoardId());
 
-        // Then
         Meeting deletedMeeting = em.find(Meeting.class, meeting1.getBoardId());
         assertNull(deletedMeeting);
     }

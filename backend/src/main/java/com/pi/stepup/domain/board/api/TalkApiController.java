@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-
 @Tag(name = "talk", description = "talk domain apis")
 @RestController
 @RequestMapping("/api/board")

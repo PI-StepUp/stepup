@@ -34,7 +34,6 @@ public class NoticeApiController {
         ));
     }
 
-
     @Operation(summary = "공지사항 게시글 수정",
             description = "관리자가 작성한 공지 게시글 제목, 내용, 이미지 파일, 개최한 랜덤 댄스를 수정한다.")
     @ApiResponse(responseCode = "200", description = "공지사항 수정 완료")
