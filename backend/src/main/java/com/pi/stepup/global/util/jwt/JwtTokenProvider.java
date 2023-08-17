@@ -48,17 +48,13 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 유저 정보로 AccessToken, RefreshToken 생성하는 메서드
     public TokenInfo generateToken(Authentication authentication) {
-        log.debug("jwt token provide authentication : {}", authentication);
-        // 권한 가져옴
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
 
-        // AccessToken 생성
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRED_IN);
         String accessToken = Jwts.builder()
             .setSubject(authentication.getName())
@@ -67,7 +63,6 @@ public class JwtTokenProvider {
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 
-        // RefreshToken 생성
         Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRED_IN);
         String refreshToken = Jwts.builder()
             .setSubject(authentication.getName())
@@ -83,33 +78,28 @@ public class JwtTokenProvider {
             .build();
     }
 
-    // JWT 토큰 복호화 -> 토큰에 들어있는 정보 꺼냄
     public Authentication getAuthentication(String accessToken) {
-        // 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
-            // 권한 정보 없는 토큰
             throw new InvalidTokenException(INVALID_TOKEN.getMessage());
         }
 
-        // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities = Arrays
             .stream(claims.get("auth").toString().split(","))
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
 
-        // UserDetails 객체 생성 후 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    // 토큰 검증 메서드
     public boolean validateToken(String token) throws TokenException {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException |
+                 IllegalArgumentException e) {
             throw new InvalidTokenException(INVALID_TOKEN.getMessage());
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException(EXPIRED_TOKEN.getMessage());

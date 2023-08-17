@@ -324,7 +324,6 @@ const PracticeRoom = () => {
 			lastVideoTime = localVideoRef.current?.currentTime;
 
 			await poseLandmarker.detectForVideo(localVideoRef.current, startTimeMs, (result) => {
-				console.log(result);
 				frameCount += 1;
 				setDance(result, danceRecord);
 
@@ -362,7 +361,7 @@ const PracticeRoom = () => {
 
 		dance.push(oneFrame);
 	}
-
+    
 	// =====================================
 
 	// ==============정답 데이터 get=====================
