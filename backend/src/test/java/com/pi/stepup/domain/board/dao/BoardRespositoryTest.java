@@ -70,9 +70,7 @@ public class BoardRespositoryTest {
     @Test
     @DisplayName("게시글 상세 조회 테스트")
     public void testFindOne() {
-        // When
         Optional<Board> foundBoard = boardRepository.findOne(meeting.getBoardId());
-        // Then
         assertTrue(foundBoard.isPresent());
         assertThat(foundBoard.get().getBoardId()).isEqualTo(meeting.getBoardId());
     }

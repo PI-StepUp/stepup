@@ -39,16 +39,13 @@ public class TalkServiceImpl implements TalkService {
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
         User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-
         Talk talk = Talk.builder()
                 .writer(writer)
                 .title(talkSaveRequestDto.getTitle())
                 .content(talkSaveRequestDto.getContent())
                 .fileURL(talkSaveRequestDto.getFileURL())
                 .build();
-
         talkRepository.insert(talk);
-
         return talk;
     }
 
@@ -57,15 +54,11 @@ public class TalkServiceImpl implements TalkService {
     public Talk update(TalkUpdateRequestDto talkUpdateRequestDto) {
         Talk talk = talkRepository.findOne(talkUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
-        // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
         if (!loggedInUserId.equals(talk.getWriter().getId())) {
             throw new ForbiddenException();
         }
-
         talk.update(talkUpdateRequestDto.getTitle(), talkUpdateRequestDto.getContent(), talkUpdateRequestDto.getFileURL());
-
         return talk;
     }
 
@@ -93,7 +86,6 @@ public class TalkServiceImpl implements TalkService {
     public Optional<TalkInfoResponseDto> readOne(Long boardId) {
         Talk talk = talkRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-        // 조회수 증가
         talk.increaseViewCnt();
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return Optional.ofNullable(TalkInfoResponseDto.builder()
@@ -107,13 +99,10 @@ public class TalkServiceImpl implements TalkService {
     public void delete(Long boardId) {
         Talk talk = talkRepository.findOne(boardId).orElseThrow(()
                 -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
-        // 로그인한 사용자가 작성자이거나, 관리자일 경우에만 삭제 허용
         if (!loggedInUserId.equals(talk.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(talk.getWriter().getRole())) {
             throw new ForbiddenException();
         }
-
         talkRepository.delete(boardId);
     }
 

@@ -36,22 +36,22 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public List<Meeting> findById(String id) {
         String jpql = "SELECT m FROM Meeting m WHERE m.writer.id = :id ORDER BY m.boardId desc";
         return em.createQuery(jpql, Meeting.class)
-            .setParameter("id", id)
-            .getResultList();
+                .setParameter("id", id)
+                .getResultList();
     }
 
     @Override
     public List<Meeting> findAll(String keyword) {
-            String jpql = "SELECT m FROM Meeting m WHERE m.title LIKE :keyword OR m.content Like :keyword";
-            return em.createQuery(jpql, Meeting.class)
-                    .setParameter("keyword", "%" + keyword + "%")
-                    .getResultList();
+        String jpql = "SELECT m FROM Meeting m WHERE m.title LIKE :keyword OR m.content Like :keyword";
+        return em.createQuery(jpql, Meeting.class)
+                .setParameter("keyword", "%" + keyword + "%")
+                .getResultList();
     }
 
 
     @Override
     public void delete(Long boardId) {
         Meeting meeting = em.find(Meeting.class, boardId);
-            em.remove(meeting);
+        em.remove(meeting);
     }
 }

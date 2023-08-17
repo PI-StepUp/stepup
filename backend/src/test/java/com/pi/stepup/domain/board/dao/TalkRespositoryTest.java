@@ -60,10 +60,9 @@ public class TalkRespositoryTest {
     @Test
     @DisplayName("자유게시판 게시글 등록 테스트")
     public void testInsert() {
-        // When
         Talk savedTalk1 = talkRepository.insert(talk1);
         Talk savedTalk2 = talkRepository.insert(talk2);
-        // Then
+
         assertThat(savedTalk1.getBoardId()).isNotNull();
         assertThat(savedTalk2.getBoardId()).isNotNull();
     }
@@ -71,12 +70,10 @@ public class TalkRespositoryTest {
     @Test
     @DisplayName("자유게시판 게시글 상세 조회 테스트")
     public void testFindOne() {
-        // Given
         testInsert();
-        // When
+
         Optional<Talk> foundMeeting = talkRepository.findOne(talk1.getBoardId());
 
-        // Then
         assertTrue(foundMeeting.isPresent());
         assertThat(foundMeeting.get().getBoardId()).isEqualTo(talk1.getBoardId());
     }
@@ -84,41 +81,32 @@ public class TalkRespositoryTest {
     @Test
     @DisplayName("내가 쓴 자유게시판 게시글 조회 테스트")
     public void testFindById() {
-        // Given
         testInsert();
 
-        // When
         List<Talk> talks = talkRepository.findById("j3beom");
         int numberOfMeetingsFound = talks.size();
 
-        // Then
         assertThat(2).isEqualTo(numberOfMeetingsFound);
     }
 
     @Test
     @DisplayName("자유게시판 게시글 전체 조회 테스트")
     public void testFindAll() {
-        // Given
         testInsert();
 
-        // When
         List<Talk> talks = talkRepository.findAll("");
         int numberOfMeetingsFound = talks.size();
 
-        // Then
         assertThat(2).isEqualTo(numberOfMeetingsFound);
     }
 
     @Test
     @DisplayName("자유게시판 게시글 삭제 테스트")
     public void testDelete() {
-        // Given
         testInsert();
 
-        // When
         talkRepository.delete(talk1.getBoardId());
 
-        // Then
         Talk deletedMeeting = em.find(Talk.class, talk1.getBoardId());
         assertNull(deletedMeeting);
     }

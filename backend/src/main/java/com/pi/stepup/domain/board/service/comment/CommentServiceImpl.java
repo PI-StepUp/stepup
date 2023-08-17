@@ -89,7 +89,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND.getMessage()));
 
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
-        // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
+
         if (!loggedInUserId.equals(comment.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(comment.getWriter().getRole())) {
             throw new ForbiddenException();
         }

@@ -149,7 +149,6 @@ public class TalkServiceTest {
 
             List<TalkResponseDto.TalkInfoResponseDto> result = talkService.readAll(keyword);
 
-            // 테스트 결과 검증
             assert(result.size() == 2);
             assert(result.get(0).getTitle().equals("자유게시판 테스트 제목"));
             assert(result.get(1).getTitle().equals("자유게시판 테스트 제목"));
@@ -171,7 +170,7 @@ public class TalkServiceTest {
             when(talkRepository.findById("j3beom")).thenReturn(myTalks);
 
             List<TalkResponseDto.TalkInfoResponseDto> result = talkService.readAllById();
-            // Then
+
             assert(result.size() == 2);
             assertEquals("자유게시판 테스트 제목", result.get(0).getTitle());
             assertEquals("자유게시판 테스트 내용", result.get(0).getContent());
@@ -184,12 +183,12 @@ public class TalkServiceTest {
     @DisplayName("자유게시판 게시글 삭제 테스트")
     public void deleteTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(SecurityUtils.class)) {
-            // Given
+
             securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId).thenReturn(writer.getId());
             when(talkRepository.findOne(any(Long.class))).thenReturn(Optional.of(talk1));
-            // When
+
             talkService.delete(1L);
-            // Then
+
             verify(talkRepository, times(1)).delete(1L);
         }
     }
