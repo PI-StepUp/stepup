@@ -107,6 +107,7 @@ const DanceRoom = () => {
     const [urlNo, setUrlNo] = useState<any>(0);
     const [audioEnabled, setAudioEnabled] = useState(true);
     const [videoEnabled, setVideoEnabled] = useState(true);
+    const [refreshScore, setRefreshScore] = useState<number>(0);
     const inputChat = useRef<any>(null);
     const chatContent = useRef<any>(null);
     const modal = useRef<any>();
@@ -302,6 +303,8 @@ const DanceRoom = () => {
 
             const score = await calculateSimilarity(danceRecord, danceAnswer);
             console.log(score);
+
+            setRefreshScore(score);
 
             if(score < 60){
                 setPlayResult("failure");
@@ -707,6 +710,9 @@ const DanceRoom = () => {
                         <div className="room-title">
                             <h3>{roomTitle}</h3>
                             <span>진행시간: {startTime}시 {startMinute}분 - {endTime}시 {endMinute}분</span>
+                        </div>
+                        <div className="score-wrap">
+                            <span>안무 정확도: {refreshScore.toString()}점</span>
                         </div>
                     </div>
                     <div className="video-content">
