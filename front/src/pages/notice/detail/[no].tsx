@@ -34,7 +34,6 @@ const DetailNotice = () => {
                     Authorization: `Bearer ${accessToken}`,
                 }
             }).then((data) => {
-                console.log(data);
                 if(data.data.message === "공지사항 삭제 완료"){
                     alert("해당 게시글이 삭제되었습니다.");
                     router.push('/notice/list');
@@ -86,19 +85,7 @@ const DetailNotice = () => {
         }catch(e){
             alert("글 삭제 실패, 관리자에게 문의하세요.");
         }
-    }
-
-						if (data.response.status === 500) {
-							alert("시스템 에러, 관리자에게 문의하세요.");
-							return;
-						}
-					})
-				}
-			})
-		} catch (e) {
-			alert("글 삭제 실패, 관리자에게 문의하세요.");
-		}
-	}
+    };
 
 	useEffect(() => {
 		axiosBoard.get(`/notice/${boardIdStat}`).then((data) => {
@@ -114,7 +101,7 @@ const DetailNotice = () => {
 			<SubNav linkNo="1"></SubNav>
 			<div className="detail-article-wrap">
 				<div className="detail-title">
-					<span>게시글</span>
+					<span>공지사항</span>
 					<div className="flex-wrap">
 						<h3>글 상세보기</h3>
 						<div className="vertical-line"></div>
