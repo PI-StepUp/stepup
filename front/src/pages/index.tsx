@@ -51,7 +51,7 @@ const Index = () => {
 		}else if(mainBanner === 2){
 			setMainBanner(1);
 		}
-	}, 4000)
+	}, 6000)
 
 	const openSideMenu = () => {
 		switch(sideMenu){
@@ -168,16 +168,15 @@ const Index = () => {
 					</div>
 				</div>
 			</header>
-			{
-				mainBanner === 1 ?
-				<div className="main-banner main-banner1">
+			<div className="main-banner">
+				{
+					mainBanner === 1 ?
+					<div className={`main-banner-image visible`} style={{ backgroundImage: `url("/images/main-mainbanner.png")` }}></div>
+					:
+					<div className={`main-banner-image visible`} style={{ backgroundImage: `url("/images/main-mainbanner2.jpg")` }}></div>
 
-				</div>
-				:
-				<div className="main-banner main-banner2">
-
-				</div>
-			}
+				}
+			</div>
 			<div className="main-info" ref={mainInfo}>
 				{inView ? 
 					<div className="flex-wrap" style={{animationName: "top-animation"}}>

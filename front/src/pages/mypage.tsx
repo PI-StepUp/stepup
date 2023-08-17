@@ -101,50 +101,21 @@ const MyPage = () => {
   let meetingCnt: number;
 
   useEffect(() => {
-    if (id === '' || accessToken === '' || refreshToken === '') {
+    if (id === '' || accessToken === '' || refreshToken === '' || loginUserNickname == '') {
       alert("로그인을 먼저 진행해주세요.");
       router.push('/login');
     } else {
-      // 접근 권한(로그인 여부) 확인
-      try {
-        axios.post('https://stepup-pi.com:8080/api/user/auth', {
-          id: id,
-        }, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            refreshToken: refreshToken,
-          }
-        }).then((data) => {
-          if (data.data.message === "토큰 재발급 완료") {
-            setAccessToken(data.data.data.accessToken);
-            setRefreshToken(data.data.data.refreshToken);
-          } else if (data.data.message === "잘못된 형식의 헤더") {
-            // console.log("로그인을 먼저 진행해주세요.")
-          }
-        }).catch((e) => {
-          if (e.response.data.message === "잘못된 형식의 헤더") {
-            alert("로그인을 먼저 진행해주세요.");
-            router.push('/login');
-          }
-        })
-      } catch (e) {
-        // console.log("로그인되지 않은 상태에서 진입", e);
-        alert('시스템 에러, 관리자에게 문의하세요.');
-      }
-    }
-
-    if (id !== '' && accessToken !== '' && refreshToken !== '') {
       const setup = async () => {
         // 로그인 유저 정보 조회
         await axios.get("https://stepup-pi.com:8080/api/user", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
-        }).then(async (data) => {
+        }).then((data) => {
           if (data.data.message === "회원정보 조회 완료") {
-            await setLoginUser(data.data.data);
-            await setLoginUserNickname(data.data.data.nickname);
-            await setRankName(data.data.data.rankName);
+            setLoginUser(data.data.data);
+            setLoginUserNickname(data.data.data.nickname);
+            setRankName(data.data.data.rankName);
 
             const getRankColor = (rank: string) => {
               switch (rank) {
@@ -166,16 +137,83 @@ const MyPage = () => {
                   break;
               }
             }
-            await getRankColor(data.data.data.rankName);
-            await setProfileImg(data.data.data.profileImg);
+            getRankColor(data.data.data.rankName);
+            setProfileImg(data.data.data.profileImg);
 
             const getpoint = () => {
               if (typeof data.data.data.point === 'number') {
                 setPoint(data.data.data.point);
               }
             }
-            await getpoint();
-            await setPointLeft(goalRankPoint - point);
+            getpoint();
+            setPointLeft(goalRankPoint - point);
+          }
+        }).catch((error: any) => {
+          if (error.response.data.message === "만료된 토큰") {
+            axios.get("https://stepup-pi.com:8080/api/user", {
+              headers: {
+                refreshToken: refreshToken,
+              }
+            }).then((data) => {
+              if (data.data.message === "토큰 재발급 완료") {
+                setAccessToken(data.data.data.accessToken);
+                setRefreshToken(data.data.data.refreshToken);
+              }
+            }).then(() => {
+              axios.get("https://stepup-pi.com:8080/api/user", {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                }
+              }).then((data) => {
+                if (data.data.message === "회원정보 조회 완료") {
+                  setLoginUser(data.data.data);
+                  setLoginUserNickname(data.data.data.nickname);
+                  setRankName(data.data.data.rankName);
+
+                  const getRankColor = (rank: string) => {
+                    switch (rank) {
+                      case "BRONZE":
+                        setRankBtnColor("#A77044");
+                        setGoalRankPoint(100);
+                        break;
+                      case "SILVER":
+                        setRankBtnColor("#A7A7AD");
+                        setGoalRankPoint(300);
+                        break;
+                      case "GOLD":
+                        setRankBtnColor("#FFB028");
+                        setGoalRankPoint(1000);
+                        break;
+                      case "PLATINUM":
+                        setRankBtnColor("#86f989");
+                        setGoalRankPoint(10000);
+                        break;
+                    }
+                  }
+                  getRankColor(data.data.data.rankName);
+                  setProfileImg(data.data.data.profileImg);
+
+                  const getpoint = () => {
+                    if (typeof data.data.data.point === 'number') {
+                      setPoint(data.data.data.point);
+                    }
+                  }
+                  getpoint();
+                  setPointLeft(goalRankPoint - point);
+                }
+              }).catch((data) => {
+                if (data.response.status === 401) {
+                  alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                  router.push("/login");
+                  return;
+                }
+
+                if (data.response.status === 500) {
+                  alert("시스템 에러, 관리자에게 문의하세요.");
+                  return;
+                }
+              })
+            })
           }
         })
 
@@ -189,6 +227,41 @@ const MyPage = () => {
             setMeetingBoard(data.data.data as Boards[]);
             meetingCnt = data.data.data.length!;
           }
+        }).catch((error: any) => {
+          if (error.response.data.message === "만료된 토큰") {
+            axios.get(`https://stepup-pi.com:8080/api/board/meeting/my`, {
+              headers: {
+                refreshToken: refreshToken
+              }
+            }).then((data) => {
+              if (data.data.message === "토큰 재발급 완료") {
+                setAccessToken(data.data.data.accessToken);
+                setRefreshToken(data.data.data.refreshToken);
+              }
+            }).then(() => {
+              axios.get(`https://stepup-pi.com:8080/api/board/meeting/my`, {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                }
+              }).then((data) => {
+                if (data.data.message === "내가 작성한 정모 목록 조회") {
+                  setMeetingBoard(data.data.data as Boards[]);
+                  meetingCnt = data.data.data.length!;
+                }
+              }).catch((data) => {
+                if (data.response.status === 401) {
+                  alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                  router.push("/login");
+                  return;
+                }
+
+                if (data.response.status === 500) {
+                  alert("시스템 에러, 관리자에게 문의하세요.");
+                  return;
+                }
+              })
+            })
+          }
         })
 
         // 로그인 유저가 작성한 자유게시판 게시글 조회
@@ -197,11 +270,46 @@ const MyPage = () => {
             Authorization: `Bearer ${accessToken}`
           }
         }).then((data) => {
-          // console.log("로그인 유저가 작성한 자유게시판 게시글 조회", data);
           if (data.data.message === "내가 작성한 자유게시판 목록 조회") {
             setTalkBoard(data.data.data as Boards[]);
             talkCnt = data.data.data.length!;
             setBoardCnt(talkCnt + meetingCnt);
+          }
+        }).catch((error: any) => {
+          if (error.response.data.message === "만료된 토큰") {
+            axios.get(`https://stepup-pi.com:8080/api/board/talk/my`, {
+              headers: {
+                refreshToken: refreshToken
+              }
+            }).then((data) => {
+              if (data.data.message === "토큰 재발급 완료") {
+                setAccessToken(data.data.data.accessToken);
+                setRefreshToken(data.data.data.refreshToken);
+              }
+            }).then(() => {
+              axios.get(`https://stepup-pi.com:8080/api/board/talk/my`, {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                }
+              }).then((data) => {
+                if (data.data.message === "내가 작성한 자유게시판 목록 조회") {
+                  setTalkBoard(data.data.data as Boards[]);
+                  talkCnt = data.data.data.length!;
+                  setBoardCnt(talkCnt + meetingCnt);
+                }
+              }).catch((data) => {
+                if (data.response.status === 401) {
+                  alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                  router.push("/login");
+                  return;
+                }
+
+                if (data.response.status === 500) {
+                  alert("시스템 에러, 관리자에게 문의하세요.");
+                  return;
+                }
+              })
+            })
           }
         })
 
@@ -210,10 +318,45 @@ const MyPage = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
-        }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
+        }).then((data) => {
           if (data.data.message === "내가 예약한 랜덤 플레이 댄스 목록 조회 완료") {
             setReserved(data.data.data);
             reservedRandomDanceCnt = reserved?.length!;
+          }
+        }).catch((error: any) => {
+          if (error.response.data.message === "만료된 토큰") {
+            axios.get("https://stepup-pi.com:8080/api/dance/my/reserve", {
+              headers: {
+                refreshToken: refreshToken
+              }
+            }).then((data) => {
+              if (data.data.message === "토큰 재발급 완료") {
+                setAccessToken(data.data.data.accessToken);
+                setRefreshToken(data.data.data.refreshToken);
+              }
+            }).then(() => {
+              axios.get("https://stepup-pi.com:8080/api/dance/my/reserve", {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                }
+              }).then((data) => {
+                if (data.data.message === "내가 예약한 랜덤 플레이 댄스 목록 조회 완료") {
+                  setReserved(data.data.data);
+                  reservedRandomDanceCnt = reserved?.length!;
+                }
+              }).catch((data) => {
+                if (data.response.status === 401) {
+                  alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                  router.push("/login");
+                  return;
+                }
+
+                if (data.response.status === 500) {
+                  alert("시스템 에러, 관리자에게 문의하세요.");
+                  return;
+                }
+              })
+            })
           }
         })
 
@@ -222,9 +365,43 @@ const MyPage = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
-        }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
+        }).then((data) => {
           if (data.data.message === "내가 개최한 랜덤 플레이 댄스 목록 조회 완료") {
             setMyRandomDance(data.data.data);
+          }
+        }).catch((error: any) => {
+          if (error.response.data.message === "만료된 토큰") {
+            axios.get("https://stepup-pi.com:8080/api/dance/my/open", {
+              headers: {
+                refreshToken: refreshToken
+              }
+            }).then((data) => {
+              if (data.data.message === "토큰 재발급 완료") {
+                setAccessToken(data.data.data.accessToken);
+                setRefreshToken(data.data.data.refreshToken);
+              }
+            }).then((data) => {
+              axios.get("https://stepup-pi.com:8080/api/dance/my/open", {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                }
+              }).then((data) => {
+                if (data.data.message === "내가 개최한 랜덤 플레이 댄스 목록 조회 완료") {
+                  setMyRandomDance(data.data.data);
+                }
+              }).catch((data) => {
+                if (data.response.status === 401) {
+                  alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                  router.push("/login");
+                  return;
+                }
+
+                if (data.response.status === 500) {
+                  alert("시스템 에러, 관리자에게 문의하세요.");
+                  return;
+                }
+              })
+            })
           }
         })
 
@@ -233,18 +410,51 @@ const MyPage = () => {
           headers: {
             Authorization: `Bearer ${accessToken}`
           },
-        }).then((data: { data: { message: string; data: React.SetStateAction<any[] | undefined>; }; }) => {
+        }).then((data) => {
           if (data.data.message === "내가 참여한 랜덤 플레이 댄스 목록 조회 완료") {
             setMyRandomDanceHistory(data.data.data);
-            // console.log("로그인 유저가 참여한 랜플댄 목록 조회", myRandomDanceHistory);
+          }
+        }).catch((error: any) => {
+          if (error.response.data.message === "만료된 토큰") {
+            axios.get("https://stepup-pi.com:8080/api/dance/my/attend/", {
+              headers: {
+                refreshToken: refreshToken
+              },
+            }).then((data) => {
+              if (data.data.message === "토큰 재발급 완료") {
+                setAccessToken(data.data.data.accessToken);
+                setRefreshToken(data.data.data.refreshToken);
+              }
+            }).then(() => {
+              axios.get("https://stepup-pi.com:8080/api/dance/my/attend/", {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                },
+              }).then((data) => {
+                if (data.data.message === "내가 참여한 랜덤 플레이 댄스 목록 조회 완료") {
+                  setMyRandomDanceHistory(data.data.data);
+                }
+              }).catch((data) => {
+                if (data.response.status === 401) {
+                  alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                  router.push("/login");
+                  return;
+                }
+
+                if (data.response.status === 500) {
+                  alert("시스템 에러, 관리자에게 문의하세요.");
+                  return;
+                }
+              })
+            })
           }
         })
+
         await setReadyData(true);
         await setDomLoaded(true);
       }
       setup();
     }
-
   }, []);
 
   // 로그인 유저의 랜플댄 예약 취소
@@ -256,9 +466,46 @@ const MyPage = () => {
     }).then((data) => {
       if (data.data.message === "랜덤 플레이 댄스 예약 취소 완료") {
         alert("예약을 취소하셨습니다.")
-        router.push("/mypage");
+        window.location.replace("/mypage");
       } else {
         alert("예약을 취소하지 못했습니다. 다시 한 번 시도해주세요.")
+      }
+    }).catch((error: any) => {
+      if (error.response.data.message === "만료된 토큰") {
+        axios.delete(`https://stepup-pi.com:8080/api/dance/my/reserve/${selectedId.reservationId}`, {
+          headers: {
+            refreshToken: refreshToken
+          }
+        }).then((data) => {
+          if (data.data.message === "토큰 재발급 완료") {
+            setAccessToken(data.data.data.accessToken);
+            setRefreshToken(data.data.data.refreshToken);
+          }
+        }).then(() => {
+          axios.delete(`https://stepup-pi.com:8080/api/dance/my/reserve/${selectedId.reservationId}`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          }).then((data) => {
+            if (data.data.message === "랜덤 플레이 댄스 예약 취소 완료") {
+              alert("예약을 취소하셨습니다.")
+              window.location.replace("/mypage");
+            } else {
+              alert("예약을 취소하지 못했습니다. 다시 한 번 시도해주세요.")
+            }
+          }).catch((data) => {
+            if (data.response.status === 401) {
+              alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+              router.push("/login");
+              return;
+            }
+
+            if (data.response.status === 500) {
+              alert("시스템 에러, 관리자에게 문의하세요.");
+              return;
+            }
+          })
+        })
       }
     })
   }
@@ -269,19 +516,56 @@ const MyPage = () => {
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
-    }).then((data: { data: { message: string; }; }) => {
+    }).then((data) => {
       if (data.data.message === "랜덤 플레이 댄스 삭제 완료") {
         alert("개최한 랜덤 플레이 댄스를 삭제했습니다.");
-        router.push("/mypage");
+        window.location.replace("/mypage");
       } else {
         alert("삭제를 하지 못했습니다. 다시 한 번 시도해주세요.");
+      }
+    }).catch((error: any) => {
+      if (error.response.data.message === "만료된 토큰") {
+        axios.delete(`https://stepup-pi.com:8080/api/dance/my/${roomid.rpdId}`, {
+          headers: {
+            refreshToken: refreshToken
+          },
+        }).then((data) => {
+          if (data.data.message === "토큰 재발급 완료") {
+            setAccessToken(data.data.data.accessToken);
+            setRefreshToken(data.data.data.refreshToken);
+          }
+        }).then(() => {
+          axios.delete(`https://stepup-pi.com:8080/api/dance/my/${roomid.rpdId}`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            },
+          }).then((data) => {
+            if (data.data.message === "랜덤 플레이 댄스 삭제 완료") {
+              alert("개최한 랜덤 플레이 댄스를 삭제했습니다.");
+              window.location.replace("/mypage");
+            } else {
+              alert("삭제를 하지 못했습니다. 다시 한 번 시도해주세요.");
+            }
+          }).catch((data) => {
+            if (data.response.status === 401) {
+              alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+              router.push("/login");
+              return;
+            }
+
+            if (data.response.status === 500) {
+              alert("시스템 에러, 관리자에게 문의하세요.");
+              return;
+            }
+          })
+        })
       }
     })
   }
 
+  // 비밀번호 일치 확인
   const checkPw = async () => {
     setCheckPassword(pwValue.current!.value);
-
     try {
       axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
         id: id,
@@ -295,11 +579,50 @@ const MyPage = () => {
           setEqualPw(true);
           setCanEditInfo(true);
           router.push('/mypageedit');
-        } else {
         }
-      }).catch((e) => {
-        // console.log("에러 발생", e);
+      }).catch((error: any) => {
         setEqualPw(false);
+        if (error.response.data.message === "만료된 토큰") {
+          axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
+            id: id,
+            password: pwValue.current!.value,
+          }, {
+            headers: {
+              refreshToken: refreshToken
+            }
+          }).then((data) => {
+            if (data.data.message === "토큰 재발급 완료") {
+              setAccessToken(data.data.data.accessToken);
+              setRefreshToken(data.data.data.refreshToken);
+            }
+          }).then(() => {
+            axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
+              id: id,
+              password: pwValue.current!.value,
+            }, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              }
+            }).then((data) => {
+              if (data.data.message === "비밀번호 일치") {
+                setEqualPw(true);
+                setCanEditInfo(true);
+                router.push('/mypageedit');
+              }
+            }).catch((data) => {
+              if (data.response.status === 401) {
+                alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                router.push("/login");
+                return;
+              }
+
+              if (data.response.status === 500) {
+                alert("시스템 에러, 관리자에게 문의하세요.");
+                return;
+              }
+            })
+          })
+        }
       })
     } catch (e) {
     }
@@ -362,7 +685,7 @@ const MyPage = () => {
                       <div>
                         <progress value={point} max={goalRankPoint}></progress>
                         <div className="progress-text">
-                          <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {Number(goalRankPoint-point)}</p>
+                          <p>{lang === "en" ? "the next rank" : lang === "cn" ? "直到下一次排名" : "다음 랭킹까지"} {Number(goalRankPoint - point)}</p>
                           {readyData ? (<p>{point}/{goalRankPoint}</p>) : (<p></p>)}
                         </div>
                         <div className="info-user">
