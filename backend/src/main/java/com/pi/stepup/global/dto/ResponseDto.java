@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResponseDto<T> {
+
     private String message;
     private T data;
 
