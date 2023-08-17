@@ -180,7 +180,10 @@ const DanceRoom = () => {
     }
 
     const sendMessage = () => {
-        socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
+        socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value, roomId: roomId});
+        if(inputChat.current){
+            inputChat.current.value = "";
+        }
         scrollToBottom();
     }
 
@@ -192,7 +195,11 @@ const DanceRoom = () => {
 
     const handleKeyPress = (e: any) => {
         if (e.key === 'Enter') {
-            socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value}, roomId);
+            socketRef.current.emit("send_message", {nickname: nickname, content: inputChat.current?.value, roomId: roomId});
+            if(inputChat.current){
+                inputChat.current.value = "";
+            }
+            scrollToBottom();
         }
     };
 
@@ -569,11 +576,13 @@ const DanceRoom = () => {
 		});
 
         socketRef.current.on('message', async (data:any) => {
-            setMsgList((prevMsgList: any) => [...prevMsgList, data]);
-            if(inputChat.current != null){
-                inputChat.current.value = "";
+            if(data.roomId == roomId){
+                setMsgList((prevMsgList: any) => [...prevMsgList, data]);
+                if(inputChat.current != null){
+                    inputChat.current.value = "";
+                }
+                scrollToBottom();
             }
-            scrollToBottom();
         })
         
         socketRef.current.on('cntCorrect', (roomName: any) => {

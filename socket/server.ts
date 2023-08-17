@@ -84,8 +84,9 @@ io.on('connection', socket => {
         socket.to(data.candidateReceiveID).emit('getCandidate', {candidate: data.candidate, candidateSendID: data.candidateSendID});
     });
 
-    socket.on('send_message', (data, roomName) => {
-        io.emit('message', data);
+    socket.on('send_message', ({nickname, content, roomId}) => {
+        console.log("확인", nickname, content, roomId);
+        io.emit('message', {nickname, content, roomId});
     });
 
     socket.on('playMusic', ({data, roomName}) => {
