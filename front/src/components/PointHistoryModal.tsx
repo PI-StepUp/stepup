@@ -28,7 +28,6 @@ const Modal = (props: props): ReactElement => {
 	}).then((data) => {
 		if (data.data.message === "포인트 적립 내역 조회 완료") {
 			setHistory(data.data.data);
-			// console.log("포인트 적립 내역 조회 완료", data.data.data);
 		} else {
 			{ lang === "en" ? alert("Failed to retrieve. Please try again.") : lang === "cn" ? alert("检索失败，请重试。") : alert("조회에 실패하였습니다. 다시 시도해주세요.") }
 		}

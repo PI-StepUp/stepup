@@ -14,10 +14,7 @@ import { LanguageState } from "states/states";
 import { accessTokenState, refreshTokenState, idState, nicknameState, profileImgState, emailState, agreeToReceiveEmailState, countryState, countryIdState, canEditInfoState } from "states/states";
 
 import axios from "axios";
-
 import AWS from "aws-sdk";
-import dotenv from 'dotenv';
-dotenv.config();
 
 const MyPageEdit = () => {
 	const [lang, setLang] = useRecoilState(LanguageState);
@@ -67,7 +64,6 @@ const MyPageEdit = () => {
 
 	// map, 조건부렌더링으로 치환해둘 것!
 	const handleSelect = (country: object) => {
-		console.log(country);
 		setCountryId(country.countryId);
 		setCountryCode(country.countryCode);
 	}
@@ -96,9 +92,6 @@ const MyPageEdit = () => {
 
 	// 닉네임 중복 여부 체크
 	const nicknameCheck = async () => {
-		// console.log("-----------닉네임 중복 확인-------------")
-		// console.log("입력한 닉네임", nicknameValue.current!.value);
-
 		try {
 			axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
 				nickname: nicknameValue.current!.value,
@@ -107,19 +100,14 @@ const MyPageEdit = () => {
 					Authorization: `Bearer ${accessToken}`,
 				}
 			}).then((data) => {
-				// console.log("닉네임 중복 확인 결과", data);
 				if (data.data.message === "닉네임 사용 가능") {
 					setNicknameFlag(true);
 					setNickname(nicknameValue.current.value);
-					console.log("닉네임 사용 가능!");
 				} else {
 					setNicknameFlag(false);
-					console.log("닉네임 사용 불가능!");
 				}
 			}).catch((e) => {
-				console.log("에러 발생", e);
 				setNicknameFlag(false);
-				// alert('입력하신 닉네임은 사용할 수 없습니다. 다시 입력해주세요.');
 			})
 		} catch (e) {
 		}
@@ -127,9 +115,6 @@ const MyPageEdit = () => {
 
 	// 이메일 중복 체크
 	const emailCheck = async () => {
-		// console.log("-----------이메일 중복 확인-------------")
-		// console.log("입력한 이메일", emailValue.current!.value);
-
 		try {
 			axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
 				email: emailValue.current!.value,
@@ -138,19 +123,14 @@ const MyPageEdit = () => {
 					Authorization: `Bearer ${accessToken}`,
 				}
 			}).then((data) => {
-				console.log("이메일 중복 확인 결과", data);
 				if (data.data.message === "이메일 사용 가능") {
 					setEmailFlag(true);
 					setEmail(emailValue.current.value);
-					console.log("이메일 사용 가능!");
 				} else {
 					setNicknameFlag(false);
-					console.log("이메일 사용 불가능!");
 				}
 			}).catch((e) => {
-				console.log("에러 발생", e);
 				setNicknameFlag(false);
-				// alert('입력하신 이메일은 사용할 수 없습니다. 다시 입력해주세요.');
 			})
 		} catch (e) {
 		}
@@ -161,34 +141,50 @@ const MyPageEdit = () => {
 		await setAgreeToReceiveEmail((prevEmailAlert: number) => prevEmailAlert === 0 ? 1 : 0);
 	}
 
-	// 회원정보 수정
-	const editInfo = async () => {
-		console.log("-----------회원 정보 수정-------------")
-		// console.log("입력한 닉네임", nicknameValue.current.value);
-		// console.log("입력한 이메일", emailValue.current!.value);
+	// 이미지 업로드
+	const handleImageUpload = async () => {
+		if (selectedImg) {
+			const s3 = new AWS.S3();
+			const params = {
+				Bucket: 'stepup-pi',
+				Key: `${Date.now()}_${selectedImg.name}`,
+				Body: selectedImg,
+				ContentType: selectedImg.type,
+			};
 
-		// 이미지 업로드
-		const handleImageUpload = async () => {
-			if (selectedImg) {
-				const s3 = new AWS.S3();
-				const params = {
-					Bucket: 'stepup-pi',
-					// 파일 저장 이름, 날짜_원본파일이름
-					Key: `${Date.now()}_${selectedImg.name}`,
-					Body: selectedImg,
-					ContentType: selectedImg.type,
-				};
-
-				try {
-					await s3.upload(params).promise();
-					console.log("Image upload Success!!");
-					await setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
-				} catch (error) {
-					console.log("Image upload Fail!!", error);
-				}
+			try {
+				s3.upload(params).promise();
+				// console.log("Image upload Success!!");
+				setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
+				// console.log("파일 url", profileImg);
+			} catch (error) {
+				// console.log("Image upload Fail!!", error);
 			}
 		}
+	}
 
+	// 프로필 사진 변경
+	const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files) {
+			const file = e.target.files[0];
+			await setSelectedImg(file);
+			// await handleImageUpload();
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => {
+				// 이미지 경로
+				setProfileImg(reader.result || "url");
+			}
+		}
+	}
+
+	// 프로필 사진 삭제
+	const onDeleteImage = async () => {
+		setProfileImg('');
+	}
+
+	// 회원정보 수정
+	const editInfo = async () => {
 		const dupNicknameCheck = async () => {
 			let result: boolean;
 			await nicknameFlag ? result = true : result = false;
@@ -210,37 +206,36 @@ const MyPageEdit = () => {
 		if (ResultEmail === false) {
 			alert("이메일 중복 확인을 해주세요.");
 		}
-
-		await handleImageUpload();
-
+		
 		try {
-			axios.put("https://stepup-pi.com:8080/api/user", {
-				email: emailValue.current.value,
-				emailAlert: agreeToReceiveEmail,
-				countryId: countryId,
-				countryCode: countryCode,
-				nickname: nicknameValue.current.value,
-				profileImg: profileImg.toString(),
-			}, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				}
-			}).then((data) => {
-				if (data.data.message === "회원정보 수정 완료") {
-					console.log("회원정보 수정 완료");
-					alert("회원 정보를 수정했습니다.");
-					router.push('/');
-				} else {
-					console.log("회원정보 수정 미완료");
-					alert("회원 정보 수정에 실패했습니다. 다시 한 번 시도해주세요.");
-				}
-			}).catch((e) => {
-				console.log("에러 발생", e);
-				alert('회원 정보 수정에 실패했습니다. 관리자에게 문의해주세요.');
-			})
-
-		} catch (e) {
-		}
+			await handleImageUpload()
+				.then(() => {
+					axios.put("https://stepup-pi.com:8080/api/user", {
+						email: emailValue.current.value,
+						emailAlert: agreeToReceiveEmail,
+						countryId: countryId,
+						countryCode: countryCode,
+						nickname: nicknameValue.current.value,
+						profileImg: profileImg,
+					}, {
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						}
+					}).then((data) => {
+						if (data.data.message === "회원정보 수정 완료") {
+							// console.log("회원정보 수정 완료");
+							alert("회원 정보를 수정했습니다.");
+							router.push('/');
+						} else {
+							// console.log("회원정보 수정 미완료");
+							alert("회원 정보 수정에 실패했습니다. 다시 한 번 시도해주세요.");
+						}
+					}).catch((e) => {
+						// console.log("에러 발생", e);
+						alert('회원 정보 수정에 실패했습니다. 관리자에게 문의해주세요.');
+					})
+				})
+		} catch (e) {}
 	}
 
 	// 비밀번호 변경
@@ -256,13 +251,10 @@ const MyPageEdit = () => {
 				Authorization: `Bearer ${accessToken}`,
 			}
 		}).then((data) => {
-			console.log("비번 변경 >> ", data);
 			if (data.data.message === "비밀번호 변경 완료") {
-				console.log("비밀번호 변경 완료");
 				alert("비밀번호를 수정했습니다.")
 				router.push('/');
 			} else {
-				console.log("비밀번호 변경 실패");
 				alert("비밀번호 변경에 실패했습니다. 다시 한 번 시도해주세요.");
 			}
 		})
@@ -285,30 +277,6 @@ const MyPageEdit = () => {
 			setPwFlag(false);
 		}
 	}
-
-	// 프로필 사진 변경
-	const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
-			const file = e.target.files[0];
-			setSelectedImg(file);
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			// console.log("reader", reader);
-			reader.onload = () => {
-				// 이미지 경로
-				setProfileImg(reader.result || "url");
-				console.log("url >>", reader.result);
-			}
-			console.log("프사 변경 url >> ", profileImg);
-		}
-	}
-
-	// 프로필 사진 삭제
-	const onDeleteImage = async () => {
-		setProfileImg('');
-	}
-
-
 
 	return (
 		<>

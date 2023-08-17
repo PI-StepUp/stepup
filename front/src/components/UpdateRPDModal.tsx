@@ -78,10 +78,9 @@ const Modal = (props: props): ReactElement => {
 			const file = e.target.files[0];
 			const reader = new FileReader();
 			reader.readAsDataURL(file);
-			console.log("reader", reader);
+			//console.log("reader", reader);
 			reader.onload = () => {
 				setRoomImg(reader.result);
-				console.log("url >>", reader.result);
 			}
 		}
 	}
