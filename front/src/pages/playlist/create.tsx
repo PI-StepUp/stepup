@@ -2,13 +2,12 @@ import {useRef} from "react";
 
 import Header from "components/Header";
 import MainBanner from "components/MainBanner";
-import SubNav from "components/subNav";
 import Footer from "components/Footer";
 
 import { axiosMusic, axiosUser } from "apis/axios";
 import { useRouter } from "next/router";
 
-import { accessTokenState, refreshTokenState, idState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const PlayListCreate = () => {
@@ -19,6 +18,7 @@ const PlayListCreate = () => {
     const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
     const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
     const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const router = useRouter();
 
@@ -71,6 +71,7 @@ const PlayListCreate = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }

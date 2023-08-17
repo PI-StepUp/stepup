@@ -546,10 +546,10 @@ const DanceRoom = () => {
                     }).catch((data) => {
                         if(data.response.status === 401){
                             alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            setNickname("");
                             router.push("/login");
                             return;
                         }
-    
                         if(data.response.status === 500){
                             alert("시스템 에러, 관리자에게 문의하세요.");
                             return;
@@ -560,7 +560,6 @@ const DanceRoom = () => {
                     })
                 }
             })
-
 			pcsRef.current[data.id].close();
 			delete pcsRef.current[data.id];
 			setUsers((oldUsers) => oldUsers.filter((user) => user.id !== data.id));
@@ -635,6 +634,7 @@ const DanceRoom = () => {
                         }).catch((data) => {
                             if(data.response.status === 401){
                                 alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                                setNickname("");
                                 router.push("/login");
                                 return;
                             }
@@ -739,7 +739,7 @@ const DanceRoom = () => {
                                         </button>
                                     </li>
                                 }
-                                <li><Link href="/randomplay/list"><button className="exit-button">{lang==="en" ? "End Practice" : lang==="cn" ? "结束练习" : "연습 종료하기" }</button></Link></li>
+                                <li><Link href="/randomplay/list"><button className="exit-button">{lang==="en" ? "Shutting Down" : lang==="cn" ? "退出" : "종료하기" }</button></Link></li>
                                 {
                                     videoEnabled ?
                                     <li onMouseEnter = {cameraHover} onMouseLeave = {cameraLeave}>

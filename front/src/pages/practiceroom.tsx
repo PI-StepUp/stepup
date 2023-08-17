@@ -7,7 +7,7 @@ import PlayIcon from "/public/images/icon-play.svg"
 import ReflectHoverIcon from "/public/images/icon-hover-reflect.svg"
 
 import { useRecoilState } from "recoil";
-import { LanguageState } from "states/states";
+import { LanguageState, nicknameState } from "states/states";
 
 import Image from "next/image"
 import Link from "next/link"
@@ -75,6 +75,7 @@ const PracticeRoom = () => {
 	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
 	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
 	const [id, setId] = useRecoilState(idState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 	const [musics, setMusics] = useState<any>();
 	const [count3, setCount3] = useState(false);
 	const [count2, setCount2] = useState(false);
@@ -99,7 +100,7 @@ const PracticeRoom = () => {
 	const getLocalStream = useCallback(async () => {
 		try {
 			const localStream = await navigator.mediaDevices.getUserMedia({
-				audio: true,
+				audio: false,
 				video: {
 					width: 240,
 					height: 240,
@@ -109,7 +110,6 @@ const PracticeRoom = () => {
 			if (localVideoRef.current) {
 				localVideoRef.current.srcObject = localStream;
 				localVideoRef.current.play();
-				console.log("video 실행");
 				localVideoRef.current.addEventListener("loadeddata", makePoseLandmarker);
 			}
 		} catch (e) {
@@ -128,7 +128,6 @@ const PracticeRoom = () => {
                 Authorization: `Bearer ${accessToken}`,
             }
         }).then((data) => {
-            console.log("music data", data);
             if(data.data.message === "노래 목록 조회 완료"){
                 setMusics(data.data.data);
             }
@@ -162,6 +161,7 @@ const PracticeRoom = () => {
                 }).catch((data) => {
                     if(data.response.status === 401){
                         alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                        setNickname("");
                         router.push("/login");
                         return;
                     }
@@ -183,10 +183,8 @@ const PracticeRoom = () => {
 	async function makePoseLandmarker() {
 		canvasCtx = localCanvasRef.current!.getContext("2d");
 		drawingUtils = new DrawingUtils(canvasCtx);
-		console.log("drawingutils 생성?", drawingUtils);
 		await createLandmarker().then((landMarker) => {
 			poseLandmarker = landMarker;
-			console.log("poselandmarker 생성", poseLandmarker);
 		});
 	}
 
@@ -223,14 +221,10 @@ const PracticeRoom = () => {
 		return setTimeout(async () => {
 			saveMotion = false;
 			localCanvasRef.current!.style.display = "none";
-			console.log("측정 종료");
-			console.log("측정 기록", danceRecord);
 
 			const danceAnswer = await JSON.parse(response.data.answer);
-			console.log("danceAnswer 값", response.data);
 
 			const score = await calculateSimilarity(danceRecord, danceAnswer);
-			console.log(score);
 			setResultScore(score);
 
 			setTimeout(() => {
@@ -259,7 +253,6 @@ const PracticeRoom = () => {
 			}).then((data) => {
 				if (data.data.message === "포인트 적립 완료") {
 					// alert("연습실 이용 포인트가 적립되었습니다!");
-					console.log("연습실 이용 포인트 적립 완료!")
 				}
 			}).catch((error: any) => {
                 if(error.response.data.message === "만료된 토큰"){
@@ -290,12 +283,12 @@ const PracticeRoom = () => {
                         }).then((data) => {
                             if (data.data.message === "포인트 적립 완료") {
                                 // alert("연습실 이용 포인트가 적립되었습니다!");
-                                console.log("연습실 이용 포인트 적립 완료!")
                             }
                         })
                     }).catch((data) => {
                         if(data.response.status === 401){
                             alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            setNickname("");
                             router.push("/login");
                             return;
                         }
@@ -318,7 +311,6 @@ const PracticeRoom = () => {
 	// ============ 모션 인식 =============
 	async function predictWebcam() {
 		if (!poseLandmarker) {
-			console.log("pose landmarker not loaded!");
 			await makePoseLandmarker();
 			predictWebcam();
 			return;
@@ -333,13 +325,13 @@ const PracticeRoom = () => {
 
 			await poseLandmarker.detectForVideo(localVideoRef.current, startTimeMs, (result) => {
 				frameCount += 1;
-					setDance(result, danceRecord);
+				setDance(result, danceRecord);
 
 				canvasCtx.save();
 				canvasCtx.clearRect(0, 0, localCanvasRef.current!.width, localCanvasRef.current!.height);
 				for (const landmark of result.landmarks) {
 					drawingUtils.drawLandmarks(landmark, {
-						radius: (data) => DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1)
+						radius: (data: any) => DrawingUtils.lerp(data.from!.z, -0.15, 0.1, 5, 1)
 					});
 					drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
 				}
@@ -397,8 +389,6 @@ const PracticeRoom = () => {
                 },
             })
             const responseData = await response.data;
-            console.log("successfully!");
-            console.log("responseData 값", responseData);
             return await responseData;
         } catch (error) {
             console.error("Error:", error);
@@ -431,8 +421,6 @@ const PracticeRoom = () => {
     }
 
     async function reflectMyVideo() {
-        console.log("!reflect", reflect);
-
         if (!reflect) {
             myVideoDivRef.current?.setAttribute("class", "my-video reflect-video");
             setReflect(true);
