@@ -26,7 +26,7 @@ public class RankServiceImpl implements RankService {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        if(user.getRank() == null) {
+        if (user.getRank() == null) {
             throw new RankNotFoundException(RANK_NOT_FOUND.getMessage());
         }
 

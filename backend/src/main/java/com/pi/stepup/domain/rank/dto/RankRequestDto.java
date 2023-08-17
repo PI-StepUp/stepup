@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 public class RankRequestDto {
+
     @Data
     @Builder
     @NoArgsConstructor
@@ -22,11 +23,11 @@ public class RankRequestDto {
 
         public PointHistory toEntity(User user, PointPolicy pointPolicy, RandomDance randomDance) {
             return PointHistory.builder()
-                    .pointPolicy(pointPolicy)
-                    .randomDance(randomDance)
-                    .count(this.count)
-                    .user(user)
-                    .build();
+                .pointPolicy(pointPolicy)
+                .randomDance(randomDance)
+                .count(this.count)
+                .user(user)
+                .build();
         }
     }
 }
