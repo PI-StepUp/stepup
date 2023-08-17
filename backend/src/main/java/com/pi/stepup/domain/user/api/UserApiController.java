@@ -56,7 +56,6 @@ public class UserApiController {
     @Operation(summary = "국가 코드 목록 조회", description = "선택 가능한 국가 코드 목록을 조회한다.")
     @ApiResponse(responseCode = "200",
         description = "국가 코드 목록 조회 성공"
-//        content = @Content(array = @ArraySchema(schema = @Schema(implementation = CountryResponseDto.class)))
     )
     @GetMapping("/country")
     public ResponseEntity<ResponseDto<?>> readAllCountries() {
@@ -201,8 +200,6 @@ public class UserApiController {
     @PutMapping("")
     public ResponseEntity<ResponseDto<?>> update(
         @RequestBody UpdateUserRequestDto updateUserRequestDto) {
-        log.debug("[update()] updateUserRequestDto : {}", updateUserRequestDto);
-
         userService.update(updateUserRequestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(

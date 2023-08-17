@@ -39,7 +39,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            //Cors옵션 활성화
             .cors().configurationSource(corsConfigurationSource())
             .and()
 
@@ -50,15 +49,12 @@ public class SecurityConfig {
 
             .authorizeRequests()
 
-            //로그인하지 않아도 접근 가능
             .regexMatchers(HttpMethod.POST, Constants.PostPermitArray).permitAll()
             .regexMatchers(HttpMethod.GET, Constants.GetPermitArray).permitAll()
 
-            //관리자 권한
             .regexMatchers(Constants.AdminPermitArray)
             .hasAuthority(UserRole.ROLE_ADMIN.name())
 
-            //문서 관련도 로그인하지 않아도 접근 가능
             .antMatchers("/swagger-ui/**").permitAll()
             .antMatchers("/v3/api-docs/**").permitAll()
             .antMatchers("/**/*.html").permitAll()
@@ -67,7 +63,6 @@ public class SecurityConfig {
             .antMatchers("/**/*.png").permitAll()
             .antMatchers("/images/**").permitAll()
 
-            //그외는 모두 로그인해야 접근 가능
             .anyRequest().authenticated()
 
             .and()
@@ -87,7 +82,6 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOriginPattern("*");
-//        configuration.addAllowedOrigin("도메인 지정");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);

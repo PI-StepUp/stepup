@@ -125,7 +125,6 @@ public class UserServiceImpl implements UserService {
     public AuthenticatedResponseDto login(LoginRequestDto loginRequestDto) {
         TokenInfo tokenInfo = setFirstAuthentication(loginRequestDto.getId(),
             loginRequestDto.getPassword());
-        log.debug("login token : {}", tokenInfo);
 
         User user = userRepository.findById(loginRequestDto.getId()).get();
         userRedisService.saveRefreshToken(user.getId(), tokenInfo.getRefreshToken());
@@ -155,11 +154,8 @@ public class UserServiceImpl implements UserService {
 
         userRepository.insert(user);
 
-        log.debug("user : {}", user);
-
         TokenInfo tokenInfo = setFirstAuthentication(signUpRequestDto.getId(),
             signUpRequestDto.getPassword());
-        log.debug("token : {}", tokenInfo);
 
         userRedisService.saveRefreshToken(user.getId(), tokenInfo.getRefreshToken());
 
@@ -190,8 +186,6 @@ public class UserServiceImpl implements UserService {
     public void delete() {
         User user = userRepository.findById(SecurityUtils.getLoggedInUserId())
             .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-
-        log.debug("[delete()] user : {}", user);
 
         userRedisService.deleteRefreshToken(user.getId());
         userRedisService.deleteUserInfo(user);

@@ -2,10 +2,8 @@ package com.pi.stepup.global.error.exception;
 
 public class DuplicatedException extends IllegalArgumentException {
 
-    private String message;
-
     public DuplicatedException() {
-        this.message = "중복 오류";
+        super("데이터 중복");
     }
 
     public DuplicatedException(String message) {
