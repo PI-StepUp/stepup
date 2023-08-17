@@ -20,10 +20,9 @@ public class RankRepositoryImpl implements RankRepository {
         Optional<Rank> rank;
         try {
             rank = Optional.ofNullable(em.createQuery(
-                    "SELECT r FROM Rank r "
-                        + "WHERE :point BETWEEN r.startPoint AND r.endPoint", Rank.class
-                ).setParameter("point", point)
-                .getSingleResult());
+                "SELECT r FROM Rank r "
+                    + "WHERE :point BETWEEN r.startPoint AND r.endPoint",
+                Rank.class).setParameter("point", point).getSingleResult());
         } catch (NoResultException e) {
             rank = Optional.empty();
         }
@@ -34,10 +33,10 @@ public class RankRepositoryImpl implements RankRepository {
     public Optional<Rank> getRankByName(RankName rankName) {
         Optional<Rank> rank;
         try {
-            rank = Optional.ofNullable(em.createQuery(
-                "SELECT r FROM Rank r "
-                    + "where r.name = :rankName", Rank.class
-            ).setParameter("rankName", rankName).getSingleResult());
+            rank = Optional.ofNullable(
+                em.createQuery("SELECT r FROM Rank r "
+                        + "where r.name = :rankName", Rank.class)
+                    .setParameter("rankName", rankName).getSingleResult());
         } catch (NoResultException e) {
             rank = Optional.empty();
         }

@@ -1,16 +1,16 @@
 package com.pi.stepup.domain.rank.dao;
 
 import com.pi.stepup.domain.rank.domain.PointPolicy;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class PointPolicyRepositoryImpl implements PointPolicyRepository {
+
     private final EntityManager em;
 
     @Override
