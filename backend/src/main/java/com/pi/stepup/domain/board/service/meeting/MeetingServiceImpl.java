@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class MeetingServiceImpl implements MeetingService {
     private final MeetingRepository meetingRepository;
     private final UserRepository userRepository;
     private final CommentService commentService;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @Transactional
     @Override
@@ -41,8 +44,8 @@ public class MeetingServiceImpl implements MeetingService {
         User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        //끝 시간이 시작 시간보다 이전이면 예외
-        if (meetingSaveRequestDto.getEndAt().isBefore(meetingSaveRequestDto.getStartAt())) {
+        if (LocalDateTime.parse(meetingSaveRequestDto.getEndAt(), formatter)
+                .isBefore(LocalDateTime.parse(meetingSaveRequestDto.getStartAt(), formatter))) {
             throw new MeetingBadRequestException(MEETING_INVALID_TIME.getMessage());
         }
 
@@ -51,8 +54,8 @@ public class MeetingServiceImpl implements MeetingService {
                 .title(meetingSaveRequestDto.getTitle())
                 .content(meetingSaveRequestDto.getContent())
                 .fileURL(meetingSaveRequestDto.getFileURL())
-                .startAt(meetingSaveRequestDto.getStartAt())
-                .endAt(meetingSaveRequestDto.getEndAt())
+                .startAt(LocalDateTime.parse(meetingSaveRequestDto.getStartAt()))
+                .endAt(LocalDateTime.parse(meetingSaveRequestDto.getEndAt()))
                 .region(meetingSaveRequestDto.getRegion())
                 .build();
 
@@ -67,20 +70,20 @@ public class MeetingServiceImpl implements MeetingService {
         Meeting meeting = meetingRepository.findOne(meetingUpdateRequestDto.getBoardId())
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
 
-        //끝 시간이 시작 시간보다 이전이면 예외
-        if (meetingUpdateRequestDto.getEndAt().isBefore(meetingUpdateRequestDto.getStartAt())) {
+        if (LocalDateTime.parse(meetingUpdateRequestDto.getEndAt(), formatter)
+                .isBefore(LocalDateTime.parse(meetingUpdateRequestDto.getStartAt(), formatter))) {
             throw new MeetingBadRequestException(MEETING_INVALID_TIME.getMessage());
         }
 
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
-        // 로그인한 사용자가 작성자가 아닌 경우 ForbiddenException 발생
         if (!loggedInUserId.equals(meeting.getWriter().getId())) {
             throw new ForbiddenException();
         }
 
         meeting.update(meetingUpdateRequestDto.getTitle(), meetingUpdateRequestDto.getContent(),
                 meetingUpdateRequestDto.getFileURL(), meetingUpdateRequestDto.getRegion(),
-                meetingUpdateRequestDto.getStartAt(), meetingUpdateRequestDto.getEndAt());
+                LocalDateTime.parse(meetingUpdateRequestDto.getStartAt(), formatter),
+                LocalDateTime.parse(meetingUpdateRequestDto.getEndAt(), formatter));
 
         return meeting;
     }
@@ -109,7 +112,6 @@ public class MeetingServiceImpl implements MeetingService {
     public MeetingInfoResponseDto readOne(Long boardId) {
         Meeting meeting = meetingRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-        // 조회수 증가
         meeting.increaseViewCnt();
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return MeetingInfoResponseDto.builder()
@@ -124,10 +126,9 @@ public class MeetingServiceImpl implements MeetingService {
         Meeting meeting = meetingRepository.findOne(boardId).orElseThrow(()
                 -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
         String loggedInUserId = SecurityUtils.getLoggedInUserId();
-        // 로그인한 사용자가 댓글 작성자이거나, 관리자일 경우에만 삭제 허용
         if (!loggedInUserId.equals(meeting.getWriter().getId()) && !UserRole.ROLE_ADMIN.equals(meeting.getWriter().getRole())) {
             throw new ForbiddenException();
         }
         meetingRepository.delete(boardId);
     }
-}
+ }

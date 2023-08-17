@@ -47,7 +47,7 @@ public class MeetingApiControllerTest {
 
     @MockBean
     private MeetingService meetingService;
-    private MeetingRequestDto.MeetingSaveRequestDto  meetingSaveRequestDto;
+    private MeetingRequestDto.MeetingSaveRequestDto meetingSaveRequestDto;
     private MeetingRequestDto.MeetingUpdateRequestDto meetingUpdateRequestDto;
     private MeetingResponseDto.MeetingInfoResponseDto meetingInfoResponseDto;
     private User writer;
@@ -55,6 +55,9 @@ public class MeetingApiControllerTest {
     private Meeting meeting2;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
             "yyyy-MM-dd HH:mm");
+
+    private final String startAt = "2023-08-20 10:00";
+    private final String endAt = "2023-08-20 11:00";
 
     @BeforeEach
     public void init() {
@@ -82,8 +85,8 @@ public class MeetingApiControllerTest {
                 .title("정모 테스트 제목")
                 .content("정모 테스트 내용")
                 .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-20 10:00", formatter))
-                .endAt(LocalDateTime.parse("2023-08-30 10:00", formatter))
+                .startAt(LocalDateTime.parse(startAt, formatter))
+                .endAt(LocalDateTime.parse(endAt, formatter))
                 .region("서울")
                 .build();
     }
@@ -95,8 +98,8 @@ public class MeetingApiControllerTest {
                 .title("정모 테스트 제목2")
                 .content("정모 테스트 내용2")
                 .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-20 10:00", formatter))
-                .endAt(LocalDateTime.parse("2023-08-30 10:00", formatter))
+                .startAt(LocalDateTime.parse(startAt, formatter))
+                .endAt(LocalDateTime.parse(endAt, formatter))
                 .region("광주")
                 .build();
     }
@@ -106,8 +109,8 @@ public class MeetingApiControllerTest {
                 .title("정모 테스트 제목")
                 .content("정모 테스트 내용")
                 .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-20 10:00", formatter))
-                .endAt(LocalDateTime.parse("2023-08-30 10:00", formatter))
+                .startAt(startAt)
+                .endAt(endAt)
                 .region("서울")
                 .build();
     }
@@ -118,8 +121,8 @@ public class MeetingApiControllerTest {
                 .title("(수정)정모 테스트 제목")
                 .content("(수정)정모 테스트 내용")
                 .fileURL("(수정)https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
-                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .startAt(startAt)
+                .endAt(endAt)
                 .region("광주")
                 .build();
     }

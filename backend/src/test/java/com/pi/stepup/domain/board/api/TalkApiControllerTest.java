@@ -130,13 +130,11 @@ public class TalkApiControllerTest {
     @WithMockUser
     public void createTalkApiTest() throws Exception {
         String url = CREATE_TALK_URL.getUrl();
-
         final ResultActions postAction = mockMvc.perform(
                 MockMvcRequestBuilders.post(url).with(csrf())
                         .content(gson.toJson(talkSaveRequestDto))
                         .contentType(MediaType.APPLICATION_JSON)
         );
-
         postAction.andExpect(status().isCreated());
         verify(talkService, times(1)).create(any(TalkRequestDto.TalkSaveRequestDto.class));
     }
@@ -147,49 +145,24 @@ public class TalkApiControllerTest {
     @WithMockUser
     public void deleteTalkApiTest() throws Exception {
         Long boardId = 1L;
-
         final ResultActions deleteAction = mockMvc.perform(
                 MockMvcRequestBuilders.delete(DELETE_TALK_URL.getUrl() + boardId)
                         .with(csrf())
         );
-
         verify(talkService, only()).delete(boardId);
         deleteAction.andExpect(status().isOk());
 
     }
-
-//    @Test
-//    @DisplayName("자유게시판 게시글 수정 테스트")
-//    @WithMockUser
-//    public void updateTalkApiTest() throws Exception {
-//
-//        makeTalkUpdateRequestDto();
-//        String url = UPDATE_TALK_URL.getUrl();
-//
-//        ResultActions resultActions = mockMvc.perform(
-//                MockMvcRequestBuilders.put(url)
-//                        .with(csrf())
-//                        .content(gson.toJson(talkUpdateRequestDto))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//        );
-//
-//        resultActions.andExpect(status().isOk());
-//
-//        verify(talkService, times(1)).update(any(TalkRequestDto.TalkUpdateRequestDto.class));
-//    }
 
     @Test
     @DisplayName("자유게시판 게시글 상세 조회 테스트")
     @WithMockUser
     public void readOneTalkControllerTest() throws Exception {
         when(talkService.readOne(any())).thenReturn(Optional.ofNullable(talkInfoResponseDto));
-
         String url = READ_ONE_TALK_URL.getUrl() + talk1.getBoardId();
         final ResultActions getAction = mockMvc.perform(
                 get(url)
         );
-
         getAction.andExpect(status().isOk()).andDo(print());
     }
 }

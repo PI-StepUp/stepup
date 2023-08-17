@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 public class MeetingRequestDto {
 
@@ -22,8 +20,8 @@ public class MeetingRequestDto {
         @NotBlank
         private String content;
         private String fileURL;
-        private LocalDateTime startAt;
-        private LocalDateTime endAt;
+        private String startAt;
+        private String endAt;
         @NotBlank
         private String region;
     }
@@ -47,7 +45,7 @@ public class MeetingRequestDto {
         private String boardType;
         @NotBlank
         private String region;
-        private LocalDateTime startAt;
-        private LocalDateTime endAt;
+        private String startAt;
+        private String endAt;
     }
 }

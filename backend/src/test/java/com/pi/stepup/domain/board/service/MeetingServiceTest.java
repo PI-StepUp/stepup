@@ -2,10 +2,8 @@ package com.pi.stepup.domain.board.service;
 
 import com.pi.stepup.domain.board.dao.meeting.MeetingRepository;
 import com.pi.stepup.domain.board.domain.Meeting;
-import com.pi.stepup.domain.board.domain.Talk;
 import com.pi.stepup.domain.board.dto.meeting.MeetingRequestDto;
 import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto;
-import com.pi.stepup.domain.board.dto.talk.TalkResponseDto;
 import com.pi.stepup.domain.board.service.meeting.MeetingServiceImpl;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
@@ -93,8 +91,8 @@ public class MeetingServiceTest {
                 .title("정모 테스트 제목")
                 .content("정모 테스트 내용")
                 .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
-                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .startAt("2023-07-28T09:00:00")
+                .endAt("2023-07-28T11:00:00")
                 .region("서울")
                 .build();
     }
@@ -105,8 +103,8 @@ public class MeetingServiceTest {
                 .title("(수정)정모 테스트 제목")
                 .content("(수정)정모 테스트 내용")
                 .fileURL("(수정)https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
-                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .startAt("2023-07-28T09:00:00")
+                .endAt("2023-07-28T11:00:00")
                 .region("광주")
                 .build();
     }
@@ -158,10 +156,9 @@ public class MeetingServiceTest {
 
             List<MeetingResponseDto.MeetingInfoResponseDto> result = meetingService.readAll(keyword);
 
-            // 테스트 결과 검증
-            assert(result.size() == 2);
-            assert(result.get(0).getTitle().equals("정모 테스트 제목"));
-            assert(result.get(1).getTitle().equals("정모 테스트 제목2"));
+            assert (result.size() == 2);
+            assert (result.get(0).getTitle().equals("정모 테스트 제목"));
+            assert (result.get(1).getTitle().equals("정모 테스트 제목2"));
         }
     }
 
@@ -180,8 +177,8 @@ public class MeetingServiceTest {
             when(meetingRepository.findById("j3beom")).thenReturn(myMeetings);
 
             List<MeetingResponseDto.MeetingInfoResponseDto> result = meetingService.readAllById();
-            // Then
-            assert(result.size() == 2);
+
+            assert (result.size() == 2);
             assertEquals("정모 테스트 제목", result.get(0).getTitle());
             assertEquals("정모 테스트 내용", result.get(0).getContent());
         }
@@ -191,12 +188,12 @@ public class MeetingServiceTest {
     @DisplayName("정모 게시글 삭제 테스트")
     public void deleteTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(SecurityUtils.class)) {
-            // Given
+
             securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId).thenReturn(writer.getId());
             when(meetingRepository.findOne(any(Long.class))).thenReturn(Optional.of(meeting1));
-            // When
+
             meetingService.delete(1L);
-            // Then
+
             verify(meetingRepository, times(1)).delete(1L);
         }
     }

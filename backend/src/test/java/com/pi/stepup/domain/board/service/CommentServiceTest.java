@@ -146,13 +146,11 @@ public class CommentServiceTest {
             comments.add(comment1);
             comments.add(comment2);
 
-            // When
             when(boardRepository.findOne(1L)).thenReturn(Optional.of(board));
             when(commentRepository.findByBoardId(1L)).thenReturn(comments);
 
             List<CommentResponseDto.CommentInfoResponseDto> result = commentService.readByBoardId(1L);
 
-            // Then
             assert(result.size() == 2);
             assert(result.get(0).getContent().equals("댓글입니당"));
             assert(result.get(1).getContent().equals("댓글입니다아아아"));
@@ -164,12 +162,12 @@ public class CommentServiceTest {
     @DisplayName("자유게시판 게시글 삭제 테스트")
     public void deleteTest() {
         try (MockedStatic<SecurityUtils> securityUtilsMockedStatic = mockStatic(SecurityUtils.class)) {
-            // Given
+
             securityUtilsMockedStatic.when(SecurityUtils::getLoggedInUserId).thenReturn(writer.getId());
             when(commentRepository.findOne(any(Long.class))).thenReturn(Optional.of(comment1));
-            // When
+
             commentService.delete(1L);
-            // Then
+
             verify(commentRepository, times(1)).delete(1L);
         }
     }

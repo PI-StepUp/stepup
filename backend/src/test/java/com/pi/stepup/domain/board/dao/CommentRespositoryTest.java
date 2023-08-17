@@ -70,10 +70,9 @@ public class CommentRespositoryTest {
     @Test
     @DisplayName("댓글 등록 테스트")
     public void testInsert() {
-        // When
         Comment savedComment1 = commentRepository.insert(comment1);
         Comment savedComment2 = commentRepository.insert(comment2);
-        // Then
+
         assertThat(savedComment1.getCommentId()).isNotNull();
         assertThat(savedComment2.getCommentId()).isNotNull();
     }
@@ -81,41 +80,32 @@ public class CommentRespositoryTest {
     @Test
     @DisplayName("댓글 상세 조회 테스트")
     public void testFindOne() {
-        // Given
         testInsert();
 
-        // When
         Optional<Comment> foundComment = commentRepository.findOne(comment1.getCommentId());
-
-        // Then
         assertTrue(foundComment.isPresent());
+
         assertThat(foundComment.get().getCommentId()).isEqualTo(comment1.getCommentId());
     }
 
     @Test
     @DisplayName("해당 게시글에 대한 댓글 전체 조회 테스트")
     public void testfindByBoardId() {
-        // Given
         testInsert();
 
-        // When
         List<Comment> comments = commentRepository.findByBoardId(comment1.getBoard().getBoardId());
         int numberOfMeetingsFound = comments.size();
 
-        // Then
         assertThat(2).isEqualTo(numberOfMeetingsFound);
     }
 
     @Test
     @DisplayName("정모 게시글 삭제 테스트")
     public void testDelete() {
-        // Given
         testInsert();
 
-        // When
         commentRepository.delete(comment1.getCommentId());
 
-        // Then
         Comment deletedComment = em.find(Comment.class, comment1.getCommentId());
         assertNull(deletedComment);
     }
