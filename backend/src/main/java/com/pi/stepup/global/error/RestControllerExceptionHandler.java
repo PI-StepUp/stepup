@@ -41,9 +41,9 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ResponseDto<String>> handleForbiddenException(
-            ForbiddenException exception) {
+        ForbiddenException exception) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                ResponseDto.create(AUTHORIZATION_FAILED.getMessage())
+            ResponseDto.create(AUTHORIZATION_FAILED.getMessage())
         );
     }
 
