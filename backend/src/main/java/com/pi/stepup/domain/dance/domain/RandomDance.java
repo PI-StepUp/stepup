@@ -52,16 +52,13 @@ public class RandomDance extends BaseEntity {
 
     private String thumbnail;
 
-    //호스트
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User host;
 
-    //사용하는 노래 목록
     @OneToMany(mappedBy = "randomDance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DanceMusic> danceMusicList = new ArrayList<>();
 
-    //예약자 목록
     @OneToMany(mappedBy = "randomDance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservationList = new ArrayList<>();
 
