@@ -44,6 +44,7 @@ public class TalkServiceImpl implements TalkService {
                 .title(talkSaveRequestDto.getTitle())
                 .content(talkSaveRequestDto.getContent())
                 .fileURL(talkSaveRequestDto.getFileURL())
+                .viewCnt(0L)
                 .build();
         talkRepository.insert(talk);
         return talk;
