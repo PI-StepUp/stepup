@@ -306,7 +306,7 @@ const DanceRoom = () => {
 
             setRefreshScore(score);
 
-            if(score < 60){
+            if(score < 70){
                 setPlayResult("failure");
                 setTimeout(() => {
                     setPlayResult("");
