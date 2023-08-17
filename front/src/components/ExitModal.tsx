@@ -35,7 +35,6 @@ const Modal = (props: props): ReactElement => {
 				setId("");
 				setProfileImg("");
 				setRankname("");
-				console.log("탈퇴 완료");
 				{lang === "en" ? alert("You have been withdrawn. Thank you for using our service.") : lang === "cn" ? alert("您已经退出。感谢您使用我们的服务。") : alert("탈퇴되었습니다. 이용해주셔서 감사합니다.")}
 				router.push('/');
 			} else {
