@@ -152,18 +152,40 @@
     background-image: url("/images/main-mainbanner2.jpg");
 }
 
-.main-banner{
+.main-banner {
     @include setSize(100%, 700px);
-    background-position: center;
-    background-size:cover;
-    position:relative;
-    top:-100px;
-    z-index:-1;
-    animation-duration: 2s;
-    @include mobile{
-        @include setSize(100%, 575px);
+    position: relative;
+    top: -100px;
+    z-index: -1;
+    animation: fadeInOut 6s infinite alternate;
+      background-position: center;
+    background-size: cover;
+    @include mobile {
+      @include setSize(100%, 575px);
     }
-}
+  }
+  @keyframes fadeInOut {
+    0%, 100% {
+      opacity: 0;
+    }
+    25%, 75% {
+      opacity: 1;
+    }
+  }
+  .main-banner-image {
+    @include setSize(100%, 100%);
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity ease;
+  }
+  .main-banner-image.visible {
+    opacity: 1;
+  }
+  
 .main-info{
     @include block-center(1200px);
     padding-bottom:132px;

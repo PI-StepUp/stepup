@@ -62,7 +62,6 @@ const MyPageEdit = () => {
 		}
 	}
 
-	// map, 조건부렌더링으로 치환해둘 것!
 	const handleSelect = (country: object) => {
 		setCountryId(country.countryId);
 		setCountryCode(country.countryCode);
@@ -76,7 +75,6 @@ const MyPageEdit = () => {
 			alert("회원 정보 수정 란의 비밀번호를 먼저 입력해주세요.");
 			router.push('/mypage');
 		} else {
-			// 접근 권한(로그인 여부) 확인
 			setCanEditInfo('');
 		}
 	}, []);
@@ -106,8 +104,48 @@ const MyPageEdit = () => {
 				} else {
 					setNicknameFlag(false);
 				}
-			}).catch((e) => {
+			}).catch((error: any) => {
 				setNicknameFlag(false);
+				if (error.response.data.message === "만료된 토큰") {
+					axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
+						nickname: nicknameValue.current!.value,
+					}, {
+						headers: {
+							refreshToken: refreshToken
+						}
+					}).then((data) => {
+						if (data.data.message === "토큰 재발급 완료") {
+							setAccessToken(data.data.data.accessToken);
+							setRefreshToken(data.data.data.refreshToken);
+						}
+					}).then((data) => {
+						axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
+							nickname: nicknameValue.current!.value,
+						}, {
+							headers: {
+								Authorization: `Bearer ${accessToken}`,
+							}
+						}).then((data) => {
+							if (data.data.message === "닉네임 사용 가능") {
+								setNicknameFlag(true);
+								setNickname(nicknameValue.current.value);
+							} else {
+								setNicknameFlag(false);
+							}
+						}).catch((data) => {
+							if (data.response.status === 401) {
+								alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+								router.push("/login");
+								return;
+							}
+
+							if (data.response.status === 500) {
+								alert("시스템 에러, 관리자에게 문의하세요.");
+								return;
+							}
+						})
+					})
+				}
 			})
 		} catch (e) {
 		}
@@ -129,38 +167,78 @@ const MyPageEdit = () => {
 				} else {
 					setNicknameFlag(false);
 				}
-			}).catch((e) => {
+			}).catch((error: any) => {
 				setNicknameFlag(false);
+				if (error.response.data.message === "만료된 토큰") {
+					axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
+						email: emailValue.current!.value,
+					}, {
+						headers: {
+							refreshToken: refreshToken
+						}
+					}).then((data) => {
+						if (data.data.message === "토큰 재발급 완료") {
+							setAccessToken(data.data.data.accessToken);
+							setRefreshToken(data.data.data.refreshToken);
+						}
+					}).then(() => {
+						axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
+							email: emailValue.current!.value,
+						}, {
+							headers: {
+								Authorization: `Bearer ${accessToken}`,
+							}
+						}).then((data) => {
+							if (data.data.message === "이메일 사용 가능") {
+								setEmailFlag(true);
+								setEmail(emailValue.current.value);
+							} else {
+								setNicknameFlag(false);
+							}
+						}).catch((data) => {
+							if (data.response.status === 401) {
+								alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+								router.push("/login");
+								return;
+							}
+
+							if (data.response.status === 500) {
+								alert("시스템 에러, 관리자에게 문의하세요.");
+								return;
+							}
+						})
+					})
+				}
 			})
 		} catch (e) {
 		}
 	}
 
-	// 이메일 수신 여부 체크
+	// 이메일 수신 여부 체크 박스
 	const agreementCheck = async () => {
 		await setAgreeToReceiveEmail((prevEmailAlert: number) => prevEmailAlert === 0 ? 1 : 0);
 	}
 
-	// 이미지 업로드
-	const handleImageUpload = async () => {
-		if (selectedImg) {
-			const s3 = new AWS.S3();
-			const params = {
-				Bucket: 'stepup-pi',
-				Key: `${Date.now()}_${selectedImg.name}`,
-				Body: selectedImg,
-				ContentType: selectedImg.type,
-			};
-
-			try {
-				s3.upload(params).promise();
-				// console.log("Image upload Success!!");
-				setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`)
-				// console.log("파일 url", profileImg);
-			} catch (error) {
-				// console.log("Image upload Fail!!", error);
+	// 이미지 s3 업로드
+	function uploadImg() {
+		return new Promise(function (resolve, reject) {
+			if (selectedImg) {
+				const s3 = new AWS.S3();
+				const fileName = `${Date.now()}_${selectedImg.name}`;
+				const params = {
+					Bucket: 'stepup-pi',
+					Key: fileName,
+					Body: selectedImg,
+					ContentType: selectedImg.type,
+				};
+				try {
+					s3.upload(params).promise().then(() => {
+						setProfileImg(`https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${params.Key}`);
+					})
+				} catch (e) { }
+				resolve(fileName);
 			}
-		}
+		});
 	}
 
 	// 프로필 사진 변경
@@ -206,36 +284,82 @@ const MyPageEdit = () => {
 		if (ResultEmail === false) {
 			alert("이메일 중복 확인을 해주세요.");
 		}
-		
+
 		try {
-			await handleImageUpload()
-				.then(() => {
-					axios.put("https://stepup-pi.com:8080/api/user", {
-						email: emailValue.current.value,
-						emailAlert: agreeToReceiveEmail,
-						countryId: countryId,
-						countryCode: countryCode,
-						nickname: nicknameValue.current.value,
-						profileImg: profileImg,
-					}, {
-						headers: {
-							Authorization: `Bearer ${accessToken}`,
-						}
-					}).then((data) => {
-						if (data.data.message === "회원정보 수정 완료") {
-							// console.log("회원정보 수정 완료");
-							alert("회원 정보를 수정했습니다.");
-							router.push('/');
-						} else {
-							// console.log("회원정보 수정 미완료");
-							alert("회원 정보 수정에 실패했습니다. 다시 한 번 시도해주세요.");
-						}
-					}).catch((e) => {
-						// console.log("에러 발생", e);
-						alert('회원 정보 수정에 실패했습니다. 관리자에게 문의해주세요.');
-					})
+			uploadImg().then((fileName: any) => {
+				axios.put("https://stepup-pi.com:8080/api/user", {
+					email: emailValue.current.value,
+					emailAlert: agreeToReceiveEmail,
+					countryId: countryId,
+					countryCode: countryCode,
+					nickname: nicknameValue.current.value,
+					profileImg: `https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${fileName}`,
+				}, {
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					}
+				}).then((data) => {
+					if (data.data.message === "회원정보 수정 완료") {
+						alert("회원 정보를 수정했습니다.");
+						router.push('/');
+					} else {
+						alert("회원 정보 수정에 실패했습니다. 다시 한 번 시도해주세요.");
+					}
+				}).catch((error: any) => {
+					// alert('회원 정보 수정에 실패했습니다. 관리자에게 문의해주세요.');
+					if (error.response.data.message === "만료된 토큰") {
+						axios.put("https://stepup-pi.com:8080/api/user", {
+							email: emailValue.current.value,
+							emailAlert: agreeToReceiveEmail,
+							countryId: countryId,
+							countryCode: countryCode,
+							nickname: nicknameValue.current.value,
+							profileImg: `https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${fileName}`,
+						}, {
+							headers: {
+								refreshToken: refreshToken
+							}
+						}).then((data) => {
+							if (data.data.message === "토큰 재발급 완료") {
+								setAccessToken(data.data.data.accessToken);
+								setRefreshToken(data.data.data.refreshToken);
+							}
+						}).then(() => {
+							axios.put("https://stepup-pi.com:8080/api/user", {
+								email: emailValue.current.value,
+								emailAlert: agreeToReceiveEmail,
+								countryId: countryId,
+								countryCode: countryCode,
+								nickname: nicknameValue.current.value,
+								profileImg: `https://stepup-pi.s3.ap-northeast-2.amazonaws.com/${fileName}`,
+							}, {
+								headers: {
+									Authorization: `Bearer ${accessToken}`,
+								}
+							}).then((data) => {
+								if (data.data.message === "회원정보 수정 완료") {
+									alert("회원 정보를 수정했습니다.");
+									router.push('/');
+								} else {
+									alert("회원 정보 수정에 실패했습니다. 다시 한 번 시도해주세요.");
+								}
+							}).catch((data) => {
+								if (data.response.status === 401) {
+									alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+									router.push("/login");
+									return;
+								}
+
+								if (data.response.status === 500) {
+									alert("시스템 에러, 관리자에게 문의하세요.");
+									return;
+								}
+							})
+						})
+					}
 				})
-		} catch (e) {}
+			});
+		} catch (e) { }
 	}
 
 	// 비밀번호 변경
@@ -256,6 +380,47 @@ const MyPageEdit = () => {
 				router.push('/');
 			} else {
 				alert("비밀번호 변경에 실패했습니다. 다시 한 번 시도해주세요.");
+			}
+		}).catch((error: any) => {
+			if (error.response.data.message === "만료된 토큰") {
+				axios.patch("https://stepup-pi.com:8080/api/user/pw", {
+					password: pw2Value.current.value,
+				}, {
+					headers: {
+						refreshToken: refreshToken
+					}
+				}).then((data) => {
+					if (data.data.message === "토큰 재발급 완료") {
+						setAccessToken(data.data.data.accessToken);
+						setRefreshToken(data.data.data.refreshToken);
+					}
+				}).then(() => {
+					axios.patch("https://stepup-pi.com:8080/api/user/pw", {
+						password: pw2Value.current.value,
+					}, {
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+						}
+					}).then((data) => {
+						if (data.data.message === "비밀번호 변경 완료") {
+							alert("비밀번호를 수정했습니다.")
+							router.push('/');
+						} else {
+							alert("비밀번호 변경에 실패했습니다. 다시 한 번 시도해주세요.");
+						}
+					}).catch((data) => {
+						if (data.response.status === 401) {
+							alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+							router.push("/login");
+							return;
+						}
+
+						if (data.response.status === 500) {
+							alert("시스템 에러, 관리자에게 문의하세요.");
+							return;
+						}
+					})
+				})
 			}
 		})
 	}
