@@ -40,6 +40,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
                 "ma.artist LIKE '%" + keyword + "%'";
         }
 
+        sql += " ORDER BY ma.musicApplyId DESC";
+
         return em.createQuery(sql, MusicApply.class).getResultList();
     }
 
@@ -49,6 +51,7 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
                 "SELECT ma FROM MusicApply ma "
                     + "LEFT JOIN FETCH ma.hearts h " +
                     "WHERE ma.writer.id = :id "
+                    + "ORDER BY ma.musicApplyId DESC"
                 , MusicApply.class
             )
             .setParameter("id", id)
@@ -96,6 +99,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
                 "ma.artist LIKE '%" + keyword + "%'";
         }
+
+        sql += " ORDER BY ma.musicApplyId DESC";
 
         return em.createQuery(sql, MusicApply.class).getResultList();
     }
