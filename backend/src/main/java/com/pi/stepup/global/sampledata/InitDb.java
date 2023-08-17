@@ -42,6 +42,7 @@ public class InitDb {
             makeMusic();
             makePoint();
             makeRank();
+            makeDeletedUser();
             makeAdmin();
             makeUser();
             makeDance();
@@ -165,6 +166,18 @@ public class InitDb {
             em.persist(rank2);
             em.persist(rank3);
             em.persist(rank4);
+        }
+
+        public void makeDeletedUser() {
+            String password = passwordEncoder.encode("ssafy");
+            String sql = "insert into users (user_id, created_at, modified_at, birth, country_id,"
+                + " email, email_alert, id, nickname, password, point, profile_img, rank_id,"
+                + "  role) "
+                + " values (0, '2023-08-15', '2023-08-15', '1997-01-01', 1, 'deleted@naver.com',"
+                + " 1, 'deleted', '알 수 없음', ?, 0, '', 4, 'ROLE_USER')";
+            Query query = em.createNativeQuery(sql);
+            query.setParameter(1, password);
+            query.executeUpdate();
         }
 
         public void makeAdmin() {

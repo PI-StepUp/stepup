@@ -27,4 +27,11 @@ public class PointHistoryRepositoryImpl implements PointHistoryRepository {
         em.persist(pointHistory);
         return pointHistory;
     }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        em.createQuery("DELETE FROM PointHistory ph WHERE ph.user.userId = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
+    }
 }

@@ -19,9 +19,13 @@ public interface MusicApplyRepository {
 
     List<MusicApply> findAll(String keyword, String id);
 
+    List<MusicApply> findAllByUserId(Long userId);
+
     List<MusicApply> findById(String id);
 
     void delete(Long musicApplyId);
 
     void deleteHeart(Long heartId);
+
+    void deleteAllHeartsByUserId(Long userId);
 }

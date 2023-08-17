@@ -43,6 +43,13 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
+    public void updateAllHostDeletedByUserID(Long userId) {
+        em.createQuery("UPDATE RandomDance rd SET rd.host = 0 WHERE rd.host.userId=:userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
+    }
+
+    @Override
     public List<DanceMusic> findAllDanceMusic(Long randomDanceId) {
         return em.createQuery("SELECT d FROM DanceMusic d "
                 + "WHERE d.randomDance.randomDanceId = :randomDanceId", DanceMusic.class)
@@ -158,6 +165,13 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
+    public void deleteAllReservationByUserId(Long userId) {
+        em.createQuery("DELETE FROM Reservation r WHERE r.user.userId = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
+    }
+
+    @Override
     public List<Reservation> findAllMyReservation(Long userId) {
         return em.createQuery("SELECT r FROM Reservation r "
                 + "WHERE r.user.userId = :userId "
@@ -171,6 +185,13 @@ public class DanceRepositoryImpl implements DanceRepository {
     public AttendHistory insertAttend(AttendHistory attendHistory) {
         em.persist(attendHistory);
         return attendHistory;
+    }
+
+    @Override
+    public void deleteAllAttendByUserId(Long userId) {
+        em.createQuery("DELETE FROM AttendHistory ah WHERE ah.user.userId = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
     }
 
     @Override
