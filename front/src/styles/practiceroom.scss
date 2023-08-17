@@ -42,6 +42,15 @@
                     margin-top:10px;
                 }
             }
+            .score-wrap{
+                margin-left:auto;
+                span{
+                    @include font(24px, 600, #696973);
+                    width:100%;
+                    display:block;
+                    text-align:right;
+                }
+            }
         }
         .video-content{
             flex:1;

@@ -43,9 +43,6 @@ const RandomPlayList = () => {
 			axiosDance.get('', {
 				params: {
 					progressType: "ALL",
-				},
-				headers: {
-					Authorization: `Bearer ${accessToken}`
 				}
 			}).then((data) => {
 				if (data.data.message === "참여 가능한 랜덤 플레이 댄스 목록 조회 완료") {
@@ -56,9 +53,6 @@ const RandomPlayList = () => {
 			axiosDance.get('', {
 				params: {
 					progressType: "IN_PROGRESS",
-				},
-				headers: {
-					Authorization: `Bearer ${accessToken}`
 				}
 			}).then((data) => {
 				if (data.data.message === "진행 중인 랜덤 플레이 댄스 목록 조회 완료") {
@@ -69,9 +63,6 @@ const RandomPlayList = () => {
 			axiosDance.get('', {
 				params: {
 					progressType: "SCHEDULED",
-				},
-				headers: {
-					Authorization: `Bearer ${accessToken}`
 				}
 			}).then((data) => {
 				if (data.data.message === "진행 예정된 랜덤 플레이 댄스 목록 조회 완료") {
