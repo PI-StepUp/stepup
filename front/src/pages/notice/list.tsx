@@ -29,11 +29,6 @@ const NoticeList = () => {
     const router = useRouter();
 
     const moveNoticeDetail = (boardId : number) => {
-        if(nickname === ""){
-            alert("해당 서비스는 로그인 후 이용하실 수 있습니다.");
-            return;
-        }
-
         setBoardId(boardId);
 
         router.push(`/notice/detail/${boardId}`);
