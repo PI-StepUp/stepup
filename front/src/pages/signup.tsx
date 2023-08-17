@@ -133,8 +133,6 @@ const SignUp = () => {
 			role: "ROLE_USER",
 		})
 
-		console.log(signup);
-
 		if (signup.data.message === "회원가입 완료") {
 			router.push('/login');
 		} else {

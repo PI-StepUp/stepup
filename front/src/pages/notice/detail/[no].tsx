@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import CommentDefaultImage from "/public/images/comment-default-img.svg";
 
-import { accessTokenState, refreshTokenState, idState, roleState, boardIdState } from "states/states";
+import { accessTokenState, refreshTokenState, idState, roleState, boardIdState, nicknameState } from "states/states";
 import { useRecoilState } from "recoil";
 
 const DetailNotice = () => {
@@ -22,6 +22,7 @@ const DetailNotice = () => {
     const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState); 
     const [id, setId] = useRecoilState(idState);
     const [role, setRole] = useRecoilState(roleState);
+    const [nickname, setNickname] = useRecoilState(nicknameState);
 
     const deleteArticle = async () => {
         try{
@@ -70,6 +71,7 @@ const DetailNotice = () => {
                     }).catch((data) => {
                         if(data.response.status === 401){
                             alert("장시간 이용하지 않아 자동 로그아웃 되었습니다.");
+                            setNickname("");
                             router.push("/login");
                             return;
                         }
