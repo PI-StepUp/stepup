@@ -37,7 +37,7 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
+const SOCKET_SERVER_URL = 'http://localhost:4002';
 
 const EMBED_URL: any = {
     1: "https://www.youtube.com/embed/g4vaGXR7fUY",
@@ -655,23 +655,25 @@ const DanceRoom = () => {
             }
         })
 
-        socketRef.current.on("startRandomplay", async (musicId: number) => {
-            await setCount3(true);
-            await setTimeout(async() => {
-                await setCount3(false);
-                await setCount2(true);
-                setTimeout(async () => {
-                    await setCount2(false);
-                    await setCount1(true);
+        socketRef.current.on("startRandomplay", async (data: any) => {
+            if(data.roomName == roomId){
+                await setCount3(true);
+                await setTimeout(async() => {
+                    await setCount3(false);
+                    await setCount2(true);
                     setTimeout(async () => {
-                        await setCount1(false);
-                        setUrlNo(musicId);
-                        
-                        await startPredictAndCalcSimilarity(musicId);
-
+                        await setCount2(false);
+                        await setCount1(true);
+                        setTimeout(async () => {
+                            await setCount1(false);
+                            setUrlNo(data.musicId);
+                            
+                            await startPredictAndCalcSimilarity(data.musicId);
+    
+                        }, 2000);
                     }, 2000);
                 }, 2000);
-            }, 2000);
+            }
         });
 
 		return () => {
