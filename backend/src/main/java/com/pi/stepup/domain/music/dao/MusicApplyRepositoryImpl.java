@@ -32,17 +32,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public List<MusicApply> findAll(String keyword, String id) {
-        log.info("현재 사용자 아이디 : {}", id);
-//        String sql =
-//            "SELECT new com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyJPAFindResponseDto("
-//                + "ma.id, ma.title, ma.artist, ma.writer.nickname, ma.writer.profileImg, ma.heartCnt, h.id"
-//                + ") "
-//                + "FROM MusicApply ma "
-//                + "LEFT JOIN ma.hearts h ON h.user.id = :id "
-//                + "WHERE ma.writer.id = :id";
         String sql = "SELECT DISTINCT ma FROM MusicApply ma "
             + "LEFT JOIN ma.hearts h ";
-//            + "LEFT JOIN h.user u ON u.id = :id";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
@@ -66,7 +57,7 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
 
     @Override
     public Optional<MusicApply> findOne(Long musicApplyId) {
-        Optional<MusicApply> musicApply = null;
+        Optional<MusicApply> musicApply;
 
         try {
             musicApply = Optional.ofNullable(em.find(MusicApply.class, musicApplyId));

@@ -1,7 +1,6 @@
 package com.pi.stepup.domain.music.service;
 
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.ADD_HEART_FAIL;
-import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.REMOVE_HEART_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
@@ -24,8 +23,6 @@ import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.pi.stepup.global.error.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -67,16 +64,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             musicApplies = musicApplyRepository.findAll(keyword);
         } else {
             musicApplies = musicApplyRepository.findAll(keyword, id);
-            log.info("노래 신청 - 로그인 아이디 : {}", id);
-            log.info("신청 목록 : {}", musicApplies);
-            if (!musicApplies.get(0).getHearts().isEmpty()) {
-                for (Heart h : musicApplies.get(0).getHearts()) {
-                    log.info("좋아요 누른사람 아이디 : {}",
-                        h.getUser().getId());
-                }
-            }
         }
-
 
         return setCanHeart(musicApplies, id);
     }
@@ -87,24 +75,6 @@ public class MusicApplyServiceImpl implements MusicApplyService {
         List<MusicApply> musicApplies = musicApplyRepository.findById(id);
         return setCanHeart(musicApplies, id);
     }
-
-    // 원래 메소드
-//    public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies) {
-//        List<MusicApplyFindResponseDto> result = new ArrayList<>();
-//
-//        for (MusicApply ma : musicApplies) {
-//            int canHeart = 1;
-//            if (ma.getHearts().size() != 0) {
-//                canHeart = 0;
-//            }
-//
-//            result.add(MusicApplyFindResponseDto.builder()
-//                .musicApply(ma)
-//                .canHeart(canHeart)
-//                .build());
-//        }
-//        return result;
-//    }
 
     public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies, String id) {
         List<MusicApplyFindResponseDto> result = new ArrayList<>();
@@ -170,8 +140,6 @@ public class MusicApplyServiceImpl implements MusicApplyService {
         }
 
         musicApplyRepository.insert(heart);
-
-        // TODO : Entity 안에 PostPersist, PostRemove
         musicApply.addHeart();
     }
 
