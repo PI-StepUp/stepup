@@ -44,4 +44,11 @@ public class CommentRepositoryImpl implements CommentRepository {
         Comment comment = em.find(Comment.class, commemtId);
         em.remove(comment);
     }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        em.createQuery("DELETE FROM Comment c WHERE c.writer.userId = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
+    }
 }

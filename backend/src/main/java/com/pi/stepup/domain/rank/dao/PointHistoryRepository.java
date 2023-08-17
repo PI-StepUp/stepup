@@ -8,4 +8,6 @@ public interface PointHistoryRepository {
     List<PointHistory> findAll(String id);
 
     PointHistory insert(PointHistory pointHistory);
+
+    void deleteAllByUserId(Long userId);
 }
