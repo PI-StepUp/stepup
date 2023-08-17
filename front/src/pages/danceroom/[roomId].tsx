@@ -37,7 +37,7 @@ const pc_config = {
 		},
 	],
 };
-const SOCKET_SERVER_URL = 'http://localhost:4002';
+const SOCKET_SERVER_URL = 'https://stepup-pi.com:4002';
 
 const EMBED_URL: any = {
     1: "https://www.youtube.com/embed/g4vaGXR7fUY",
