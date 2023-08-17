@@ -88,8 +88,8 @@ io.on('connection', socket => {
         io.emit('message', data);
     });
 
-    socket.on('playMusic', (data, roomName) => {
-        io.emit('startRandomplay', data);
+    socket.on('playMusic', ({data, roomName}) => {
+        io.emit('startRandomplay', {data, roomName});
     });
 
     socket.on('close_randomplay', (nickname, correct, roomName) => {
