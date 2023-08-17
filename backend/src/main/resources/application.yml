@@ -14,4 +14,4 @@ spring:
         - redisdev
         - mongodev
 
-    active: develop
+    active: release
