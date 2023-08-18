@@ -1,5 +1,5 @@
 import React, { ReactElement, useRef, useState } from 'react';
-import { LanguageState, accessTokenState, idState } from "states/states";
+import { LanguageState, accessTokenState, refreshTokenState, idState } from "states/states";
 import { useRecoilState } from "recoil";
 import Image from "next/image"
 import router from 'next/router';
@@ -40,6 +40,7 @@ const Modal = (props: props): ReactElement => {
 	const [danceType, setDanceType] = useState(props.danceType);
 	const [lang, setLang] = useRecoilState(LanguageState);
 	const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+	const [refreshToken, setRefreshToken] = useRecoilState(refreshTokenState);
 	const [id, setId] = useRecoilState(idState);
 	const { open, close } = props;
 
@@ -53,7 +54,7 @@ const Modal = (props: props): ReactElement => {
 			endAt: roomStartDate.current?.value + " " + roomEndTime.current?.value,
 			danceType: danceType,
 			maxUser: Number(roomMaxNum.current?.value),
-			thumbnail: roomImg,
+			thumbnail: props.thumbnail,
 			hostId: id,
 			danceMusicIdList: [1, 2, 3],
 		}, {
@@ -133,19 +134,6 @@ const Modal = (props: props): ReactElement => {
 		})
 	}
 
-	// 랜플댄 사진 변경
-	const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
-			const file = e.target.files[0];
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			//console.log("reader", reader);
-			reader.onload = () => {
-				setRoomImg(reader.result);
-			}
-		}
-	}
-
 	return (
 		<div className="ce-modal">
 			<div className="modal-wrap">
@@ -189,11 +177,6 @@ const Modal = (props: props): ReactElement => {
 								<tr>
 									<td className="modify-title">최대 참여자 수</td>
 									<td><input type="number" className="input-max" ref={roomMaxNum} defaultValue={props.maxUser} /></td>
-								</tr>
-								<tr>
-									<td className="modify-title">대표이미지</td>
-									<Image className="img" src={String(roomImg?.toString())} alt="thumbnail" width={100} height={100}></Image>
-									<td><input type="file" accept="image/jpg, image/png" onChange={onChangeImage} /></td>
 								</tr>
 							</table>
 						</form>

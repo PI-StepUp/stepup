@@ -675,7 +675,6 @@ const MyPage = () => {
                     </div>
                   </li>
                   <li>
-                    {/* 프로필 클릭 시 포인트 적립 내역 모달창 추가 예정 */}
                     <div className="info history">
                       <div className="img-profile">
                         {profileImg === null || profileImg === 'url' || profileImg == ""
@@ -716,9 +715,7 @@ const MyPage = () => {
                       return (
                         <li className="contents" key={index}>
                           <div className="img-box">
-                            {reservation.thumbnail === null || reservation.thumbnail === "url"
-                              ? (<Image className="img" src={img_rpdance} alt="reserved" width={100} height={100}></Image>)
-                              : (<Image className="img" src={reservation.thumbnail.toString} alt="reserved" width={100} height={100}></Image>)}
+                            <Image className="img" src={img_rpdance} alt="reserved" width={100} height={100}></Image>
                           </div>
                           <div className="description">
                             <div className="time">Korea {reservation.startAt} ~ {reservation.endAt} (KST)</div>
@@ -749,9 +746,7 @@ const MyPage = () => {
                       return (
                         <li className="contents" key={index}>
                           <div className="img-box">
-                            {randomDance.thumbnail === null || randomDance.thumbnail === "url"
-                              ? (<Image className="img" src={img_rpdance} alt="open" width={100} height={100}></Image>)
-                              : (<Image className="img" src={randomDance.thumbnail.toString} alt="open" width={100} height={100}></Image>)}
+                            <Image className="img" src={img_rpdance} alt="open" width={100} height={100}></Image>
                           </div>
                           <div className="description">
                             <div className="time">Korea {randomDance.startAt} ~ {randomDance.endAt} (KST)</div>
@@ -801,9 +796,7 @@ const MyPage = () => {
                       return (
                         <li className="contents" key={index}>
                           <div className="img-box">
-                            {randomDance.thumbnail === null || randomDance.thumbnail === "url"
-                              ? (<Image className="img" src={img_rpdance} alt="open" width={100} height={100}></Image>)
-                              : (<Image className="img" src={randomDance.thumbnail.toString} alt="open" width={100} height={100}></Image>)}
+                            <Image className="img" src={img_rpdance} alt="open" width={100} height={100}></Image>
                           </div>
                           <div className="description">
                             <div className="time">Korea {randomDance.startAt} ~ {randomDance.endAt} (KST)</div>
