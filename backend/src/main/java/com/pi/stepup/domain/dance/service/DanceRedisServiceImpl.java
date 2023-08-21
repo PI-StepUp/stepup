@@ -19,11 +19,7 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.config.security.SecurityUtils;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -150,38 +146,38 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                 if (hasReservation) {
                     Set<Object> set = redisTemplate.opsForSet().members(id);
 
-                    Iterator<Object> iter = set.iterator();
-                    while (iter.hasNext()) {
-                        randomDanceIdSet.add(Long.valueOf(String.valueOf(iter.next())));
-                    }
-
-                    log.debug("randomDanceIdSet: {}", randomDanceIdSet);
-
-                    for (Long value : randomDanceIdSet) {
-                        //이미 진행 중이거나 진행 완료된 건 레디스 및 idSet에서 제외
-                        if (randomDance.getStartAt().isBefore(now)) {
-                            randomDanceIdSet.remove(value);
-                            redisTemplate.opsForSet().remove(id, value);
+                    if (set != null) {
+                        Iterator<Object> iter = set.iterator();
+                        while (iter.hasNext()) {
+                            randomDanceIdSet.add(Long.valueOf(String.valueOf(iter.next())));
                         }
-                    }
 
-                    log.debug("[change]: randomDanceIdSet: {}", randomDanceIdSet);
+                        log.debug("randomDanceIdSet: {}", randomDanceIdSet);
+
+                        for (Long value : randomDanceIdSet) {
+                            //이미 진행 중이거나 진행 완료된 건 레디스 및 idSet에서 제외
+                            if (randomDance.getStartAt().isBefore(now)) {
+                                randomDanceIdSet.remove(value);
+                                redisTemplate.opsForSet().remove(id, value);
+                            }
+                        }
+
+                        log.debug("[change]: randomDanceIdSet: {}", randomDanceIdSet);
+                    }
 
                     //레디스에 없으면 DB 조회
                 } else {
 
                     //이때 startAt과 현재 시간 비교한 것들만 가져옴
                     for (int j = 0; j < randomDanceList.size(); j++) {
-                        Reservation reservation
+                        Optional<Reservation> reservation
                             = danceRepository.findReservationByRandomDanceIdAndUserId
-                            (randomDance.getRandomDanceId(), user.getUserId()).orElseThrow(()
-                            //RESERVATION NOT FOUND
-                            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                            (randomDance.getRandomDanceId(), user.getUserId());
 
-                        randomDanceIdSet.add(reservation.getRandomDance().getRandomDanceId());
-
-                        //레디스에 저장
-                        redisTemplate.opsForSet().add(id, randomDance.getRandomDanceId());
+                        if (reservation.isPresent()) {
+                            randomDanceIdSet.add(reservation.get().getRandomDance().getRandomDanceId());
+                            redisTemplate.opsForSet().add(id, randomDance.getRandomDanceId());
+                        }
                     }
 
                     log.debug("randomDanceIdSet: {}", randomDanceIdSet);
@@ -221,6 +217,7 @@ public class DanceRedisServiceImpl implements DanceRedisService {
         return allDance;
     }
 
+    //TODO: redis에 있는 경우 redis것만 가져옴, DB것도 같이 가져오도록 수정하기
     @Override
     public List<DanceFindResponseDto> readAllMyReserveDance() {
         String loginUserId = SecurityUtils.getLoggedInUserId();
@@ -242,44 +239,46 @@ public class DanceRedisServiceImpl implements DanceRedisService {
             Set<Object> set = redisTemplate.opsForSet().members(id);
             log.debug("set: {}", set);
 
-            Iterator<Object> iter = set.iterator();
-            while (iter.hasNext()) {
-                randomDanceIdSet.add(Long.valueOf(String.valueOf(iter.next())));
-            }
-
-            log.debug("randomDanceIdSet: {}", randomDanceIdSet);
-
-            Iterator<Long> iter2 = randomDanceIdSet.iterator();
-            while (iter2.hasNext()) {
-                Long num = iter2.next();
-                log.debug("iter2: {}", num);
-
-                RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
-                    -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
-                log.debug("randomDance: {}", randomDance);
-
-                //이미 진행 중이거나 진행완료된 건 레디스 및 idSet에서 제외
-                if (randomDance.getStartAt().isBefore(now)) {
-                    log.debug("[remove]: randomDance-startAt-Before: {}", randomDance);
-
-                    randomDanceIdSet.remove(id);
-                    redisTemplate.opsForSet().remove(id, num);
+            if (set != null) {
+                Iterator<Object> iter = set.iterator();
+                while (iter.hasNext()) {
+                    randomDanceIdSet.add(Long.valueOf(String.valueOf(iter.next())));
                 }
-            }
 
-            Iterator<Long> iter3 = randomDanceIdSet.iterator();
-            while (iter3.hasNext()) {
-                Long num = iter3.next();
-                log.debug("iter3: {}", num);
+                log.debug("randomDanceIdSet: {}", randomDanceIdSet);
 
-                RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
-                    -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
-                log.debug("randomDance: {}", randomDance);
+                Iterator<Long> iter2 = randomDanceIdSet.iterator();
+                while (iter2.hasNext()) {
+                    Long num = iter2.next();
+                    log.debug("iter2: {}", num);
 
-                DanceFindResponseDto danceFindResponseDto
-                    = DanceFindResponseDto.builder().randomDance(randomDance).build();
+                    RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
+                            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                    log.debug("randomDance: {}", randomDance);
 
-                allMyRandomDance.add(danceFindResponseDto);
+                    //이미 진행 중이거나 진행완료된 건 레디스 및 idSet에서 제외
+                    if (randomDance.getStartAt().isBefore(now)) {
+                        log.debug("[remove]: randomDance-startAt-Before: {}", randomDance);
+
+                        randomDanceIdSet.remove(id);
+                        redisTemplate.opsForSet().remove(id, num);
+                    }
+                }
+
+                Iterator<Long> iter3 = randomDanceIdSet.iterator();
+                while (iter3.hasNext()) {
+                    Long num = iter3.next();
+                    log.debug("iter3: {}", num);
+
+                    RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
+                            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+                    log.debug("randomDance: {}", randomDance);
+
+                    DanceFindResponseDto danceFindResponseDto
+                            = DanceFindResponseDto.builder().randomDance(randomDance).build();
+
+                    allMyRandomDance.add(danceFindResponseDto);
+                }
             }
 
             //레디스에 없으면 DB 조회
