@@ -119,13 +119,22 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
+    public List<Reservation> insertReservationList(List<Reservation> reservationList) {
+        for(int i=0; i<reservationList.size(); i++) {
+            em.persist(reservationList.get(i));
+        }
+        return reservationList;
+    }
+
+    @Override
     public Optional<Reservation> findReservationByRandomDanceIdAndUserId(Long randomDanceId,
         Long userId) {
         Optional<Reservation> reservation = null;
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
                     + "WHERE r.randomDance.randomDanceId = :randomDanceId "
-                    + "AND r.user.userId = :userId", Reservation.class)
+                    + "AND r.user.userId = :userId "
+                    + "AND r.randomDance.startAt > current_timestamp  ", Reservation.class)
                 .setParameter("randomDanceId", randomDanceId)
                 .setParameter("userId", userId)
                 .getSingleResult());
@@ -143,7 +152,8 @@ public class DanceRepositoryImpl implements DanceRepository {
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
                     + "WHERE r.reservationId = :reservationId "
-                    + "AND r.randomDance.randomDanceId = :randomDanceId", Reservation.class)
+                    + "AND r.randomDance.randomDanceId = :randomDanceId "
+                    + "AND r.randomDance.startAt > current_timestamp  ", Reservation.class)
                 .setParameter("reservationId", reservationId)
                 .setParameter("randomDanceId", randomDanceId)
                 .getSingleResult());
@@ -166,11 +176,11 @@ public class DanceRepositoryImpl implements DanceRepository {
 
     @Override
     public void deleteAllReservationByUserId(Long userId) {
-        em.createQuery("DELETE FROM Reservation r WHERE r.user.userId = :userId")
+        em.createQuery("DELETE FROM Reservation r "
+                + "WHERE r.user.userId = :userId")
             .setParameter("userId", userId)
             .executeUpdate();
     }
-
     @Override
     public List<Reservation> findAllMyReservation(Long userId) {
         return em.createQuery("SELECT r FROM Reservation r "
@@ -180,6 +190,7 @@ public class DanceRepositoryImpl implements DanceRepository {
             .setParameter("userId", userId)
             .getResultList();
     }
+
 
     @Override
     public AttendHistory insertAttend(AttendHistory attendHistory) {

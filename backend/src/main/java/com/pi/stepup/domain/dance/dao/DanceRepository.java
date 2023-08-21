@@ -28,6 +28,7 @@ public interface DanceRepository {
     List<RandomDance> findInProgressDance(String keyword);
 
     Reservation insertReservation(Reservation reservation);
+    List<Reservation> insertReservationList(List<Reservation> reservationList);
 
     Optional<Reservation> findReservationByRandomDanceIdAndUserId(Long randomDanceId, Long userId);
 
