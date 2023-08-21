@@ -99,11 +99,13 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     public MusicApplyFindResponseDto readOne(Long musicApplyId) {
+        MusicApply musicApply = musicApplyRepository.findOne(musicApplyId)
+            .orElseThrow(
+                () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
+        musicApply.setHeartCnt(musicApplyRedisService.getHeartCnt(musicApplyId));
+
         return MusicApplyFindResponseDto.builder()
-            .musicApply(musicApplyRepository.findOne(musicApplyId)
-                .orElseThrow(
-                    () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()))
-            )
+            .musicApply(musicApply)
             .canHeart(findHeartStatus(musicApplyId))
             .build();
     }
