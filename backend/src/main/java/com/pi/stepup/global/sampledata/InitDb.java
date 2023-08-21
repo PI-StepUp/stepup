@@ -47,7 +47,7 @@ public class InitDb {
             makeUser();
             makeDance();
 //            makeReservation();
-            makeAttend();
+//            makeAttend();
             makeMusicApply();
             makeDanceMusic();
             makePointHistory();
