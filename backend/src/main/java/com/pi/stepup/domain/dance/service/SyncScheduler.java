@@ -30,9 +30,8 @@ public class SyncScheduler {
     private final DanceRepository danceRepository;
     private final UserRepository userRepository;
 
-    //TODO
-    private final long SCHEDULED_TIME = 10000;
-    private final long CHECK_TTL_TIME = 10;
+    private final long SCHEDULED_TIME = 3600000;
+    private final long CHECK_TTL_TIME = 10000;
 
     @Scheduled(fixedDelay = SCHEDULED_TIME)
     @Transactional
