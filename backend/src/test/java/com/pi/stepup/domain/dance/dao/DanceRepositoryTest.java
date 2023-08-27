@@ -1,24 +1,25 @@
 package com.pi.stepup.domain.dance.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.pi.stepup.domain.dance.domain.AttendHistory;
 import com.pi.stepup.domain.dance.domain.DanceMusic;
 import com.pi.stepup.domain.dance.domain.RandomDance;
 import com.pi.stepup.domain.dance.domain.Reservation;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.user.domain.User;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -48,11 +49,11 @@ public class DanceRepositoryTest {
     private final String mTitle = "ISTJ";
     private final String artist = "NCT DREAM";
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-        "yyyy-MM-dd HH:mm");
+            "yyyy-MM-dd HH:mm");
     private final String startAt1 = "2023-07-20 10:00";
-    private final String startAt2 = "2023-09-20 10:00";
-    private final String startAt3 = "2023-09-10 10:00";
-    private final String endAt = "2023-09-30 10:00";
+    private final String startAt2 = "2024-09-20 10:00";
+    private final String startAt3 = "2024-09-10 10:00";
+    private final String endAt = "2024-09-30 10:00";
 
 
     @Test
@@ -65,37 +66,37 @@ public class DanceRepositoryTest {
 
     public User makeHost() {
         host = User.builder()
-            .id("hostId")
-            .build();
+                .id("hostId")
+                .build();
         em.persist(host);
         return host;
     }
 
     public User makeUser() {
         user = User.builder()
-            .id("userId")
-            .build();
+                .id("userId")
+                .build();
         em.persist(user);
         return user;
     }
 
     public Music makeMusic() {
         music = Music.builder()
-            .title(mTitle)
-            .artist(artist)
-            .build();
+                .title(mTitle)
+                .artist(artist)
+                .build();
         em.persist(music);
         return music;
     }
 
     public void makeDance() {
         randomDance = RandomDance.builder()
-            .title(title)
-            .content(content)
-            .host(host)
-            .startAt(LocalDateTime.parse(startAt1, formatter))
-            .endAt(LocalDateTime.parse(endAt, formatter))
-            .build();
+                .title(title)
+                .content(content)
+                .host(host)
+                .startAt(LocalDateTime.parse(startAt1, formatter))
+                .endAt(LocalDateTime.parse(endAt, formatter))
+                .build();
     }
 
     public void makeDanceMusic() {
@@ -105,29 +106,29 @@ public class DanceRepositoryTest {
 
     public void makeReservation() {
         reservation = Reservation.builder()
-            .randomDance(randomDance)
-            .user(user)
-            .build();
+                .randomDance(randomDance)
+                .user(user)
+                .build();
     }
 
     public void makeDance2() {
         randomDance2 = RandomDance.builder()
-            .title(title + 2)
-            .content(content + 2)
-            .host(host)
-            .startAt(LocalDateTime.parse(startAt2, formatter))
-            .endAt(LocalDateTime.parse(endAt, formatter))
-            .build();
+                .title(title + 2)
+                .content(content + 2)
+                .host(host)
+                .startAt(LocalDateTime.parse(startAt2, formatter))
+                .endAt(LocalDateTime.parse(endAt, formatter))
+                .build();
     }
 
     public void makeDance3() {
         randomDance3 = RandomDance.builder()
-            .title(title + 3)
-            .content(content + 3)
-            .host(host)
-            .startAt(LocalDateTime.parse(startAt3, formatter))
-            .endAt(LocalDateTime.parse(endAt, formatter))
-            .build();
+                .title(title + 3)
+                .content(content + 3)
+                .host(host)
+                .startAt(LocalDateTime.parse(startAt3, formatter))
+                .endAt(LocalDateTime.parse(endAt, formatter))
+                .build();
     }
 
     public void makeDanceMusic2() {
@@ -137,30 +138,30 @@ public class DanceRepositoryTest {
 
     public void makeReservation2() {
         reservation2 = Reservation.builder()
-            .randomDance(randomDance2)
-            .user(user)
-            .build();
+                .randomDance(randomDance2)
+                .user(user)
+                .build();
     }
 
     public void makeReservation3() {
         reservation3 = Reservation.builder()
-            .randomDance(randomDance3)
-            .user(user)
-            .build();
+                .randomDance(randomDance3)
+                .user(user)
+                .build();
     }
 
     public void makeAttend() {
         attend = AttendHistory.builder()
-            .randomDance(randomDance)
-            .user(user)
-            .build();
+                .randomDance(randomDance)
+                .user(user)
+                .build();
     }
 
     public void makeAttend2() {
         attend2 = AttendHistory.builder()
-            .randomDance(randomDance2)
-            .user(user)
-            .build();
+                .randomDance(randomDance2)
+                .user(user)
+                .build();
     }
 
     @Test
@@ -183,7 +184,7 @@ public class DanceRepositoryTest {
 
         RandomDance findDance1 = em.find(RandomDance.class, randomDance.getRandomDanceId());
         RandomDance findDance2 = danceRepository.findOne(randomDance.getRandomDanceId())
-            .orElseThrow();
+                .orElseThrow();
 
         assertThat(findDance2).isNotNull();
         assertThat(findDance1).isEqualTo(findDance2);
@@ -212,7 +213,7 @@ public class DanceRepositoryTest {
         em.persist(randomDance);
 
         List<DanceMusic> danceMusicList
-            = danceRepository.findAllDanceMusic(randomDance.getRandomDanceId());
+                = danceRepository.findAllDanceMusic(randomDance.getRandomDanceId());
 
         assertThat(danceMusicList).isNotNull();
         assertThat(danceMusicList.size()).isEqualTo(1);
@@ -227,7 +228,7 @@ public class DanceRepositoryTest {
         em.persist(randomDance2);
 
         List<RandomDance> randomDanceList
-            = danceRepository.findAllMyOpenDance(host.getId());
+                = danceRepository.findAllMyOpenDance(host.getId());
 
         assertThat(randomDanceList.size()).isEqualTo(2);
     }
@@ -242,13 +243,13 @@ public class DanceRepositoryTest {
 
         String keyword = "";
         List<RandomDance> randomDanceList
-            = danceRepository.findAllDance(keyword);
+                = danceRepository.findAllDance(keyword);
 
         assertThat(randomDanceList.size()).isEqualTo(2);
         assertThat(randomDanceList.get(0).getStartAt())
-            .isEqualTo(LocalDateTime.parse(startAt1, formatter));
+                .isEqualTo(LocalDateTime.parse(startAt1, formatter));
         assertThat(randomDanceList.get(1).getStartAt())
-            .isEqualTo(LocalDateTime.parse(startAt2, formatter));
+                .isEqualTo(LocalDateTime.parse(startAt2, formatter));
     }
 
     @Test
@@ -260,11 +261,11 @@ public class DanceRepositoryTest {
         em.persist(randomDance2);
 
         List<RandomDance> randomDanceList
-            = danceRepository.findScheduledDance("");
+                = danceRepository.findScheduledDance("");
 
         assertThat(randomDanceList.size()).isEqualTo(1);
         assertThat(randomDanceList.get(0).getStartAt())
-            .isEqualTo(LocalDateTime.parse(startAt2, formatter));
+                .isEqualTo(LocalDateTime.parse(startAt2, formatter));
     }
 
     @Test
@@ -276,11 +277,11 @@ public class DanceRepositoryTest {
         em.persist(randomDance2);
 
         List<RandomDance> randomDanceList
-            = danceRepository.findInProgressDance("");
+                = danceRepository.findInProgressDance("");
 
         assertThat(randomDanceList.size()).isEqualTo(1);
         assertThat(randomDanceList.get(0).getStartAt())
-            .isEqualTo(LocalDateTime.parse(startAt1, formatter));
+                .isEqualTo(LocalDateTime.parse(startAt1, formatter));
     }
 
     @Test
@@ -290,7 +291,7 @@ public class DanceRepositoryTest {
         em.persist(randomDance);
         makeReservation();
         Reservation saveReservation
-            = danceRepository.insertReservation(reservation);
+                = danceRepository.insertReservation(reservation);
 
         assertThat(saveReservation).isEqualTo(reservation);
         assertThat(saveReservation.getReservationId()).isEqualTo(reservation.getReservationId());
@@ -300,17 +301,18 @@ public class DanceRepositoryTest {
     @Test
     @DisplayName("예약한 랜덤 플레이 댄스 하나 조회 테스트")
     public void findReservationTest() {
-        makeDance();
-        em.persist(randomDance);
-        makeReservation();
-        em.persist(reservation);
+        makeDance2();
+        em.persist(randomDance2);
+        makeReservation2();
+        em.persist(reservation2);
 
-        Reservation findReservation1 = em.find(Reservation.class, reservation.getReservationId());
+        Reservation findReservation1 = em.find(Reservation.class, reservation2.getReservationId());
+        assertThat(findReservation1).isNotNull();
         Reservation findReservation2
-            = danceRepository.findReservationByRandomDanceIdAndUserId
-            (reservation.getRandomDance().getRandomDanceId(),
-                reservation.getUser().getUserId()).orElseThrow();
-        assertThat(findReservation2.getReservationId()).isEqualTo(reservation.getReservationId());
+                = danceRepository.findReservationByRandomDanceIdAndUserId
+                (reservation2.getRandomDance().getRandomDanceId(),
+                        reservation2.getUser().getUserId()).orElseThrow();
+        assertThat(findReservation2.getReservationId()).isEqualTo(reservation2.getReservationId());
         assertThat(findReservation2).isNotNull();
         assertThat(findReservation1).isEqualTo(findReservation2);
     }
@@ -318,18 +320,18 @@ public class DanceRepositoryTest {
     @Test
     @DisplayName("예약한 랜덤 플레이 댄스 하나 조회 테스트2")
     public void findReservationTest2() {
-        makeDance();
-        em.persist(randomDance);
-        makeReservation();
-        em.persist(reservation);
+        makeDance2();
+        em.persist(randomDance2);
+        makeReservation2();
+        em.persist(reservation2);
 
-        Reservation findReservation1 = em.find(Reservation.class, reservation.getReservationId());
+        Reservation findReservation1 = em.find(Reservation.class, reservation2.getReservationId());
         Reservation findReservation2
-            = danceRepository.findReservationByReservationIdAndRandomDanceId
-            (reservation.getReservationId(),
-                reservation.getRandomDance().getRandomDanceId()).orElseThrow();
+                = danceRepository.findReservationByReservationIdAndRandomDanceId
+                (reservation2.getReservationId(),
+                        reservation2.getRandomDance().getRandomDanceId()).orElseThrow();
 
-        assertThat(findReservation2.getReservationId()).isEqualTo(reservation.getReservationId());
+        assertThat(findReservation2.getReservationId()).isEqualTo(reservation2.getReservationId());
         assertThat(findReservation2).isNotNull();
         assertThat(findReservation1).isEqualTo(findReservation2);
     }
@@ -337,24 +339,24 @@ public class DanceRepositoryTest {
     @Test
     @DisplayName("랜덤 플레이 댄스 예약 취소")
     public void deleteReservationTest() {
-        makeDance();
-        em.persist(randomDance);
-        makeReservation();
-        em.persist(reservation);
+        makeDance2();
+        em.persist(randomDance2);
+        makeReservation2();
+        em.persist(reservation2);
 
         assertThat(
-            danceRepository.findReservationByRandomDanceIdAndUserId
-                (reservation.getRandomDance().getRandomDanceId(),
-                    user.getUserId())).isNotEmpty();
+                danceRepository.findReservationByRandomDanceIdAndUserId
+                        (reservation2.getRandomDance().getRandomDanceId(),
+                                user.getUserId())).isNotEmpty();
 
         danceRepository.deleteReservation
-            (reservation.getRandomDance().getRandomDanceId(),
-                reservation.getUser().getUserId());
+                (reservation2.getRandomDance().getRandomDanceId(),
+                        reservation2.getUser().getUserId());
 
         assertThat(
-            danceRepository.findReservationByRandomDanceIdAndUserId
-                (reservation.getRandomDance().getRandomDanceId(),
-                    user.getUserId())).isEmpty();
+                danceRepository.findReservationByRandomDanceIdAndUserId
+                        (reservation2.getRandomDance().getRandomDanceId(),
+                                user.getUserId())).isEmpty();
     }
 
     @Test
@@ -370,7 +372,7 @@ public class DanceRepositoryTest {
         em.persist(reservation3);
 
         List<Reservation> reservationList
-            = danceRepository.findAllMyReservation(reservation2.getUser().getUserId());
+                = danceRepository.findAllMyReservation(reservation2.getUser().getUserId());
 
         assertThat(reservationList.size()).isEqualTo(2);
     }
@@ -382,7 +384,7 @@ public class DanceRepositoryTest {
         em.persist(randomDance);
         makeAttend();
         AttendHistory saveAttend
-            = danceRepository.insertAttend(attend);
+                = danceRepository.insertAttend(attend);
 
         assertThat(saveAttend).isEqualTo(attend);
         assertThat(saveAttend.getAttendHistoryId()).isEqualTo(attend.getAttendHistoryId());
@@ -399,9 +401,9 @@ public class DanceRepositoryTest {
 
         AttendHistory findAttend1 = em.find(AttendHistory.class, attend.getAttendHistoryId());
         AttendHistory findAttend2
-            = danceRepository.findAttendByRandomDanceIdAndUserId
-            (attend.getRandomDance().getRandomDanceId(),
-                attend.getUser().getUserId()).orElseThrow();
+                = danceRepository.findAttendByRandomDanceIdAndUserId
+                (attend.getRandomDance().getRandomDanceId(),
+                        attend.getUser().getUserId()).orElseThrow();
 
         assertThat(findAttend2.getAttendHistoryId()).isEqualTo(attend.getAttendHistoryId());
         assertThat(findAttend2).isNotNull();
@@ -421,7 +423,7 @@ public class DanceRepositoryTest {
         em.persist(attend2);
 
         List<AttendHistory> attendList
-            = danceRepository.findAllMyAttend(attend.getUser().getUserId());
+                = danceRepository.findAllMyAttend(attend.getUser().getUserId());
 
         assertThat(attendList.size()).isEqualTo(2);
     }
