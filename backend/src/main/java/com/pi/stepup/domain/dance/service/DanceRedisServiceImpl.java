@@ -64,7 +64,6 @@ public class DanceRedisServiceImpl implements DanceRedisService {
             redisTemplate.opsForSet().add(id, randomDanceId);
             redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
 
-            //아니면 그냥 추가만 하기
         } else {
             redisTemplate.opsForSet().add(id, randomDanceId);
         }
@@ -170,18 +169,18 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                         //DB와 동일한지 확인
                         //Reids에만 있고 DB에는 없는 건 괜찮은데
                         //DB에만 있고 Redis에는 없는 것이 있을 경우를 대비
-                        List<Reservation> allMyReservation
-                                = danceRepository.findAllMyReservation(user.getUserId());
-                        if (allMyReservation.size() != randomDanceIdSet.size()) {
-                            for (int j = 0; j < allMyReservation.size(); j++) {
-                                Long randomDanceId = allMyReservation.get(j).getRandomDance().getRandomDanceId();
-
-                                log.debug("[DB와 동기화 중]: randomDanceId: {}", randomDanceId);
-                                randomDanceIdSet.add(randomDanceId);
-                            }
-                        }
-
-                        log.debug("[change]: randomDanceIdSet: {}", randomDanceIdSet);
+//                        List<Reservation> allMyReservation
+//                                = danceRepository.findAllMyReservation(user.getUserId());
+//                        if (allMyReservation.size() != randomDanceIdSet.size()) {
+//                            for (int j = 0; j < allMyReservation.size(); j++) {
+//                                Long randomDanceId = allMyReservation.get(j).getRandomDance().getRandomDanceId();
+//
+//                                log.debug("[DB와 동기화 중]: randomDanceId: {}", randomDanceId);
+//                                randomDanceIdSet.add(randomDanceId);
+//                            }
+//                        }
+//
+//                        log.debug("[change]: randomDanceIdSet: {}", randomDanceIdSet);
                     }
 
                     //레디스에 없으면 DB 조회
@@ -199,6 +198,8 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                         }
                     }
 
+                    redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
+
                     log.debug("randomDanceIdSet: {}", randomDanceIdSet);
                 }
 
@@ -212,8 +213,6 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                             .reserveStatus(1)
                             .build();
 
-                    log.debug("danceSearchResponseDto: {}", danceSearchResponseDto);
-
                     //자기가 개최한 거면 예약하기 버튼 활성화 + 예외처리
                     //예약이 존재하지 않는 랜플댄도 예약하기 버튼 활성화
                 } else {
@@ -223,8 +222,6 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                             .progressType(danceSearchRequestDto.getProgressType())
                             .reserveStatus(0)
                             .build();
-
-                    log.debug("danceSearchResponseDto: {}", danceSearchResponseDto);
                 }
             }
 
@@ -272,7 +269,6 @@ public class DanceRedisServiceImpl implements DanceRedisService {
 
                     RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
                             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
-                    log.debug("randomDance: {}", randomDance);
 
                     //이미 진행 중이거나 진행완료된 건 레디스 및 idSet에서 제외
                     if (randomDance.getStartAt().isBefore(now)) {
@@ -284,13 +280,18 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                 }
 
                 //DB와 동일한지 확인
-                List<Reservation> allMyReservation
-                        = danceRepository.findAllMyReservation(userId);
-                if (allMyReservation.size() != randomDanceIdSet.size()) {
-                    for (int i = 0; i < allMyReservation.size(); i++) {
-                        randomDanceIdSet.add(allMyReservation.get(i).getRandomDance().getRandomDanceId());
-                    }
-                }
+//                List<Reservation> allMyReservation
+//                        = danceRepository.findAllMyReservation(userId);
+//                if (allMyReservation.size() != randomDanceIdSet.size()) {
+//                    for (int i = 0; i < allMyReservation.size(); i++) {
+//                        Long randomDanceId = allMyReservation.get(i).getRandomDance().getRandomDanceId();
+//
+//                        log.debug("[DB와 동기화 중]: randomDanceId: {}", randomDanceId);
+//                        randomDanceIdSet.add(randomDanceId);
+//                    }
+//                }
+//
+//                log.debug("[change]: randomDanceIdSet: {}", randomDanceIdSet);
 
                 Iterator<Long> iter3 = randomDanceIdSet.iterator();
                 while (iter3.hasNext()) {
@@ -299,7 +300,6 @@ public class DanceRedisServiceImpl implements DanceRedisService {
 
                     RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
                             -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
-                    log.debug("randomDance: {}", randomDance);
 
                     DanceFindResponseDto danceFindResponseDto
                             = DanceFindResponseDto.builder().randomDance(randomDance).build();
@@ -320,16 +320,15 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                 Long randomDanceId = allMyReservation.get(i).getRandomDance().getRandomDanceId();
                 RandomDance randomDance = danceRepository.findOne(randomDanceId).orElseThrow(()
                         -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
-                log.debug("randomDance: {}", randomDance);
 
                 DanceFindResponseDto danceFindResponseDto
                         = DanceFindResponseDto.builder().randomDance(randomDance).build();
-                log.debug("danceFindResponseDto: {}", danceFindResponseDto);
 
                 allMyRandomDance.add(danceFindResponseDto);
 
                 //레디스에 저장
                 redisTemplate.opsForSet().add(id, randomDanceId);
+                redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
             }
         }
 
