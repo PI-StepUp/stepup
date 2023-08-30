@@ -30,7 +30,8 @@ public class SyncScheduler {
     private final DanceRepository danceRepository;
     private final UserRepository userRepository;
 
-    private final long SCHEDULED_TIME = 3600000;
+    //    private final long SCHEDULED_TIME = 3600000;
+    private final long SCHEDULED_TIME = 20000;
     private final long CHECK_TTL_TIME = 10000;
 
     @Scheduled(fixedDelay = SCHEDULED_TIME)
@@ -42,9 +43,7 @@ public class SyncScheduler {
             if (redisTemplate.getExpire(reservationRedisKey) <= CHECK_TTL_TIME) {
                 log.info("reservationRedisKey: {}", reservationRedisKey);
 
-                //id에 해당하는 value 가져오기
                 Set<Object> set = redisTemplate.opsForSet().members(reservationRedisKey);
-                log.info("set: {}", set);
 
                 String userId = getUserId(reservationRedisKey);
 
@@ -56,20 +55,16 @@ public class SyncScheduler {
                     Long randomDanceId = Long.valueOf(String.valueOf(value));
                     randomDanceIdSet.add(randomDanceId);
                 }
-                log.info("randomDanceIdSet: {}", randomDanceIdSet);
 
-                //없는 거만 insert하기
                 //이미 DB에 존재하는 리스트 가져와서 있는 거 제외하기
                 List<Reservation> reservationList = danceRepository.findAllMyReservation(userPk);
-                for(int i=0; i<reservationList.size(); i++) {
+                for (int i = 0; i < reservationList.size(); i++) {
                     Long randomDanceId = reservationList.get(i).getRandomDance().getRandomDanceId();
 
-                    if(randomDanceIdSet.contains(randomDanceId)) {
-                        log.info("[exist] randomDanceId: {}", randomDanceId);
+                    if (randomDanceIdSet.contains(randomDanceId)) {
                         randomDanceIdSet.remove(randomDanceId);
                     }
                 }
-                log.info("[removed] randomDanceIdSet: {}", randomDanceIdSet);
 
                 List<Reservation> reservationInsertList = new ArrayList<>();
                 for (Long randomDanceId : randomDanceIdSet) {
