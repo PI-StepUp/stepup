@@ -208,11 +208,6 @@ class DanceServiceTest {
     public void makeReservation(String id) {
         redisTemplate.opsForSet().add(id, randomDance.getRandomDanceId());
         redisTemplate.expire(id, 100000, TimeUnit.MILLISECONDS);
-        reservation = Reservation.builder()
-                .reservationId(pk)
-                .randomDance(randomDance)
-                .user(user)
-                .build();
     }
 
     public void makeReservationDb() {
