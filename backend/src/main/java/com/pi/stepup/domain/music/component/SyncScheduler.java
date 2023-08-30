@@ -32,10 +32,10 @@ public class SyncScheduler {
     private final UserRepository userRepository;
     private final MusicApplyRedisService musicApplyRedisService;
 
-    private final long SCHEDULED_TIME = 100_000;
-    private final long CHECK_TTL_TIME = 60;
+    private final long SCHEDULED_TIME = 3_000_000; // 3_000_000
+//    private final long CHECK_TTL_TIME = 60;
 
-    @Scheduled(fixedDelay = SCHEDULED_TIME) // 3_600_000 10_000
+    @Scheduled(fixedDelay = SCHEDULED_TIME) // 3_600_000 100_000
     @Transactional
     public void syncExpiredDataToDB() {
         log.info("[INFO] Redis에 저장 된 Data DB에 저장");
@@ -48,15 +48,16 @@ public class SyncScheduler {
         Set<String> heartCntKeysWithKeyword = redisTemplate.keys("*heart_cnt*");
 
         for (String heartCntKey : heartCntKeysWithKeyword) {
-            if (redisTemplate.getExpire(heartCntKey) <= CHECK_TTL_TIME) {
-                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", heartCntKey);
-                Long musicApplyId = getMusicApplyId(heartCntKey);
-                int heartCnt = (int) redisTemplate.opsForValue().get(heartCntKey);
+//            if (redisTemplate.getExpire(heartCntKey) <= CHECK_TTL_TIME) {
+//                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", heartCntKey);
+//
+//            }
+            Long musicApplyId = getMusicApplyId(heartCntKey);
+            int heartCnt = (int) redisTemplate.opsForValue().get(heartCntKey);
 
-                MusicApply musicApply = musicApplyRepository.findOne(musicApplyId).orElseThrow(
-                    () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
-                musicApply.setHeartCnt(heartCnt);
-            }
+            MusicApply musicApply = musicApplyRepository.findOne(musicApplyId).orElseThrow(
+                () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
+            musicApply.setHeartCnt(heartCnt);
         }
     }
 
@@ -67,32 +68,32 @@ public class SyncScheduler {
         List<Heart> hearts = new ArrayList<>();
 
         for (String userKey : userKeysWithKeyword) {
-            // 만료 5초 전인 데이터들
-            if (redisTemplate.getExpire(userKey) <= CHECK_TTL_TIME) {
-                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", userKey);
-                Set<Object> values = redisTemplate.opsForSet().members(userKey);
-                String userId = getUserId(userKey);
+//            if (redisTemplate.getExpire(userKey) <= CHECK_TTL_TIME) {
+//                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", userKey);
+//
+//            }
+            Set<Object> values = redisTemplate.opsForSet().members(userKey);
+            String userId = getUserId(userKey);
 
-                // userId에 해당하는 musicApply 전부 삭제 => heart pk가 변경되는 현상 발생..
-                musicApplyRepository.deleteHeartById(userId);
+            // userId에 해당하는 musicApply 전부 삭제 => heart pk가 변경되는 현상 발생..
+            musicApplyRepository.deleteHeartById(userId);
 
-                for (Object value : values) {
-                    Long musicApplyId = getMusicApplyId(value);
-                    Heart heart = Heart.builder()
-                        .musicApply(musicApplyRepository.findOne(musicApplyId).orElseThrow(
-                            () -> new MusicApplyNotFoundException(
-                                MUSIC_APPLY_NOT_FOUND.getMessage())))
-                        .user(userRepository.findById(userId).orElseThrow(
-                            () -> new UserNotFoundException(USER_NOT_FOUND.getMessage())))
-                        .build();
+            for (Object value : values) {
+                Long musicApplyId = getMusicApplyId(value);
+                Heart heart = Heart.builder()
+                    .musicApply(musicApplyRepository.findOne(musicApplyId).orElseThrow(
+                        () -> new MusicApplyNotFoundException(
+                            MUSIC_APPLY_NOT_FOUND.getMessage())))
+                    .user(userRepository.findById(userId).orElseThrow(
+                        () -> new UserNotFoundException(USER_NOT_FOUND.getMessage())))
+                    .build();
 
-                    log.debug("[DEBUG] 삽입되는 heart music apply id: {}",
-                        heart.getMusicApply().getMusicApplyId());
+                log.debug("[DEBUG] 삽입되는 heart music apply id: {}",
+                    heart.getMusicApply().getMusicApplyId());
 
-                    hearts.add(heart);
-                }
-                musicApplyRepository.insertHearts(hearts);
+                hearts.add(heart);
             }
+            musicApplyRepository.insertHearts(hearts);
         }
     }
 
