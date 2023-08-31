@@ -62,12 +62,10 @@ public class DanceRedisServiceImpl implements DanceRedisService {
         String id = "reservation:" + loginUserId;
         boolean hasReservation = redisTemplate.hasKey(id);
 
-        if (!hasReservation) {
-            redisTemplate.opsForSet().add(id, randomDanceId);
-            redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForSet().add(id, randomDanceId);
 
-        } else {
-            redisTemplate.opsForSet().add(id, randomDanceId);
+        if (!hasReservation) {
+            redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -85,7 +83,6 @@ public class DanceRedisServiceImpl implements DanceRedisService {
         if (hasReservation) {
             Long isRemoved
                 = redisTemplate.opsForSet().remove(id, randomDanceId);
-            log.debug("isRemoved: {}", isRemoved);
 
             if (isRemoved == 0) {
                 danceRepository.deleteReservation(randomDanceId, userId);
@@ -128,13 +125,11 @@ public class DanceRedisServiceImpl implements DanceRedisService {
 
         List<DanceSearchResponseDto> allDance = new ArrayList<>();
 
-        //예약 상태
         if (isLogin) {
             String id = "reservation:" + loginUserId;
             boolean hasReservation = redisTemplate.hasKey(id);
             Set<Long> randomDanceIdSet = new HashSet<>();
 
-            //Redis
             if (hasReservation) {
                 Set<Object> set = redisTemplate.opsForSet().members(id);
 
@@ -144,36 +139,22 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                         randomDanceIdSet.add(Long.valueOf(String.valueOf(iter.next())));
                     }
 
-//                        for (Long value : randomDanceIdSet) {
-//                            if (randomDance.getStartAt().isBefore(now)) {
-//                                randomDanceIdSet.remove(value);
-//                                redisTemplate.opsForSet().remove(id, value);
-//                            }
-//                        }
-
-                    log.info("randomDanceIdSet: {}", randomDanceIdSet);
-
                     Iterator<Long> iter2 = randomDanceIdSet.iterator();
                     while (iter2.hasNext()) {
                         Long num = iter2.next();
 
-                        RandomDance randomDance = danceRepository.findOne(num).orElseThrow();
+                        RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
+                            -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
 
                         if (randomDance.getStartAt().isBefore(now)) {
-                            randomDanceIdSet.remove(num);
-//                            iter2.remove();
-                            log.info("!!! num: {}", num);
+                            iter2.remove();
 
                             redisTemplate.opsForSet().remove(id, num);
                         }
                     }
-
-                    log.info("[removed] - randomDanceIdSet: {}", randomDanceIdSet);
                 }
 
-            //DB
             } else {
-
                 for (int j = 0; j < randomDanceList.size(); j++) {
                     RandomDance randomDance = randomDanceList.get(j);
 
@@ -259,26 +240,24 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                     randomDanceIdSet.add(Long.valueOf(String.valueOf(iter.next())));
                 }
 
-//                Iterator<Long> iter2 = randomDanceIdSet.iterator();
-//                while (iter2.hasNext()) {
-//                    Long num = iter2.next();
-//
-//                    RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
-//                        -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
-//
-//                    if (randomDance.getStartAt().isBefore(now)) {
-//                        randomDanceIdSet.remove(num);
-//                        redisTemplate.opsForSet().remove(id, num);
-//                        log.info("[removed] num: {}", num);
-//                    }
-//                }
-
-                Iterator<Long> iter3 = randomDanceIdSet.iterator();
-                while (iter3.hasNext()) {
-                    Long num = iter3.next();
+                List<RandomDance> randomDanceList = new ArrayList<>();
+                Iterator<Long> iter2 = randomDanceIdSet.iterator();
+                while (iter2.hasNext()) {
+                    Long num = iter2.next();
 
                     RandomDance randomDance = danceRepository.findOne(num).orElseThrow(()
                         -> new DanceBadRequestException(DANCE_NOT_FOUND.getMessage()));
+
+                    if (randomDance.getStartAt().isBefore(now)) {
+                        iter2.remove();
+                        redisTemplate.opsForSet().remove(id, num);
+                    } else {
+                        randomDanceList.add(randomDance);
+                    }
+                }
+
+                for(int i=0; i< randomDanceList.size(); i++) {
+                    RandomDance randomDance = randomDanceList.get(i);
 
                     DanceFindResponseDto danceFindResponseDto
                         = DanceFindResponseDto.builder().randomDance(randomDance).build();
@@ -302,8 +281,9 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                 allMyRandomDance.add(danceFindResponseDto);
 
                 redisTemplate.opsForSet().add(id, randomDanceId);
-                redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
             }
+
+            redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
         }
 
         return allMyRandomDance;
