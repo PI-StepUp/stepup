@@ -116,6 +116,9 @@ const MeetingList = () => {
                                                     {meeting.profileImg === null ? <Image src={defaultMeetingProfileImg} alt=""/> : <Image src={defaultMeetingProfileImg} alt=""/>}
                                                     <p>{meeting.writerName}</p>
                                                 </div>
+                                                <div className="meeting-cnt" style={{ marginTop: '15px' }}>
+                                                    <p>댓글수: {meeting.commentCnt} 조회수: {meeting.viewCnt}</p>
+                                                </div>  
                                                 <div className="meeting-content">
                                                     <p>{meeting.content}</p>
                                                     <span onClick={() => moveMeetingDetail(meeting.boardId)}>{lang==="en" ? "Offer someone to go with you" : lang==="cn" ? "提议一起去的人" : "같이 갈 사람 제의하기" }</span>

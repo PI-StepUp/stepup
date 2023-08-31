@@ -109,8 +109,9 @@ const ArticleList = () => {
 					<colgroup>
 						<col width="10%" />
 						<col width="10%" />
-						<col width="65%" />
+						<col width="55%" />
 						<col width="15%" />
+						<col width="10%" />
 					</colgroup>
 					<thead>
 						<tr>
@@ -118,6 +119,7 @@ const ArticleList = () => {
 							<th>{lang === "en" ? "Writer" : lang === "cn" ? "作者" : "작성자"}</th>
 							<th>{lang === "en" ? "Title" : lang === "cn" ? "标题" : "제목"}</th>
 							<th>{lang === "en" ? "Number of Comments" : lang === "cn" ? "评论数量" : "댓글수"}</th>
+							<th>{lang === "en" ? "Views" : lang === "cn" ? "閲覧数" : "조회수"}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -129,6 +131,7 @@ const ArticleList = () => {
 										<td>{article.writerName}</td>
 										<td>{article.title}</td>
 										<td>{article.commentCnt}</td>
+										<td>{article.viewCnt}</td>
 									</tr>
 								)
 							}

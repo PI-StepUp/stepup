@@ -49,7 +49,4 @@ public abstract class Board extends BaseEntity {
     @Column(name = "VIEW_CNT")
     Long viewCnt;
 
-    public void increaseViewCnt() {
-        this.viewCnt++;
-    }
 }
