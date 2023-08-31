@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -21,8 +23,7 @@ public class CntRedisServiceImpl implements CntRedisService {
     private final ViewCntRedisRepository viewCntRedisRepository;
     private final BoardRepository boardRepository;
     private final RedisTemplate<String, Object> redisTemplate;
-    //    private final long TTL = 3_600_000L;
-    private final long TTL = 30_000L;
+    private final long TTL = 3_600_000L;
 
     @Override
     public void increaseViewCnt(Long boardId) {
