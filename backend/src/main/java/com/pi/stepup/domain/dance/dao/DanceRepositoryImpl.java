@@ -72,6 +72,8 @@ public class DanceRepositoryImpl implements DanceRepository {
         String sql = "SELECT r FROM RandomDance r "
                 + "LEFT JOIN AttendHistory a "
                 + "ON r.randomDanceId = a.randomDance.randomDanceId "
+                + "LEFT JOIN Reservation s "
+                + "ON r.randomDanceId = s.randomDance.randomDanceId "
                 + "WHERE r.endAt >= current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
@@ -79,7 +81,7 @@ public class DanceRepositoryImpl implements DanceRepository {
                     "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "GROUP BY r ORDER BY COUNT(a) DESC, ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
+        sql += "GROUP BY r ORDER BY COUNT(a) DESC, COUNT(s) DESC, ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -87,14 +89,16 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findScheduledDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
+                + "LEFT JOIN Reservation s "
+                + "ON r.randomDanceId = s.randomDance.randomDanceId "
                 + "WHERE r.startAt > current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
-                    "r.content LIKE '%" + keyword + "%')";
+                    "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "ORDER BY ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC ";
+        sql += "GROUP BY r ORDER BY COUNT(s) DESC, ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC ";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -109,7 +113,7 @@ public class DanceRepositoryImpl implements DanceRepository {
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
-                    "r.content LIKE '%" + keyword + "%')";
+                    "r.content LIKE '%" + keyword + "%') ";
         }
 
         sql += "GROUP BY r ORDER BY COUNT(a) DESC, ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC ";
