@@ -119,6 +119,17 @@
                             }
                         }
                     }
+                    .meeting-cnt{
+                        margin-top:25px;
+                        p{
+                            @include font(16px, 400, #A5A5A5);
+                            line-height:26px;
+                            @include mobile{
+                                font-size:8px;
+                                line-height:20px;
+                            }
+                        }
+                    }
                     .meeting-content{
                         margin-top:25px;
                         p{
