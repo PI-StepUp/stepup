@@ -28,7 +28,7 @@ public class SyncScheduler {
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
 
-    private final long SCHEDULED_TIME = 100_000;
+    private final long SCHEDULED_TIME = 3_000_000;
     private final long CHECK_TTL_TIME = 60;
 
     @Scheduled(fixedDelay = SCHEDULED_TIME) // 3_600_000 10_000
@@ -44,14 +44,11 @@ public class SyncScheduler {
         Set<String> pointKeyWithKeywords = redisTemplate.keys("*point*");
 
         for (String pointKey : pointKeyWithKeywords) {
-            if (redisTemplate.getExpire(pointKey) <= CHECK_TTL_TIME) {
-                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", pointKey);
-                String userId = getUserId(pointKey, "point");
-                User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-                user.updatePoint((Integer) redisTemplate.opsForValue().get(pointKey));
-                redisTemplate.delete(pointKey);
-            }
+            String userId = getUserId(pointKey, "point");
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+            user.updatePoint((Integer) redisTemplate.opsForValue().get(pointKey));
+            redisTemplate.delete(pointKey);
         }
     }
 
@@ -60,17 +57,14 @@ public class SyncScheduler {
         Set<String> rankKeyWtihKeywords = redisTemplate.keys("*rank*");
 
         for (String rankKey : rankKeyWtihKeywords) {
-            if (redisTemplate.getExpire(rankKey) <= CHECK_TTL_TIME) {
-                log.info("[INFO] 만료되기 60초 전인 데이터 : {}", rankKey);
-                String userId = getUserId(rankKey, "rank");
-                log.debug("[DEBUG] {} 사용자 등급 동기화 중...", userId);
-                User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-                user.setRank(rankRepository.getRankByName(
-                        RankName.valueOf((String) redisTemplate.opsForValue().get(rankKey)))
-                    .orElseThrow(() -> new RankNotFoundException(RANK_NOT_FOUND.getMessage())));
-                redisTemplate.delete(rankKey);
-            }
+            String userId = getUserId(rankKey, "rank");
+            log.debug("[DEBUG] {} 사용자 등급 동기화 중...", userId);
+            User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+            user.setRank(rankRepository.getRankByName(
+                    RankName.valueOf((String) redisTemplate.opsForValue().get(rankKey)))
+                .orElseThrow(() -> new RankNotFoundException(RANK_NOT_FOUND.getMessage())));
+            redisTemplate.delete(rankKey);
         }
     }
 
