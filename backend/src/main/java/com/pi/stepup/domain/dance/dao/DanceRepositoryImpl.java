@@ -102,6 +102,8 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findInProgressDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
+                + "LEFT JOIN AttendHistory a "
+                + "ON r.randomDanceId = a.randomDance.randomDanceId "
                 + "WHERE r.startAt <= current_timestamp "
                 + "AND r.endAt >= current_timestamp ";
 
@@ -110,7 +112,7 @@ public class DanceRepositoryImpl implements DanceRepository {
                     "r.content LIKE '%" + keyword + "%')";
         }
 
-        sql += "ORDER BY ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC ";
+        sql += "GROUP BY r ORDER BY COUNT(a) DESC, ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC ";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
