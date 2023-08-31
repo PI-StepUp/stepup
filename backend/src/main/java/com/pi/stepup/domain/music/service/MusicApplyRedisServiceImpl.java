@@ -106,9 +106,6 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
 
         String musicApplyHeartCntKey = "music_apply_id:" + musicApplyId + ":heart_cnt";
         redisTemplate.opsForValue().decrement(musicApplyHeartCntKey, 1);
-
-        String changedMusicApplyKey = "user:" + userId + ":changed_music_apply_id";
-        redisTemplate.opsForSet().add(changedMusicApplyKey, (Long) musicApplyId);
     }
 
     @Override
