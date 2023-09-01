@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.pi.stepup.domain.board.constant.BoardExceptionMessage.BOARD_NOT_FOUND;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_NOT_FOUND;
@@ -85,14 +85,37 @@ public class NoticeServiceImpl implements NoticeService {
         return notice;
     }
 
+//    @Transactional
+//    @Override
+//    public List<NoticeInfoResponseDto> readAll(String keyword) {
+//        List<Notice> allNotices = noticeRepository.findAll(keyword);
+//        return allNotices.stream()
+//                .map(n -> NoticeInfoResponseDto.builder().notice(n).build())
+//                .collect(Collectors.toList());
+//    }
+
     @Transactional
     @Override
     public List<NoticeInfoResponseDto> readAll(String keyword) {
         List<Notice> allNotices = noticeRepository.findAll(keyword);
-        return allNotices.stream()
-                .map(n -> NoticeInfoResponseDto.builder().notice(n).build())
-                .collect(Collectors.toList());
+
+        List<NoticeInfoResponseDto> noticeInfoResponseDtos = new ArrayList<>();
+
+        for (Notice notice : allNotices) {
+            Long currentViewCnt = null;
+            if (cntRedisService != null && notice != null) {
+                currentViewCnt = cntRedisService.getViewCntFromRedis(notice.getBoardId());
+            }
+            NoticeInfoResponseDto dto = NoticeInfoResponseDto.builder()
+                    .notice(notice)
+                    .viewCnt(currentViewCnt)
+                    .build();
+            noticeInfoResponseDtos.add(dto);
+        }
+
+        return noticeInfoResponseDtos;
     }
+
 
     @Transactional
     @Override

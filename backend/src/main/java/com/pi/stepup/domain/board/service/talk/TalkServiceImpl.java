@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,13 +66,27 @@ public class TalkServiceImpl implements TalkService {
         return talk;
     }
 
+
     @Transactional
     @Override
     public List<TalkInfoResponseDto> readAll(String keyword) {
         List<Talk> allTalks = talkRepository.findAll(keyword);
-        return allTalks.stream()
-                .map(t -> TalkInfoResponseDto.builder().talk(t).build())
-                .collect(Collectors.toList());
+
+        List<TalkInfoResponseDto> talkInfoResponseDtos = new ArrayList<>();
+
+        for (Talk talk : allTalks) {
+            Long currentViewCnt = null;
+            if (cntRedisService != null && talk != null) {
+                currentViewCnt = cntRedisService.getViewCntFromRedis(talk.getBoardId());
+            }
+            TalkInfoResponseDto dto = TalkInfoResponseDto.builder()
+                    .talk(talk)
+                    .viewCnt(currentViewCnt)
+                    .build();
+            talkInfoResponseDtos.add(dto);
+        }
+
+        return talkInfoResponseDtos;
     }
 
     @Override
