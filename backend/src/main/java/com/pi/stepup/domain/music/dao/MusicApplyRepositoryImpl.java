@@ -31,18 +31,8 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public List<MusicApply> findAll(String keyword, String id) {
-        log.info("현재 사용자 아이디 : {}", id);
-//        String sql =
-//            "SELECT new com.pi.stepup.domain.music.dto.MusicResponseDto.MusicApplyJPAFindResponseDto("
-//                + "ma.id, ma.title, ma.artist, ma.writer.nickname, ma.writer.profileImg, ma.heartCnt, h.id"
-//                + ") "
-//                + "FROM MusicApply ma "
-//                + "LEFT JOIN ma.hearts h ON h.user.id = :id "
-//                + "WHERE ma.writer.id = :id";
-        String sql = "SELECT DISTINCT ma FROM MusicApply ma "
-            + "LEFT JOIN ma.hearts h ";
-//            + "LEFT JOIN h.user u ON u.id = :id";
+    public List<MusicApply> findAll(String keyword) {
+        String sql = "SELECT ma FROM MusicApply ma ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
@@ -56,8 +46,7 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     public List<MusicApply> findById(String id) {
         return em.createQuery(
                 "SELECT ma FROM MusicApply ma "
-                    + "LEFT JOIN FETCH ma.hearts h " +
-                    "WHERE ma.writer.id = :id "
+                    + "WHERE ma.writer.id = :id "
                 , MusicApply.class
             )
             .setParameter("id", id)
@@ -98,15 +87,33 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
-    public List<MusicApply> findAll(String keyword) {
-        String sql = "SELECT ma FROM MusicApply ma ";
+    public List<Heart> findAllHeart() {
+        return em.createQuery(
+            "SELECT h FROM Heart h "
+                + "JOIN FETCH h.user "
+                + "JOIN FETCH h.musicApply", Heart.class
+        ).getResultList();
+    }
 
-        if (StringUtils.hasText(keyword) && !keyword.equals("")) {
-            sql += "WHERE ma.title LIKE '%" + keyword + "%' OR " +
-                "ma.artist LIKE '%" + keyword + "%'";
-        }
+    @Override
+    public List<Heart> findHeartByMusicApplyId(Long musicApplyId) {
+        return em.createQuery(
+                "SELECT h FROM Heart h "
+                    + "WHERE h.musicApply.musicApplyId = :musicApplyId "
+                , Heart.class
+            )
+            .setParameter("musicApplyId", musicApplyId)
+            .getResultList();
+    }
 
-        return em.createQuery(sql, MusicApply.class).getResultList();
+    @Override
+    public List<Heart> findHeartById(String id) {
+        return em.createQuery(
+                "SELECT h FROM Heart h "
+                    + "WHERE h.user.id = :id", Heart.class
+            )
+            .setParameter("id", id)
+            .getResultList();
     }
 
     @Override
@@ -119,5 +126,46 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     public void deleteHeart(Long heartId) {
         Heart heart = em.find(Heart.class, heartId);
         em.remove(heart);
+    }
+
+    @Override
+    public void deleteHeartByIdAndMusicApplyId(String id, Long musicApplyId) {
+        try {
+            Heart heart = em.createQuery(
+                    "SELECT h FROM Heart h "
+                        + "WHERE h.user.id = :id AND h.musicApply.musicApplyId = :musicApplyId",
+                    Heart.class
+                ).setParameter("id", id)
+                .setParameter("musicApplyId", musicApplyId)
+                .getSingleResult();
+
+            em.remove(heart);
+        } catch (NoResultException ex) {
+            // 조회 결과가 없는 경우
+        }
+    }
+
+    @Override
+    public void insertHearts(List<Heart> hearts) {
+        log.info("[INFO] insert heart repository");
+        log.debug("[DEBUG] 삽입되는 좋아요 개수 : {}", hearts.size());
+        for (Heart h : hearts) {
+            em.persist(h);
+        }
+    }
+
+    @Override
+    public void deleteHearts(List<Heart> hearts) {
+        for (Heart h : hearts) {
+            em.remove(h);
+        }
+    }
+
+    @Override
+    public void deleteHeartById(String id) {
+        List<Heart> hearts = findHeartById(id);
+        for (Heart h : hearts) {
+            em.remove(h);
+        }
     }
 }

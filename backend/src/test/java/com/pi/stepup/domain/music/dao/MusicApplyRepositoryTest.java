@@ -59,7 +59,7 @@ class MusicApplyRepositoryTest {
         em.persist(user);
         insertMusicApply();
 
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, user.getId());
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
         assertThat(musicApplies.size()).isEqualTo(5);
     }
 
@@ -70,7 +70,7 @@ class MusicApplyRepositoryTest {
         em.persist(user);
         insertMusicApply();
 
-        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword, user.getId());
+        List<MusicApply> musicApplies = musicApplyRepository.findAll(keyword);
         assertThat(musicApplies.size()).isEqualTo(2);
     }
 
@@ -190,6 +190,27 @@ class MusicApplyRepositoryTest {
             .user(user)
             .musicApply(musicApply)
             .build();
+    }
+
+    private void makeHearts() {
+        for (int i = 0; i < 5; i++) {
+            User u = User.builder()
+                .id("user"+i)
+                .build();
+            em.persist(u);
+
+            MusicApply ma = MusicApply.builder()
+                .title("t"+i)
+                .writer(u)
+                .build();
+            em.persist(ma);
+
+            Heart h = Heart.builder()
+                .user(u)
+                .musicApply(ma)
+                .build();
+            em.persist(h);
+        }
     }
 
     private void makeMusicApply() {
