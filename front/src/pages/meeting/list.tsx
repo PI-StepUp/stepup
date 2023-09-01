@@ -117,7 +117,7 @@ const MeetingList = () => {
                                                     <p>{meeting.writerName}</p>
                                                 </div>
                                                 <div className="meeting-cnt" style={{ marginTop: '15px' }}>
-                                                    <p>댓글수: {meeting.commentCnt}  조회수: {meeting.viewCnt}</p>
+                                                    <p>조회수: {meeting.viewCnt} 댓글수: {meeting.commentCnt}</p>
                                                 </div>  
                                                 <div className="meeting-content">
                                                     <p>{meeting.content}</p>

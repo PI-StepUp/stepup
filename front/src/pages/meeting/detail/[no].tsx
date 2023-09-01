@@ -25,6 +25,25 @@ const DetailArticle = () => {
     const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
     const [comments, setComments] = useState<any>();
     const commentValue = useRef<any>();
+    const startDate = new Date(article?.startAt);
+    const endDate = new Date(article?.endAt);
+
+
+    const formattedStartDate = startDate.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    
+      const formattedEndDate = endDate.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
     const createComment = () => {
         axiosBoard.post(`/comment/${boardId}`, {
@@ -315,9 +334,18 @@ const DetailArticle = () => {
                         <h4>{article?.title}</h4>
                         <p>2023년 07월 15일 AM 10시</p>
                     </div>
+                    <div className="detail-main-region">
+                        <p>지역: {article?.region}</p>
+                    </div>
+                    <div className="detail-main-time">
+                        <p>만나요 ! {formattedStartDate}</p>
+                    </div>
+                    <div className="detail-main-time">
+                        <p>잘가요 ! {formattedEndDate}</p>
+                    </div>   
                     <div className="detail-main-content">
                         <p>{article?.content}</p>
-                    </div>
+                    </div>                               
                     <div className="button-wrap">
                         {
                             nickname === article?.writerName ?
