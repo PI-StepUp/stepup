@@ -21,22 +21,27 @@ import com.pi.stepup.domain.rank.exception.RankNotFoundException;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
+import com.pi.stepup.domain.user.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class PointHistoryServiceImpl implements PointHistoryService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final PointPolicyRepository pointPolicyRepository;
     private final PointHistoryRepository pointHistoryRepository;
     private final DanceRepository danceRepository;
     private final RankRepository rankRepository;
+    private final PointRedisService pointRedisService;
 
     @Override
     @Transactional
@@ -57,18 +62,19 @@ public class PointHistoryServiceImpl implements PointHistoryService {
 
         Integer point = pointUpdateRequestDto.getCount() * pointPolicy.getPoint();
 
-        user.updatePoint(point);
+//        user.updatePoint(point);
         pointHistoryRepository.insert(
             pointUpdateRequestDto.toEntity(user, pointPolicy, randomDance));
 
-        updateUserRank(user);
+        pointRedisService.updatePoint(id, point);
+        updateUserRank(id);
     }
 
-    public void updateUserRank(User user) {
-        Integer userPoint = user.getPoint();
+    public void updateUserRank(String id) {
+        Integer userPoint = userService.readOne().getPoint();
         Rank rank = rankRepository.findOneByPoint(userPoint)
             .orElseThrow(() -> new RankNotFoundException(RANK_NOT_FOUND.getMessage()));
-        user.setRank(rank);
+        pointRedisService.updateRank(id, rank.getName());
     }
 
     @Override
@@ -86,8 +92,7 @@ public class PointHistoryServiceImpl implements PointHistoryService {
     @Override
     public Integer readPoint() {
         String id = getLoggedInUserId();
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
-        return user.getPoint();
+        log.info("[INFO] read point 메소드 호출");
+        return pointRedisService.getPoint(id);
     }
 }
