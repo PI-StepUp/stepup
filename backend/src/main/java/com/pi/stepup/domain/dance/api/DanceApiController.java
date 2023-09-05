@@ -20,6 +20,7 @@ import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceSearchResponseDto;
+import com.pi.stepup.domain.dance.service.DanceRedisService;
 import com.pi.stepup.domain.dance.service.DanceService;
 import com.pi.stepup.domain.music.dto.MusicResponseDto.MusicFindResponseDto;
 import com.pi.stepup.global.dto.ResponseDto;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class DanceApiController {
 
     private final DanceService danceService;
+    private final DanceRedisService danceRedisService;
 
     @Operation(summary = "랜덤 플레이 댄스 개최", description = "회원들이 참여할 랜덤 플레이 댄스를 개최한다. 유형은 서바이벌, 랭킹, 자율 중에서 고른다.")
     @ApiResponse(responseCode = "201", description = "랜덤 플레이 댄스 생성 완료")
@@ -120,7 +122,7 @@ public class DanceApiController {
     public ResponseEntity<ResponseDto<?>> readAllRandomDance
         (DanceSearchRequestDto danceSearchRequestDto) {
         List<DanceSearchResponseDto> allDance
-            = danceService.readAllRandomDance(danceSearchRequestDto);
+            = danceRedisService.readAllRandomDance(danceSearchRequestDto);
 
         if (danceSearchRequestDto.getProgressType().equals(ProgressType.SCHEDULED.toString())) {
             return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
@@ -147,7 +149,7 @@ public class DanceApiController {
     @PostMapping("/reserve/{randomDanceId}")
     public ResponseEntity<ResponseDto<?>> createReservation
         (@PathVariable("randomDanceId") Long randomDanceId) {
-        danceService.createReservation(randomDanceId);
+        danceRedisService.createReservation(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.create(
             RESERVE_RANDOM_DANCE.getMessage()
@@ -160,7 +162,7 @@ public class DanceApiController {
     @DeleteMapping("/my/reserve/{randomDanceId}")
     public ResponseEntity<ResponseDto<?>> deleteReservation
         (@PathVariable("randomDanceId") Long randomDanceId) {
-        danceService.deleteReservation(randomDanceId);
+        danceRedisService.deleteReservation(randomDanceId);
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             DELETE_RESERVE_RANDOM_DANCE.getMessage()
@@ -173,7 +175,7 @@ public class DanceApiController {
     @GetMapping("/my/reserve")
     public ResponseEntity<ResponseDto<?>> readAllMyReserveDance() {
         List<DanceFindResponseDto> allMyRandomDance
-            = danceService.readAllMyReserveDance();
+            = danceRedisService.readAllMyReserveDance();
 
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.create(
             SELECT_ALL_RESERVE_RANDOM_DANCE.getMessage(),
