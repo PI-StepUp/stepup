@@ -69,14 +69,18 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findAllDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
+            + "LEFT JOIN AttendHistory a "
+            + "ON r.randomDanceId = a.randomDance.randomDanceId "
+            + "LEFT JOIN Reservation s "
+            + "ON r.randomDanceId = s.randomDance.randomDanceId "
             + "WHERE r.endAt >= current_timestamp ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
-                "r.content LIKE '%" + keyword + "%')";
+                "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "ORDER BY r.startAt ASC ";
+        sql += "GROUP BY r ORDER BY COUNT(a) DESC, COUNT(s) DESC, ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -88,10 +92,10 @@ public class DanceRepositoryImpl implements DanceRepository {
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
-                "r.content LIKE '%" + keyword + "%')";
+                "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "ORDER BY r.startAt ASC ";
+        sql += "ORDER BY ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -104,10 +108,10 @@ public class DanceRepositoryImpl implements DanceRepository {
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
-                "r.content LIKE '%" + keyword + "%')";
+                "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "ORDER BY r.startAt ASC ";
+        sql += "ORDER BY ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -119,13 +123,22 @@ public class DanceRepositoryImpl implements DanceRepository {
     }
 
     @Override
+    public List<Reservation> insertReservationList(List<Reservation> reservationList) {
+        for (int i = 0; i < reservationList.size(); i++) {
+            em.persist(reservationList.get(i));
+        }
+        return reservationList;
+    }
+
+    @Override
     public Optional<Reservation> findReservationByRandomDanceIdAndUserId(Long randomDanceId,
         Long userId) {
         Optional<Reservation> reservation = null;
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
                     + "WHERE r.randomDance.randomDanceId = :randomDanceId "
-                    + "AND r.user.userId = :userId", Reservation.class)
+                    + "AND r.user.userId = :userId "
+                    + "AND r.randomDance.startAt > current_timestamp  ", Reservation.class)
                 .setParameter("randomDanceId", randomDanceId)
                 .setParameter("userId", userId)
                 .getSingleResult());
@@ -143,7 +156,8 @@ public class DanceRepositoryImpl implements DanceRepository {
         try {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
                     + "WHERE r.reservationId = :reservationId "
-                    + "AND r.randomDance.randomDanceId = :randomDanceId", Reservation.class)
+                    + "AND r.randomDance.randomDanceId = :randomDanceId "
+                    + "AND r.randomDance.startAt > current_timestamp  ", Reservation.class)
                 .setParameter("reservationId", reservationId)
                 .setParameter("randomDanceId", randomDanceId)
                 .getSingleResult());
@@ -166,7 +180,8 @@ public class DanceRepositoryImpl implements DanceRepository {
 
     @Override
     public void deleteAllReservationByUserId(Long userId) {
-        em.createQuery("DELETE FROM Reservation r WHERE r.user.userId = :userId")
+        em.createQuery("DELETE FROM Reservation r "
+                + "WHERE r.user.userId = :userId")
             .setParameter("userId", userId)
             .executeUpdate();
     }
@@ -180,6 +195,7 @@ public class DanceRepositoryImpl implements DanceRepository {
             .setParameter("userId", userId)
             .getResultList();
     }
+
 
     @Override
     public AttendHistory insertAttend(AttendHistory attendHistory) {

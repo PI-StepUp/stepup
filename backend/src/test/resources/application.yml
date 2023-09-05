@@ -28,6 +28,16 @@ spring:
     password:
     ttls:
       user-info: 1_000
+      reservation: 100000
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      password: vkdlxlaWkd123#
+      database: stepup
+      authentication-database: admin
 
 jwt:
   secret: XUrYUhZfrxxxxxxxxjdkxxxxxxxxxxt5CRi3AdqZu33

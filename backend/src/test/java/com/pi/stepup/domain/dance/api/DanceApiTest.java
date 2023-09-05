@@ -9,6 +9,7 @@ import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceSearchRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceRequestDto.DanceUpdateRequestDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceFindResponseDto;
 import com.pi.stepup.domain.dance.dto.DanceResponseDto.DanceSearchResponseDto;
+import com.pi.stepup.domain.dance.service.DanceRedisService;
 import com.pi.stepup.domain.dance.service.DanceService;
 import com.pi.stepup.domain.music.domain.Music;
 import com.pi.stepup.domain.music.domain.MusicAnswer;
@@ -56,6 +57,9 @@ public class DanceApiTest {
 
     @MockBean
     private UserRedisService userRedisService;
+
+    @MockBean
+    private DanceRedisService danceRedisService;
 
     private User host;
     private Music music;
@@ -271,12 +275,11 @@ public class DanceApiTest {
                 .andExpect(jsonPath("data").isArray());
     }
 
-    //TODO: 조건별 랜덤플 목록 조회
     @Test
     @DisplayName("참여 가능한 랜덤 플레이 댄스 목록 조회 테스트")
     @WithMockUser
     public void readAllDanceApiTest() throws Exception {
-        when(danceService.readAllRandomDance(any(DanceSearchRequestDto.class))).thenReturn(allDance);
+        when(danceRedisService.readAllRandomDance(any(DanceSearchRequestDto.class))).thenReturn(allDance);
 
         makeDanceAllSearchRequestDto();
         mockMvc.perform(
@@ -293,7 +296,7 @@ public class DanceApiTest {
     @DisplayName("랜덤 플레이 댄스 예약 테스트")
     @WithMockUser
     public void createReservationApiTest() throws Exception {
-        doNothing().when(danceService).createReservation(any(Long.class));
+        doNothing().when(danceRedisService).createReservation(any(Long.class));
 
         mockMvc.perform(
                         post(String.format(RESERVE_RANDOM_DANCE_URL.getUrl()
@@ -309,7 +312,7 @@ public class DanceApiTest {
     @DisplayName("랜덤 플레이 댄스 예약 취소 테스트")
     @WithMockUser
     public void deleteReservationApiTest() throws Exception {
-        doNothing().when(danceService).deleteReservation(any(Long.class));
+        doNothing().when(danceRedisService).deleteReservation(any(Long.class));
 
         mockMvc.perform(
                         delete(
@@ -326,7 +329,7 @@ public class DanceApiTest {
     @DisplayName("예약한 랜덤 플레이 댄스 목록 조회 테스트")
     @WithMockUser
     public void readAllMyReserveDanceApiTest() throws Exception {
-        when(danceService.readAllMyReserveDance()).thenReturn(allMyDance);
+        when(danceRedisService.readAllMyReserveDance()).thenReturn(allMyDance);
 
         makeAllMyDanceList();
         mockMvc.perform(
