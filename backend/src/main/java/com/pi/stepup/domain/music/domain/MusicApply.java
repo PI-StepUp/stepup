@@ -60,16 +60,20 @@ public class MusicApply extends BaseEntity {
         this.hearts = hearts;
     }
 
-    public void addHeart() {
-        this.heartCnt += 1;
+    public void setHeartCnt(int heartCnt) {
+        this.heartCnt = heartCnt;
     }
 
-    public void removeHeart() {
-        this.heartCnt -= 1;
-    }
+//    public void addHeart() {
+//        this.heartCnt += 1;
+//    }
+//
+//    public void removeHeart() {
+//        this.heartCnt -= 1;
+//    }
 
-    public void addHeartAndSetMusicApply(Heart heart) {
-        this.hearts.add(heart);
-        heart.setMusicApply(this);
-    }
+//    public void addHeartAndSetMusicApply(Heart heart) {
+//        this.hearts.add(heart);
+//        heart.setMusicApply(this);
+//    }
 }

@@ -15,13 +15,25 @@ public interface MusicApplyRepository {
 
     Optional<Heart> findHeart(String id, Long musicApplyId);
 
-    List<MusicApply> findAll(String keyword);
+    List<Heart> findAllHeart();
 
-    List<MusicApply> findAll(String keyword, String id);
+    List<Heart> findHeartByMusicApplyId(Long musicApplyId);
+
+    List<Heart> findHeartById(String id);
+
+    List<MusicApply> findAll(String keyword);
 
     List<MusicApply> findById(String id);
 
     void delete(Long musicApplyId);
 
     void deleteHeart(Long heartId);
+
+    void deleteHeartByIdAndMusicApplyId(String id, Long musicApplyId);
+
+    void insertHearts(List<Heart> hearts);
+
+    void deleteHearts(List<Heart> hearts);
+
+    void deleteHeartById(String id);
 }
