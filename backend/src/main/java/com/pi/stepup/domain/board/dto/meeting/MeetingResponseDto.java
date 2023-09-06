@@ -22,6 +22,7 @@ public class MeetingResponseDto {
         private final String region;
         private final LocalDateTime startAt;
         private final LocalDateTime endAt;
+        private final LocalDateTime createdAt;
         private final List<CommentInfoResponseDto> comments;
         private final Long viewCnt;
         private final int commentCnt;
@@ -38,9 +39,10 @@ public class MeetingResponseDto {
             this.region = meeting.getRegion();
             this.startAt = meeting.getStartAt();
             this.endAt = meeting.getEndAt();
+            this.createdAt = meeting.getCreatedAt();
             this.comments = comments;
             this.commentCnt = meeting.getCommentCnt();
-            this.viewCnt = meeting.getViewCnt();
+            this.viewCnt = viewCnt;
         }
     }
 }

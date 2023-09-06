@@ -76,6 +76,7 @@ const NoticeList = () => {
                                         <span>{lang==="en" ? "NOTICE" : lang==="cn" ? "公告" : "공지사항" }</span>
                                         <div className="notice-list-content">
                                             <h4>{notice.title}</h4>
+                                            <p> 조회수 : {notice.viewCnt}</p>
                                             <p>{notice.content}</p>
                                         </div>
                                         <div className="flex-wrap">

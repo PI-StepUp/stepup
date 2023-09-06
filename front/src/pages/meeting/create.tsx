@@ -30,8 +30,8 @@ const MeetingCreate = () => {
         await axiosBoard.post('/meeting', {
             title: meetingTitle.current?.value,
             content: meetingContent.current?.value,
-            startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
-            endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+            startAt: meetingDate.current?.value + " " + meetingStartTime.current?.value,
+            endAt: meetingDate.current?.value + " " + meetingEndTime.current?.value,
             region: meetingRegion.current?.value,
         }, {
             headers:{
@@ -47,8 +47,8 @@ const MeetingCreate = () => {
                 axiosBoard.post('/meeting', {
                     title: meetingTitle.current?.value,
                     content: meetingContent.current?.value,
-                    startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
-                    endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+                    startAt: meetingDate.current?.value + " " + meetingStartTime.current?.value,
+                    endAt: meetingDate.current?.value + " " + meetingEndTime.current?.value,
                     region: meetingRegion.current?.value,
                 }, {
                     headers:{
@@ -63,8 +63,8 @@ const MeetingCreate = () => {
                     axiosBoard.post('/meeting', {
                         title: meetingTitle.current?.value,
                         content: meetingContent.current?.value,
-                        startAt: meetingDate.current?.value + "T" + meetingStartTime.current?.value,
-                        endAt: meetingDate.current?.value + "T" + meetingEndTime.current?.value,
+                        startAt: meetingDate.current?.value + " " + meetingStartTime.current?.value,
+                        endAt: meetingDate.current?.value + " " + meetingEndTime.current?.value,
                         region: meetingRegion.current?.value,
                     }, {
                         headers:{

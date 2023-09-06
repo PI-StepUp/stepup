@@ -111,6 +111,27 @@
                 line-height:28px;
             }
         }
+        .detail-main-region{
+            margin-top:90px;
+            @include font(22px, 400,  #777);
+            line-height:36px;
+            @include mobile{
+                margin-top:56px;
+                font-size:18px;
+                line-height:28px;
+            }
+        }
+        .detail-main-time{
+            margin-top:20px;
+            @include font(22px, 400, #777);
+            line: height 28px;
+            @include mobile{
+                margin-top:56px;
+                font-size:18px;
+                font-weight: 400;
+                line-height:28px;
+            }
+        }
         .button-wrap{
             @include flex(flex-end, center);
             margin-top:250px;

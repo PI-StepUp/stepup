@@ -19,6 +19,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,8 @@ public class MeetingServiceTest {
     private User writer;
     private Meeting meeting1;
     private Meeting meeting2;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Test
     @BeforeEach
@@ -67,9 +70,10 @@ public class MeetingServiceTest {
                 .title("정모 테스트 제목")
                 .content("정모 테스트 내용")
                 .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
-                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .startAt(LocalDateTime.parse("2023-07-28 09:00", formatter))
+                .endAt(LocalDateTime.parse("2023-07-28 11:00", formatter))
                 .region("서울")
+                .viewCnt(14L)
                 .build();
     }
 
@@ -80,9 +84,10 @@ public class MeetingServiceTest {
                 .title("정모 테스트 제목2")
                 .content("정모 테스트 내용2")
                 .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-                .startAt(LocalDateTime.parse("2023-07-28T09:00:00"))
-                .endAt(LocalDateTime.parse("2023-07-28T11:00:00"))
+                .startAt(LocalDateTime.parse("2023-07-28 09:00", formatter))
+                .endAt(LocalDateTime.parse("2023-07-28 11:00", formatter))
                 .region("광주")
+                .viewCnt(13L)
                 .build();
     }
 
@@ -91,8 +96,8 @@ public class MeetingServiceTest {
                 .title("정모 테스트 제목")
                 .content("정모 테스트 내용")
                 .fileURL("https://example.com/meeting_files/meeting_document.pdf")
-                .startAt("2023-07-28T09:00:00")
-                .endAt("2023-07-28T11:00:00")
+                .startAt("2023-07-28 09:00")
+                .endAt("2023-07-28 11:00")
                 .region("서울")
                 .build();
     }
@@ -103,8 +108,8 @@ public class MeetingServiceTest {
                 .title("(수정)정모 테스트 제목")
                 .content("(수정)정모 테스트 내용")
                 .fileURL("(수정)https://example.com/meeting_files/meeting_document.pdf")
-                .startAt("2023-07-28T09:00:00")
-                .endAt("2023-07-28T11:00:00")
+                .startAt("2023-07-28 09:00")
+                .endAt("2023-07-28 11:00")
                 .region("광주")
                 .build();
     }

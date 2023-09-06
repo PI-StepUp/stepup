@@ -8,6 +8,7 @@ import com.pi.stepup.domain.board.dto.talk.TalkRequestDto.TalkUpdateRequestDto;
 import com.pi.stepup.domain.board.dto.talk.TalkResponseDto.TalkInfoResponseDto;
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
+import com.pi.stepup.domain.board.service.redis.CntRedisService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class TalkServiceImpl implements TalkService {
     private final TalkRepository talkRepository;
     private final UserRepository userRepository;
     private final CommentService commentService;
+    private final CntRedisService cntRedisService;
 
     @Transactional
     @Override
@@ -63,13 +66,27 @@ public class TalkServiceImpl implements TalkService {
         return talk;
     }
 
+
     @Transactional
     @Override
     public List<TalkInfoResponseDto> readAll(String keyword) {
         List<Talk> allTalks = talkRepository.findAll(keyword);
-        return allTalks.stream()
-                .map(t -> TalkInfoResponseDto.builder().talk(t).build())
-                .collect(Collectors.toList());
+
+        List<TalkInfoResponseDto> talkInfoResponseDtos = new ArrayList<>();
+
+        for (Talk talk : allTalks) {
+            Long currentViewCnt = null;
+            if (cntRedisService != null && talk != null) {
+                currentViewCnt = cntRedisService.getViewCntFromRedis(talk.getBoardId());
+            }
+            TalkInfoResponseDto dto = TalkInfoResponseDto.builder()
+                    .talk(talk)
+                    .viewCnt(currentViewCnt)
+                    .build();
+            talkInfoResponseDtos.add(dto);
+        }
+
+        return talkInfoResponseDtos;
     }
 
     @Override
@@ -87,13 +104,16 @@ public class TalkServiceImpl implements TalkService {
     public Optional<TalkInfoResponseDto> readOne(Long boardId) {
         Talk talk = talkRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-        talk.increaseViewCnt();
+        cntRedisService.increaseViewCnt(boardId);
+        Long currentViewCnt = cntRedisService.getViewCntFromRedis(boardId);
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return Optional.ofNullable(TalkInfoResponseDto.builder()
                 .talk(talkRepository.findOne(boardId).orElseThrow())
                 .comments(comments)
+                .viewCnt(currentViewCnt)
                 .build());
     }
+
 
     @Transactional
     @Override

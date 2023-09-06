@@ -59,11 +59,11 @@ public class CommentServiceImpl implements CommentService {
 
         if (board instanceof Talk) {
             Talk talk = (Talk) board;
-            talk.updateCommentCnt(); // 댓글 수 업데이트
+            talk.updateCommentCnt();
             talkRepository.insert(talk);
         } else if (board instanceof Meeting) {
             Meeting meeting = (Meeting) board;
-            meeting.updateCommentCnt(); // 댓글 수 업데이트
+            meeting.updateCommentCnt();
             meetingRepository.insert(meeting);
         }
 
