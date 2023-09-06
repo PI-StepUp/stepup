@@ -326,7 +326,7 @@ const DetailArticle = () => {
                     <div className="detail-main-title">
                         <span>게시글</span>
                         <h4 ref={articleTitle}></h4>
-                        <p>2023년 07월 15일 AM 10시</p>
+                        <p ref={formattedCreatedDate}></p>
                     </div>
                     <div className="detail-main-content">
                         <p ref={articleContent}></p>
