@@ -9,6 +9,7 @@ import com.pi.stepup.domain.board.dto.meeting.MeetingResponseDto.MeetingInfoResp
 import com.pi.stepup.domain.board.exception.BoardNotFoundException;
 import com.pi.stepup.domain.board.exception.MeetingBadRequestException;
 import com.pi.stepup.domain.board.service.comment.CommentService;
+import com.pi.stepup.domain.board.service.redis.CntRedisService;
 import com.pi.stepup.domain.user.constant.UserRole;
 import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,8 @@ public class MeetingServiceImpl implements MeetingService {
     private final MeetingRepository meetingRepository;
     private final UserRepository userRepository;
     private final CommentService commentService;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private final CntRedisService cntRedisService;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Transactional
     @Override
@@ -44,8 +47,10 @@ public class MeetingServiceImpl implements MeetingService {
         User writer = userRepository.findById(loggedInUserId)
                 .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
 
-        if (LocalDateTime.parse(meetingSaveRequestDto.getEndAt(), formatter)
-                .isBefore(LocalDateTime.parse(meetingSaveRequestDto.getStartAt(), formatter))) {
+        LocalDateTime startAt = LocalDateTime.parse(meetingSaveRequestDto.getStartAt(), formatter);
+        LocalDateTime endAt = LocalDateTime.parse(meetingSaveRequestDto.getEndAt(), formatter);
+
+        if (endAt.isBefore(startAt)) {
             throw new MeetingBadRequestException(MEETING_INVALID_TIME.getMessage());
         }
 
@@ -54,8 +59,8 @@ public class MeetingServiceImpl implements MeetingService {
                 .title(meetingSaveRequestDto.getTitle())
                 .content(meetingSaveRequestDto.getContent())
                 .fileURL(meetingSaveRequestDto.getFileURL())
-                .startAt(LocalDateTime.parse(meetingSaveRequestDto.getStartAt()))
-                .endAt(LocalDateTime.parse(meetingSaveRequestDto.getEndAt()))
+                .startAt(startAt)
+                .endAt(endAt)
                 .region(meetingSaveRequestDto.getRegion())
                 .viewCnt(0L)
                 .build();
@@ -93,10 +98,24 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public List<MeetingInfoResponseDto> readAll(String keyword) {
         List<Meeting> allMeetings = meetingRepository.findAll(keyword);
-        return allMeetings.stream()
-                .map(m -> MeetingInfoResponseDto.builder().meeting(m).build())
-                .collect(Collectors.toList());
+
+        List<MeetingInfoResponseDto> meetingInfoResponseDtos = new ArrayList<>();
+
+        for (Meeting meeting : allMeetings) {
+            Long currentViewCnt = null;
+            if (cntRedisService != null && meeting != null) {
+                currentViewCnt = cntRedisService.getViewCntFromRedis(meeting.getBoardId());
+            }
+            MeetingInfoResponseDto dto = MeetingInfoResponseDto.builder()
+                    .meeting(meeting)
+                    .viewCnt(currentViewCnt)
+                    .build();
+            meetingInfoResponseDtos.add(dto);
+        }
+
+        return meetingInfoResponseDtos;
     }
+
 
     @Override
     public List<MeetingInfoResponseDto> readAllById() {
@@ -113,13 +132,16 @@ public class MeetingServiceImpl implements MeetingService {
     public MeetingInfoResponseDto readOne(Long boardId) {
         Meeting meeting = meetingRepository.findOne(boardId)
                 .orElseThrow(() -> new BoardNotFoundException(BOARD_NOT_FOUND.getMessage()));
-        meeting.increaseViewCnt();
+        cntRedisService.increaseViewCnt(boardId);
+        Long currentViewCnt = cntRedisService.getViewCntFromRedis(boardId);
         List<CommentInfoResponseDto> comments = commentService.readByBoardId(boardId);
         return MeetingInfoResponseDto.builder()
                 .meeting(meetingRepository.findOne(boardId).orElseThrow())
                 .comments(comments)
+                .viewCnt(currentViewCnt)
                 .build();
     }
+
 
     @Transactional
     @Override
@@ -132,4 +154,4 @@ public class MeetingServiceImpl implements MeetingService {
         }
         meetingRepository.delete(boardId);
     }
- }
+}

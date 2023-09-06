@@ -23,6 +23,16 @@ const DetailNotice = () => {
     const [id, setId] = useRecoilState(idState);
     const [role, setRole] = useRecoilState(roleState);
     const [nickname, setNickname] = useRecoilState(nicknameState);
+    const createdDate = new Date(article?.createdAt);
+
+    const formattedCreatedDate = createdDate.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
 
     const deleteArticle = async () => {
         try{
@@ -114,7 +124,7 @@ const DetailNotice = () => {
 					<div className="detail-main-title">
 						<span>공지사항</span>
 						<h4>{article?.title}</h4>
-						<p>2023년 07월 15일 AM 10시</p>
+                        <p>{formattedCreatedDate}</p>
 					</div>
 					<div className="detail-main-content">
 						<p>{article?.content}</p>
