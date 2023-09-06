@@ -85,15 +85,6 @@ public class NoticeServiceImpl implements NoticeService {
         return notice;
     }
 
-//    @Transactional
-//    @Override
-//    public List<NoticeInfoResponseDto> readAll(String keyword) {
-//        List<Notice> allNotices = noticeRepository.findAll(keyword);
-//        return allNotices.stream()
-//                .map(n -> NoticeInfoResponseDto.builder().notice(n).build())
-//                .collect(Collectors.toList());
-//    }
-
     @Transactional
     @Override
     public List<NoticeInfoResponseDto> readAll(String keyword) {

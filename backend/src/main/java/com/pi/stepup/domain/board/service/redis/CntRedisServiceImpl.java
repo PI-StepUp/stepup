@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -37,7 +35,8 @@ public class CntRedisServiceImpl implements CntRedisService {
             currentDbViewCnt++;
             valueOperations.set(key, String.valueOf(currentDbViewCnt), Duration.ofMillis(TTL));
         } else {
-            valueOperations.increment(key, 1L);
+            Long currentViewCnt = Long.parseLong(currentViewCntStr);
+            valueOperations.set(key, String.valueOf(currentViewCnt + 1), Duration.ofMillis(TTL));
         }
     }
 
