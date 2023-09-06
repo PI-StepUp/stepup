@@ -28,6 +28,16 @@ const DetailArticle = () => {
     const [nickname, setNickname] = useRecoilState(nicknameState);
     const [profileImg, setProfileImg] = useRecoilState(profileImgState);
     const [boardIdStat, setBoardIdStat] = useRecoilState(boardIdState);
+    const createdDate = new Date(article?.createdAt);
+
+    const formattedCreatedDate = createdDate.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
 
     const deleteComment = async (commentId: any) => {
         await axiosBoard.delete(`/comment/${commentId}`, {

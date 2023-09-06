@@ -1,11 +1,11 @@
 package com.pi.stepup.domain.board.dto.talk;
 
-import com.pi.stepup.domain.board.domain.Comment;
 import com.pi.stepup.domain.board.domain.Talk;
 import com.pi.stepup.domain.board.dto.comment.CommentResponseDto.CommentInfoResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class TalkResponseDto {
@@ -18,6 +18,7 @@ public class TalkResponseDto {
         private final String profileImg;
         private final String fileURL;
         private final String boardType;
+        private final LocalDateTime createdAt;
         private final int commentCnt;
         private final Long viewCnt;
         private final List<CommentInfoResponseDto> comments;
@@ -31,6 +32,7 @@ public class TalkResponseDto {
             this.profileImg = talk.getWriter().getProfileImg();
             this.fileURL = talk.getFileURL();
             this.boardType = talk.getBoardType();
+            this.createdAt = talk.getCreatedAt();
             this.commentCnt = talk.getCommentCnt();
             this.viewCnt = viewCnt;
             this.comments = comments;

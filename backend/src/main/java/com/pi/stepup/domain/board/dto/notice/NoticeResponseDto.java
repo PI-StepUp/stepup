@@ -4,6 +4,8 @@ import com.pi.stepup.domain.board.domain.Notice;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 public class NoticeResponseDto {
     @Getter
     public static class NoticeInfoResponseDto {
@@ -14,6 +16,7 @@ public class NoticeResponseDto {
         private final String profileImg;
         private final String fileURL;
         private final String boardType;
+        private final LocalDateTime createdAt;
         private final Long randomDanceId;
         private final Long viewCnt;
 
@@ -26,6 +29,7 @@ public class NoticeResponseDto {
             this.profileImg = notice.getWriter().getProfileImg();
             this.fileURL = notice.getFileURL();
             this.boardType = notice.getBoardType();
+            this.createdAt = notice.getCreatedAt();
             this.viewCnt = viewCnt;
             if (notice.getRandomDance() != null) {
                 this.randomDanceId = notice.getRandomDance().getRandomDanceId();

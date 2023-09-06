@@ -27,7 +27,7 @@ const DetailArticle = () => {
     const commentValue = useRef<any>();
     const startDate = new Date(article?.startAt);
     const endDate = new Date(article?.endAt);
-
+    const createdDate = new Date(article?.createdAt);
 
     const formattedStartDate = startDate.toLocaleString("ko-KR", {
         year: "numeric",
@@ -38,6 +38,14 @@ const DetailArticle = () => {
       });
     
       const formattedEndDate = endDate.toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const formattedCreatedDate = createdDate.toLocaleString("ko-KR", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -332,7 +340,7 @@ const DetailArticle = () => {
                     <div className="detail-main-title">
                         <span>오프라인 정모</span>
                         <h4>{article?.title}</h4>
-                        <p>2023년 07월 15일 AM 10시</p>
+                        <p>{formattedCreatedDate}</p>
                     </div>
                     <div className="detail-main-region">
                         <p>지역: {article?.region}</p>
