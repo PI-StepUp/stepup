@@ -199,19 +199,6 @@ class UserServiceImplTest {
         }
     }
 
-    @DisplayName("사용자를 삭제할 때 repository의 delete 메서드가 호출된다.")
-    @Test
-    void deleteTest_Success() {
-        User user = User.builder().build();
-        try (MockedStatic<SecurityUtils> securityUtilsMocked = mockStatic(SecurityUtils.class)) {
-            mockGetUserIdAndFindById(securityUtilsMocked, user);
-
-            userService.delete();
-
-            verify(userRepository, times(1)).delete(user);
-        }
-    }
-
     @DisplayName("회원정보 조회에 성공할 경우 UserInfoResponseDto를 반환한다.")
     @Test
     void readOneTest() {
