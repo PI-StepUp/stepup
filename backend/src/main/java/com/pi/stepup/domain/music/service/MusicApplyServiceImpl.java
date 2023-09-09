@@ -1,6 +1,8 @@
 package com.pi.stepup.domain.music.service;
 
+import static com.pi.stepup.domain.music.constant.MusicApplyLikeStatus.CAN_HEART;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.ADD_HEART_FAIL;
+import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_DELETE_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.MUSIC_APPLY_NOT_FOUND;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.REMOVE_HEART_FAIL;
 import static com.pi.stepup.domain.music.constant.MusicExceptionMessage.UNAUTHORIZED_USER_ACCESS;
@@ -22,7 +24,6 @@ import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.error.exception.ForbiddenException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     private final MusicApplyRepository musicApplyRepository;
     private final UserRepository userRepository;
+    private final MusicApplyRedisService musicApplyRedisService;
 
     @Override
     @Transactional
@@ -60,12 +62,12 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             id = null;
         }
 
-        if (id == null) {
-            musicApplies = musicApplyRepository.findAll(keyword);
-        } else {
-            musicApplies = musicApplyRepository.findAll(keyword, id);
+        if(musicApplyRedisService.checkRedisEmpty()) {
+            musicApplyRedisService.getHeartsFromDB();
         }
 
+        musicApplies = musicApplyRepository.findAll(keyword);
+        log.info("[INFO] read All");
         return setCanHeart(musicApplies, id);
     }
 
@@ -78,17 +80,16 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     public List<MusicApplyFindResponseDto> setCanHeart(List<MusicApply> musicApplies, String id) {
         List<MusicApplyFindResponseDto> result = new ArrayList<>();
+        log.info("[INFO] setCanHeart method");
 
         for (MusicApply ma : musicApplies) {
             int canHeart = 1;
 
-            for (Heart h : ma.getHearts()) {
-                if (h.getUser().getId().equals(id)) {
-                    canHeart = 0;
-                    break;
-                }
+            if (id != null) {
+                canHeart = musicApplyRedisService.getHeartStatus(id, ma.getMusicApplyId());
             }
 
+            ma.setHeartCnt(musicApplyRedisService.getHeartCnt(ma.getMusicApplyId()));
             result.add(MusicApplyFindResponseDto.builder()
                 .musicApply(ma)
                 .canHeart(canHeart)
@@ -99,11 +100,13 @@ public class MusicApplyServiceImpl implements MusicApplyService {
 
     @Override
     public MusicApplyFindResponseDto readOne(Long musicApplyId) {
+        MusicApply musicApply = musicApplyRepository.findOne(musicApplyId)
+            .orElseThrow(
+                () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
+        musicApply.setHeartCnt(musicApplyRedisService.getHeartCnt(musicApplyId));
+
         return MusicApplyFindResponseDto.builder()
-            .musicApply(musicApplyRepository.findOne(musicApplyId)
-                .orElseThrow(
-                    () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()))
-            )
+            .musicApply(musicApply)
             .canHeart(findHeartStatus(musicApplyId))
             .build();
     }
@@ -139,34 +142,35 @@ public class MusicApplyServiceImpl implements MusicApplyService {
             throw new HeartStatusException(ADD_HEART_FAIL.getMessage());
         }
 
-        musicApplyRepository.insert(heart);
-        musicApply.addHeart();
+        musicApplyRedisService.saveHeart(heart.getUser().getId(),
+            heart.getMusicApply().getMusicApplyId());
     }
 
     @Override
     @Transactional
-    public void deleteHeart(Long musicRequestId) {
+    public void deleteHeart(Long musicApplyId) {
         String id = getLoggedInUserId();
-        Optional<Heart> heart = musicApplyRepository.findHeart(id, musicRequestId);
+        int isHeartExist = musicApplyRedisService.getHeartStatus(id, musicApplyId);
 
-        if (heart.isPresent()) {
-            musicApplyRepository.deleteHeart(heart.get().getHeartId());
-            MusicApply musicApply = heart.get().getMusicApply();
-            musicApply.removeHeart();
-        } else {
+        if (isHeartExist == CAN_HEART.getHeartStatus()) {
             throw new HeartStatusException(REMOVE_HEART_FAIL.getMessage());
+        } else {
+            MusicApply musicApply = musicApplyRepository.findOne(musicApplyId)
+                .orElseThrow(
+                    () -> new MusicApplyNotFoundException(MUSIC_APPLY_NOT_FOUND.getMessage()));
+            musicApplyRedisService.deleteHeart(id, musicApplyId);
         }
     }
 
     @Override
     public Integer findHeartStatus(Long musicApplyId) {
         String id = getLoggedInUserId();
-        Optional<Heart> heart = musicApplyRepository.findHeart(id, musicApplyId);
+        int isHeartExist = musicApplyRedisService.getHeartStatus(id, musicApplyId);
 
-        if (heart.isPresent()) {
-            return 0;
-        } else {
+        if (isHeartExist == CAN_HEART.getHeartStatus()) {
             return 1;
+        } else {
+            return 0;
         }
     }
 }

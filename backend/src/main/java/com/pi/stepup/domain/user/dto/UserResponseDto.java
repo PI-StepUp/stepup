@@ -63,7 +63,7 @@ public class UserResponseDto {
             this.birth = userInfo.getBirth();
             this.profileImg = userInfo.getProfileImg();
             this.point = userInfo.getPoint();
-            this.rankName = userInfo.getRankName();
+            this.rankName = RankName.valueOf(userInfo.getRankName());
             this.rankImg = userInfo.getRankImg();
             this.role = userInfo.getRole();
         }
