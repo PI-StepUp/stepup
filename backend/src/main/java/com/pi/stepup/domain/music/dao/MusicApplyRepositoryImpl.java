@@ -45,6 +45,14 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     }
 
     @Override
+    public List<MusicApply> findAllByUserId(Long userId) {
+        return em.createQuery("SELECT ma FROM MusicApply ma "
+                + "WHERE ma.writer.userId = :userId", MusicApply.class)
+            .setParameter("userId", userId)
+            .getResultList();
+    }
+
+    @Override
     public List<MusicApply> findById(String id) {
         return em.createQuery(
                 "SELECT ma FROM MusicApply ma "
@@ -130,6 +138,13 @@ public class MusicApplyRepositoryImpl implements MusicApplyRepository {
     public void deleteHeart(Long heartId) {
         Heart heart = em.find(Heart.class, heartId);
         em.remove(heart);
+    }
+
+    @Override
+    public void deleteAllHeartsByUserId(Long userId) {
+        em.createQuery("DELETE FROM Heart h WHERE h.user.userId = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
     }
 
     @Override
