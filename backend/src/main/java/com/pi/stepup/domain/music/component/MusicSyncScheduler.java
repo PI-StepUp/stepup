@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class SyncScheduler {
+public class MusicSyncScheduler {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final MusicApplyRepository musicApplyRepository;
