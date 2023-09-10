@@ -81,12 +81,8 @@ public class DanceRedisServiceImpl implements DanceRedisService {
         String id = "reservation:" + loginUserId;
         boolean hasReservation = redisTemplate.hasKey(id);
         if (hasReservation) {
-            Long isRemoved
-                = redisTemplate.opsForSet().remove(id, randomDanceId);
-
-            if (isRemoved == 0) {
-                danceRepository.deleteReservation(randomDanceId, userId);
-            }
+            redisTemplate.opsForSet().remove(id, randomDanceId);
+            danceRepository.deleteReservation(randomDanceId, userId);
 
         } else {
             danceRepository.deleteReservation(randomDanceId, userId);
