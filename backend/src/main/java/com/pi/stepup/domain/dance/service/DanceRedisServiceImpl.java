@@ -281,9 +281,9 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                 allMyRandomDance.add(danceFindResponseDto);
 
                 redisTemplate.opsForSet().add(id, randomDanceId);
-            }
 
-            redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
+                redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
+            }
         }
 
         return allMyRandomDance;
