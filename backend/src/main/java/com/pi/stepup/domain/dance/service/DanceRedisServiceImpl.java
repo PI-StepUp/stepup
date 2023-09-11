@@ -252,7 +252,7 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                     }
                 }
 
-                for(int i=0; i< randomDanceList.size(); i++) {
+                for (int i = 0; i < randomDanceList.size(); i++) {
                     RandomDance randomDance = randomDanceList.get(i);
 
                     DanceFindResponseDto danceFindResponseDto
