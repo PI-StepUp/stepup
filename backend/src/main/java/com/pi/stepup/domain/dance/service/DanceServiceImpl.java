@@ -1,6 +1,5 @@
 package com.pi.stepup.domain.dance.service;
 
-
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.ATTEND_DUPLICATED;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_DELETE_FORBIDDEN;
 import static com.pi.stepup.domain.dance.constant.DanceExceptionMessage.DANCE_INVALID_MUSIC;
@@ -31,6 +30,7 @@ import com.pi.stepup.domain.user.dao.UserRepository;
 import com.pi.stepup.domain.user.domain.User;
 import com.pi.stepup.domain.user.exception.UserNotFoundException;
 import com.pi.stepup.global.config.security.SecurityUtils;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -84,6 +84,10 @@ public class DanceServiceImpl implements DanceService {
     }
 
     private boolean validationDance(RandomDance randomDance) {
+        if (randomDance.getStartAt().isBefore(LocalDateTime.now())) {
+            return false;
+        }
+
         if (randomDance.getEndAt().isAfter(randomDance.getStartAt())) {
             return true;
         } else {
@@ -132,7 +136,7 @@ public class DanceServiceImpl implements DanceService {
             for (String reservationRedisKey : reservationRedisKeys) {
                 Set<Object> set = redisTemplate.opsForSet().members(reservationRedisKey);
 
-                if(set !=null) {
+                if (set != null) {
                     String id = getUserId(reservationRedisKey);
                     userRepository.findById(id).orElseThrow(()
                         -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));

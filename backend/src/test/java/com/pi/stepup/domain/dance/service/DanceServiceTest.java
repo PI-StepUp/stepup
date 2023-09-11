@@ -89,9 +89,9 @@ class DanceServiceTest {
     private final Long pk3 = 3L;
     private final String title = "랜덤 플레이 댄스";
     private final String content = "함께 합시다";
-    private final String startAt1 = "2023-07-20 10:00";
-    private final String startAt2 = "2023-08-20 10:00";
-    private final String endAt = "2023-08-30 10:00";
+    private final String startAt1 = "2024-07-20 10:00";
+    private final String startAt2 = "2024-08-20 10:00";
+    private final String endAt = "2024-08-30 10:00";
     private final String mTitle = "ISTJ";
     private final String artist = "NCT DREAM";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(

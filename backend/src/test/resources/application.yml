@@ -28,7 +28,9 @@ spring:
     password:
     ttls:
       user-info: 1_000
-      reservation: 100000
+      reservation: 30000
+      point: 7_200_000
+      heart: 7_200_000
 
   data:
     mongodb:
