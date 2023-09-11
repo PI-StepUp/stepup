@@ -73,14 +73,14 @@ public class DanceRepositoryImpl implements DanceRepository {
             + "ON r.randomDanceId = a.randomDance.randomDanceId "
             + "LEFT JOIN Reservation s "
             + "ON r.randomDanceId = s.randomDance.randomDanceId "
-            + "WHERE r.endAt >= current_timestamp ";
+            + "WHERE r.endAt >= now() ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "GROUP BY r ORDER BY COUNT(a) DESC, COUNT(s) DESC, ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
+        sql += "GROUP BY r ORDER BY COUNT(a) DESC, COUNT(s) DESC, ABS(TIMESTAMPDIFF(SECOND, now(), r.startAt)) ASC";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -88,14 +88,14 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findScheduledDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
-            + "WHERE r.startAt > current_timestamp ";
+            + "WHERE r.startAt > now() ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "ORDER BY ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
+        sql += "ORDER BY ABS(TIMESTAMPDIFF(SECOND, now(), r.startAt)) ASC";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -103,15 +103,15 @@ public class DanceRepositoryImpl implements DanceRepository {
     @Override
     public List<RandomDance> findInProgressDance(String keyword) {
         String sql = "SELECT r FROM RandomDance r "
-            + "WHERE r.startAt <= current_timestamp "
-            + "AND r.endAt >= current_timestamp ";
+            + "WHERE r.startAt <= now() "
+            + "AND r.endAt >= now() ";
 
         if (StringUtils.hasText(keyword) && !keyword.equals("")) {
             sql += "AND (r.title LIKE '%" + keyword + "%' OR " +
                 "r.content LIKE '%" + keyword + "%') ";
         }
 
-        sql += "ORDER BY ABS(FUNCTION('TIMESTAMPDIFF', SECOND, current_timestamp, r.startAt)) ASC";
+        sql += "ORDER BY ABS(TIMESTAMPDIFF(SECOND, now(), r.startAt)) ASC";
 
         return em.createQuery(sql, RandomDance.class).getResultList();
     }
@@ -138,7 +138,7 @@ public class DanceRepositoryImpl implements DanceRepository {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
                     + "WHERE r.randomDance.randomDanceId = :randomDanceId "
                     + "AND r.user.userId = :userId "
-                    + "AND r.randomDance.startAt > current_timestamp  ", Reservation.class)
+                    + "AND r.randomDance.startAt > now() ", Reservation.class)
                 .setParameter("randomDanceId", randomDanceId)
                 .setParameter("userId", userId)
                 .getSingleResult());
@@ -157,7 +157,7 @@ public class DanceRepositoryImpl implements DanceRepository {
             reservation = Optional.ofNullable(em.createQuery("SELECT r FROM Reservation r "
                     + "WHERE r.reservationId = :reservationId "
                     + "AND r.randomDance.randomDanceId = :randomDanceId "
-                    + "AND r.randomDance.startAt > current_timestamp  ", Reservation.class)
+                    + "AND r.randomDance.startAt > now() ", Reservation.class)
                 .setParameter("reservationId", reservationId)
                 .setParameter("randomDanceId", randomDanceId)
                 .getSingleResult());
@@ -190,7 +190,7 @@ public class DanceRepositoryImpl implements DanceRepository {
     public List<Reservation> findAllMyReservation(Long userId) {
         return em.createQuery("SELECT r FROM Reservation r "
                 + "WHERE r.user.userId = :userId "
-                + "AND r.randomDance.startAt > current_timestamp "
+                + "AND r.randomDance.startAt > now() "
                 + "ORDER BY r.createdAt DESC", Reservation.class)
             .setParameter("userId", userId)
             .getResultList();

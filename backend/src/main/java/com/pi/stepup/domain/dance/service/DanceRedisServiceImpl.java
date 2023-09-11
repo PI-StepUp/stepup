@@ -81,12 +81,8 @@ public class DanceRedisServiceImpl implements DanceRedisService {
         String id = "reservation:" + loginUserId;
         boolean hasReservation = redisTemplate.hasKey(id);
         if (hasReservation) {
-            Long isRemoved
-                = redisTemplate.opsForSet().remove(id, randomDanceId);
-
-            if (isRemoved == 0) {
-                danceRepository.deleteReservation(randomDanceId, userId);
-            }
+            redisTemplate.opsForSet().remove(id, randomDanceId);
+            danceRepository.deleteReservation(randomDanceId, userId);
 
         } else {
             danceRepository.deleteReservation(randomDanceId, userId);
@@ -256,7 +252,7 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                     }
                 }
 
-                for(int i=0; i< randomDanceList.size(); i++) {
+                for (int i = 0; i < randomDanceList.size(); i++) {
                     RandomDance randomDance = randomDanceList.get(i);
 
                     DanceFindResponseDto danceFindResponseDto
@@ -281,9 +277,9 @@ public class DanceRedisServiceImpl implements DanceRedisService {
                 allMyRandomDance.add(danceFindResponseDto);
 
                 redisTemplate.opsForSet().add(id, randomDanceId);
-            }
 
-            redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
+                redisTemplate.expire(id, expiration, TimeUnit.MILLISECONDS);
+            }
         }
 
         return allMyRandomDance;
