@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: "redisrelease"
+
+  redis:
+    host: 52.78.93.184
+    port: 6379
+    password: vkdlxlaWkd123#
+    ttls:
+      user-info: 3_600_600
+      reservation: 86400000
+      point: 7_200_000
+      heart: 7_200_000

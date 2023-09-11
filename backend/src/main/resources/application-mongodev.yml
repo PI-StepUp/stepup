@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: "mongodev"
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      username: root
+      password: vkdlxlaWkd123#
+      database: stepup
+      authentication-database: admin

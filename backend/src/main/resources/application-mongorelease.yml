@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: "mongorelease"
+
+  data:
+    mongodb:
+      host: 52.78.93.184
+      port: 27017
+      username: root
+      password: vkdlxlaWkd123#
+      database: stepup
+      authentication-database: admin
