@@ -46,13 +46,13 @@
 
 <img src="readmeimgs/image-removebg-preview_(6).png" alt="readmeimgs/image-removebg-preview_(6).png" width="40px" /> **JPA**
 
+<img src="readmeimgs/redis_original_logo_icon_146368.png" alt="readmeimgs/redis_original_logo_icon_146368.png" width="40px" /> **Redis**
+
 <br />
 
 **[DB]**
 
 <img src="readmeimgs/file_type_mariadb_icon_130403.png" alt="readmeimgs/file_type_mariadb_icon_130403.png" width="40px" /> **MariaDB**
-
-<img src="readmeimgs/redis_original_logo_icon_146368.png" alt="readmeimgs/redis_original_logo_icon_146368.png" width="40px" /> **Redis**
 
 <img src="readmeimgs/pngwing.com.png" alt="readmeimgs/pngwing.com.png" width="40px" /> **MongoDB**
 
