@@ -1,0 +1,3 @@
+[submodule "stepup-secret"]
+	path = stepup-secret
+	url = https://github.com/PI-StepUp/stepup-secret.git
