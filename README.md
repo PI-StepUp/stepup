@@ -4,289 +4,125 @@
 
 # “k-pop에 필요한 모든 만남이 있는 곳” Step Up 
 
+<br />
 
+## 기능 소개
 
 👉 [기능 소개](https://cypress-nigella-d2a.notion.site/2971539abcde4505973e4a14e6458b61?pvs=4)
 
-👉 [배포 관련 자세한 내용 참조](https://www.notion.so/36653d0fff1a40d2aac3d80beed99200?pvs=21)
+<br />
 
+## 서비스 구조
 
+![Untitled](readmeimgs/services.png)
 
-**[ 개발 환경 ]**
+<br />
 
-```
-VS Code : 1.81.1
-IntelliJ : 17.0.7+10-b829.16 amd64
-spring boot : 2.7.13
-JDK : OpenJDK 11.0.18
-JVM : JDK와 동일
-next.js : 13.4.10
-Node.js : 18.16.1
-socket.io : ^4.7.1
-```
+## 사용 기술
 
-**[ DB ]**
+### 🚀 Stacks
 
-```
-mariaDB : 15.1 Distrib 10.5.10-MariaDB
-redis : 7.0.12
-mongoDB : 6.0.9
-```
+**[Frontend]**
 
-**[ 서버 환경 ]**
+<img src="readmeimgs/scss.png" alt="readmeimgs/scss.png" width="40px" /> **SCSS**
 
-```
-EC2 - ami linux 2 (t2 micro, 프리티어)
-nginx : 1.22.1
-ssl
-docker : 20.10.23
-~~jenkins - dood~~
-```
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" alt="https://upload.wikimedia.org/wikipedia/commons/4/4c/Typescript_logo_2020.svg" width="40px" /> **Typescript**
 
-**[ 외부 서비스 ]**
+<img src="readmeimgs/nextjs_icon_132160.png" alt="%E1%84%89%E1%85%A5%E1%84%87%E1%85%B5%E1%84%89%E1%85%B3%20%E1%84%89%E1%85%A9%E1%84%80%E1%85%A2%20c976b277d6634c1d8e4243931cc7f973/nextjs_icon_132160.png" width="40px" /> **Next.js**
 
-```
-AWS S3
-Gmail
-```
+<img src="readmeimgs/recoil.svg" alt="%E1%84%89%E1%85%A5%E1%84%87%E1%85%B5%E1%84%89%E1%85%B3%20%E1%84%89%E1%85%A9%E1%84%80%E1%85%A2%20c976b277d6634c1d8e4243931cc7f973/recoil.svg" width="40px" /> **Recoil**
 
+<img src="readmeimgs/socketio.png" alt="%E1%84%89%E1%85%A5%E1%84%87%E1%85%B5%E1%84%89%E1%85%B3%20%E1%84%89%E1%85%A9%E1%84%80%E1%85%A2%20c976b277d6634c1d8e4243931cc7f973/socketio.png" width="40px" /> **Socket.io**
 
+<br />
 
+**[Backend]**
 
+<img src="readmeimgs/image-removebg-preview_(5).png" alt="readmeimgs/image-removebg-preview_(5).png" width="40px" /> **Java**
 
-## 초기 세팅 (EC2 접속)
+<img src="readmeimgs/image-removebg-preview_(4).png" alt="readmeimgs/image-removebg-preview_(4).png" width="40px" /> **Spring Boot**
 
-### git clone
+<img src="readmeimgs/spring-security.svg" alt="readmeimgs/spring-security.svg" width="40px" /> **Spring Security**
 
-```bash
-git clone https://lab.ssafy.com/s09-webmobile1-sub2/S09P12A601.git
-```
+<img src="readmeimgs/image-removebg-preview_(6).png" alt="readmeimgs/image-removebg-preview_(6).png" width="40px" /> **JPA**
 
+<br />
 
+**[DB]**
 
-### mariaDB 실행
+<img src="readmeimgs/file_type_mariadb_icon_130403.png" alt="readmeimgs/file_type_mariadb_icon_130403.png" width="40px" /> **MariaDB**
 
-```bash
-# mariaDB 이미지 받기
-docker pull mariadb:latest
+<img src="readmeimgs/redis_original_logo_icon_146368.png" alt="readmeimgs/redis_original_logo_icon_146368.png" width="40px" /> **Redis**
 
-# mariaDB 실행
-docker run --name mariadb -d -p 3306:3306 mariadb:latest
-```
+<img src="readmeimgs/pngwing.com.png" alt="readmeimgs/pngwing.com.png" width="40px" /> **MongoDB**
 
+<br />
 
+**[Motion Detect]**
 
-### redis 실행
+<img src="readmeimgs/media_pipe.png" alt="%E1%84%89%E1%85%A5%E1%84%87%E1%85%B5%E1%84%89%E1%85%B3%20%E1%84%89%E1%85%A9%E1%84%80%E1%85%A2%20c976b277d6634c1d8e4243931cc7f973/media_pipe.png" width="40px" /> **Media Pipe**
 
-```bash
-# redis image
-docker pull redis
+<br />
 
-# run redis
-docker run -d -p 6379:6379 --name redis redis:latest --requirepass "비밀번호"
-```
+### 🛠  Infra & Tools
 
 
+<img src="readmeimgs/image-removebg-preview_(8).png" alt="readmeimgs/image-removebg-preview_(8).png" width="40px" /> **EC2**
 
-### mongoDB 실행
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Amazon-S3-Logo.svg/250px-Amazon-S3-Logo.svg.png" alt="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Amazon-S3-Logo.svg/250px-Amazon-S3-Logo.svg.png" width="40px" /> **S3** 
 
-mongoDB docker-compose 작성
+<img src="readmeimgs/docker.png" alt="readmeimgs/docker.png" width="40px" /> **Docker** 
 
-```bash
-mkdir mongoDB
-cd mongoDB
-vim docker-compose.yml
+<img src="readmeimgs/nginx_logo_icon_169915.png" alt="readmeimgs/nginx_logo_icon_169915.png" width="40px" /> **Nginx** 
 
-# ======= vim 편집기 docker-compose 작성 ======
-version: '3.0'
-services:
-  mongodb:
-    image: mongo
-    # 컨테이너 실행시 재시작
-    restart: always
-    # 컨테이너명
-    container_name: mongodb
-    # 포트번호 설정
-    ports:
-      - "27017:27017"
-    command: [--auth]
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: 사용자 이름
-      MONGO_INITDB_ROOT_PASSWORD: 비밀번호
-    volumes:
-      - ./data/mongodb:/data/db
-```
-
-mongoDB 실행
-
-```bash
-cd mongoDB
-docker-compose up -d
-```
-
-
-
-### nginx 설정 및 SSL 적용
-
-도메인 적용
-
-![setdomain](readmeimgs/setdomain.png)
-
-Let’s Encrypt 설치
-
-```bash
-sudo wget -r --no-parent -A 'epel-release-*.rpm' <http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/>
-
-sudo rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-*.rpm
-
-sudo yum-config-manager --enable epel*
+<img src="readmeimgs/letsencrypt_logo_icon_169272.png" alt="readmeimgs/letsencrypt_logo_icon_169272.png" width="40px" /> **Let’s Encrypt (SSL)** 
 
-# cerbot 설치
-sudo yum install -y certbot python2-certbot-apache
-sudo yum install certbot-nginx
-```
+<img src="readmeimgs/jenkins_logo_icon_170552.png" alt="readmeimgs/jenkins_logo_icon_170552.png" width="40px" /> **Jenkins** 
 
-Nginx 설치 및 실행
+<img src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" alt="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" width="40px" /> **Git** 
 
-```bash
-# nginx 설치
-sudo yum install nginx
+<img src="https://cdn-icons-png.flaticon.com/512/5968/5968705.png" alt="https://cdn-icons-png.flaticon.com/512/5968/5968705.png" width="40px" /> **Figma** 
 
-# nginx 실행
-sudo service nginx start
-```
+<img src="readmeimgs/17d4a23-miro-logo-color-square.png" alt="readmeimgs/17d4a23-miro-logo-color-square.png" width="40px" /> **Miro** 
 
-Nginx 설정 파일 작성
+<img src="readmeimgs/image-removebg-preview_(1).png" alt="readmeimgs/image-removebg-preview_(1).png" width="40px" /> **ERD Cloud** 
 
-```bash
-vim conf.d/default.conf
+<img src="readmeimgs/image-removebg-preview_(1)%201.png" alt="readmeimgs/image-removebg-preview_(1)%201.png" width="40px" /> **MobaXTerm** 
 
-# ===== vim 편집기 default.conf 작성 =====
-upstream frontend {
-	server 127.0.0.1:3000;
-}
-upstream backend {
-	server 127.0.0.1:8080;
-}
-upstream socket {
-	server 127.0.0.1:4002;
-}
+<img src="readmeimgs/postman.png" alt="readmeimgs/postman.png" width="40px" /> **Postman** 
 
-server {
-	listen 80;
-	server_name 서버 주소;
-	location / {
-		return 301 도메인주소$request_uri;
-	}
-}
+<br />
 
-server {
-	listen 443 ssl;
-    	ssl_certificate /etc/letsencrypt/live/도메인주소/fullchain.pem;
-	   	ssl_certificate_key /etc/letsencrypt/live/도메인주소/privkey.pem;
-    	include /etc/letsencrypt/options-ssl-nginx.conf;
-    	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+### 👥  Collaboration
 
-	server_name 도메인주소
-	location /api {
-		rewrite ^/api(/.*)$ $1 break;
-		proxy_pass <http://backend>;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade $http_upgrade;
-		proxy_set_header Connection "upgrade";
-		proxy_set_header Host $host;
-		proxy_set_header X-Real-IP $remote_addr;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto $scheme;
-	}
+<img src="readmeimgs/image-removebg-preview_(10).png" alt="readmeimgs/image-removebg-preview_(10).png" width="40px" /> **GitLab** 
 
-	location / {
-		proxy_pass <http://frontend>;
-		proxy_set_header Host $host;
-		proxy_set_header X-Real-IP $remote_addr;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto $scheme;
-		 # https websocket
-            	proxy_set_header       Upgrade $http_upgrade;
-           	proxy_set_header       Connection "upgrade";        	
-	}
-}
+<img src="https://cdn.icon-icons.com/icons2/2389/PNG/512/notion_logo_icon_145025.png" alt="https://cdn.icon-icons.com/icons2/2389/PNG/512/notion_logo_icon_145025.png" width="40px" /> **Notion** 
 
-server {
-    if ($host = 도메인주소) { 
-        return 301 https://$host$request_uri;
-    }
+<img src="readmeimgs/image-removebg-preview_(9).png" alt="readmeimgs/image-removebg-preview_(9).png" width="40px" /> **Jira** 
 
-    if ($host = 도메인주소) {
-        return 301 https://$host$request_uri;
-    }
-}
-```
+<img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" alt="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" width="40px" /> **Discord** 
 
-Let’s Encrypt 적용
+<img src="readmeimgs/image-removebg-preview_(1)%202.png" alt="readmeimgs/image-removebg-preview_(1)%202.png" width="40px" /> **MatterMost** 
 
-```bash
-sudo certbot --nginx
-```
+<img src="readmeimgs/image-removebg-preview_(1)%203.png" alt="readmeimgs/image-removebg-preview_(1)%203.png" width="40px" /> **Webex** 
 
+<br />
 
+## 서버 **아키텍처**
 
-## 프로젝트 배포
+![Untitled](readmeimgs/architecture.png)
 
-### SpringBoot 배포
+<br />
 
-SpringBoot Docker image Build
+## 멤버
 
-```bash
-cd S09P12A601/backend
+| :crown: 장세범                                               | 송채은                                                       | 이가경                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="readmeimgs/sehbeom.png"  width="300px"/><br /><br />⭐ 팀장<br />📞 010-6569-7740<br />✉️ j3beom@gmail.com<br />📁 [Sehbeom.git](https://github.com/Sehbeom)<br />📄 [3Beom.log<br />](https://velog.io/@j3beom)🏷️ #ENFP #BE<br /> | <img src="readmeimgs/SongChaee.jpg"  width="300px"/><br /><br />⭐ 서기<br />📞 010-7102-9842<br />✉️ sce9842@gmail.com<br />📁 [SongChaee<br />](https://github.com/SongChaee)🏷️ #ENFP #FE<br /> | <img src="readmeimgs/rabbit0216.png"  width="300px"/><br /><br />⭐ 서기<br />📞 010-3892-6597<br />✉️ rabbit1999k@naver.com<br />📁  [rabbit0216](https://github.com/rabbit0216)<br />🏷️  #INTP #BE #인프라<br /> |
 
-docker build -t 도커허브아이디/stepup-spring .
-```
 
-SpringBoot 실행
 
-```bash
-docker run --name stepup-spring -d -p 8080:8080 stepup-spring
-```
-
-
-
-### Socket 배포
-
-Socket Docker image Build
-
-```bash
-cd S09P12A601/socket
-
-docker build -t 도커허브아이디/stepup-socket .
-```
-
-Socket 실행
-
-```bash
-# -v : ec2 서버의 /etc/letsencrypt 디렉토리와 
-			# stepup-socket-test 컨테이너의 /app/ssl 디렉토리 연결
-docker run -d --name stepup-socket -p 4002:4002 \\
- -v /etc/letsencrypt:/app/ssl 도커허브아이디/stepup-socket
-```
-
-
-
-### Next.js 배포
-
-Next.js Docker image Build
-
-```bash
-cd S09P12A601/front
-
-docker build -t 도커허브아이디/stepup-next .
-```
-
-Next.js 실행
-
-```bash
-docker run --name stepup-next -d -p 3000:3000 stepup-next
-```
-
-
-
+| 이슬기                                                       | 이주희                                                       | 최찬영                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="readmeimgs/seul1219.png"  width="300px"/><br /><br />⭐ 컨텐츠<br />📞 010-7682-5051<br />✉️ urina842@gmail.com<br />📁 [seul1219<br />](https://github.com/seul1219)🏷️ #INTJ #BE<br /> | <img src="readmeimgs/ejoohee.png"  width="300px"/><br /><br />⭐ 총무<br />📞 010-7240-8563<br />✉️ joo9837@naver.com<br />📁 [ejoohee](https://github.com/ejoohee)<br />🏷️ #ESFP #BE<br /> | <img src="readmeimgs/livinoid98.png"  width="300px"/><br /><br />⭐ 디자인<br />📞 010-7748-9292<br />✉️ cy9803@gmail.com<br />📁 [livinoid98](https://github.com/livinoid98)<br />🏷️ #FE<br /> |
