@@ -122,19 +122,19 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
     @Override
     public void getHeartsFromDB() {
         log.info("[INFO] DB 데이터 Redis에 저장 중 ...");
-        List<Heart> heartsFromDB = musicApplyRepository.findAllHeart();
+        List<MusicApply> musicAppliesFromDB = musicApplyRepository.findAll("");
 
-        for (Heart h : heartsFromDB) {
-            String userKey = "user:" + h.getUser().getId() + ":heart_music_applies";
-            log.debug("[DEBUG / saveHeart] music apply id class : {}",
-                h.getMusicApply().getMusicApplyId().getClass());
-            redisTemplate.opsForSet().add(userKey, (Long) h.getMusicApply().getMusicApplyId());
+        for(MusicApply ma : musicAppliesFromDB) {
+            String userKey = "user:" + ma.getWriter().getId() + ":heart_music_applies";
+            log.debug("[DEBUG / saveHeart] music apply : {}",
+                ma.getMusicApplyId());
+            redisTemplate.opsForSet().add(userKey, (Long) ma.getMusicApplyId());
             redisTemplate.expire(userKey, HEART_EXPIRED_IN, TimeUnit.MILLISECONDS);
 
             String musicApplyHeartCntKey =
-                "music_apply_id:" + h.getMusicApply().getMusicApplyId() + ":heart_cnt";
+                "music_apply_id:" + ma.getMusicApplyId() + ":heart_cnt";
             redisTemplate.opsForValue()
-                .getAndSet(musicApplyHeartCntKey, h.getMusicApply().getHeartCnt());
+                .getAndSet(musicApplyHeartCntKey, ma.getHeartCnt());
             redisTemplate.expire(musicApplyHeartCntKey, HEART_EXPIRED_IN, TimeUnit.MILLISECONDS);
         }
     }
@@ -146,6 +146,9 @@ public class MusicApplyRedisServiceImpl implements MusicApplyRedisService {
             musicApplyHeartCntKey)) {
             getHeartsFromDB();
         }
+
+        log.info("### [MusicApplyRedisService/getHeartCnt] key : {} - value : {}",
+            musicApplyHeartCntKey, redisTemplate.opsForValue().get(musicApplyHeartCntKey));
         return (Integer) redisTemplate.opsForValue().get(musicApplyHeartCntKey);
     }
 }
