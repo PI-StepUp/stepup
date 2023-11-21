@@ -121,7 +121,7 @@ const PracticeRoom = () => {
     useEffect(() => {
         getLocalStream();
 
-        axios.get("https://stepup-pi.com:8080/api/music",{
+        axios.get("https://stepup-pi.com/api/music",{
             params:{
                 keyword: "",
             },
@@ -147,7 +147,7 @@ const PracticeRoom = () => {
                         setRefreshToken(data.data.data.refreshToken);
                     }
                 }).then(() => {
-                    axios.get("https://stepup-pi.com:8080/api/music",{
+                    axios.get("https://stepup-pi.com/api/music",{
                         params:{
                             keyword: "",
                         },

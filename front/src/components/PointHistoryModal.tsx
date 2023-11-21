@@ -25,7 +25,7 @@ const Modal = (props: props): ReactElement => {
 	const router = useRouter();
 
 	// 포인트 적립 내역 조회
-	axios.get("https://stepup-pi.com:8080/api/rank/my/history", {
+	axios.get("https://stepup-pi.com/api/rank/my/history", {
 		headers: {
 			Authorization: `Bearer ${accessToken}`
 		},
@@ -37,7 +37,7 @@ const Modal = (props: props): ReactElement => {
 		}
 	}).catch((error: any) => {
 		if (error.response.data.message === "만료된 토큰") {
-			axios.get("https://stepup-pi.com:8080/api/rank/my/history", {
+			axios.get("https://stepup-pi.com/api/rank/my/history", {
 				headers: {
 					refreshToken: refreshToken
 				},
@@ -47,7 +47,7 @@ const Modal = (props: props): ReactElement => {
 					setRefreshToken(data.data.data.refreshToken);
 				}
 			}).then(() => {
-				axios.get("https://stepup-pi.com:8080/api/rank/my/history", {
+				axios.get("https://stepup-pi.com/api/rank/my/history", {
 					headers: {
 						Authorization: `Bearer ${accessToken}`
 					},
