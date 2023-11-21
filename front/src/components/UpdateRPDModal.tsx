@@ -46,7 +46,7 @@ const Modal = (props: props): ReactElement => {
 
 	// 랜플댄 수정
 	const updateRPD = async () => {
-		await axios.put("https://stepup-pi.com:8080/api/dance/my", {
+		await axios.put("https://stepup-pi.com/api/dance/my", {
 			randomDanceId: props.randomDanceId,
 			title: roomTitle.current?.value,
 			content: roomContent.current?.value,
@@ -72,7 +72,7 @@ const Modal = (props: props): ReactElement => {
 			}
 		}).catch((error: any) => {
 			if (error.response.data.message === "만료된 토큰") {
-				axios.put("https://stepup-pi.com:8080/api/dance/my", {
+				axios.put("https://stepup-pi.com/api/dance/my", {
 					randomDanceId: props.randomDanceId,
 					title: roomTitle.current?.value,
 					content: roomContent.current?.value,
@@ -93,7 +93,7 @@ const Modal = (props: props): ReactElement => {
 						setRefreshToken(data.data.data.refreshToken);
 					}
 				}).then(() => {
-					axios.put("https://stepup-pi.com:8080/api/dance/my", {
+					axios.put("https://stepup-pi.com/api/dance/my", {
 						randomDanceId: props.randomDanceId,
 						title: roomTitle.current?.value,
 						content: roomContent.current?.value,

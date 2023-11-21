@@ -23,7 +23,7 @@ const Modal = (props: props): ReactElement => {
 
 	// 회원 탈퇴
 	const leaveStepup = async () => {
-		await axios.delete(`https://stepup-pi.com:8080/api/user?id=${id}`, {
+		await axios.delete(`https://stepup-pi.com/api/user?id=${id}`, {
 			headers: {
 				Authorization: `Bearer ${accessToken}`
 			},
@@ -42,7 +42,7 @@ const Modal = (props: props): ReactElement => {
 			}
 		}).catch((error: any) => {
 			if (error.response.data.message === "만료된 토큰") {
-				axios.delete(`https://stepup-pi.com:8080/api/user?id=${id}`, {
+				axios.delete(`https://stepup-pi.com/api/user?id=${id}`, {
 					headers: {
 						refreshToken: refreshToken
 					},
@@ -52,7 +52,7 @@ const Modal = (props: props): ReactElement => {
 						setRefreshToken(data.data.data.refreshToken);
 					}
 				}).then(() => {
-					axios.delete(`https://stepup-pi.com:8080/api/user?id=${id}`, {
+					axios.delete(`https://stepup-pi.com/api/user?id=${id}`, {
 						headers: {
 							Authorization: `Bearer ${accessToken}`
 						},

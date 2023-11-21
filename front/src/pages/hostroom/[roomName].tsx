@@ -165,7 +165,7 @@ const Hostroom = () => {
 	useEffect(() => {
 		socketRef.current = io.connect(SOCKET_SERVER_URL);
 
-        axios.get('https://stepup-pi.com:8080/api/music',{
+        axios.get('https://stepup-pi.com/api/music',{
             params:{
                 keyword: "",
             },
@@ -178,7 +178,7 @@ const Hostroom = () => {
             }
         }).catch((error: any) => {
             if(error.response.data.message === "만료된 토큰"){
-                axios.get('https://stepup-pi.com:8080/api/music',{
+                axios.get('https://stepup-pi.com/api/music',{
                     params:{
                         keyword: "",
                     },

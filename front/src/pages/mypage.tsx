@@ -107,7 +107,7 @@ const MyPage = () => {
     } else {
       const setup = async () => {
         // 로그인 유저 정보 조회
-        await axios.get("https://stepup-pi.com:8080/api/user", {
+        await axios.get("https://stepup-pi.com/api/user", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -150,7 +150,7 @@ const MyPage = () => {
           }
         }).catch((error: any) => {
           if (error.response.data.message === "만료된 토큰") {
-            axios.get("https://stepup-pi.com:8080/api/user", {
+            axios.get("https://stepup-pi.com/api/user", {
               headers: {
                 refreshToken: refreshToken,
               }
@@ -160,7 +160,7 @@ const MyPage = () => {
                 setRefreshToken(data.data.data.refreshToken);
               }
             }).then(() => {
-              axios.get("https://stepup-pi.com:8080/api/user", {
+              axios.get("https://stepup-pi.com/api/user", {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
                 }
@@ -218,7 +218,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저가 작성한 정모 게시글 조회
-        await axios.get(`https://stepup-pi.com:8080/api/board/meeting/my`, {
+        await axios.get(`https://stepup-pi.com/api/board/meeting/my`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -229,7 +229,7 @@ const MyPage = () => {
           }
         }).catch((error: any) => {
           if (error.response.data.message === "만료된 토큰") {
-            axios.get(`https://stepup-pi.com:8080/api/board/meeting/my`, {
+            axios.get(`https://stepup-pi.com/api/board/meeting/my`, {
               headers: {
                 refreshToken: refreshToken
               }
@@ -239,7 +239,7 @@ const MyPage = () => {
                 setRefreshToken(data.data.data.refreshToken);
               }
             }).then(() => {
-              axios.get(`https://stepup-pi.com:8080/api/board/meeting/my`, {
+              axios.get(`https://stepup-pi.com/api/board/meeting/my`, {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
                 }
@@ -265,7 +265,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저가 작성한 자유게시판 게시글 조회
-        await axios.get(`https://stepup-pi.com:8080/api/board/talk/my`, {
+        await axios.get(`https://stepup-pi.com/api/board/talk/my`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -277,7 +277,7 @@ const MyPage = () => {
           }
         }).catch((error: any) => {
           if (error.response.data.message === "만료된 토큰") {
-            axios.get(`https://stepup-pi.com:8080/api/board/talk/my`, {
+            axios.get(`https://stepup-pi.com/api/board/talk/my`, {
               headers: {
                 refreshToken: refreshToken
               }
@@ -287,7 +287,7 @@ const MyPage = () => {
                 setRefreshToken(data.data.data.refreshToken);
               }
             }).then(() => {
-              axios.get(`https://stepup-pi.com:8080/api/board/talk/my`, {
+              axios.get(`https://stepup-pi.com/api/board/talk/my`, {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
                 }
@@ -314,7 +314,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저의 랜플댄 예약 목록 조회
-        await axios.get("https://stepup-pi.com:8080/api/dance/my/reserve", {
+        await axios.get("https://stepup-pi.com/api/dance/my/reserve", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -325,7 +325,7 @@ const MyPage = () => {
           }
         }).catch((error: any) => {
           if (error.response.data.message === "만료된 토큰") {
-            axios.get("https://stepup-pi.com:8080/api/dance/my/reserve", {
+            axios.get("https://stepup-pi.com/api/dance/my/reserve", {
               headers: {
                 refreshToken: refreshToken
               }
@@ -335,7 +335,7 @@ const MyPage = () => {
                 setRefreshToken(data.data.data.refreshToken);
               }
             }).then(() => {
-              axios.get("https://stepup-pi.com:8080/api/dance/my/reserve", {
+              axios.get("https://stepup-pi.com/api/dance/my/reserve", {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
                 }
@@ -361,7 +361,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저가 개최한 랜플댄 목록 조회
-        await axios.get("https://stepup-pi.com:8080/api/dance/my/open", {
+        await axios.get("https://stepup-pi.com/api/dance/my/open", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -371,7 +371,7 @@ const MyPage = () => {
           }
         }).catch((error: any) => {
           if (error.response.data.message === "만료된 토큰") {
-            axios.get("https://stepup-pi.com:8080/api/dance/my/open", {
+            axios.get("https://stepup-pi.com/api/dance/my/open", {
               headers: {
                 refreshToken: refreshToken
               }
@@ -381,7 +381,7 @@ const MyPage = () => {
                 setRefreshToken(data.data.data.refreshToken);
               }
             }).then((data) => {
-              axios.get("https://stepup-pi.com:8080/api/dance/my/open", {
+              axios.get("https://stepup-pi.com/api/dance/my/open", {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
                 }
@@ -406,7 +406,7 @@ const MyPage = () => {
         })
 
         // 로그인 유저가 참여한 랜플댄 목록 조회
-        await axios.get("https://stepup-pi.com:8080/api/dance/my/attend/", {
+        await axios.get("https://stepup-pi.com/api/dance/my/attend/", {
           headers: {
             Authorization: `Bearer ${accessToken}`
           },
@@ -416,7 +416,7 @@ const MyPage = () => {
           }
         }).catch((error: any) => {
           if (error.response.data.message === "만료된 토큰") {
-            axios.get("https://stepup-pi.com:8080/api/dance/my/attend/", {
+            axios.get("https://stepup-pi.com/api/dance/my/attend/", {
               headers: {
                 refreshToken: refreshToken
               },
@@ -426,7 +426,7 @@ const MyPage = () => {
                 setRefreshToken(data.data.data.refreshToken);
               }
             }).then(() => {
-              axios.get("https://stepup-pi.com:8080/api/dance/my/attend/", {
+              axios.get("https://stepup-pi.com/api/dance/my/attend/", {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
                 },
@@ -459,7 +459,7 @@ const MyPage = () => {
 
   // 로그인 유저의 랜플댄 예약 취소
   const cancelRandomDance = async (selectedId: any) => {
-    await axios.delete(`https://stepup-pi.com:8080/api/dance/my/reserve/${selectedId.reservationId}`, {
+    await axios.delete(`https://stepup-pi.com/api/dance/my/reserve/${selectedId.reservationId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
@@ -472,7 +472,7 @@ const MyPage = () => {
       }
     }).catch((error: any) => {
       if (error.response.data.message === "만료된 토큰") {
-        axios.delete(`https://stepup-pi.com:8080/api/dance/my/reserve/${selectedId.reservationId}`, {
+        axios.delete(`https://stepup-pi.com/api/dance/my/reserve/${selectedId.reservationId}`, {
           headers: {
             refreshToken: refreshToken
           }
@@ -482,7 +482,7 @@ const MyPage = () => {
             setRefreshToken(data.data.data.refreshToken);
           }
         }).then(() => {
-          axios.delete(`https://stepup-pi.com:8080/api/dance/my/reserve/${selectedId.reservationId}`, {
+          axios.delete(`https://stepup-pi.com/api/dance/my/reserve/${selectedId.reservationId}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`
             }
@@ -512,7 +512,7 @@ const MyPage = () => {
 
   // 로그인 유저가 개최한 랜플댄 삭제
   const deleteMyRandomDance = async (roomid: any) => {
-    await axios.delete(`https://stepup-pi.com:8080/api/dance/my/${roomid.rpdId}`, {
+    await axios.delete(`https://stepup-pi.com/api/dance/my/${roomid.rpdId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       },
@@ -525,7 +525,7 @@ const MyPage = () => {
       }
     }).catch((error: any) => {
       if (error.response.data.message === "만료된 토큰") {
-        axios.delete(`https://stepup-pi.com:8080/api/dance/my/${roomid.rpdId}`, {
+        axios.delete(`https://stepup-pi.com/api/dance/my/${roomid.rpdId}`, {
           headers: {
             refreshToken: refreshToken
           },
@@ -535,7 +535,7 @@ const MyPage = () => {
             setRefreshToken(data.data.data.refreshToken);
           }
         }).then(() => {
-          axios.delete(`https://stepup-pi.com:8080/api/dance/my/${roomid.rpdId}`, {
+          axios.delete(`https://stepup-pi.com/api/dance/my/${roomid.rpdId}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`
             },
@@ -567,7 +567,7 @@ const MyPage = () => {
   const checkPw = async () => {
     setCheckPassword(pwValue.current!.value);
     try {
-      axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
+      axios.post("https://stepup-pi.com/api/user/checkpw", {
         id: id,
         password: pwValue.current!.value,
       }, {
@@ -583,7 +583,7 @@ const MyPage = () => {
       }).catch((error: any) => {
         setEqualPw(false);
         if (error.response.data.message === "만료된 토큰") {
-          axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
+          axios.post("https://stepup-pi.com/api/user/checkpw", {
             id: id,
             password: pwValue.current!.value,
           }, {
@@ -596,7 +596,7 @@ const MyPage = () => {
               setRefreshToken(data.data.data.refreshToken);
             }
           }).then(() => {
-            axios.post("https://stepup-pi.com:8080/api/user/checkpw", {
+            axios.post("https://stepup-pi.com/api/user/checkpw", {
               id: id,
               password: pwValue.current!.value,
             }, {

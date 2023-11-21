@@ -80,7 +80,7 @@ const MyPageEdit = () => {
 	}, []);
 
 	useEffect(() => {
-		axios.get('https://stepup-pi.com:8080/api/user/country', {
+		axios.get('https://stepup-pi.com/api/user/country', {
 		}).then((data) => {
 			if (data.data.message === "국가 코드 목록 조회 완료") {
 				setCountries(data.data.data);
@@ -91,7 +91,7 @@ const MyPageEdit = () => {
 	// 닉네임 중복 여부 체크
 	const nicknameCheck = async () => {
 		try {
-			axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
+			axios.post("https://stepup-pi.com/api/user/dupnick", {
 				nickname: nicknameValue.current!.value,
 			}, {
 				headers: {
@@ -107,7 +107,7 @@ const MyPageEdit = () => {
 			}).catch((error: any) => {
 				setNicknameFlag(false);
 				if (error.response.data.message === "만료된 토큰") {
-					axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
+					axios.post("https://stepup-pi.com/api/user/dupnick", {
 						nickname: nicknameValue.current!.value,
 					}, {
 						headers: {
@@ -119,7 +119,7 @@ const MyPageEdit = () => {
 							setRefreshToken(data.data.data.refreshToken);
 						}
 					}).then((data) => {
-						axios.post("https://stepup-pi.com:8080/api/user/dupnick", {
+						axios.post("https://stepup-pi.com/api/user/dupnick", {
 							nickname: nicknameValue.current!.value,
 						}, {
 							headers: {
@@ -154,7 +154,7 @@ const MyPageEdit = () => {
 	// 이메일 중복 체크
 	const emailCheck = async () => {
 		try {
-			axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
+			axios.post("https://stepup-pi.com/api/user/dupemail", {
 				email: emailValue.current!.value,
 			}, {
 				headers: {
@@ -170,7 +170,7 @@ const MyPageEdit = () => {
 			}).catch((error: any) => {
 				setNicknameFlag(false);
 				if (error.response.data.message === "만료된 토큰") {
-					axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
+					axios.post("https://stepup-pi.com/api/user/dupemail", {
 						email: emailValue.current!.value,
 					}, {
 						headers: {
@@ -182,7 +182,7 @@ const MyPageEdit = () => {
 							setRefreshToken(data.data.data.refreshToken);
 						}
 					}).then(() => {
-						axios.post("https://stepup-pi.com:8080/api/user/dupemail", {
+						axios.post("https://stepup-pi.com/api/user/dupemail", {
 							email: emailValue.current!.value,
 						}, {
 							headers: {
@@ -287,7 +287,7 @@ const MyPageEdit = () => {
 
 		try {
 			uploadImg().then((fileName: any) => {
-				axios.put("https://stepup-pi.com:8080/api/user", {
+				axios.put("https://stepup-pi.com/api/user", {
 					email: emailValue.current.value,
 					emailAlert: agreeToReceiveEmail,
 					countryId: countryId,
@@ -308,7 +308,7 @@ const MyPageEdit = () => {
 				}).catch((error: any) => {
 					// alert('회원 정보 수정에 실패했습니다. 관리자에게 문의해주세요.');
 					if (error.response.data.message === "만료된 토큰") {
-						axios.put("https://stepup-pi.com:8080/api/user", {
+						axios.put("https://stepup-pi.com/api/user", {
 							email: emailValue.current.value,
 							emailAlert: agreeToReceiveEmail,
 							countryId: countryId,
@@ -325,7 +325,7 @@ const MyPageEdit = () => {
 								setRefreshToken(data.data.data.refreshToken);
 							}
 						}).then(() => {
-							axios.put("https://stepup-pi.com:8080/api/user", {
+							axios.put("https://stepup-pi.com/api/user", {
 								email: emailValue.current.value,
 								emailAlert: agreeToReceiveEmail,
 								countryId: countryId,
@@ -368,7 +368,7 @@ const MyPageEdit = () => {
 			alert("비밀번호를 다시 확인해주세요.");
 			return;
 		}
-		await axios.patch("https://stepup-pi.com:8080/api/user/pw", {
+		await axios.patch("https://stepup-pi.com/api/user/pw", {
 			password: pw2Value.current.value,
 		}, {
 			headers: {
@@ -383,7 +383,7 @@ const MyPageEdit = () => {
 			}
 		}).catch((error: any) => {
 			if (error.response.data.message === "만료된 토큰") {
-				axios.patch("https://stepup-pi.com:8080/api/user/pw", {
+				axios.patch("https://stepup-pi.com/api/user/pw", {
 					password: pw2Value.current.value,
 				}, {
 					headers: {
@@ -395,7 +395,7 @@ const MyPageEdit = () => {
 						setRefreshToken(data.data.data.refreshToken);
 					}
 				}).then(() => {
-					axios.patch("https://stepup-pi.com:8080/api/user/pw", {
+					axios.patch("https://stepup-pi.com/api/user/pw", {
 						password: pw2Value.current.value,
 					}, {
 						headers: {
